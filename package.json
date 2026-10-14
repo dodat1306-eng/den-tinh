@@ -1,0 +1,15 @@
+{
+  "name": "den-tinh",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Đèn Tinh: Miền Sương Lạc — game hành động 2D với bối cảnh fantasy Việt Nam.",
+  "scripts": {
+    "start": "node tools/server.cjs",
+    "test": "node tools/test.cjs",
+    "test:combat": "node tools/playthrough.cjs",
+    "test:http": "node tools/http-test.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

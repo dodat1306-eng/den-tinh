@@ -1,0 +1,27 @@
+# Local game runtime, saves, browser profiles and caches
+/runtime/*
+!/runtime/NODE-LICENSE.txt
+
+# Generated test output and local screenshots
+/qa/*
+
+# Build output and dependencies
+/node_modules/
+/dist/
+/build/
+*.zip
+*.log
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

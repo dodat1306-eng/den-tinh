@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101c22">
+  <title>Đèn Tinh · Miền Sương Lạc</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="stage">
+    <canvas id="gameCanvas" width="1280" height="720" aria-label="Thế giới Đèn Tinh"></canvas>
+    <div id="vignette"></div>
+    <div id="hud" class="hidden">
+      <section class="vitals glass">
+        <div class="hero-badge" id="heroBadge">AN</div>
+        <div class="vital-data">
+          <div class="vital-title"><strong id="heroName">An</strong><span id="levelLabel">CẤP 1</span></div>
+          <div class="bar health"><i id="hpBar"></i><span id="hpText">100 / 100</span></div>
+          <div class="bar mana"><i id="mpBar"></i><span id="mpText">100 / 100</span></div>
+          <div class="bar xp"><i id="xpBar"></i></div>
+        </div>
+      </section>
+      <div class="zone-tag"><span id="zoneName">Làng Đèn</span><small id="zoneSub">NƠI NGỌN LỬA BẮT ĐẦU</small></div>
+      <section class="map-panel glass">
+        <div class="map-head"><span id="goldLabel">0 xu</span><button id="mapButton" title="Bản đồ (M)">M</button></div>
+        <canvas id="minimap" width="178" height="128"></canvas>
+        <div class="seal-row" id="sealRow"></div>
+      </section>
+      <section class="quest glass"><span class="eyebrow">NGỌN ĐÈN DẪN LỐI</span><strong id="questTitle"></strong><p id="questText"></p></section>
+      <div id="bossHud" class="hidden"><strong id="bossName"></strong><div class="bar"><i id="bossBar"></i></div></div>
+      <section class="skill-tray">
+        <div class="skill" id="skill-dash"><kbd>SPACE</kbd><b>↝</b><span>Lướt né</span><i></i></div>
+        <div class="skill" id="skill-q"><kbd>Q</kbd><b>✦</b><span id="qName"></span><i></i></div>
+        <div class="skill" id="skill-e"><kbd>E</kbd><b>◉</b><span id="eName"></span><i></i></div>
+        <div class="skill ultimate" id="skill-r"><kbd>R</kbd><b>☀</b><span id="rName"></span><i></i></div>
+        <div class="skill" id="skill-heal"><kbd>H</kbd><b>✚</b><span id="potionLabel">3 bình máu</span><i></i></div>
+      </section>
+      <div class="bottom-info"><span>WASD di chuyển · Chuột trái tấn công · F tương tác</span><button id="pauseButton">Ⅱ Tạm dừng</button><button id="soundButton">♫ Âm thanh</button></div>
+      <div id="interactHint" class="hidden"><kbd>F</kbd><span></span></div>
+      <div id="toastBox"></div>
+    </div>
+    <section id="mainMenu" class="menu-screen">
+      <div class="menu-art"><canvas id="titleArt" width="560" height="650"></canvas></div>
+      <div class="menu-copy">
+        <div class="brand-mark">✦</div><p class="eyebrow">MỘT HÀNH TRÌNH GIỮ LỬA</p>
+        <h1>ĐÈN TINH</h1><div class="subtitle">MIỀN SƯƠNG LẠC</div>
+        <p class="story-teaser">Đêm ấy, sương nuốt mất tên của cả ngôi làng.<br>Chỉ còn một ngọn đèn nhớ đường trở về.</p>
+        <p class="choose-label">CHỌN NGƯỜI GIỮ LỬA</p>
+        <div id="heroCards" class="hero-cards"></div>
+        <div class="menu-actions"><button id="startButton" class="primary">Bắt đầu hành trình <span>→</span></button><button id="continueButton" class="secondary hidden">Tiếp tục</button></div>
+        <div class="menu-links"><button id="helpButton">Cách chơi</button><button id="fullscreenButton">Toàn màn hình</button><button id="creditsButton">Về thế giới này</button></div>
+      </div>
+      <div class="menu-footer"><span>KHÁM PHÁ TỰ DO · CHIẾN ĐẤU THỜI GIAN THỰC</span><span>ĐÈN TINH / 01</span></div>
+    </section>
+    <section id="modal" class="modal-layer hidden"><div id="modalContent" class="modal-card"></div></section>
+    <section id="mapOverlay" class="modal-layer hidden"><div class="world-map-card"><div class="world-map-head"><div><p class="eyebrow">ĐI THEO ÁNH LỬA</p><h2>Miền Sương Lạc</h2></div><button id="closeMap">Đóng · M</button></div><canvas id="worldMap" width="850" height="520"></canvas><p>Vàng: ngươi · Hồng: ấn chưa thức tỉnh · Ngọc: điểm đã giải phóng · Đỏ: cội đa</p></div></section>
+    <div id="fatalError" class="hidden"></div>
+  </main>
+  <script src="world.js"></script>
+  <script src="engine.js"></script>
+  <script src="render.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
