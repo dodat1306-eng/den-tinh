@@ -11,6 +11,19 @@ Game hành động 2D tiếng Việt, một người chơi, lấy chất liệu 
 
 Bản ZIP đầy đủ dùng Node.js đi kèm trong `runtime/node.exe`; không cần npm install, CDN hoặc tài khoản. Mã nguồn GitHub không chứa runtime thực thi: cài **Node.js 22 trở lên**, rồi chạy `npm start` hoặc `CHOI_GAME.bat`. Bộ khởi chạy ưu tiên runtime đi kèm và tự tìm Node.js trên PATH nếu không có. Muốn chia sẻ LAN từ source có thể chạy `npm run start:lan` hoặc `CHOI_CHUNG_MANG.bat`. Cache, hồ sơ trình duyệt của bộ khởi chạy và bản lưu máy chủ nằm trong thư mục dự án.
 
+## Xuất bản web trên Cloudflare Workers
+
+Dự án có thể xuất bản bằng Workers Static Assets, từ repository GitHub hoặc từ máy cá nhân:
+
+```sh
+npm run build:web
+npm run deploy
+```
+
+Trong Cloudflare Workers Builds, chọn nhánh `main`, thư mục gốc `/`, build command `exit 0` và deploy command `npm run deploy`. Lệnh deploy tạo lại `dist/`, rồi dùng Wrangler phiên bản cố định để triển khai. `wrangler.jsonc` bật địa chỉ `workers.dev` và chỉ phục vụ `dist/`; tệp không tồn tại trả 404.
+
+Bản web công khai lưu tiến độ riêng trong localStorage của từng trình duyệt. Không tải lên bản lưu chủ máy, Node runtime, công cụ kiểm tra hoặc dự án Unity. Khi dùng trên thiết bị khác, tiến độ không tự đồng bộ.
+
 ## Bản Unity
 
 Thư mục **Unity/** chứa dự án C# Unity 6.3 LTS thật, dùng SpriteRenderer, hoạt ảnh sprite, Camera trực giao, LineRenderer, ParticleSystem và AudioSource. Logic C# đã được biên dịch và kiểm tra độc lập. **Chưa có bản .exe Unity được xuất và xác nhận chạy**, vì Editor chưa cài thành công và máy chưa có giấy phép Unity được kích hoạt.

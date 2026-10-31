@@ -16,6 +16,7 @@
 
 # Build output and dependencies
 /node_modules/
+/.wrangler/
 /dist/
 /build/
 *.zip
