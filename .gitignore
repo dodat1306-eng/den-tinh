@@ -4,6 +4,15 @@
 
 # Generated test output and local screenshots
 /qa/*
+!/qa/test-report.json
+!/qa/expansion-report.json
+!/qa/playthrough-report.json
+!/qa/http-report.json
+!/qa/unity-core-tests.txt
+!/qa/unity-combat-tests.txt
+!/qa/browser-v02.md
+!/qa/v02-hoavi-firewall.jpg
+!/qa/v02-menu.jpg
 
 # Build output and dependencies
 /node_modules/

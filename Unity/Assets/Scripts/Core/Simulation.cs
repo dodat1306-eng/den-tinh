@@ -1,0 +1,171 @@
+using System;
+using System.Collections.Generic;
+
+namespace DenTinh.Core {
+    // Pure C# simulation: shared design and content with the browser release, no Unity dependencies.
+    public sealed class Simulation {
+        public const float Width=60,Height=45;
+        public readonly ContentDatabase Content;public HeroDef Hero;public PlayerState Player;
+        public List<EnemyState> Enemies=new List<EnemyState>();public List<Bullet> Bullets=new List<Bullet>();public List<Danger> Dangers=new List<Danger>();public List<ZoneEffect> Zones=new List<ZoneEffect>();public List<Effect> Effects=new List<Effect>();public List<Prop> Props=new List<Prop>();public List<Shrine> Shrines=new List<Shrine>();public List<Loot> Drops=new List<Loot>();public List<string> Memories=new List<string>(),Achievements=new List<string>();public Queue<SimEvent> Events=new Queue<SimEvent>();
+        public int Seed,Cycle,Kills,Deaths,PendingLevels,Tutorial,Serial;public float Time,Shake;public bool Paused,Dead,Victory,BossStarted;public GameInput Input;public Random Rng;
+        float moved,shots,droneTimer;int dashes,skills;bool chest;bool proc;
+        public Simulation(ContentDatabase content,string hero,int seed,int cycle=0){Content=content;Hero=content.Hero(hero);Seed=seed;Cycle=cycle;Rng=new Random(seed);Player=new PlayerState{hp=Hero.hp,maxHp=Hero.hp,damage=Hero.damage,speed=Hero.speed/64,armor=hero=="kiet"?.08f:0};string first=hero=="linh"?"bamboo":hero=="kiet"?"thunder":hero=="hoavi"?"terminal":"lantern";Player.weapons=new[]{new WeaponState(Content.Weapon(first)),new WeaponState(Content.Weapon(hero=="hoavi"?"firewall":"lotus"))};Generate();}
+        public WeaponState Active {get{return Player.weapons[Player.slot];}}public WeaponDef Weapon {get{return Content.Weapon(Active.id);}}
+        public static string Zone(V2 p){if(V2.Distance(p,new V2(29,37))<7)return "ancient";if(p.x<21&&p.y<20)return "village";if(p.x>39&&p.y<23)return "lotus";if(p.x>37&&p.y>23)return "ash";if(p.x<23&&p.y>20)return "forest";return "crossroads";}
+        public void Emit(string kind,string text){Events.Enqueue(new SimEvent(kind,text));}
+        public float Random(float a,float b){return a+(float)Rng.NextDouble()*(b-a);}
+        void Generate(){
+            Shrines.Add(new Shrine{id="truc",name="Ấn Trúc",kind="hunt",position=new V2(13,34)});Shrines.Add(new Shrine{id="sen",name="Ấn Sen",kind="defend",position=new V2(48,12)});Shrines.Add(new Shrine{id="tro",name="Ấn Tro",kind="forge",position=new V2(48,34)});
+            for(int i=0;i<400;i++){V2 p=new V2(Random(1,59),Random(1,44));string z=Zone(p);if(V2.Distance(p,Player.position)<7||V2.Distance(p,new V2(29,37))<5||Shrines.Exists(s=>V2.Distance(s.position,p)<4)||OnPath(p))continue;Props.Add(new Prop{position=p,type=z=="forest"?"bamboo":z=="lotus"?"lotus":z=="ash"?"rock":"tree",zone=z,radius=z=="lotus"?0:.29f,variant=Rng.Next(4)});}
+            Props.Add(new Prop{position=new V2(6.3f,12),type="house",zone="village",radius=.8f});Props.Add(new Prop{position=new V2(14,12.5f),type="house",zone="village",radius=.8f});Props.Add(new Prop{position=new V2(10.5f,15),type="temple",zone="village",radius=1});Props.Add(new Prop{position=new V2(29,39.4f),type="banyan",zone="ancient",radius=1.1f});
+            for(int i=0;i<75;i++){V2 p=new V2(Random(2,58),Random(2,43));if(Zone(p)=="village"||Zone(p)=="ancient"||Shrines.Exists(s=>V2.Distance(s.position,p)<5)){i--;continue;}Spawn(new[]{"slime","shade","boar","archer","wisp"}[i%5],p,false);}
+            EnemyState boss=Spawn("boar",new V2(13,34),true);boss.miniBoss=true;boss.hp=boss.maxHp=780+Cycle*190;boss.radius=.48f;boss.damage=16;Shrines[0].enemies.Add(boss.id);
+            for(int i=0;i<15;i++){V2 p=i==0?new V2(13,9.5f):new V2(Random(3,57),Random(3,42));if(Collides(p,.4f)){i--;continue;}Drops.Add(new Loot{id="chest-"+i,kind="chest",position=p,weapon=Content.weapons[(i+Math.Abs(Seed%1000))%Content.weapons.Length].id});}
+            Drops.Add(new Loot{id="memory-bell",kind="memory",position=new V2(7,15),weapon="wildfire"});Drops.Add(new Loot{id="memory-letter",kind="memory",position=new V2(19,38),weapon="pierce"});Drops.Add(new Loot{id="memory-lotus",kind="memory",position=new V2(54,6),weapon="vampire"});
+        }
+        public static bool OnPath(V2 p){V2[] paths={new V2(11,10),new V2(27,20),new V2(13,34),new V2(27,20),new V2(48,12),new V2(27,20),new V2(48,34),new V2(27,20),new V2(29,37)};for(int i=1;i<paths.Length;i++){if(Segment(p,paths[i-1],paths[i])<1)return true;}return false;}
+        public static float Segment(V2 p,V2 a,V2 b){V2 d=b-a;float l=d.x*d.x+d.y*d.y;if(l<.0001f)return V2.Distance(p,a);float t=Mathx.Clamp(((p.x-a.x)*d.x+(p.y-a.y)*d.y)/l,0,1);return V2.Distance(p,a+d*t);}
+        public bool Collides(V2 p,float r){if(p.x<r+.4f||p.y<r+.4f||p.x>Width-r-.4f||p.y>Height-r-.4f)return true;return Props.Exists(o=>o.radius>0&&V2.Distance(p,o.position)<r+o.radius);}
+        V2 Move(V2 p,V2 delta,float radius){int steps=Math.Max(1,(int)Math.Ceiling(delta.Length/.1f));for(int i=0;i<steps;i++){V2 x=new V2(p.x+delta.x/steps,p.y);if(!Collides(x,radius))p=x;V2 y=new V2(p.x,p.y+delta.y/steps);if(!Collides(y,radius))p=y;}return p;}
+        public EnemyState Spawn(string type,V2 at,bool elite){EnemyState e=new EnemyState{id="enemy-"+(++Serial),type=type,position=at,home=at,hp=type=="boar"?85:52,speed=type=="shade"?1.8f:1.2f,damage=type=="boar"?13:9};e.hp*=1+Cycle*.22f;e.maxHp=e.hp;e.damage*=1+Cycle*.12f;e.cooldown=Random(1,3);Enemies.Add(e);return e;}
+        public void Fx(string kind,V2 at,float radius,string color,float duration){Effects.Add(new Effect{kind=kind,position=at,radius=radius,color=color,time=duration,maxTime=duration});}
+        public void Text(V2 at,string text,string color){Effects.Add(new Effect{kind="text",position=at,text=text,color=color,time=.8f,maxTime=.8f});}
+        public void Tick(float delta){
+            if(Paused||Dead)return;float dt=Mathx.Clamp(delta,0,.04f);Time+=dt;PlayerState p=Player;
+            p.fireTimer=Math.Max(0,p.fireTimer-dt);p.dashTimer=Math.Max(0,p.dashTimer-dt);p.qTimer=Math.Max(0,p.qTimer-dt);p.eTimer=Math.Max(0,p.eTimer-dt);p.invulnerable=Math.Max(0,p.invulnerable-dt);p.overclock=Math.Max(0,p.overclock-dt);p.firewall=Math.Max(0,p.firewall-dt);p.mp=Math.Min(p.maxMp,p.mp+13*dt);Shake=Math.Max(0,Shake-dt*20);
+            foreach(WeaponState w in p.weapons)if(w.reload>0){w.reload-=dt;if(w.reload<=0){w.reload=0;w.ammo=Content.Weapon(w.id).clip;}}
+            V2 direction=Input.move.Length>1?Input.move.Unit:Input.move;p.moving=direction.Length>.05f;p.facing=Mathx.Angle(Input.aim-p.position);V2 before=p.position;
+            if(p.dashTime>0){p.dashTime-=dt;p.position=Move(p.position,p.dashDirection*13.3f*dt,.2f);}else p.position=Move(p.position,direction*p.speed*dt,.2f);moved+=V2.Distance(before,p.position);
+            if(Input.attack)Fire();
+            if(p.overclock>0){droneTimer-=dt;if(droneTimer<=0){droneTimer=.35f;EnemyState e=Nearest(p.position,9);if(e!=null){for(int i=0;i<2;i++){V2 from=p.position+V2.Angle(Time*3+(i==0?-1:1))*.8f;Shoot(from,Mathx.Angle(e.position-from),14,p.damage*1.2f,true,"code","#7affe5",1,"",false);}}}}
+            UpdateEnemies(dt);UpdateBullets(dt);UpdateDangers(dt);UpdateChallenges(dt);UpdateZones(dt);
+            foreach(EnemyState e in Enemies.ToArray())if(e.alive){e.hit=Math.Max(0,e.hit-dt);e.slow=Math.Max(0,e.slow-dt);if(e.burn>0){e.burn-=dt;e.burnTick-=dt;if(e.burnTick<=0){e.burnTick=.5f;DamageEnemy(e,p.damage*.23f,false);}}}
+            foreach(Loot l in Drops)if(!l.collected&&(l.kind=="gold"||l.kind=="potion")){float d=V2.Distance(l.position,p.position);if(d<(p.Has("dom")?5:2.8f))l.position+=(p.position-l.position).Unit*5*dt;if(d<.4f){l.collected=true;if(l.kind=="gold")p.gold+=l.amount;else p.potions=Math.Min(12,p.potions+1);Emit("sound","pickup");}}
+            if(p.Has("dom"))p.hp=Math.Min(p.maxHp,p.hp+dt);
+            for(int i=Effects.Count-1;i>=0;i--){Effects[i].time-=dt;if(Effects[i].time<=0)Effects.RemoveAt(i);}if(Effects.Count>220)Effects.RemoveRange(0,Effects.Count-220);if(Bullets.Count>550)Bullets.RemoveRange(0,Bullets.Count-550);
+            if(Tutorial<5){bool[] done={moved>1.7f,shots>=4,dashes>0,skills>0,chest};if(done[Tutorial]){Tutorial++;Emit("sound","pickup");if(Tutorial==5)Unlock("first-light","Người giữ lửa đầu tiên");}}
+        }
+        public bool Fire(){PlayerState p=Player;WeaponState state=Active;WeaponDef w=Weapon;if(p.fireTimer>0||p.dashTime>0||state.reload>0)return false;if(state.ammo<=0){Reload();return false;}p.fireTimer=w.interval*(p.overclock>0?.55f:1)*(Hero.id=="linh"&&p.moving?.88f:1)/(1+.13f*p.relics.FindAll(x=>x=="haste").Count);int count=w.shots+(p.Has("split")?1:0);for(int i=0;i<count;i++)Shoot(p.position,p.facing+(i-(count-1)*.5f)*(w.kind=="shotgun"?.14f:.105f),w.speed/64,p.damage*w.power*(1+(state.level-1)*.18f)*(p.Has("split")?.85f:1),true,w.kind=="code"?"code":w.kind=="bow"?"arrow":"orb",w.color,w.pierce+(p.Has("pierce")?2:0),w.effect,true);state.ammo--;shots++;Fx("muzzle",p.position+V2.Angle(p.facing)*.5f,.3f,w.color,.12f);Emit("sound",w.kind=="code"?"codeShot":"shoot");return true;}
+        public void Shoot(V2 from,float angle,float speed,float damage,bool friendly,string kind,string color,int pierce=0,string effect="",bool charge=true){V2 v=V2.Angle(angle);Bullets.Add(new Bullet{position=from+v*.35f,velocity=v*speed,damage=damage,friendly=friendly,kind=kind,color=color,pierce=pierce,effect=effect,charge=charge,life=friendly?1.3f:3});}
+        public bool Reload(){if(Active.reload>0||Active.ammo>=Weapon.clip)return false;Active.reload=Weapon.reload*(Player.Has("cooling")?.8f:1);Emit("sound","reload");return true;}
+        public void Swap(){if(Paused||Dead)return;Player.slot=1-Player.slot;Player.fireTimer=Math.Max(.13f,Player.fireTimer);Emit("sound","switch");}
+        public bool Dash(){PlayerState p=Player;if(Paused||Dead||p.dashTimer>0)return false;p.dashDirection=Input.move.Length>.1f?Input.move.Unit:V2.Angle(p.facing);p.dashTime=.19f;p.invulnerable=Math.Max(p.invulnerable,.27f);p.dashTimer=1.2f;dashes++;Fx("dash",p.position,.6f,Hero.color,.35f);if(p.Has("dashshock")||Hero.id=="kiet")Area(p.position,2.1f,p.damage*2,true);Emit("sound","dash");return true;}
+        public bool Skill(string key){
+            PlayerState p=Player;if(Paused||Dead)return false;float cost=key=="q"?24:key=="e"?38:0;if(key=="r"&&p.ult<100||key=="q"&&p.qTimer>0||key=="e"&&p.eTimer>0||p.mp<cost)return false;
+            if(key!="q"&&key!="e"&&key!="r")return false;p.mp-=cost;skills++;if(key=="q")p.qTimer=Hero.qCd*(p.Has("cooling")?.8f:1);if(key=="e")p.eTimer=Hero.eCd*(p.Has("cooling")?.8f:1);
+            if(key=="q"){
+                int n=Hero.id=="an"?9:Hero.id=="linh"?3:Hero.id=="hoavi"?5:0;
+                if(Hero.id=="kiet"){List<EnemyState> near=Enemies.FindAll(e=>e.alive&&V2.Distance(e.position,p.position)<6.7f);for(int i=0;i<Math.Min(7,near.Count);i++){DamageEnemy(near[i],p.damage*3,true);Beam(p.position,near[i].position,"#c8d8ff");}}
+                else for(int i=0;i<n;i++)Shoot(p.position,p.facing+(i-(n-1)*.5f)*.13f,Hero.id=="linh"?16:14,p.damage*(Hero.id=="hoavi"?1.8f+p.code*.18f:Hero.id=="linh"?2.6f:1.25f),true,Hero.id=="hoavi"?"code":"orb",Hero.color,Hero.id=="an"?1:5,"",true);
+                if(Hero.id=="hoavi"){p.qTimer*=Math.Max(.45f,1-p.code*.05f);p.code=0;}
+                Fx(Hero.id=="hoavi"?"circuit":"ring",p.position,2.5f,Hero.color,.55f);
+            }else if(key=="e"){
+                if(Hero.id=="hoavi"){p.firewall=4;p.shield=Math.Min(65,p.shield+32);p.hp=Math.Min(p.maxHp,p.hp+18);}
+                else if(Hero.id=="an"){p.hp=Math.Min(p.maxHp,p.hp+14);Zones.Add(new ZoneEffect{position=p.position,radius=2.5f,time=4,damage=p.damage*.55f,color=Hero.color});}
+                else if(Hero.id=="linh"){V2 at=p.position+(Input.aim-p.position).Unit*Math.Min(6.7f,V2.Distance(Input.aim,p.position));Zones.Add(new ZoneEffect{position=at,radius=2.1f,time=3,damage=p.damage*.9f,color=Hero.color});Fx("leaves",at,2.2f,Hero.color,.8f);}
+                else{Area(p.position,3.1f,p.damage*4,true);ClearBullets(p.position,3.6f);}
+                Fx("circuit",p.position,2.5f,Hero.color,.75f);
+            }else{
+                p.ult=0;p.invulnerable=Math.Max(p.invulnerable,1.2f);p.hp=Math.Min(p.maxHp,p.hp+p.maxHp*.14f);ClearBullets(p.position,9.5f);
+                if(Hero.id=="hoavi"){p.overclock=7;p.code=8;droneTimer=0;}else{if(Hero.id=="linh")Zones.Add(new ZoneEffect{position=p.position,radius=4.4f,time=5,damage=p.damage*1.5f,color=Hero.color,follow=true,charge=false});else Area(p.position,Hero.id=="kiet"?6.1f:5.3f,p.damage*(Hero.id=="kiet"?9:7),false);for(int j=0;j<24;j++)Shoot(p.position,j/24f*Mathx.Tau,10,p.damage*2,true,"orb",Hero.color,3,"",false);}
+                Fx("ultimate",p.position,5.5f,Hero.color,1.25f);Shake=.45f;
+            }
+            Emit("sound",key=="r"?"ultimate":"skill");return true;
+        }
+        public bool Heal(){PlayerState p=Player;if(Paused||Dead||p.potions==0||p.hp>=p.maxHp)return false;p.potions--;p.hp=Math.Min(p.maxHp,p.hp+p.maxHp*.55f);Fx("ring",p.position,1,"#a4ecc3",.6f);Emit("sound","heal");return true;}
+        public void ClearBullets(V2 at,float r){Bullets.RemoveAll(b=>!b.friendly&&V2.Distance(b.position,at)<r);}
+        public void Beam(V2 a,V2 b,string color){Effects.Add(new Effect{kind="beam",position=a,end=b,color=color,time=.28f,maxTime=.28f});}
+        public void Area(V2 at,float radius,float damage,bool charge){foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,at)<radius+e.radius)DamageEnemy(e,damage,charge);Fx("ring",at,radius,Hero.color,.4f);}
+        public void DamagePlayer(float amount){PlayerState p=Player;if(Dead||Victory||p.invulnerable>0||amount<=0||Zone(p.position)=="village")return;float shield=Math.Min(p.shield,amount);p.shield-=shield;amount-=shield;if(amount<=0){p.invulnerable=.2f;return;}float dmg=Math.Max(1,(float)Math.Round(amount*(1-p.armor)));p.hp=Math.Max(0,p.hp-dmg);p.invulnerable=.62f;Shake=.3f;Text(p.position+new V2(0,1),"-"+dmg,"#ffa6a4");Emit("sound","hurt");if(p.hp<=0){Dead=true;Emit("death","Ngọn đèn vẫn còn sáng.");}}
+        public void DamageEnemy(EnemyState e,float amount,bool charge){
+            if(!e.alive)return;if(e.type=="boss"&&Enemies.Exists(x=>x.alive&&x.root))amount*=.25f;bool crit=Rng.NextDouble()<Player.crit;float dmg=(float)Math.Round(amount*(crit?1.7f:1));e.hp-=dmg;e.hit=.12f;Text(e.position+new V2(0,.7f),dmg+(crit?"!":""),crit?"#ffe09a":"#e8f3d2");
+            if(charge){Player.ult=Math.Min(100,Player.ult+Math.Min(2.5f,dmg*.04f));if(Hero.id=="hoavi")Player.code=Math.Min(8,Player.code+1);}
+            if(e.hp<=0){e.alive=false;Kills++;if(charge)Player.ult=Math.Min(100,Player.ult+2);Xp(e.xp);if(e.gold>0)Drops.Add(new Loot{id="gold-"+Serial+"-"+Kills,kind="gold",position=e.position,amount=e.gold});if(Rng.NextDouble()<.14)Drops.Add(new Loot{id="potion-"+Kills,kind="potion",position=e.position+new V2(.2f,0)});if(Player.Has("vampire"))Player.hp=Math.Min(Player.maxHp,Player.hp+3);
+                if(e.miniBoss){DropWeapon(e.position,"jade",1);Unlock("truc-hunter","Đánh bại Trúc Vệ");Shrines[0].complete=true;}if(e.type=="boss"){Victory=true;Player.hp=Player.maxHp;Player.gold+=180;Bullets.Clear();Dangers.Clear();Unlock("home","Đưa ánh đèn trở về");Emit("victory","Ngọn đèn tìm được đường về.");}
+                if(!proc&&e.burn>0&&Player.Has("wildfire")){proc=true;foreach(EnemyState other in Enemies.ToArray())if(other.alive&&V2.Distance(e.position,other.position)<2.4f){other.burn=2.5f;other.burnTick=0;}proc=false;}
+                if(Kills%14==0&&!e.root&&e.challenge==null)DropWeapon(e.position,Content.weapons[Rng.Next(4,Content.weapons.Length)].id,1);Fx("burst",e.position,.7f,Hero.color,.45f);Emit("sound","kill");
+            }
+        }
+        void Xp(int xp){Player.xp+=xp;while(Player.xp>=Player.nextXp){Player.xp-=Player.nextXp;Player.level++;Player.nextXp=(float)Math.Floor(Player.nextXp*1.32f+18);Player.maxHp+=10;Player.hp=Math.Min(Player.maxHp,Player.hp+45);Player.damage+=2;Player.mp=Player.maxMp;PendingLevels++;Emit("level","Chọn một di vật.");}}
+        public RelicDef[] Choices(){List<RelicDef> pool=new List<RelicDef>();foreach(RelicDef r in Content.relics)if(!Player.Has(r.id)||r.id=="power"||r.id=="vitality"||r.id=="haste"||r.id=="spirit")pool.Add(r);int offset=(Player.level*3+Math.Abs(Seed%1000))%pool.Count;List<RelicDef> result=new List<RelicDef>();for(int i=0;result.Count<3&&i<pool.Count;i++){RelicDef r=pool[(offset+i)%pool.Count];result.Add(r);}return result.ToArray();}
+        public bool ApplyRelic(string id,bool level){RelicDef r=Content.Relic(id);if(r==null||level&&PendingLevels<1)return false;if(level)PendingLevels--;Player.relics.Add(id);if(id=="power")Player.damage+=5;if(id=="vitality"){Player.maxHp+=30;Player.hp=Math.Min(Player.maxHp,Player.hp+45);Player.armor=Math.Min(.45f,Player.armor+.04f);}if(id=="haste")Player.speed=Math.Min(5.5f,Player.speed+.16f);if(id=="spirit"){Player.maxMp+=20;Player.mp=Player.maxMp;Player.crit=Math.Min(.6f,Player.crit+.05f);}Emit("toast","Di vật: "+r.name);return true;}
+        EnemyState Nearest(V2 at,float range){EnemyState best=null;float nearest=range;foreach(EnemyState e in Enemies)if(e.alive){float d=V2.Distance(e.position,at);if(d<nearest){best=e;nearest=d;}}return best;}
+        void UpdateEnemies(float dt){
+            bool safe=Zone(Player.position)=="village";
+            foreach(EnemyState e in Enemies.ToArray()){
+                if(!e.alive||V2.Distance(e.position,Player.position)>15)continue;e.cooldown-=dt;if(e.type=="core")continue;if(e.type=="boss"){Boss(e,dt);continue;}if(Victory)continue;
+                V2 target=Player.position;Shrine defense=Shrines.Find(s=>s.id=="sen"&&s.started&&!s.complete);if(e.challenge=="sen"&&defense!=null)target=defense.position;
+                float d=V2.Distance(e.position,target);V2 direction=(target-e.position).Unit;float speed=e.speed*(e.slow>0?.48f:1);
+                if(safe||V2.Distance(e.position,e.home)>10&&e.challenge==null){e.position=Move(e.position,(e.home-e.position).Unit*speed*.65f*dt,e.radius);continue;}
+                if(e.type=="archer"||e.type=="wisp"){
+                    if(d>4.2f)e.position=Move(e.position,direction*speed*dt,e.radius);if(d<2.3f)e.position=Move(e.position,direction*(-speed)*dt,e.radius);
+                    if(e.cooldown<=0&&d<7.2f){Shoot(e.position,Mathx.Angle(direction),e.type=="wisp"?3.7f:5,10,false,e.type=="wisp"?"orb":"arrow","#ffb0b7");e.cooldown=1.7f;Fx("warning",e.position,.45f,"#ffbb91",.3f);}
+                }else if(e.type=="boar"){
+                    if(e.phase==1){e.timer-=dt;if(e.timer<=0){e.phase=2;e.timer=.5f;e.chargeDirection=direction;}}
+                    else if(e.phase==2){e.position=Move(e.position,e.chargeDirection*5.5f*dt,e.radius);e.timer-=dt;if(e.timer<=0){e.phase=0;e.cooldown=2.4f;}}
+                    else if(e.cooldown<=0&&d>1&&d<5.5f){e.phase=1;e.timer=.7f;Fx("warning",e.position,.7f,"#ffb17d",.7f);}else if(d>.6f)e.position=Move(e.position,direction*speed*dt,e.radius);
+                    if(e.miniBoss){e.extraTimer-=dt;if(e.extraTimer<=0){e.extraTimer=e.hp<e.maxHp*.5f?2.5f:3.5f;for(int j=-2;j<=2;j++)Shoot(e.position,Mathx.Angle(direction)+j*.23f,4,13,false,"arrow","#ffd18d");}}
+                }else{
+                    if(d>.6f)e.position=Move(e.position,direction*speed*dt,e.radius);if(e.type=="shade"&&e.cooldown<=0&&d>2.5f&&d<6.5f){V2 next=target-direction*1.5f;if(!Collides(next,e.radius)){Fx("burst",e.position,.5f,"#c4b0e8",.4f);e.position=next;}e.cooldown=4;}
+                }
+                if(e.challenge=="sen"&&defense!=null&&d<1.1f)defense.hp-=dt*9;
+                if(V2.Distance(e.position,Player.position)<e.radius+.28f)DamagePlayer(e.damage*(e.phase==2?1.4f:1));
+            }
+        }
+        void Boss(EnemyState e,float dt){
+            V2 p=Player.position;float d=V2.Distance(e.position,p),a=Mathx.Angle(p-e.position);if(d>15)return;e.phase=e.hp/e.maxHp<.3f?3:e.hp/e.maxHp<.5f?2:1;if(d>3.6f&&d<10)e.position=Move(e.position,(p-e.position).Unit*.5f*dt,e.radius);if(d<1)DamagePlayer(23);
+            if(!e.rootPhase&&e.hp<e.maxHp*.65f){e.rootPhase=true;for(int j=0;j<3;j++){EnemyState r=Spawn("core",e.home+V2.Angle(j/3f*Mathx.Tau)*2.5f,true);r.root=true;r.radius=.3f;r.hp=r.maxHp=115;r.speed=r.damage=0;r.xp=r.gold=0;}Emit("toast","Phá ba Rễ Ký Ức để gỡ khiên Mộc Quỷ!");}
+            if(e.cooldown<=0){e.cooldown=e.phase>1?1.9f:2.7f;e.pattern=(e.pattern+1)%4;
+                if(e.pattern==0)for(int j=-3;j<=3;j++)Shoot(e.position,a+j*.14f,4.4f,17,false,"orb","#ffb588");
+                if(e.pattern==1){int n=e.phase>1?24:18;for(int j=0;j<n;j++)Shoot(e.position,j/(float)n*Mathx.Tau+Time*.24f,3,13,false,"orb","#ff8eaa");}
+                if(e.pattern==2)for(int j=0;j<5;j++)Dangers.Add(new Danger{position=p+V2.Angle(j*1.7f)*(j==0?0:1.6f),radius=1,time=1,maxTime=1,damage=22});
+                if(e.pattern==3){for(int j=-4;j<=4;j++)Shoot(e.position,a+j*.22f,5.6f,15,false,"arrow","#ffc4a3");if(Enemies.FindAll(x=>x.alive&&x.challenge=="boss").Count<6)for(int j=0;j<2;j++){EnemyState add=Spawn("shade",e.position+V2.Angle(Random(0,Mathx.Tau))*2,true);add.challenge="boss";add.xp=add.gold=0;}}
+                Fx("ring",e.position,1.5f,"#ffa69b",.6f);
+            }
+            if(e.phase==3){e.timer-=dt;if(e.timer<=0){e.timer=3;for(int j=0;j<5;j++)Dangers.Add(new Danger{position=e.home+V2.Angle(j/5f*Mathx.Tau+Time*.4f)*2.8f,radius=.9f,time=1.2f,maxTime=1.2f,damage=23});}}
+        }
+        void UpdateBullets(float dt){
+            foreach(Bullet b in Bullets.ToArray()){
+                if(!Bullets.Contains(b))continue;b.life-=dt;V2 old=b.position;b.position+=b.velocity*dt;if(Collides(b.position,.04f))b.life=0;
+                if(b.life>0&&b.friendly)foreach(EnemyState e in Enemies.ToArray())if(e.alive&&!b.hit.Contains(e.id)&&Segment(e.position,old,b.position)<e.radius+b.radius){DamageEnemy(e,b.damage,b.charge);b.hit.Add(e.id);if(b.effect=="burn"||Player.Has("wildfire")||Hero.id=="an"){e.burn=2.3f;e.burnTick=0;}if(b.effect=="shock")e.slow=.7f;
+                    if((b.effect=="chain"||Player.Has("chain"))&&Rng.NextDouble()<.25){int hit=0;foreach(EnemyState other in Enemies.ToArray())if(other.alive&&other.id!=e.id&&V2.Distance(other.position,e.position)<2.8f&&hit++<2){DamageEnemy(other,b.damage*.45f,b.charge);Beam(e.position,other.position,"#c3c6ff");}}
+                    if(b.effect=="explode"){foreach(EnemyState other in Enemies.ToArray())if(other.alive&&other.id!=e.id&&V2.Distance(other.position,e.position)<1.5f)DamageEnemy(other,b.damage*.55f,b.charge);Fx("circuit",e.position,1.5f,b.color,.4f);}
+                    if(b.effect=="heal"&&!e.alive&&Rng.NextDouble()<.2)Player.hp=Math.Min(Player.maxHp,Player.hp+5);if(b.pierce-->0)continue;b.life=0;break;
+                }
+                if(!b.friendly){if(Player.firewall>0&&V2.Distance(b.position,Player.position)<2.5f){b.life=0;Fx("burst",b.position,.25f,"#e9a5ef",.25f);}else if(Segment(Player.position,old,b.position)<.22f+b.radius){DamagePlayer(b.damage);b.life=0;}}
+                if(b.life<=0)Bullets.Remove(b);
+            }
+            if(Player.firewall>0){Player.droneTimer-=dt;if(Player.droneTimer<=0){Player.droneTimer=.32f;Area(Player.position,2.4f,Player.damage*.65f,true);}}
+        }
+        void UpdateDangers(float dt){for(int i=Dangers.Count-1;i>=0;i--){Danger d=Dangers[i];d.time-=dt;if(d.time<=0){Fx("roots",d.position,d.radius,d.color,.55f);if(V2.Distance(Player.position,d.position)<d.radius+.2f)DamagePlayer(d.damage);Dangers.RemoveAt(i);}}}
+        void UpdateZones(float dt){for(int i=Zones.Count-1;i>=0;i--){ZoneEffect z=Zones[i];z.time-=dt;z.tick-=dt;if(z.follow)z.position=Player.position;if(z.tick<=0){z.tick=.32f;Area(z.position,z.radius,z.damage,z.charge);}if(z.time<=0)Zones.RemoveAt(i);}}
+        public bool StartChallenge(Shrine s){if(s.active||s.started)return false;s.started=true;s.time=0;s.hp=100;s.wave=0;s.waveTimer=0;if(s.id=="tro"){s.enemies.Clear();for(int j=0;j<3;j++){EnemyState e=Spawn("core",s.position+V2.Angle(j/3f*Mathx.Tau)*2.2f,true);e.challenge=s.id;e.speed=e.damage=0;e.hp=e.maxHp=180;e.radius=.35f;e.gold=e.xp=0;s.enemies.Add(e.id);}}Emit("toast",s.id=="sen"?"Bảo vệ Đèn Sen trong 36 giây!":"Phá ba lõi Tro, né vòng lửa!");return true;}
+        void UpdateChallenges(float dt){foreach(Shrine s in Shrines){if(!s.started||s.complete||s.active)continue;s.time+=dt;s.waveTimer-=dt;if(s.id=="sen"){
+                    if(s.waveTimer<=0&&s.time<33){s.waveTimer=8;s.wave++;for(int j=0;j<4;j++){EnemyState e=Spawn(j%2==0?"shade":"slime",s.position+V2.Angle(j/4f*Mathx.Tau+s.wave)*4.3f,false);e.challenge=s.id;e.hp=e.maxHp=55;e.speed=1.2f;e.xp=e.gold=0;s.enemies.Add(e.id);}}
+                    if(s.hp<=0){s.started=false;s.time=0;s.hp=100;ClearChallenge(s);Emit("toast","Đèn Sen tắt. Nhấn F để thử lại.");}
+                    else if(s.time>=36){s.complete=true;ClearChallenge(s);Emit("toast","Đèn Sen vẫn sáng. Nhấn F nhận ấn!");}
+                }else if(s.id=="tro"){
+                    if(s.waveTimer<=0){s.waveTimer=2.5f;for(int j=0;j<3;j++)Dangers.Add(new Danger{position=s.position+V2.Angle(s.time*1.4f+j/3f*Mathx.Tau)*2.1f,radius=.8f,time=1.1f,maxTime=1.1f,damage=18,color="#ffb16b"});}
+                    if(!Enemies.Exists(e=>e.alive&&s.enemies.Contains(e.id))){s.complete=true;Emit("toast","Ba lõi Tro đã tắt. Nhấn F nhận ấn!");}
+                }}}
+        void ClearChallenge(Shrine s){foreach(EnemyState e in Enemies)if(s.enemies.Contains(e.id))e.alive=false;s.enemies.Clear();}
+        public void DropWeapon(V2 at,string id,int level){Drops.Add(new Loot{id="weapon-"+(++Serial),kind="weapon",position=at,weapon=id,level=level});}
+        public string Nearby(){V2 p=Player.position;Loot l=Drops.Find(x=>!x.collected&&(x.kind=="weapon"||x.kind=="chest"||x.kind=="memory")&&V2.Distance(x.position,p)<1.25f);if(l!=null)return l.kind=="weapon"?"F · Nhặt "+Content.Weapon(l.weapon).name:l.kind=="memory"?"F · Đọc mảnh ký ức":"F · Mở rương linh vật";Shrine s=Shrines.Find(x=>V2.Distance(x.position,p)<1.5f);if(s!=null)return "F · "+s.name+(s.active?" · về làng":s.complete?" · thức tỉnh":s.started?" · đang thử thách":" · bắt đầu thử thách");if(V2.Distance(p,new V2(10.5f,11))<1.3f)return "F · Trò chuyện với Bà Năm";if(V2.Distance(p,new V2(14.5f,8.5f))<1.4f)return "F · Lò rèn Chú Bảy";if(V2.Distance(p,new V2(8.2f,8.6f))<1.2f)return "F · Nghỉ tại Giếng Ngọc";if(V2.Distance(p,new V2(29,37))<1.5f)return "F · Đàn tế Cội Đa";return "";}
+        public bool Interact(){
+            if(Paused||Dead)return false;PlayerState p=Player;Loot l=Drops.Find(x=>!x.collected&&(x.kind=="weapon"||x.kind=="chest"||x.kind=="memory")&&V2.Distance(x.position,p.position)<1.25f);
+            if(l!=null){l.collected=true;if(l.kind=="chest"){chest=true;p.gold+=Rng.Next(20,42);p.potions=Math.Min(12,p.potions+1);DropWeapon(l.position+new V2(.5f,0),l.weapon,1);Emit("toast","Rương linh vật mở ra một vũ khí!");}else if(l.kind=="weapon"){WeaponState old=Active;p.weapons[p.slot]=new WeaponState(Content.Weapon(l.weapon)){level=l.level};DropWeapon(p.position+new V2(1.6f,0),old.id,old.level);Unlock("arsenal","Thử một vũ khí mới");}else{Memories.Add(l.id);ApplyRelic(l.weapon,false);p.gold+=25;Emit("memory",l.id=="memory-bell"?"Chuông đình đang đợi một người còn nhớ tên làng.":l.id=="memory-letter"?"Một lời hẹn nằm trong ống trúc. Đốm vẫn nhớ mùi mực cũ.":"Ký ức cũng có thể được sao lưu, HoaVi nghĩ.");}Emit("save","");return true;}
+            Shrine s=Shrines.Find(x=>V2.Distance(x.position,p.position)<1.5f);if(s!=null){if(s.active){p.position=new V2(11.5f,10);return true;}if(s.id=="truc")s.complete=!Enemies.Exists(e=>e.alive&&s.enemies.Contains(e.id));if(!s.complete){if(s.id!="truc"&&!s.started)return StartChallenge(s);return false;}s.active=true;p.hp=p.maxHp;p.mp=p.maxMp;p.gold+=45;p.ult=Math.Min(100,p.ult+35);ApplyRelic(s.id=="truc"?"pierce":s.id=="sen"?"vampire":"wildfire",false);DropWeapon(s.position+new V2(.7f,0),s.id=="truc"?"jade":s.id=="sen"?"lotusblade":"ember",1);Unlock("seal-"+s.id,"Thức tỉnh "+s.name);Emit("save","");return true;}
+            if(V2.Distance(p.position,new V2(14.5f,8.5f))<1.4f){Emit("shop","");return true;}
+            if(V2.Distance(p.position,new V2(8.2f,8.6f))<1.2f){p.hp=p.maxHp;p.mp=p.maxMp;p.potions=Math.Max(3,p.potions);Emit("toast","Giếng Ngọc hồi đầy sức lực.");return true;}
+            if(V2.Distance(p.position,new V2(10.5f,11))<1.3f){Emit("dialogue",Victory?"Ngôi làng lại có một cái tên. Đốm ngủ yên bên thềm.":"Săn Trúc Vệ, giữ Đèn Sen và thanh tẩy lò Tro. Đốm sẽ giúp con tìm những ký ức cũ.");return true;}
+            if(V2.Distance(p.position,new V2(29,37))<1.5f){if(Shrines.Exists(x=>!x.active)){Emit("toast","Cần đủ ba ấn linh trước.");return false;}if(!BossStarted&&!Victory){BossStarted=true;EnemyState b=Spawn("boss",new V2(29,37),true);b.hp=b.maxHp=2100+p.level*180+Cycle*500;b.radius=.7f;b.damage=23;b.speed=.5f;b.gold=160;b.xp=250;p.hp=p.maxHp;p.mp=p.maxMp;p.ult=100;Emit("toast","Mộc Quỷ thức tỉnh. Tuyệt kỹ đã sẵn sàng!");Emit("save","");return true;}}
+            return false;
+        }
+        public bool Buy(string id){PlayerState p=Player;int price=id=="potion"?20:id=="weapon"?55+Active.level*30:id=="relic"?105:60+p.level*15;if(p.gold<price||id=="potion"&&p.potions>=12||id=="weapon"&&Active.level>=5)return false;if(id=="potion")p.potions++;else if(id=="weapon")Active.level++;else if(id=="relic"){List<RelicDef> pool=new List<RelicDef>(Content.relics);pool.RemoveAll(r=>p.Has(r.id));ApplyRelic((pool.Count>0?pool:new List<RelicDef>(Content.relics))[Rng.Next(pool.Count>0?pool.Count:Content.relics.Length)].id,false);}else if(id=="damage")p.damage+=5;else if(id=="hp"){p.maxHp+=25;p.hp=Math.Min(p.maxHp,p.hp+25);}else return false;p.gold-=price;Emit("save","");return true;}
+        public void Respawn(){Dead=false;Deaths++;Player.position=new V2(11.5f,10);Player.hp=Player.maxHp;Player.mp=Player.maxMp;Player.gold=(int)(Player.gold*.9f);Player.potions=Math.Max(3,Player.potions);Player.invulnerable=2;Player.shield=Player.overclock=Player.firewall=0;Bullets.Clear();Dangers.Clear();Zones.Clear();foreach(Shrine s in Shrines)if(s.started&&!s.complete){ClearChallenge(s);s.started=false;s.time=0;s.hp=100;}foreach(EnemyState e in Enemies)if(e.type=="boss"&&e.alive){e.hp=e.maxHp;e.position=e.home;}}
+        public void Unlock(string id,string name){if(Achievements.Contains(id))return;Achievements.Add(id);Emit("toast","Thành tựu · "+name);}
+        public string Objective(){if(Tutorial<5)return new[]{"Di chuyển bằng WASD hoặc cần trái.","Giữ chuột trái hoặc kéo cần phải để bắn.","Nhấn SPACE để lướt né.","Dùng Q hoặc E để thử kỹ năng.","Mở rương bên phải bằng F."}[Tutorial];if(Victory)return "Trở về Bà Năm hoặc bắt đầu Hành trình +.";Shrine nearest=null;foreach(Shrine s in Shrines)if(!s.active&&(nearest==null||V2.Distance(s.position,Player.position)<V2.Distance(nearest.position,Player.position)))nearest=s;if(nearest==null)return BossStarted?"Phá rễ bảo vệ Mộc Quỷ; né vòng đạn và rễ đỏ.":"Đến đàn tế phía bắc, nhấn F gọi Cội Đa.";if(nearest.complete)return "Đến "+nearest.name+" và nhấn F để thức tỉnh.";if(nearest.id=="truc")return "Săn Trúc Vệ ở Rừng Trúc phía tây bắc.";if(nearest.id=="sen")return nearest.started?"Giữ Đèn Sen: "+Math.Ceiling(36-nearest.time)+"s · đèn "+Math.Ceiling(nearest.hp)+"%":"Đến Đầm Sen và bảo vệ ngọn đèn.";return nearest.started?"Phá ba lõi Tro; tránh các dấu lửa.":"Thử thách lò rèn đang đợi trên Đồi Tro.";}
+        public RunSave Capture(){return new RunSave{seed=Seed,cycle=Cycle,kills=Kills,deaths=Deaths,tutorial=Tutorial,serial=Serial,pendingLevels=PendingLevels,tutorialMoved=moved,tutorialShots=shots,tutorialDashes=dashes,tutorialSkills=skills,tutorialChest=chest,time=Time,hero=Hero.id,bossStarted=BossStarted,victory=Victory,player=Player,enemies=Enemies,shrines=Shrines,loot=Drops,memories=Memories,achievements=Achievements};}
+        public static Simulation Restore(ContentDatabase content,RunSave data){if(data==null||data.version!=2||data.player==null||data.enemies==null||data.shrines==null||data.shrines.Count!=3||data.player.weapons==null||data.player.weapons.Length!=2||Array.Find(content.heroes,h=>h.id==data.hero)==null)throw new ArgumentException("Bản lưu Unity không hợp lệ");Simulation g=new Simulation(content,data.hero,data.seed,data.cycle);g.Player=data.player;g.Player.position=new V2(Mathx.Clamp(g.Player.position.x,1,59),Mathx.Clamp(g.Player.position.y,1,44));if(g.Collides(g.Player.position,.2f))g.Player.position=new V2(11.5f,10);g.Player.maxHp=Mathx.Clamp(g.Player.maxHp,50,10000);g.Player.hp=Mathx.Clamp(g.Player.hp,1,g.Player.maxHp);g.Player.slot=g.Player.slot==1?1:0;foreach(WeaponState w in g.Player.weapons){WeaponDef d=content.Weapon(w.id);w.id=d.id;w.level=(int)Mathx.Clamp(w.level,1,5);w.ammo=(int)Mathx.Clamp(w.ammo,0,d.clip);w.reload=Mathx.Clamp(w.reload,0,5);}g.Enemies=data.enemies;g.Shrines=data.shrines;g.Drops=data.loot??new List<Loot>();g.Memories=data.memories??new List<string>();g.Achievements=data.achievements??new List<string>();g.Kills=data.kills;g.Deaths=data.deaths;g.PendingLevels=Math.Max(0,data.pendingLevels);g.Tutorial=(int)Mathx.Clamp(data.tutorial,0,5);g.moved=data.tutorialMoved;g.shots=data.tutorialShots;g.dashes=data.tutorialDashes;g.skills=data.tutorialSkills;g.chest=data.tutorialChest;g.Serial=data.serial;g.Time=data.time;g.BossStarted=data.bossStarted;g.Victory=data.victory;g.Player.overclock=g.Player.firewall=0;return g;}
+    }
+}

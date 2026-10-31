@@ -11,6 +11,7 @@
   function poly(ctx,pts,color){ctx.fillStyle=color;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fill()}
   function glow(ctx,x,y,r,color,alpha=.5){ctx.save();ctx.globalAlpha=alpha;const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,color);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore()}
   function drawHero(ctx,p,hero,time=0,scale=1,npc=false){
+    if(root.DTVisualHero)return root.DTVisualHero(ctx,p,hero,time,scale,npc);
     ctx.save();ctx.translate(Math.round(p.x),Math.round(p.y));ctx.scale(scale,scale);
     ellipse(ctx,0,0,17,7,'#071b1b60');
     const walk=p.moving?Math.sin(time*16)*2:Math.sin(time*2)*.5,bob=p.dashTime>0?-3:walk;

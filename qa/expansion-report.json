@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-31T17:46:14.602Z",
+  "passed": 20,
+  "total": 20,
+  "tests": [
+    {
+      "name": "Catalog includes four heroes, twelve distinct weapons and twelve relics",
+      "pass": true
+    },
+    {
+      "name": "HoaVi passive charges from hits; Debug consumes stacks and mana",
+      "pass": true
+    },
+    {
+      "name": "Firewall restores health, grants a shield and blocks hostile shots",
+      "pass": true
+    },
+    {
+      "name": "Every ultimate, including Overclock drones and burning hits, never recharges itself",
+      "pass": true
+    },
+    {
+      "name": "Both weapon slots have independent clips, reload and upgrades",
+      "pass": true
+    },
+    {
+      "name": "Split, piercing and dash relics change actual attacks",
+      "pass": true
+    },
+    {
+      "name": "A relic found outside level-up grants its advertised stat effect",
+      "pass": true
+    },
+    {
+      "name": "Truc has a single miniboss, Sen starts defense, Tro spawns destructible cores",
+      "pass": true
+    },
+    {
+      "name": "Defense only completes at its timer, failure is retryable and cannot award an early seal",
+      "pass": true
+    },
+    {
+      "name": "Boss progression enforces seals, then adds roots and a third phase",
+      "pass": true
+    },
+    {
+      "name": "Weapons can be found in chests and picked up by F",
+      "pass": true
+    },
+    {
+      "name": "Lore rewards a relic and Dom highlights nearby discoveries",
+      "pass": true
+    },
+    {
+      "name": "Expanded save round-trip preserves both weapons, modifiers, armor, challenge and dynamic enemies",
+      "pass": true
+    },
+    {
+      "name": "Legacy 0.1 saves migrate without losing player upgrades or seals",
+      "pass": true
+    },
+    {
+      "name": "Missing coordinates are rejected and missing optional expansion fields recover safely",
+      "pass": true
+    },
+    {
+      "name": "A weapon at a completed shrine never blocks F activation or traps the player in swaps",
+      "pass": true
+    },
+    {
+      "name": "Saving during the root phase never duplicates boss weak points",
+      "pass": true
+    },
+    {
+      "name": "Village is safe and failed challenges reset after respawn",
+      "pass": true
+    },
+    {
+      "name": "New Game Plus varies worlds, scales enemy health and preserves selected hero",
+      "pass": true
+    },
+    {
+      "name": "New runtime assets exist and JavaScript files parse without remote runtime dependencies",
+      "pass": true
+    }
+  ]
+}

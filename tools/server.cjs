@@ -1,34 +1,70 @@
-const http=require('node:http');
-const fs=require('node:fs');
-const path=require('node:path');
-const root=path.resolve(__dirname,'..');
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json; charset=utf-8'};
-const port=Number(process.env.DENTINH_PORT||4174);
-const savePath=path.join(root,'runtime','save.json');
-const allowed=new Set(['index.html','world.js','engine.js','render.js','app.js','style.css','icon.svg']);
-http.createServer((req,res)=>{
-  let url;try{url=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname)}catch(e){res.writeHead(400);res.end();return}
-  if(url==='/health'){res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({game:'den-tinh-v1'}));return}
-  if(url==='/save'){
-    const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'};
-    const origin=req.headers.origin,localOrigins=new Set([`http://127.0.0.1:${port}`,'http://127.0.0.1:4173']);
-    if(localOrigins.has(origin)){headers['Access-Control-Allow-Origin']=origin;headers['Vary']='Origin';headers['Access-Control-Allow-Headers']='Content-Type';headers['Access-Control-Allow-Methods']='GET, POST, OPTIONS'}
-    if(req.method==='OPTIONS'){res.writeHead(localOrigins.has(origin)?204:403,headers);res.end();return}
-    if(req.method==='GET'){fs.readFile(savePath,'utf8',(err,data)=>{res.writeHead(200,headers);res.end(err?'null':data)});return}
-    if(req.method==='POST'){
-      if(!localOrigins.has(origin)||!String(req.headers['content-type']).startsWith('application/json')){res.writeHead(403,headers);res.end('{}');return}
-      let body='',tooLarge=false;
-      req.on('data',chunk=>{body+=chunk;if(body.length>160000){tooLarge=true;req.destroy()}});
-      req.on('end',()=>{if(tooLarge)return;let save;
-        try{save=JSON.parse(body);if(save.version!==1||!['an','linh','kiet'].includes(save.hero)||!save.player||!Number.isFinite(save.player.x)||!Array.isArray(save.enemies))throw new Error('Invalid save')}catch(e){res.writeHead(400,headers);res.end('{}');return}
-        try{fs.mkdirSync(path.dirname(savePath),{recursive:true});fs.writeFileSync(savePath+'.new',JSON.stringify(save));fs.renameSync(savePath+'.new',savePath);res.writeHead(200,headers);res.end('{"saved":true}')}catch(e){res.writeHead(500,headers);res.end('{"saved":false}')}
-      });return;
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const projectRoot = path.resolve(__dirname, '..');
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png' };
+const allowed = new Set(['index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png']);
+const isLoopback = address => address === '::1' || /^127\./.test(address || '') || /^::ffff:127\./i.test(address || '');
+
+function createGameServer(options = {}) {
+  const root = options.root || projectRoot;
+  const savePath = options.savePath || path.join(root, 'runtime', 'save.json');
+  const server = http.createServer((req, res) => {
+    const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
+    let url;
+    try { url = decodeURIComponent(new URL(req.url, 'http://127.0.0.1').pathname); }
+    catch { res.writeHead(400); res.end(); return; }
+    if (url === '/health') {
+      const address = server.address();
+      res.writeHead(200, headers);
+      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 3, contentVersion:'0.2.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
+      return;
     }
-    res.writeHead(405,headers);res.end('{}');return;
-  }
-  const name=url==='/'?'index.html':url.slice(1);
-  if(!allowed.has(name)){res.writeHead(404);res.end('Not found');return}
-  const file=path.resolve(root,name);
-  if(!file.startsWith(root+path.sep)){res.writeHead(403);res.end();return}
-  fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);res.end('Not found');return}res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(data)})
-}).listen(port,'127.0.0.1',()=>console.log(`Den Tinh: http://127.0.0.1:${port}`));
+    if (url === '/save') {
+      // Host disk saves stay private; LAN players save in their own browsers.
+      if (!isLoopback(req.socket.remoteAddress)) { res.writeHead(403, headers); res.end('{"error":"host-save-only"}'); return; }
+      const port = server.address().port, origin = req.headers.origin;
+      const localOrigins = new Set([`http://127.0.0.1:${port}`, `http://localhost:${port}`, `http://[::1]:${port}`, 'http://127.0.0.1:4173']);
+      if (localOrigins.has(origin)) {
+        headers['Access-Control-Allow-Origin'] = origin; headers.Vary = 'Origin';
+        headers['Access-Control-Allow-Headers'] = 'Content-Type'; headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+      }
+      if (req.method === 'OPTIONS') { res.writeHead(localOrigins.has(origin) ? 204 : 403, headers); res.end(); return; }
+      if (req.method === 'GET') { fs.readFile(savePath, 'utf8', (err, data) => { res.writeHead(200, headers); res.end(err ? 'null' : data); }); return; }
+      if (req.method === 'POST') {
+        if (!localOrigins.has(origin) || !String(req.headers['content-type']).startsWith('application/json')) { res.writeHead(403, headers); res.end('{}'); return; }
+        let body = '';
+        req.on('data', chunk => { body += chunk; if (body.length > 160000) req.destroy(); });
+        req.on('end', () => {
+          let save;
+          try {
+            save = JSON.parse(body);
+            if (save.version !== 1 || !['an', 'linh', 'kiet', 'hoavi'].includes(save.hero) || !save.player || !Number.isFinite(save.player.x) || !Number.isFinite(save.player.y) || !Array.isArray(save.enemies)) throw new Error('Invalid save');
+          } catch { res.writeHead(400, headers); res.end('{}'); return; }
+          try {
+            fs.mkdirSync(path.dirname(savePath), { recursive: true }); fs.writeFileSync(savePath + '.new', JSON.stringify(save)); fs.renameSync(savePath + '.new', savePath);
+            res.writeHead(200, headers); res.end('{"saved":true}');
+          } catch { res.writeHead(500, headers); res.end('{"saved":false}'); }
+        }); return;
+      }
+      res.writeHead(405, headers); res.end('{}'); return;
+    }
+    if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); res.end(); return; }
+    const name = url === '/' ? 'index.html' : url.slice(1);
+    if (!allowed.has(name)) { res.writeHead(404); res.end('Not found'); return; }
+    const file = path.resolve(root, name);
+    if (!file.startsWith(root + path.sep)) { res.writeHead(403); res.end(); return; }
+    fs.readFile(file, (err, data) => {
+      if (err) { res.writeHead(404); res.end('Not found'); return; }
+      res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+      res.end(req.method === 'HEAD' ? undefined : data);
+    });
+  });
+  return server;
+}
+if (require.main === module) {
+  const port = Number(process.env.DENTINH_PORT || 4174);
+  const host = process.env.DENTINH_HOST || (process.argv.includes('--lan') ? '0.0.0.0' : '127.0.0.1');
+  createGameServer().listen(port, host, () => console.log(`Den Tinh: http://${host}:${port} (${host === '127.0.0.1' ? 'local' : 'LAN'})`));
+}
+module.exports = { createGameServer, isLoopback };

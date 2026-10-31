@@ -17,9 +17,15 @@ $gamePort = 4174
 $gameServerReady = $false
 try {
   $gameHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$gamePort/health" -TimeoutSec 2
-  if ($gameHealth.game -eq 'den-tinh-v1') { $gameServerReady = $true }
+  if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge 3) { $gameServerReady = $true }
 } catch {}
 if (-not $gameServerReady) {
+  if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -lt 3) {
+    $gameOldWasLan = $gameHealth.lan
+    $gameOldWorkers = Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.ExecutablePath -eq $gameNode -and $_.CommandLine -like "*`"$gameServer`"*" }
+    foreach ($gameOldWorker in $gameOldWorkers) { Stop-Process -Id $gameOldWorker.ProcessId -Force }
+    if ($gameOldWasLan) { $env:DENTINH_HOST = '0.0.0.0' }
+  }
   $gameListener = Get-NetTCPConnection -LocalPort $gamePort -State Listen -ErrorAction SilentlyContinue
   if ($gameListener) { throw 'Cong 4174 dang duoc ung dung khac su dung. Dong ung dung do roi mo game.' }
   $env:DENTINH_PORT = [string]$gamePort
@@ -28,7 +34,7 @@ if (-not $gameServerReady) {
     Start-Sleep -Milliseconds 150
     try {
       $gameHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$gamePort/health" -TimeoutSec 1
-      if ($gameHealth.game -eq 'den-tinh-v1') { $gameServerReady = $true; break }
+      if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge 3) { $gameServerReady = $true; break }
     } catch {}
   }
   if (-not $gameServerReady) { throw 'May chu game chua khoi dong. Kiem tra runtime\server-error.log.' }

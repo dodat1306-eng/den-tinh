@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-31T17:46:14.455Z",
+  "passed": 13,
+  "total": 13,
+  "tests": [
+    {
+      "name": "Deterministic world, valid starting point",
+      "pass": true
+    },
+    {
+      "name": "Every shrine, NPC, chest and final altar reachable on foot",
+      "pass": true
+    },
+    {
+      "name": "Movement respects map boundaries and solid objects",
+      "pass": true
+    },
+    {
+      "name": "Shooting hits, kills and awards XP",
+      "pass": true
+    },
+    {
+      "name": "Dash grants immunity and cannot ignore cooldown",
+      "pass": true
+    },
+    {
+      "name": "All three heroes: Q, E and R function and spend resources",
+      "pass": true
+    },
+    {
+      "name": "Potions, shops and level rewards have bounded costs",
+      "pass": true
+    },
+    {
+      "name": "Three seals and final encounter enforce progression",
+      "pass": true
+    },
+    {
+      "name": "Save and restore preserve character, progress and combat health",
+      "pass": true
+    },
+    {
+      "name": "Death and respawn retain progress, charge correct gold penalty",
+      "pass": true
+    },
+    {
+      "name": "Boss projectile death does not break the update loop",
+      "pass": true
+    },
+    {
+      "name": "All local HTML dependencies exist; no remote runtime dependencies",
+      "pass": true
+    },
+    {
+      "name": "Ultimate attacks never refill their own charge; dropped loot survives saves",
+      "pass": true
+    }
+  ]
+}

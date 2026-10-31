@@ -1,104 +1,84 @@
-# Đèn Tinh: Miền Sương Lạc
+# Đèn Tinh: Miền Sương Lạc — 0.2
 
-Bản chơi đầu tiên 0.1, game hành động 2D nhìn từ trên xuống, một người chơi, tiếng Việt. Một thế giới mở nhỏ gồm các vùng nối liền, có cốt truyện, khám phá tự do và trận kết thúc.
-
-## Chạy từ source trên GitHub
-
-1. Clone repo hoặc chọn **Code → Download ZIP**, rồi giải nén vào thư mục bạn muốn, ví dụ một thư mục trên ổ D hoặc E.
-2. Có [Node.js](https://nodejs.org/) phiên bản 22 trở lên. Source không dùng thư viện npm bên ngoài, nên không cần `npm install`.
-3. Trên Windows, nhấp đúp **CHOI_GAME.bat**. Bộ khởi chạy tìm `runtime\node.exe` nếu có, hoặc dùng Node.js đã cài trên máy.
-
-Trên các hệ điều hành khác, chạy từ thư mục repo:
-
-```sh
-npm start
-```
-
-Sau đó mở **http://127.0.0.1:4174/** trong trình duyệt. Máy chủ chỉ lắng nghe trên máy của bạn. Bản lưu chính được tạo trong `runtime/save.json`.
-
-Kiểm tra source:
-
-```sh
-npm test
-npm run test:combat
-```
-
-`npm run test:http` kiểm tra máy chủ đang chạy ở cổng 4174. Các báo cáo được tạo vào `qa/`.
-
-Repo chứa mã nguồn, bộ khởi chạy, công cụ kiểm tra và giấy phép của runtime Node. Runtime thực thi, bản lưu, cache, hồ sơ trình duyệt và báo cáo cục bộ được loại khỏi Git bằng `.gitignore`.
+Game hành động 2D tiếng Việt, một người chơi, lấy chất liệu từ làng Việt, rừng trúc, đầm sen và ký ức trong sương. Bản 0.2 thêm HoaVi, vũ khí, di vật, thử thách riêng, hình minh họa và sprite chuyển động mới.
 
 ## Chơi ngay
 
-1. Mở thư mục `E:\Games\DenTinh`.
-2. Nhấp đúp **CHOI_GAME.bat**.
-3. Chọn An, Linh hoặc Kiệt, rồi chọn **Bắt đầu hành trình**.
+- Nhấp đúp **CHOI_GAME.bat** trong `E:\Games\DenTinh`, hoặc mở `http://127.0.0.1:4174/` khi máy chủ đã chạy.
+- Chọn một trong bốn nhân vật rồi **Bắt đầu hành trình**. Có hướng dẫn bằng hành động trong làng, có thể bỏ qua trong Cài đặt.
+- Muốn chia sẻ với người cùng Wi-Fi/LAN: chạy **CHOI_CHUNG_MANG.bat**. Địa chỉ hiện tại nằm trong `runtime/lan-info.json`. Giữ máy chủ bật và cùng kết nối mạng.
+- Mỗi người chơi qua IP LAN có tiến độ riêng trong trình duyệt. Đây là các lượt chơi độc lập, chưa phải co-op.
 
-Game chạy offline bằng Microsoft Edge hoặc Chrome đã có trên máy. Bộ khởi chạy tự mở một máy chủ nhỏ tại `http://127.0.0.1:4174`, chỉ nhận kết nối trên máy của bạn. Không cần cài engine, đăng nhập hay trả phí. Runtime Node có sẵn được sao chép vào `runtime\node.exe` trên E để không cần cài thêm.
+Bản ZIP đầy đủ dùng Node.js đi kèm trong `runtime/node.exe`; không cần npm install, CDN hoặc tài khoản. Mã nguồn GitHub không chứa runtime thực thi: cài **Node.js 22 trở lên**, rồi chạy `npm start` hoặc `CHOI_GAME.bat`. Bộ khởi chạy ưu tiên runtime đi kèm và tự tìm Node.js trên PATH nếu không có. Muốn chia sẻ LAN từ source có thể chạy `npm run start:lan` hoặc `CHOI_CHUNG_MANG.bat`. Cache, hồ sơ trình duyệt của bộ khởi chạy và bản lưu máy chủ nằm trong thư mục dự án.
 
-Dự án, runtime, dữ liệu trình duyệt riêng của game và bộ nhớ đệm đều đặt dưới `E:\Games\DenTinh`. Bộ khởi chạy sử dụng trình duyệt đang có trên máy. Không thay đổi hồ sơ trình duyệt cá nhân. Đóng cửa sổ là thoát game; máy chủ nội bộ nhẹ vẫn ở nền để lần sau mở nhanh, và dừng khi khởi động lại Windows. Không cần kết nối Internet khi chơi.
+## Bản Unity
+
+Thư mục **Unity/** chứa dự án C# Unity 6.3 LTS thật, dùng SpriteRenderer, hoạt ảnh sprite, Camera trực giao, LineRenderer, ParticleSystem và AudioSource. Logic C# đã được biên dịch và kiểm tra độc lập. **Chưa có bản .exe Unity được xuất và xác nhận chạy**, vì Editor chưa cài thành công và máy chưa có giấy phép Unity được kích hoạt.
+
+Đọc [hướng dẫn Unity](Unity/README_VI.md). Dùng `MO_DU_AN_UNITY.bat` sau khi cài Editor 6000.3.27f1 và tự kích hoạt giấy phép trong Unity Hub; dùng `BUILD_UNITY.bat` để xuất Windows. Tiến độ Unity và trình duyệt lưu riêng, không tự đồng bộ qua hai bản.
+
+## Bốn nhân vật
+
+| Nhân vật | Nội tại | Q | E | R |
+| --- | --- | --- | --- | --- |
+| An — Người Giữ Đèn | Lửa linh đốt quái | Liên Hỏa | Vòng Trấn | Thiên Đăng |
+| Linh — Trúc Ảnh | Di chuyển tăng tốc bắn | Xuyên Vân | Mưa Trúc | Phong Linh |
+| Kiệt — Lôi Vệ | 8% giáp, lướt phát xung điện | Lôi Liên | Chấn Địa | Thiên Lôi |
+| **HoaVi — Kiến Trúc Sư Mã Lệnh** | Đánh trúng tích tối đa 8 Mã Lệnh | **Debug Pulse**: năm luồng mã xuyên, tiêu thụ mã tăng sát thương/rút hồi chiêu | **Firewall**: chặn đạn, sát thương vùng, hồi 18 máu và thêm 32 khiên | **Overclock**: tăng tốc bắn 7 giây, hai drone, xóa đạn và hồi máu |
+
+Tuyệt kỹ cần tích đủ 100% từ chiến đấu và không tự nạp năng lượng từ sát thương của chính nó.
+
+## Vũ khí và di vật
+
+Hai ô vũ khí độc lập, mỗi ô có băng đạn, thời gian nạp và cấp nâng riêng. Đạn dự trữ không giới hạn. Nhặt vũ khí bằng F; vũ khí cũ được thả ra ngoài tầm tương tác để tránh vòng đổi liên tục. Chú Bảy nâng vũ khí tối đa +5, mỗi cấp thêm 18% sát thương.
+
+12 vũ khí: Đèn Lưu Hỏa, Cung Trúc Ảnh, Lôi Thương, Terminal 01, Liên Hoa Tán, Hỏa Pháo Tro Tàn, Ngọc Xuyên Sơn, Compiler X, Phong Lôi Cầm, Sen Nguyệt Kiếm, Firewall.exe, Rễ Ký Ức. Có thiêu đốt, xuyên, lan sét, nổ vùng và hồi phục.
+
+12 di vật: Tâm Hỏa, Bền Rễ, Gió Trúc, Tâm Ngọc, Lửa Truyền, Dấu Chân Sấm, Nhánh Trúc, Xuyên Mây, Sương Sen, Mạch Lôi, Tản Nhiệt, Lời Hứa Của Đốm. Nhận từ lên cấp, ấn, rương, mảnh ký ức và cửa hàng. Xem nội tại, vũ khí và di vật bằng I.
+
+## Hành trình
+
+- **Rừng Trúc:** săn miniboss Trúc Vệ, né cú lao và loạt trúc.
+- **Đầm Sen:** nhấn F ở ấn để bảo vệ Đèn Sen trong 36 giây; đèn tắt có thể thử lại.
+- **Đồi Tro:** nhấn F ở ấn, phá ba lõi tro và né vòng lửa báo trước.
+- **Cội Đa:** cần đủ ba ấn. Boss tạo rễ bảo vệ ở khoảng 65% máu; phá rễ để gỡ khiên. Dưới 30% máu thêm các cụm rễ xoay.
+
+Làng Đèn là vùng nghỉ an toàn. Giếng Ngọc hồi đầy máu, linh lực và bổ sung ít nhất ba bình. Các ấn đã thức tỉnh đưa bạn về làng. Có ba mảnh ký ức, thành tựu và Đốm đánh dấu khám phá gần người. Thắng boss có thể khám phá tiếp hoặc bắt đầu **Hành trình +** với seed mới và quái mạnh hơn.
 
 ## Điều khiển
 
 | Phím | Hành động |
 | --- | --- |
-| WASD / phím mũi tên | Di chuyển |
-| Chuột | Ngắm |
-| Giữ chuột trái | Tấn công |
-| Space | Lướt né; có một khoảng miễn sát thương |
-| Q, E | Kỹ năng riêng, dùng linh lực tự hồi |
-| R | Tuyệt kỹ khi tích đủ lực bằng cách đánh quái |
-| F | Nói chuyện, dùng giếng, mở rương, thức tỉnh ấn |
-| H | Uống bình máu |
-| M | Bản đồ toàn vùng |
-| I | Thuộc tính và mô tả kỹ năng |
-| Esc | Tạm dừng, lưu hoặc về màn đầu |
+| WASD / mũi tên | Di chuyển |
+| Chuột / giữ trái | Ngắm / bắn |
+| Space | Lướt né |
+| Q, E, R | Kỹ năng và tuyệt kỹ |
+| F | Tương tác, nhặt vũ khí |
+| TAB / V | Đổi vũ khí / nạp băng |
+| H | Hồi 55% máu tối đa |
+| M, I, Esc | Bản đồ, thuộc tính, tạm dừng |
 
-## Hành trình
+Trên điện thoại, game tự bật hai cần cảm ứng và nút kỹ năng; dùng nằm ngang để nhìn rộng. Có nút thuộc tính, cài đặt, tạm dừng và bản đồ. Có thể bật/tắt cảm ứng thủ công, chỉnh âm lượng nhạc/hiệu ứng, cỡ chữ và giảm rung/chớp trong Cài đặt. Đã kiểm tra điều khiển bằng trình duyệt ở bố cục điện thoại; chưa xác nhận chơi trên điện thoại thật của người dùng.
 
-Sương đã nuốt tên của Làng Đèn. Bà Năm trao cho người giữ lửa một ngọn đèn vẫn nhớ đường về. Linh thú Đốm đi cùng người chơi.
+## Lưu và sao lưu
 
-Khám phá Rừng Trúc, Đầm Sen và Đồi Tro theo bất kỳ thứ tự nào. Hạ bảy hộ vệ quanh mỗi ấn rồi nhấn F cạnh ấn để thức tỉnh. Mỗi ấn hồi sức, thưởng xu và giúp tích lực tuyệt kỹ. Ấn đã thức tỉnh có thể đưa người chơi về làng.
+Tự lưu mỗi 12 giây và sau tương tác quan trọng. Bản chính chủ máy là `runtime/save.json`; có dự phòng trong hồ sơ trình duyệt. Chơi qua LAN dùng localStorage của từng trình duyệt, không được đọc/ghi bản lưu chủ máy.
 
-Khi đủ ba ấn, đến Cội Đa Lạc Hồn ở phía bắc và nhấn F tại đàn tế. Boss có vòng đạn, loạt đạn ngắm, rễ báo trước dưới chân và quái triệu hồi; thay nhịp ở nửa máu. Sau trận thắng, vẫn có thể khám phá và trở về Bà Năm để đọc đoạn kết.
+Bản lưu 0.1 được đọc, giữ cấp độ/thuộc tính/xu/ấn và bổ sung dữ liệu mới. Bản sao nguồn và tiến độ trước nâng cấp nằm trong `runtime/backup-before-v02-20261030`. **Bắt đầu hành trình** mở lượt mới; **Tiếp tục** giữ lượt đang có. Sao lưu `runtime/save.json` trước khi chuyển máy hoặc xóa dữ liệu trình duyệt.
 
-Giếng Ngọc hồi đầy máu, linh lực và bổ sung ít nhất ba bình máu. Chú Bảy bán bình máu và nâng sát thương hoặc máu tối đa bằng xu nhặt từ quái, rương và ấn. Lên cấp được chọn một trong ba phần thưởng.
+## Kiểm tra và mã nguồn
 
-## Ba nhân vật
+```sh
+npm test
+npm run test:combat
+npm run test:lan
+npm run test:http
+npm run export:unity
+```
 
-| Nhân vật | Đòn đánh | Q | E | R |
-| --- | --- | --- | --- | --- |
-| An — Người Giữ Đèn | Tia lửa linh | Liên Hỏa: chín tia hình quạt | Vòng Trấn: lửa diện rộng, hồi một phần máu | Thiên Đăng: bùng lửa và đạn tỏa tròn |
-| Linh — Trúc Ảnh | Cung ngọc nhanh | Xuyên Vân: ba mũi tên xuyên mục tiêu | Mưa Trúc: vùng sát thương tại hướng chuột | Phong Linh: bão lá theo người |
-| Kiệt — Lôi Vệ | Lôi thương ba tia | Lôi Liên: sét nối các mục tiêu | Chấn Địa: hất quái, xóa đạn gần người | Thiên Lôi: sấm diện rộng |
+Trên máy này có thể gọi `runtime/node.exe` thay `node`. Kiểm tra C# thuần bằng `tools/Test-Unity-Core.ps1`; kết quả ở `qa/unity-core-tests.txt`, `qa/unity-combat-tests.txt`. Các kiểm tra này không thay thế import, Play và build bằng Unity Editor.
 
-Tuyệt kỹ của mọi nhân vật còn xóa đạn gần người, hồi một phần máu và cho một nhịp miễn sát thương. Tuyệt kỹ không tự nạp lại từ sát thương của chính nó.
+`world.js`, `engine.js` là nền gốc; `content.js`, `expansion.js` chứa catalog/gameplay 0.2. `visuals.js`, `controls.js`, `expansion.css` mở rộng hình ảnh, UI và cảm ứng. `app.js` nối các phần. Unity có simulation C# riêng và catalog sinh từ cùng nguồn. `qa/` chứa báo cáo/screenshot cục bộ. Mô phỏng chiến đấu rút ngắn di chuyển giữa đấu trường, thời gian báo cáo không phải thời lượng chơi thực tế.
 
-## Lưu game
-
-Tự lưu mỗi 12 giây và sau những tương tác quan trọng. Trong Esc có **Lưu tiến độ** và **Lưu và về màn đầu**. Chọn **Tiếp tục** để khôi phục nhân vật, cấp độ, thuộc tính, xu, bình máu, quái đã hạ, rương đã mở và ấn đã thức tỉnh.
-
-Bản lưu chính là `runtime\save.json`, nằm trên E. Game còn giữ bản dự phòng trong hồ sơ trình duyệt riêng tại `runtime\browser-profile`. Chơi trong Codex và qua bộ khởi chạy có thể dùng cùng bản lưu chính. Sao lưu `runtime\save.json` nếu muốn giữ hành trình. Bản ZIP phát hành không chứa hồ sơ hoặc tiến độ của người chơi.
-
-## Tệp nguồn và kiểm tra
-
-| Tệp | Nội dung |
-| --- | --- |
-| `world.js` | Bản đồ, cảnh vật, vị trí quái, rương, nhân vật phụ và ấn |
-| `engine.js` | Chiến đấu, di chuyển, kỹ năng, nhiệm vụ, nâng cấp và lưu game |
-| `render.js` | Nhân vật, cảnh vật pixel, bản đồ và hiệu ứng bằng Canvas |
-| `app.js` | Điều khiển, giao diện, hội thoại và âm thanh tổng hợp |
-| `style.css`, `index.html` | Bố cục và màn hình game |
-| `Start-Game.ps1`, `CHOI_GAME.bat` | Mở cửa sổ game và đặt hồ sơ/cache trong thư mục dự án |
-| `tools/test.cjs` | Kiểm tra đường đi, va chạm, kỹ năng, nhiệm vụ, lưu và hồi sinh |
-| `tools/playthrough.cjs` | Mô phỏng chiến đấu với cả ba nhân vật |
-| `qa/` | Báo cáo tạo khi chạy kiểm tra; không đưa lên Git |
-
-Dành cho sửa tiếp: `node tools/test.cjs` và `node tools/playthrough.cjs`. Bộ mô phỏng tự điều khiển chiến đấu; di chuyển giữa các đấu trường được rút ngắn, vì thế thời gian trong báo cáo không phải thời lượng chơi thực tế. Bản đồ được kiểm tra đường đi riêng bằng tìm kiếm lưới.
-
-Không có tài nguyên tải từ CDN hay dịch vụ game bên ngoài. Hình nhân vật, cảnh vật, hiệu ứng và âm thanh được xây riêng bằng mã nguồn. Đây là bản đầu với một bản đồ hữu hạn, chưa có nhiều người chơi, dungeon ngẫu nhiên, trang bị nhiều loại hay điều khiển điện thoại.
-
-## Nguồn cảm hứng đã tham khảo
-
-- [Soul Knight — trang chính thức của ChillyRoom](https://soulknight.chillyroom.com/et): tham khảo theo yêu cầu về một game hành động góc nhìn từ trên xuống. Nhân vật, cốt truyện và hình ảnh của Đèn Tinh được thiết kế riêng.
-- [Vietnam Tourism — những làng nghề lụa truyền thống](https://vietnam.travel/node/1669): tham khảo chất liệu làng cổ như cây đa, giếng nước và đình làng. Thế giới và linh thú trong game là hư cấu.
+Hình minh họa, sprite và hiệu ứng làm riêng cho Đèn Tinh. Soul Knight là tham chiếu trải nghiệm game hành động 2D; không dùng nhân vật hoặc tài nguyên của trò chơi đó.
 

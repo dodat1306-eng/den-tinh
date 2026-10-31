@@ -1,9 +1,9 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..');for(const f of['world.js','engine.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});
 const reports=[];
 for(const hero of Object.keys(DTWorld.HEROES)){
-  const g=new DTGame(hero);g.start();g.consumeEvents();let ticks=0,stage=0;
+  const g=new DTGame(hero,71426);g.start();g.skipTutorial();g.consumeEvents();let ticks=0,stage=0;
   function reward(){while(g.pendingLevels>0)g.applyTalent(g.player.hp<g.player.maxHp*.5?'vitality':'power');g.consumeEvents()}
   function fight(center,done,limit=12000){
     for(let i=0;i<limit;i++){
@@ -26,7 +26,16 @@ for(const hero of Object.keys(DTWorld.HEROES)){
   }
   for(const s of g.world.shrines){
     g.player.x=s.x+230;g.player.y=s.y+55;
-    assert(fight(s,()=>!s.guardians.some(id=>g.world.enemies.find(e=>e.id===id&&e.alive))),`${hero} cannot clear ${s.id}`);
+    if(s.id==='truc')assert(fight(s,()=>!s.guardians.some(id=>g.world.enemies.find(e=>e.id===id&&e.alive))),`${hero} cannot clear ${s.id}`);
+    else{
+      let completed=false;
+      for(let attempt=0;attempt<5&&!completed;attempt++){
+        g.player.x=s.x;g.player.y=s.y+40;assert(g.interact());
+        assert(fight(s,()=>g.challenge[s.id].complete||!g.challenge[s.id].started,12000),`${hero} challenge timer stalled: ${s.id}`);
+        completed=g.challenge[s.id].complete;
+      }
+      assert(completed,`${hero} cannot complete challenge ${s.id}`);
+    }
     g.player.x=s.x;g.player.y=s.y+40;assert(g.interact());reward();assert(s.active);stage++;
   }
   g.player.x=1830;g.player.y=653;assert(g.interact());reward();
@@ -34,4 +43,4 @@ for(const hero of Object.keys(DTWorld.HEROES)){
   assert(fight({x:1830,y:610},()=>g.victory,18000),`${hero} cannot beat boss`);
   const report={hero,completed:true,simulatedSeconds:Math.round(ticks/60),deaths:g.deaths,level:g.player.level,kills:g.kills,hp:Math.round(g.player.hp),seals:stage};reports.push(report);console.log(JSON.stringify(report));
 }
-fs.writeFileSync(path.join(root,'qa','playthrough-report.json'),JSON.stringify({method:'Actual combat simulation with an autonomous movement and combat controller, no invulnerability or damage cheats; relocation between arenas excludes travel time.',results:reports},null,2));
+fs.writeFileSync(path.join(root,'qa','playthrough-report.json'),JSON.stringify({method:'Actual v0.2 combat simulation for four heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.',results:reports},null,2));

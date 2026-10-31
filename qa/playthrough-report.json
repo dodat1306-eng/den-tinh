@@ -1,0 +1,45 @@
+{
+  "method": "Actual v0.2 combat simulation for four heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.",
+  "results": [
+    {
+      "hero": "an",
+      "completed": true,
+      "simulatedSeconds": 63,
+      "deaths": 0,
+      "level": 6,
+      "kills": 77,
+      "hp": 170,
+      "seals": 3
+    },
+    {
+      "hero": "linh",
+      "completed": true,
+      "simulatedSeconds": 86,
+      "deaths": 0,
+      "level": 6,
+      "kills": 79,
+      "hp": 150,
+      "seals": 3
+    },
+    {
+      "hero": "kiet",
+      "completed": true,
+      "simulatedSeconds": 71,
+      "deaths": 0,
+      "level": 6,
+      "kills": 78,
+      "hp": 205,
+      "seals": 3
+    },
+    {
+      "hero": "hoavi",
+      "completed": true,
+      "simulatedSeconds": 60,
+      "deaths": 0,
+      "level": 6,
+      "kills": 67,
+      "hp": 160,
+      "seals": 3
+    }
+  ]
+}

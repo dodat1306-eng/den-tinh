@@ -7,6 +7,7 @@
   <title>Đèn Tinh · Miền Sương Lạc</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="expansion.css">
 </head>
 <body>
   <main id="stage">
@@ -29,6 +30,8 @@
         <div class="seal-row" id="sealRow"></div>
       </section>
       <section class="quest glass"><span class="eyebrow">NGỌN ĐÈN DẪN LỐI</span><strong id="questTitle"></strong><p id="questText"></p></section>
+      <section id="weaponHud" class="weapon-hud glass"><span class="eyebrow">VŨ KHÍ · TAB ĐỔI Ô</span><strong id="weaponName"></strong><span id="weaponAmmo"></span><small id="passiveHud"></small></section>
+      <div id="challengeHud" class="challenge-hud hidden"></div>
       <div id="bossHud" class="hidden"><strong id="bossName"></strong><div class="bar"><i id="bossBar"></i></div></div>
       <section class="skill-tray">
         <div class="skill" id="skill-dash"><kbd>SPACE</kbd><b>↝</b><span>Lướt né</span><i></i></div>
@@ -37,7 +40,7 @@
         <div class="skill ultimate" id="skill-r"><kbd>R</kbd><b>☀</b><span id="rName"></span><i></i></div>
         <div class="skill" id="skill-heal"><kbd>H</kbd><b>✚</b><span id="potionLabel">3 bình máu</span><i></i></div>
       </section>
-      <div class="bottom-info"><span>WASD di chuyển · Chuột trái tấn công · F tương tác</span><button id="pauseButton">Ⅱ Tạm dừng</button><button id="soundButton">♫ Âm thanh</button></div>
+      <div class="bottom-info"><span>WASD · Chuột bắn · F tương tác · TAB đổi súng · V nạp</span><button id="pauseButton">Ⅱ Tạm dừng</button><button id="soundButton">♫ Âm thanh</button><button id="settingsHud">⚙ Cài đặt</button></div>
       <div id="interactHint" class="hidden"><kbd>F</kbd><span></span></div>
       <div id="toastBox"></div>
     </div>
@@ -50,17 +53,23 @@
         <p class="choose-label">CHỌN NGƯỜI GIỮ LỬA</p>
         <div id="heroCards" class="hero-cards"></div>
         <div class="menu-actions"><button id="startButton" class="primary">Bắt đầu hành trình <span>→</span></button><button id="continueButton" class="secondary hidden">Tiếp tục</button></div>
-        <div class="menu-links"><button id="helpButton">Cách chơi</button><button id="fullscreenButton">Toàn màn hình</button><button id="creditsButton">Về thế giới này</button></div>
+        <div class="menu-links"><button id="helpButton">Cách chơi</button><button id="fullscreenButton">Toàn màn hình</button><button id="settingsMenu">Cài đặt</button><button id="creditsButton">Về thế giới này</button></div>
+        <div class="edition-tag">BẢN 0.2 · HOA VI / MÃ LỆNH & KÝ ỨC</div>
       </div>
-      <div class="menu-footer"><span>KHÁM PHÁ TỰ DO · CHIẾN ĐẤU THỜI GIAN THỰC</span><span>ĐÈN TINH / 01</span></div>
+      <div class="menu-footer"><span>4 NHÂN VẬT · 12 VŨ KHÍ · DI VẬT & THỬ THÁCH</span><span>ĐÈN TINH / 02</span></div>
     </section>
-    <section id="modal" class="modal-layer hidden"><div id="modalContent" class="modal-card"></div></section>
+    <section id="modal" class="modal-layer hidden" role="dialog" aria-modal="true" aria-label="Hội thoại và bảng thông tin game"><div id="modalContent" class="modal-card"></div></section>
     <section id="mapOverlay" class="modal-layer hidden"><div class="world-map-card"><div class="world-map-head"><div><p class="eyebrow">ĐI THEO ÁNH LỬA</p><h2>Miền Sương Lạc</h2></div><button id="closeMap">Đóng · M</button></div><canvas id="worldMap" width="850" height="520"></canvas><p>Vàng: ngươi · Hồng: ấn chưa thức tỉnh · Ngọc: điểm đã giải phóng · Đỏ: cội đa</p></div></section>
     <div id="fatalError" class="hidden"></div>
+    <div id="touchControls" class="hidden" aria-label="Điều khiển cảm ứng"><div class="touch-stick move-stick" id="moveStick"><span></span><b>DI CHUYỂN</b></div><div class="touch-stick aim-stick" id="aimStick"><span></span><b>NGẮM / BẮN</b></div><div class="touch-actions"><button data-touch="dash" aria-label="Lướt né">↝</button><button data-touch="q">Q</button><button data-touch="e">E</button><button data-touch="r">R</button><button data-touch="heal" aria-label="Hồi máu">✚</button><button data-touch="interact" aria-label="Tương tác">F</button><button data-touch="swap" aria-label="Đổi vũ khí">⇄</button><button data-touch="reload" aria-label="Nạp vũ khí">V</button></div></div>
   </main>
   <script src="world.js"></script>
+  <script src="content.js"></script>
   <script src="engine.js"></script>
+  <script src="expansion.js"></script>
   <script src="render.js"></script>
+  <script src="visuals.js"></script>
   <script src="app.js"></script>
+  <script src="controls.js"></script>
 </body>
 </html>

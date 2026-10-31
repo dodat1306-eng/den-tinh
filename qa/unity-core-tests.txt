@@ -1,0 +1,18 @@
+PASS Shared catalog has four original heroes, twelve weapons and twelve relics
+PASS All heroes can shoot and damage an enemy
+PASS Magazine, reload and weapon switch preserve separate ammunition
+PASS HoaVi Mã Lệnh charges from hits and Debug consumes stacks
+PASS Firewall absorbs hits and destroys hostile projectiles
+PASS Overclock is bounded and drones do not recharge their own ultimate
+PASS All four ultimates including following storms never recharge themselves
+PASS Dash immunity and cooldown prevent repeated dodging
+PASS Movement collision and boundaries remain solid
+PASS Relics alter projectile count and dash damage
+PASS Three seals require three distinct challenges
+PASS Defense failure is retryable without corrupting shrine progress
+PASS Boss shield needs destructible roots, then third phase adds hazards
+PASS Save snapshot restores weapons, relics, health and activated seals
+PASS Save retains unclaimed level rewards and a chest opened before the tutorial step
+PASS Respawn keeps progression, resets failed challenges and charges 10 percent
+PASS New seeds vary world and New Game Plus scales enemies
+17/17 checks passed

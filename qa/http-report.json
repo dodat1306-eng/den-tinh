@@ -1,0 +1,32 @@
+{
+  "results": [
+    {
+      "name": "Local release server health",
+      "pass": true
+    },
+    {
+      "name": "Game HTML served locally",
+      "pass": true
+    },
+    {
+      "name": "Runtime and browser profile cannot be served",
+      "pass": true
+    },
+    {
+      "name": "Disk save is empty or structurally valid",
+      "pass": true
+    },
+    {
+      "name": "Invalid save rejected without overwriting progress",
+      "pass": true
+    },
+    {
+      "name": "Non-local origin cannot write save",
+      "pass": true
+    },
+    {
+      "name": "Previous local test port can migrate progress",
+      "pass": true
+    }
+  ]
+}
