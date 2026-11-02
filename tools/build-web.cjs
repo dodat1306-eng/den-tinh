@@ -11,6 +11,7 @@ const files = [
   'frontier.js', 'scenery.js',
   'assets/environment-v03.png',
   'assets/actors-v03.png',
+  'elemental.js', 'elemental-visuals.js', 'elemental-ui.js', 'elemental.css', 'assets/thien-vu-v04.png',
 ];
 
 // Publish only this allowlist; never copy local saves, tools or Unity files.

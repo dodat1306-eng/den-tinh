@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});
 const reports=[];
 for(const hero of Object.keys(DTWorld.HEROES)){
@@ -18,7 +18,7 @@ for(const hero of Object.keys(DTWorld.HEROES)){
       for(const b of g.projectiles){if(b.friendly)continue;const d=Math.hypot(b.x-p.x,b.y-p.y);if(d<75){dx+=(p.x-b.x)/Math.max(1,d);dy+=(p.y-b.y)/Math.max(1,d)}}
       for(const t of g.telegraphs){const d=Math.hypot(t.x-p.x,t.y-p.y);if(d<t.r+45){dx+=(p.x-t.x)/Math.max(1,d)*2;dy+=(p.y-t.y)/Math.max(1,d)*2}}
       const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l}g.input={dx,dy,fire:!!e,aimX:ax,aimY:ay};p.facing=Math.atan2(ay-p.y,ax-p.x);
-      if(e&&g.player.cd.q===0)g.skill('q');if(e&&g.player.cd.e===0&&Math.hypot(e.x-p.x,e.y-p.y)<300)g.skill('e');if(e&&p.ult>=100)g.skill('r');if(p.hp<p.maxHp*.48)g.heal();
+      if(g.isElemental&&g.elementSplitCd===0&&g.elementSplitTime===0&&p.mp>=60){g.selectSplitCount(7);g.splitElementals()}if(e&&g.player.cd.q===0)g.skill('q');if(e&&g.player.cd.e===0&&Math.hypot(e.x-p.x,e.y-p.y)<300)g.skill('e');if(e&&p.ult>=100)g.skill('r');if(p.hp<p.maxHp*.48)g.heal();
       if(e&&Math.hypot(e.x-p.x,e.y-p.y)<150&&p.cd.dash===0)g.dash();
       g.update(1/60);ticks++;reward();
     }
@@ -43,4 +43,4 @@ for(const hero of Object.keys(DTWorld.HEROES)){
   assert(fight({x:1830,y:610},()=>g.victory,18000),`${hero} cannot beat boss`);
   const report={hero,completed:true,simulatedSeconds:Math.round(ticks/60),deaths:g.deaths,level:g.player.level,kills:g.kills,hp:Math.round(g.player.hp),seals:stage};reports.push(report);console.log(JSON.stringify(report));
 }
-fs.writeFileSync(path.join(root,'qa','playthrough-report.json'),JSON.stringify({method:'Actual v0.3 combat simulation for four heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.',results:reports},null,2));
+fs.writeFileSync(path.join(root,'qa','playthrough-report.json'),JSON.stringify({method:'Actual v0.4 combat simulation for five heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.',results:reports},null,2));

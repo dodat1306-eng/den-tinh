@@ -21,6 +21,13 @@
 !/qa/v03-hoavi-skills.png
 !/qa/v03-world-map.png
 !/qa/v03-mobile.png
+!/qa/elemental-report.json
+!/qa/elemental-http-report.json
+!/qa/browser-v04-report.json
+!/qa/v04-element-wheel.png
+!/qa/v04-split-7.png
+!/qa/v04-seven-convergence.png
+!/qa/v04-mobile-split.png
 
 # Build output and dependencies
 /node_modules/

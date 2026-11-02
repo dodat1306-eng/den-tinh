@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-02T15:37:55.633Z",
+  "isolatedSave": true,
+  "results": [
+    {
+      "name": "Release health and all five new assets are served",
+      "pass": true
+    },
+    {
+      "name": "HTTP accepts and returns a real seven-body elemental save",
+      "pass": true
+    },
+    {
+      "name": "Invalid saves cannot overwrite the elemental fixture",
+      "pass": true
+    },
+    {
+      "name": "An unrelated origin cannot overwrite the fixture",
+      "pass": true
+    },
+    {
+      "name": "Host runtime, tools and project configuration remain private",
+      "pass": true
+    }
+  ]
+}

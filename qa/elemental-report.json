@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-02T15:29:43.088Z",
+  "passed": 18,
+  "total": 18,
+  "tests": [
+    {
+      "name": "Fifth hero has seven distinct forms, twenty-one named skills and its catalyst weapon",
+      "pass": true
+    },
+    {
+      "name": "Transformation changes appearance and skills while retaining cooldowns, health and ultimate charge",
+      "pass": true
+    },
+    {
+      "name": "Every form Q damages a target using its actual attack behavior",
+      "pass": true
+    },
+    {
+      "name": "Every form E implements a persistent field or actual earth shield",
+      "pass": true
+    },
+    {
+      "name": "Every ultimate damages and never refills itself, including delayed hits and fields",
+      "pass": true
+    },
+    {
+      "name": "Split modes create exactly 3, 5 or 7 different living elemental bodies",
+      "pass": true
+    },
+    {
+      "name": "Clone AI really attacks and does not generate free ultimate charge",
+      "pass": true
+    },
+    {
+      "name": "Changing the leader form during a split preserves remaining time and unique elements",
+      "pass": true
+    },
+    {
+      "name": "Recall retains cooldown, expired clones disappear and paused games do not run timers",
+      "pass": true
+    },
+    {
+      "name": "Hostile bullets hit and remove clones without damaging the leader remotely",
+      "pass": true
+    },
+    {
+      "name": "Zero damage cannot grant a clone protection from real damage",
+      "pass": true
+    },
+    {
+      "name": "Ice actually slows and freezes movement, nature poison deals damage, light reflects without ult charge",
+      "pass": true
+    },
+    {
+      "name": "Shots keep their original element after transformation",
+      "pass": true
+    },
+    {
+      "name": "Combined ultimate contains all seven elements, real damage and no self charging",
+      "pass": true
+    },
+    {
+      "name": "Save and restore retain form, split size, remaining time, clone health and player resources",
+      "pass": true
+    },
+    {
+      "name": "Malformed clone saves are bounded and old heroes keep their progress",
+      "pass": true
+    },
+    {
+      "name": "Death and travel cancel clones and scheduled attacks",
+      "pass": true
+    },
+    {
+      "name": "New source parses and art is a deployable transparent PNG",
+      "pass": true
+    }
+  ]
+}

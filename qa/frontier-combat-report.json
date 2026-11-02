@@ -40,6 +40,16 @@
       "deaths": 0,
       "kills": 36,
       "level": 4
+    },
+    {
+      "hero": "thienvu",
+      "completed": true,
+      "outposts": 4,
+      "waves": 6,
+      "simulatedSeconds": 27,
+      "deaths": 0,
+      "kills": 39,
+      "level": 5
     }
   ]
 }

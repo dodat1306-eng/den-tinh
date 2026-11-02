@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-11-02T15:29:53.745Z",
+  "url": "http://127.0.0.1:64323/",
+  "results": [
+    {
+      "name": "Fifth hero starts with the new atlas and catalyst",
+      "pass": true
+    },
+    {
+      "name": "Native form chooser selects an element and resumes gameplay",
+      "pass": true
+    },
+    {
+      "name": "All seven appearances and twenty-one spell animations render",
+      "pass": true
+    },
+    {
+      "name": "Fast transform keys retain shared cooldowns and ultimate charge",
+      "pass": true
+    },
+    {
+      "name": "The actual split buttons create three, five and seven different bodies",
+      "pass": true
+    },
+    {
+      "name": "Seven-element combined ultimate is activated from the real R key",
+      "pass": true
+    },
+    {
+      "name": "Reload continues the elemental hero and ongoing split",
+      "pass": true
+    },
+    {
+      "name": "Recall removes clones while keeping the cast cooldown",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion and Escape work with the native transformation chooser",
+      "pass": true
+    },
+    {
+      "name": "Seven simultaneous forms have bounded desktop rendering time",
+      "pass": true,
+      "samples": 160,
+      "meanMs": 1.2150000005960464,
+      "p95Ms": 1.9000000357627869
+    },
+    {
+      "name": "Touch chooser, mode selector and seven-form split fit the landscape viewport",
+      "pass": true
+    },
+    {
+      "name": "Portrait form chooser and expanded action buttons remain usable",
+      "pass": true
+    },
+    {
+      "name": "No uncaught browser errors across desktop and touch profiles",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "note": "Spell screenshots refill resources in isolated fixtures to show all twenty-one animations. Damage, cooldown and split rules are verified independently without cheats. Mobile tests emulate touch layouts rather than physical hardware."
+}

@@ -1,0 +1,19 @@
+# Đồ họa gốc Đèn Tinh 0.4 — Thiên Vũ
+
+Tạo bằng **công cụ image_gen tích hợp** ngày 02/11/2026, chế độ tạo ảnh mới, `transparent_background: true`, không ảnh tham chiếu. Không dùng CLI, API key hoặc tài nguyên của phim/game tham khảo.
+
+- Tệp game: `assets/thien-vu-v04.png` — PNG RGBA 1254 × 1254, alpha thật 0–255.
+- Bản gốc: `C:\Users\ASUS\.codex\generated_images\01a18d91-99cd-7a23-a845-321fe5735fa7\exec-c1643439-d75f-4154-bb24-1ce7922c2dd3.png`.
+- Atlas 4 cột × 4 hàng, 16 ô; mỗi cặp là tư thế đứng và chạy. Theo thứ tự: Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang, dạng cơ sở. Bảy cặp đầu được dùng trong game, cặp cơ sở là tạo hình tham chiếu.
+- `elemental-visuals.js` cắt theo kích thước ảnh thực. Nhân vật kết hợp hai tư thế, nhịp chân theo quãng đường, nghiêng/co giãn thân, chuyển động áo/khăn, lật theo hướng ngắm, vệt lướt và ánh nguyên tố.
+- Sét nhánh, lốc, địa trụ, hỏa long, băng tinh, dây leo, tia thái dương và hợp kích được vẽ bằng mã Canvas. Giảm kích thước/độ đậm của kỹ năng đồng minh và vẽ lại người điều khiển để tránh chìm trong hiệu ứng. Chế độ Nhẹ/cảm ứng và Giảm chuyển động tiếp tục có tác dụng.
+
+## Prompt tạo atlas (nguyên văn)
+
+```text
+Use case: stylized-concept. Asset type: production sprite atlas for an original Vietnamese fantasy 2D top-down action game. Create ONE transparent square PNG, a strict regular 4 by 4 grid of sixteen isolated full-body character sprites. NO text, labels, grid, backdrop, floor tiles, or borders. Generous transparent spacing: every sprite remains in the central 65 percent of its own cell; nothing crosses a cell boundary. All ground-contact points centered at 85 percent of the cell height. Crisp high quality hand-painted pixel art, detailed compact pixel clusters, teal dark outlines, light from upper left, orthographic three-quarter overhead view, readable when rendered at 64 pixels tall. This is ONE original young adult Vietnamese elemental guardian, Thien Vu, in seven transformation outfits. Same recognizable face, silver-black short swept hair, jade elemental bracer, short layered adventurer tunic, boots, no baseball cap, no logos. Every form has a strongly different silhouette and colors. Two poses per form: first poised idle, second running with opposite arm and forward knee. Row 1: lightning idle, lightning running, wind idle, wind running. Lightning has blue-violet angular jacket, golden lightning shoulder spines, electric bracer; wind has pale teal robes and long streaming white scarf, feather-like head ornament. Row 2: earth idle, earth running, fire idle, fire running. Earth has ochre stone gauntlets and broad rugged terracotta armor; fire has crimson and orange robes, flame-shaped golden hair tips, ember cloak and fiery fists. Row 3: ice idle, ice running, nature idle, nature running. Ice has azure and white coat, crystalline crown and angular ice armor; nature has emerald leaf cloak, vine gauntlets and small branching antler ornament. Row 4: light idle, light running, neutral guardian idle, neutral guardian running. Light has white and gold layered armor, brilliant sun halo and radiant bracer; neutral guardian has midnight indigo and pale gold clothing with seven tiny colored gems on the jade bracer. Small magical accent flames or sparks only INSIDE each cell, no large effects or attack trails. Every character is fully visible with feet, identical in-world body scale, independent transparent silhouette. Original designs, expressive and heroic.
+```
+
+## Tham khảo thiết kế
+
+[Monsta — BoBoiBoy](https://monsta.com/animations/boboiboy/) là tham chiếu cho ý tưởng bảy sức mạnh nguyên tố. Thiên Vũ có tên, ngoại hình, trang phục, atlas, tên kỹ năng và âm thanh riêng cho Đèn Tinh. Tài liệu này ghi cách tạo tài nguyên của bản web 0.4; không phải ảnh từ phim và chưa phải tài nguyên đã tích hợp trong Unity.

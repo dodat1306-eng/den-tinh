@@ -1,5 +1,5 @@
 {
-  "method": "Actual v0.3 combat simulation for four heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.",
+  "method": "Actual v0.4 combat simulation for five heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.",
   "results": [
     {
       "hero": "an",
@@ -39,6 +39,16 @@
       "level": 6,
       "kills": 67,
       "hp": 160,
+      "seals": 3
+    },
+    {
+      "hero": "thienvu",
+      "completed": true,
+      "simulatedSeconds": 62,
+      "deaths": 0,
+      "level": 6,
+      "kills": 79,
+      "hp": 175,
       "seals": 3
     }
   ]

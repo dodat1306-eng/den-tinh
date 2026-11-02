@@ -8,6 +8,7 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="expansion.css">
+  <link rel="stylesheet" href="elemental.css">
 </head>
 <body>
   <main id="stage">
@@ -54,9 +55,9 @@
         <div id="heroCards" class="hero-cards"></div>
         <div class="menu-actions"><button id="startButton" class="primary">Bắt đầu hành trình <span>→</span></button><button id="continueButton" class="secondary hidden">Tiếp tục</button></div>
         <div class="menu-links"><button id="helpButton">Cách chơi</button><button id="fullscreenButton">Toàn màn hình</button><button id="settingsMenu">Cài đặt</button><button id="creditsButton">Về thế giới này</button></div>
-        <div class="edition-tag">BẢN 0.3 · NHỮNG MIỀN ĐẤT THỨC GIẤC</div>
+        <div class="edition-tag">BẢN 0.4 · THIÊN VŨ / THẤT LINH PHÂN THÂN</div>
       </div>
-      <div class="menu-footer"><span>9 VÙNG ĐẤT · 4 NHÂN VẬT · 12 VŨ KHÍ</span><span>ĐÈN TINH / 03</span></div>
+      <div class="menu-footer"><span>9 VÙNG ĐẤT · 5 NHÂN VẬT · 13 VŨ KHÍ</span><span>ĐÈN TINH / 04</span></div>
     </section>
     <section id="modal" class="modal-layer hidden" role="dialog" aria-modal="true" aria-label="Hội thoại và bảng thông tin game"><div id="modalContent" class="modal-card"></div></section>
     <section id="mapOverlay" class="modal-layer hidden"><div class="world-map-card"><div class="world-map-head"><div><p class="eyebrow">CHÍN VÙNG ĐẤT · MỘT NGỌN ĐÈN</p><h2>Miền Sương Lạc</h2></div><button id="closeMap">Đóng · M</button></div><canvas id="worldMap" width="850" height="520"></canvas><p>Vàng: ngươi · Hồng: ấn linh · Tròn ngọc: trạm đã mở · Tròn cam: trạm chưa mở · Đỏ: cội đa</p></div></section>
@@ -68,10 +69,13 @@
   <script src="engine.js"></script>
   <script src="expansion.js"></script>
   <script src="frontier.js"></script>
+  <script src="elemental.js"></script>
   <script src="render.js"></script>
   <script src="visuals.js"></script>
   <script src="scenery.js"></script>
+  <script src="elemental-visuals.js"></script>
   <script src="app.js"></script>
   <script src="controls.js"></script>
+  <script src="elemental-ui.js"></script>
 </body>
 </html>

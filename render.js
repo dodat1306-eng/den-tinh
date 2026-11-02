@@ -67,6 +67,7 @@
       for(const t of g.telegraphs){c.save();const f=1-t.timer/t.maxTimer;c.globalAlpha=.15+f*.15;ellipse(c,t.x,t.y,t.r,t.r,'#f49983');c.globalAlpha=.8;c.strokeStyle=t.color;c.lineWidth=2;c.beginPath();c.arc(t.x,t.y,t.r,0,TAU);c.stroke();c.globalAlpha=.3;ellipse(c,t.x,t.y,t.r*f,t.r*f,t.color);c.restore()}
       for(const l of g.loot)if(inView(l)){const bob=Math.sin(g.time*5+l.x)*3;c.fillStyle=l.type==='gold'?'#e8c46e':'#bc5f70';c.fillRect(l.x-4,l.y-8+bob,8,8);c.fillStyle=l.type==='gold'?'#ffe6a0':'#edc3ad';c.fillRect(l.x-2,l.y-7+bob,3,3);glow(c,l.x,l.y,18,l.type==='gold'?'#efc773':'#d8a2a9',.12)}
       const objects=[];
+      if(this.drawElementClone)for(const ally of g.elementClones||[])if(ally.alive&&inView(ally))objects.push({y:ally.y,draw:()=>this.drawElementClone(ally)});
       if(this.drawBeacon)for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
       for(const o of g.world.props)if(inView(o))objects.push({y:o.y,draw:()=>this.drawProp(o)});
       for(const n of g.world.npcs)if(inView(n))objects.push({y:n.y,draw:()=>this.drawNpc(n)});
