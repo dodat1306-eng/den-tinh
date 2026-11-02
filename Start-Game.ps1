@@ -14,13 +14,14 @@ if (-not (Test-Path -LiteralPath $gameNode)) {
 }
 $gameServer = Join-Path $gameDirectory 'tools\server.cjs'
 $gamePort = 4174
+$gameServerVersion = 4
 $gameServerReady = $false
 try {
   $gameHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$gamePort/health" -TimeoutSec 2
-  if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge 3) { $gameServerReady = $true }
+  if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge $gameServerVersion) { $gameServerReady = $true }
 } catch {}
 if (-not $gameServerReady) {
-  if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -lt 3) {
+  if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -lt $gameServerVersion) {
     $gameOldWasLan = $gameHealth.lan
     $gameOldWorkers = Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.ExecutablePath -eq $gameNode -and $_.CommandLine -like "*`"$gameServer`"*" }
     foreach ($gameOldWorker in $gameOldWorkers) { Stop-Process -Id $gameOldWorker.ProcessId -Force }
@@ -34,7 +35,7 @@ if (-not $gameServerReady) {
     Start-Sleep -Milliseconds 150
     try {
       $gameHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$gamePort/health" -TimeoutSec 1
-      if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge 3) { $gameServerReady = $true; break }
+      if ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge $gameServerVersion) { $gameServerReady = $true; break }
     } catch {}
   }
   if (-not $gameServerReady) { throw 'May chu game chua khoi dong. Kiem tra runtime\server-error.log.' }

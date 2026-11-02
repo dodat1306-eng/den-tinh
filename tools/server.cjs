@@ -17,7 +17,7 @@ function createGameServer(options = {}) {
     if (url === '/health') {
       const address = server.address();
       res.writeHead(200, headers);
-      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 3, contentVersion:'0.4.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
+      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 4, contentVersion:'0.4.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
       return;
     }
     if (url === '/save') {

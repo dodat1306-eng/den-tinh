@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $gameRoot = $PSScriptRoot
 $gameNode = Join-Path $gameRoot 'runtime\node.exe'
 $gameServer = Join-Path $gameRoot 'tools\server.cjs'
+$gameServerVersion = 4
 if (-not (Test-Path -LiteralPath $gameNode)) {
   $gameNodeCommand = Get-Command node.exe -ErrorAction SilentlyContinue
   if ($gameNodeCommand) { $gameNode = $gameNodeCommand.Source }
@@ -12,7 +13,7 @@ if (-not (Test-Path -LiteralPath $gameNode)) {
 $gameNetwork = Get-DenTinhLanInfo
 $gameHealth = $null
 try { $gameHealth = Invoke-RestMethod -Uri 'http://127.0.0.1:4174/health' -TimeoutSec 2 } catch {}
-if (-not ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -eq 3 -and $gameHealth.lan)) {
+if (-not ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -ge $gameServerVersion -and $gameHealth.lan)) {
   $gameWorkers = Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object {
     $_.ExecutablePath -eq $gameNode -and $_.CommandLine -like "*`"$gameServer`"*"
   }
@@ -27,10 +28,10 @@ if (-not ($gameHealth.game -eq 'den-tinh-v1' -and $gameHealth.serverVersion -eq 
     Start-Sleep -Milliseconds 150
     try {
       $gameHealth = Invoke-RestMethod -Uri 'http://127.0.0.1:4174/health' -TimeoutSec 1
-      if ($gameHealth.serverVersion -eq 3 -and $gameHealth.lan) { break }
+      if ($gameHealth.serverVersion -ge $gameServerVersion -and $gameHealth.lan) { break }
     } catch {}
   }
-  if (-not ($gameHealth.serverVersion -eq 3 -and $gameHealth.lan)) { throw 'Chua khoi dong duoc may chu LAN. Xem runtime\lan-server-error.log.' }
+  if (-not ($gameHealth.serverVersion -ge $gameServerVersion -and $gameHealth.lan)) { throw 'Chua khoi dong duoc may chu LAN. Xem runtime\lan-server-error.log.' }
 }
 $gameNetwork | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $gameRoot 'runtime\lan-info.json') -Encoding UTF8
 Write-Output "Link cho nguoi cung mang: $($gameNetwork.Url)"
