@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const projectRoot = path.resolve(__dirname, '..');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png' };
-const allowed = new Set(['index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png']);
+const allowed = new Set(['index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','frontier.js','scenery.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png','assets/environment-v03.png','assets/actors-v03.png']);
 const isLoopback = address => address === '::1' || /^127\./.test(address || '') || /^::ffff:127\./i.test(address || '');
 
 function createGameServer(options = {}) {
@@ -17,7 +17,7 @@ function createGameServer(options = {}) {
     if (url === '/health') {
       const address = server.address();
       res.writeHead(200, headers);
-      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 3, contentVersion:'0.2.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
+      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 3, contentVersion:'0.3.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
       return;
     }
     if (url === '/save') {

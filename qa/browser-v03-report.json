@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-11-02T14:21:36.737Z",
+  "url": "http://127.0.0.1:59774/",
+  "desktop": [
+    1280,
+    720
+  ],
+  "mobile": [
+    844,
+    390
+  ],
+  "note": "Screenshots use staged camera locations. Travel and save fixtures pre-unlock Jade; combat difficulty is checked independently without health/damage cheats. Performance uses a controlled sixteen-enemy scene with invulnerability only to keep that scene stable.",
+  "results": [
+    {
+      "name": "Browser starts v0.3 and loads the environment atlas",
+      "pass": true
+    },
+    {
+      "name": "Keyboard movement drives the running animation",
+      "pass": true,
+      "x": 837.4775999999995,
+      "stride": 8.285595999999959,
+      "velocity": 241.13951773516266
+    },
+    {
+      "name": "Dodge produces afterimages",
+      "pass": true
+    },
+    {
+      "name": "HoaVi Firewall and Debug Pulse have active gameplay and visual effects",
+      "pass": true
+    },
+    {
+      "name": "Graphics and reduced motion preferences save through the actual settings UI",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion suppresses dash afterimages",
+      "pass": true
+    },
+    {
+      "name": "Travel dialog reaches an unlocked station and permits immediate return",
+      "pass": true
+    },
+    {
+      "name": "Continue after reload preserves the new map position and station unlock",
+      "pass": true
+    },
+    {
+      "name": "All new regions and layered skill effects render without a browser error",
+      "pass": true
+    },
+    {
+      "name": "The large map renders nine regions, routes and station markers",
+      "pass": true
+    },
+    {
+      "name": "Warm desktop combat scene has bounded frame work and terrain cache",
+      "pass": true,
+      "samples": 160,
+      "meanMs": 0.7837499979883432,
+      "p95Ms": 1.100000023841858,
+      "maxTerrainChunks": 29
+    },
+    {
+      "name": "Landscape touch controls stay on screen, move HoaVi and cast Firewall",
+      "pass": true
+    },
+    {
+      "name": "Automatic mobile quality caps the terrain cache at twenty chunks",
+      "pass": true,
+      "chunks": 20
+    },
+    {
+      "name": "Portrait rotation keeps the game and action buttons inside the viewport",
+      "pass": true
+    },
+    {
+      "name": "No uncaught JavaScript errors on desktop or mobile layouts",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

@@ -13,6 +13,14 @@
 !/qa/browser-v02.md
 !/qa/v02-hoavi-firewall.jpg
 !/qa/v02-menu.jpg
+!/qa/frontier-report.json
+!/qa/frontier-combat-report.json
+!/qa/browser-v03-report.json
+!/qa/v03-village.png
+!/qa/v03-waterfall.png
+!/qa/v03-hoavi-skills.png
+!/qa/v03-world-map.png
+!/qa/v03-mobile.png
 
 # Build output and dependencies
 /node_modules/

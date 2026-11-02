@@ -56,8 +56,9 @@
       const sx=g.shake?(Math.random()-.5)*g.shake:0,sy=g.shake?(Math.random()-.5)*g.shake:0;
       c.translate(sx,sy);c.scale(z,z);c.translate(-Math.round(this.camera.x),-Math.round(this.camera.y));
       const x0=this.camera.x-140,y0=this.camera.y-160,x1=x0+1280/z+280,y1=y0+720/z+320;
-      c.drawImage(this.ground,0,0);
+      if(this.ground.draw)this.ground.draw(c,this.camera,1280/z,720/z);else c.drawImage(this.ground,0,0);
       const inView=o=>o.x>x0&&o.x<x1&&o.y>y0&&o.y<y1;
+      if(this.drawScenery)this.drawScenery(inView);
       for(const s of g.world.shrines)if(inView(s))this.drawShrine(s);
       if(inView(g.world.altar))this.drawAltar(g.world.altar);
       for(const a of g.activeEffects)if(inView(a)){
@@ -66,6 +67,7 @@
       for(const t of g.telegraphs){c.save();const f=1-t.timer/t.maxTimer;c.globalAlpha=.15+f*.15;ellipse(c,t.x,t.y,t.r,t.r,'#f49983');c.globalAlpha=.8;c.strokeStyle=t.color;c.lineWidth=2;c.beginPath();c.arc(t.x,t.y,t.r,0,TAU);c.stroke();c.globalAlpha=.3;ellipse(c,t.x,t.y,t.r*f,t.r*f,t.color);c.restore()}
       for(const l of g.loot)if(inView(l)){const bob=Math.sin(g.time*5+l.x)*3;c.fillStyle=l.type==='gold'?'#e8c46e':'#bc5f70';c.fillRect(l.x-4,l.y-8+bob,8,8);c.fillStyle=l.type==='gold'?'#ffe6a0':'#edc3ad';c.fillRect(l.x-2,l.y-7+bob,3,3);glow(c,l.x,l.y,18,l.type==='gold'?'#efc773':'#d8a2a9',.12)}
       const objects=[];
+      if(this.drawBeacon)for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
       for(const o of g.world.props)if(inView(o))objects.push({y:o.y,draw:()=>this.drawProp(o)});
       for(const n of g.world.npcs)if(inView(n))objects.push({y:n.y,draw:()=>this.drawNpc(n)});
       for(const o of g.world.chests)if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
@@ -73,7 +75,7 @@
       objects.push({y:p.y,draw:()=>drawHero(c,p,g.hero,g.time)});
       objects.sort((a,b)=>a.y-b.y);objects.forEach(o=>o.draw());
       this.drawCompanion();
-      for(const b of g.projectiles){if(!inView(b))continue;c.save();c.translate(b.x,b.y);c.rotate(b.angle);c.fillStyle=b.color;if(b.kind==='arrow'){c.fillRect(-11,-2,22,4);poly(c,[[12,-4],[18,0],[12,4]],b.color);c.fillStyle='#ffffffbb';c.fillRect(1,-1,12,2)}else{c.fillRect(-b.r,-b.r,b.r*2,b.r*2);c.fillStyle='#fff6d5';c.fillRect(-2,-2,4,4)}c.restore();}
+      for(const b of g.projectiles){if(!inView(b))continue;if(this.drawProjectile){this.drawProjectile(b);continue}c.save();c.translate(b.x,b.y);c.rotate(b.angle);c.fillStyle=b.color;if(b.kind==='arrow'){c.fillRect(-11,-2,22,4);poly(c,[[12,-4],[18,0],[12,4]],b.color);c.fillStyle='#ffffffbb';c.fillRect(1,-1,12,2)}else{c.fillRect(-b.r,-b.r,b.r*2,b.r*2);c.fillStyle='#fff6d5';c.fillRect(-2,-2,4,4)}c.restore();}
       for(const e of g.effects)this.drawEffect(e);
       c.save();c.globalCompositeOperation='lighter';for(const pt of g.particles){if(!inView(pt))continue;c.globalAlpha=Math.min(1,pt.life/pt.maxLife);c.fillStyle=pt.color;c.fillRect(Math.round(pt.x),Math.round(pt.y),pt.size,pt.size)}c.restore();
       for(const f of g.floaters){c.save();c.globalAlpha=Math.min(1,f.life*2);c.font='bold 12px Segoe UI';c.textAlign='center';c.fillStyle='#182225';c.fillText(f.text,f.x+1,f.y+1);c.fillStyle=f.color;c.fillText(f.text,f.x,f.y);c.restore()}

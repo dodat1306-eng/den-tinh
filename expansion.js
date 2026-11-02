@@ -121,7 +121,7 @@
           }else if(dist(b,p)<p.r+b.r){this.damagePlayer(b.damage);b.life=0}
           if(!b.friendly&&p.firewall>0&&dist(b,p)<155){b.life=0;this.spark(b.x,b.y,5,'#f0a4eb',80,.25)}
         }
-        b.trail+=dt;if(b.trail>.04&&this.particles.length<580){b.trail=0;this.particles.push({x:b.x,y:b.y,color:b.color,size:b.friendly?3:3.5,life:.18,maxLife:.18})}
+        b.trail+=dt;if(b.trail>.04&&this.particles.length<580){b.trail=0;this.particles.push({x:b.x,y:b.y-18,color:b.color,size:b.friendly?3:3.5,life:.18,maxLife:.18})}
         if(b.life<=0){const idx=this.projectiles.indexOf(b);if(idx>=0)this.projectiles.splice(idx,1)}
       }
     }

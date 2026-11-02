@@ -115,7 +115,7 @@
       p.potions--;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.55);this.effect('ring',p.x,p.y,'#b6e9ad',55,.55);this.spark(p.x,p.y,24,'#b6e9ad',75,.8);this.emit('sound',{name:'heal'});return true;
     }
     damagePlayer(amount){
-      const p=this.player;if(this.dead||p.invulnerable>0||this.victory)return;
+      const p=this.player;if(this.dead||p.invulnerable>0||(this.victory&&!this.frontierCombat))return;
       const damage=Math.max(1,Math.round(amount*(1-p.armor)));p.hp=Math.max(0,p.hp-damage);p.invulnerable=.62;this.shake=5;this.hitFlash=.25;
       this.floaters.push({x:p.x,y:p.y-38,text:`−${damage}`,color:'#ffac9b',life:.7,vy:-38});this.emit('sound',{name:'hurt'});
       if(p.hp<=0){this.dead=true;this.emit('death')}
@@ -154,7 +154,7 @@
         if(Math.hypot(e.knockX,e.knockY)>4){this.moveEntity(e,e.knockX*dt,e.knockY*dt);e.knockX*=Math.exp(-8*dt);e.knockY*=Math.exp(-8*dt)}
         const dist=distance(e,p);if(dist>900)continue;
         if(e.type==='boss'){this.updateBoss(e,dt);continue}
-        if(this.victory)continue;
+        if(this.victory&&!e.frontier)continue;
         const homeDist=Math.hypot(e.x-e.homeX,e.y-e.homeY),a=Math.atan2(p.y-e.y,p.x-e.x),slow=e.slow>0?.48:1;
         let mx=0,my=0;
         if(dist>530||homeDist>600){const back=Math.atan2(e.homeY-e.y,e.homeX-e.x);if(homeDist>20){mx=Math.cos(back)*e.speed*.55;my=Math.sin(back)*e.speed*.55}}

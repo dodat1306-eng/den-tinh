@@ -1,9 +1,10 @@
-# Đèn Tinh: Miền Sương Lạc — 0.2
+# Đèn Tinh: Miền Sương Lạc — 0.3
 
-Game hành động 2D tiếng Việt, một người chơi, lấy chất liệu từ làng Việt, rừng trúc, đầm sen và ký ức trong sương. Bản 0.2 thêm HoaVi, vũ khí, di vật, thử thách riêng, hình minh họa và sprite chuyển động mới.
+Game hành động 2D tiếng Việt, một người chơi, lấy chất liệu từ làng Việt, rừng trúc, đầm sen và ký ức trong sương. Bản web 0.3 mở rộng bản đồ, thêm ba vùng khám phá, trạm dịch chuyển, bộ môi trường và quái/NPC mới, cùng chuyển động và hiệu ứng chiến đấu nhiều lớp.
 
 ## Chơi ngay
 
+- Chơi công khai tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Dùng **Tiếp tục** để giữ tiến độ; bản lưu 0.1 và 0.2 vẫn đọc được.
 - Nhấp đúp **CHOI_GAME.bat** trong `E:\Games\DenTinh`, hoặc mở `http://127.0.0.1:4174/` khi máy chủ đã chạy.
 - Chọn một trong bốn nhân vật rồi **Bắt đầu hành trình**. Có hướng dẫn bằng hành động trong làng, có thể bỏ qua trong Cài đặt.
 - Muốn chia sẻ với người cùng Wi-Fi/LAN: chạy **CHOI_CHUNG_MANG.bat**. Địa chỉ hiện tại nằm trong `runtime/lan-info.json`. Giữ máy chủ bật và cùng kết nối mạng.
@@ -25,6 +26,8 @@ Trong Cloudflare Workers Builds, chọn nhánh `main`, thư mục gốc `/`, bui
 Bản web công khai lưu tiến độ riêng trong localStorage của từng trình duyệt. Không tải lên bản lưu chủ máy, Node runtime, công cụ kiểm tra hoặc dự án Unity. Khi dùng trên thiết bị khác, tiến độ không tự đồng bộ.
 
 ## Bản Unity
+
+Nội dung mới của đợt 0.3 áp dụng cho bản web ở link trên. Dự án Unity hiện giữ nền nội dung 0.2 và cần một đợt chuyển đổi riêng cho ba vùng đất và bộ dựng cảnh mới.
 
 Thư mục **Unity/** chứa dự án C# Unity 6.3 LTS thật, dùng SpriteRenderer, hoạt ảnh sprite, Camera trực giao, LineRenderer, ParticleSystem và AudioSource. Logic C# đã được biên dịch và kiểm tra độc lập. **Chưa có bản .exe Unity được xuất và xác nhận chạy**, vì Editor chưa cài thành công và máy chưa có giấy phép Unity được kích hoạt.
 
@@ -51,6 +54,12 @@ Hai ô vũ khí độc lập, mỗi ô có băng đạn, thời gian nạp và c
 
 ## Hành trình
 
+- **Bản đồ 6400 × 4480:** diện tích gấp 2,59 lần bản 0.2, giữ nguyên tọa độ, seed và tuyến truyện của khu cũ.
+- **Thác Ngọc:** sông ngăn đường, hai cầu gỗ đi được, thác nước, liễu và tinh thể.
+- **Thung Lũng Đèn:** đồng cỏ, hoa, cối xay gió và các cột đèn.
+- **Phế Tích Thiên Cơ:** cổng đá, trụ cổ, tháp và những mạch sáng ngọc.
+- Mỗi vùng mới có một trạm đèn: nhấn **F**, hạ hai đợt hộ vệ, rồi nhấn **F** lần nữa để nhận di vật, 75 xu và mở trạm. Có thể dịch chuyển giữa trạm đã mở và Trạm Làng Đèn phía nam làng. Ba thử thách này là nhánh khám phá, không thay đổi điều kiện ba ấn của cốt truyện.
+- Tổng cộng 33 rương; bản 0.3 thêm 18 rương và 48 quái lang thang ở vùng mới. Nhấn **M** để xem đường nối vòng và các trạm.
 - **Rừng Trúc:** săn miniboss Trúc Vệ, né cú lao và loạt trúc.
 - **Đầm Sen:** nhấn F ở ấn để bảo vệ Đèn Sen trong 36 giây; đèn tắt có thể thử lại.
 - **Đồi Tro:** nhấn F ở ấn, phá ba lõi tro và né vòng lửa báo trước.
@@ -73,6 +82,8 @@ Làng Đèn là vùng nghỉ an toàn. Giếng Ngọc hồi đầy máu, linh l�
 
 Trên điện thoại, game tự bật hai cần cảm ứng và nút kỹ năng; dùng nằm ngang để nhìn rộng. Có nút thuộc tính, cài đặt, tạm dừng và bản đồ. Có thể bật/tắt cảm ứng thủ công, chỉnh âm lượng nhạc/hiệu ứng, cỡ chữ và giảm rung/chớp trong Cài đặt. Đã kiểm tra điều khiển bằng trình duyệt ở bố cục điện thoại; chưa xác nhận chơi trên điện thoại thật của người dùng.
 
+Đồ họa có chế độ **Tự động / Chi tiết cao / Nhẹ** trong Cài đặt. Tự động giảm hạt và giới hạn bộ nhớ nền trên thiết bị cảm ứng. Chạy sử dụng nhịp chân theo quãng đường thật; lướt có ảnh dư, tấn công có giật vũ khí, vệt đạn và tia trúng đích. Cây, nhà, quái, NPC và Đốm dùng hai atlas PNG trong `assets/`; dữ liệu nền được tạo và giữ theo từng ô 512 pixel.
+
 ## Lưu và sao lưu
 
 Tự lưu mỗi 12 giây và sau tương tác quan trọng. Bản chính chủ máy là `runtime/save.json`; có dự phòng trong hồ sơ trình duyệt. Chơi qua LAN dùng localStorage của từng trình duyệt, không được đọc/ghi bản lưu chủ máy.
@@ -84,6 +95,7 @@ Bản lưu 0.1 được đọc, giữ cấp độ/thuộc tính/xu/ấn và bổ
 ```sh
 npm test
 npm run test:combat
+npm run test:frontier-combat
 npm run test:lan
 npm run test:http
 npm run export:unity
@@ -91,7 +103,9 @@ npm run export:unity
 
 Trên máy này có thể gọi `runtime/node.exe` thay `node`. Kiểm tra C# thuần bằng `tools/Test-Unity-Core.ps1`; kết quả ở `qa/unity-core-tests.txt`, `qa/unity-combat-tests.txt`. Các kiểm tra này không thay thế import, Play và build bằng Unity Editor.
 
-`world.js`, `engine.js` là nền gốc; `content.js`, `expansion.js` chứa catalog/gameplay 0.2. `visuals.js`, `controls.js`, `expansion.css` mở rộng hình ảnh, UI và cảm ứng. `app.js` nối các phần. Unity có simulation C# riêng và catalog sinh từ cùng nguồn. `qa/` chứa báo cáo/screenshot cục bộ. Mô phỏng chiến đấu rút ngắn di chuyển giữa đấu trường, thời gian báo cáo không phải thời lượng chơi thực tế.
+`world.js`, `engine.js` là nền gốc; `content.js`, `expansion.js` chứa catalog/gameplay 0.2. `frontier.js` mở rộng thế giới và trạm đèn; `scenery.js` dựng nền theo ô, đồ họa, hoạt ảnh và hiệu ứng 0.3. `visuals.js`, `controls.js`, `expansion.css` bổ sung hình ảnh, UI và cảm ứng. `app.js` nối các phần. Unity có simulation C# riêng. `qa/` chứa báo cáo/screenshot được chọn để kiểm tra. Mô phỏng chiến đấu rút ngắn di chuyển giữa đấu trường, thời gian báo cáo không phải thời lượng chơi thực tế.
+
+Chi tiết thay đổi: [CHANGELOG-v0.3.md](CHANGELOG-v0.3.md). Cơ sở tham khảo, giới hạn kiểm tra và nguồn ảnh: [VALIDATION-v0.3.md](VALIDATION-v0.3.md), [ART-v0.3.md](ART-v0.3.md).
 
 Hình minh họa, sprite và hiệu ứng làm riêng cho Đèn Tinh. Soul Knight là tham chiếu trải nghiệm game hành động 2D; không dùng nhân vật hoặc tài nguyên của trò chơi đó.
 

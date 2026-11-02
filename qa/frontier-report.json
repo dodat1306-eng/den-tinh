@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-02T14:21:27.462Z",
+  "passed": 16,
+  "total": 16,
+  "tests": [
+    {
+      "name": "World is 2.59 times larger with nine distinct regions and a continuous road loop",
+      "pass": true
+    },
+    {
+      "name": "Original seed layout, enemy IDs and story locations remain unchanged",
+      "pass": true
+    },
+    {
+      "name": "All shrines, all chests and all four beacons are reachable on foot across multiple seeds",
+      "pass": true
+    },
+    {
+      "name": "River banks block walking while both wooden bridges are traversable",
+      "pass": true
+    },
+    {
+      "name": "A new beacon requires two full waves before granting its reward exactly once",
+      "pass": true
+    },
+    {
+      "name": "Travel rejects locked destinations and remote calls, cancels a dodge and allows safe return from its menu",
+      "pass": true
+    },
+    {
+      "name": "A v0.2 save retains hero, health, gold, armor, weapons, relics and awakened seals",
+      "pass": true
+    },
+    {
+      "name": "Saving mid encounter preserves the active wave, unique guardian IDs and destination unlocks",
+      "pass": true
+    },
+    {
+      "name": "New region coordinates survive save restoration and do not fall back to the village",
+      "pass": true
+    },
+    {
+      "name": "Nearby loot cannot trap the interaction at the center of an unlocked station",
+      "pass": true
+    },
+    {
+      "name": "Death resets unfinished outpost waves while keeping earned unlocks",
+      "pass": true
+    },
+    {
+      "name": "All heroes emit their own skill visuals and retain resource and cooldown rules",
+      "pass": true
+    },
+    {
+      "name": "Running animation follows real movement and a wall does not advance the stride",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion disables new dash afterimages without disabling the actual dodge",
+      "pass": true
+    },
+    {
+      "name": "The original finale remains gated; postgame frontier enemies can still deal damage",
+      "pass": true
+    },
+    {
+      "name": "New game code parses and generated atlas stays within hosting limits",
+      "pass": true
+    }
+  ]
+}

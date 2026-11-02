@@ -8,6 +8,9 @@ const files = [
   'index.html', 'world.js', 'engine.js', 'render.js', 'app.js',
   'style.css', 'icon.svg', 'content.js', 'expansion.js', 'visuals.js',
   'controls.js', 'expansion.css', 'assets/key-art.png', 'assets/heroes.png',
+  'frontier.js', 'scenery.js',
+  'assets/environment-v03.png',
+  'assets/actors-v03.png',
 ];
 
 // Publish only this allowlist; never copy local saves, tools or Unity files.

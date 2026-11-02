@@ -1,0 +1,45 @@
+{
+  "method": "Normal attacks, skills, talents, potions and dodges; no health or damage cheats. Relocation only between arenas, with four permitted death/retry attempts per outpost; travel time is excluded.",
+  "results": [
+    {
+      "hero": "an",
+      "completed": true,
+      "outposts": 4,
+      "waves": 6,
+      "simulatedSeconds": 33,
+      "deaths": 0,
+      "kills": 36,
+      "level": 4
+    },
+    {
+      "hero": "linh",
+      "completed": true,
+      "outposts": 4,
+      "waves": 6,
+      "simulatedSeconds": 33,
+      "deaths": 0,
+      "kills": 40,
+      "level": 5
+    },
+    {
+      "hero": "kiet",
+      "completed": true,
+      "outposts": 4,
+      "waves": 6,
+      "simulatedSeconds": 36,
+      "deaths": 0,
+      "kills": 40,
+      "level": 5
+    },
+    {
+      "hero": "hoavi",
+      "completed": true,
+      "outposts": 4,
+      "waves": 6,
+      "simulatedSeconds": 28,
+      "deaths": 0,
+      "kills": 36,
+      "level": 4
+    }
+  ]
+}

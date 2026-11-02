@@ -34,7 +34,7 @@
     toggle(){this.init();this.enabled=!this.enabled;if(this.master)this.master.gain.value=this.enabled?.13:0;$('soundButton').textContent=this.enabled?'♫ Âm thanh':'♫ Đã tắt'}
   }
   const audio=new Audio();
-  function resize(){const s=Math.min(innerWidth/1280,innerHeight/720);$('stage').style.transform=`translate(-50%, -50%) scale(${s})`}
+  function resize(){const viewport=document.documentElement,s=Math.min(viewport.clientWidth/1280,viewport.clientHeight/720);$('stage').style.transform=`translate(-50%, -50%) scale(${s})`}
   addEventListener('resize',resize);resize();
   function heroCards(){
     $('heroCards').innerHTML='';for(const hero of Object.values(H)){
@@ -108,9 +108,14 @@
   function toggleMap(){
     if(!game.started||game.dead||(modalType&&!mapOpen))return;mapOpen=!mapOpen;$('mapOverlay').classList.toggle('hidden',!mapOpen);game.paused=mapOpen;keys={};mouse.down=false;if(mapOpen)renderer.map($('worldMap'),true);
   }
+  function travel(){
+    const current=game.nearby();
+    showModal('travel',`<span class="eyebrow">ĐI THEO NHỮNG NGỌN ĐÈN</span><h2>Dịch chuyển trạm đèn</h2><p>Thanh tẩy hộ vệ ở ba vùng đất mới để mở thêm điểm đến. Trạm đã sáng được giữ trong bản lưu.</p><div class="shop-grid">${game.world.beacons.map(b=>`<button data-destination="${b.id}" ${!game.outposts[b.id].claimed||current?.id===b.id?'disabled':''}><strong>${b.name}</strong><span>${current?.id===b.id?'Đang ở đây':game.outposts[b.id].claimed?'Đã mở · Dịch chuyển':'Chưa mở · Hoàn thành hai đợt hộ vệ'}</span></button>`).join('')}</div><div class="buttons"><button id="travelClose" class="primary">Tiếp tục khám phá</button></div>`);
+    $('modalContent').querySelectorAll('[data-destination]').forEach(button=>button.onclick=()=>{if(game.travelTo(button.dataset.destination)){renderer.camera.x=game.player.x-500;renderer.camera.y=game.player.y-280;closeAndContinue()}else toast('Không thể dịch chuyển từ vị trí hiện tại.')});$('travelClose').onclick=closeAndContinue;
+  }
   function handleEvents(){
     const events=game.consumeEvents();for(const e of events){
-      if(e.type==='sound')audio.sfx(e.name);if(e.type==='toast')toast(e.text,e.reward);if(e.type==='dialogue')dialogue(e.id);if(e.type==='zone')toast(e.zone.name);if(e.type==='shop')shop();
+      if(e.type==='sound')audio.sfx(e.name);if(e.type==='toast')toast(e.text,e.reward);if(e.type==='dialogue')dialogue(e.id);if(e.type==='zone')toast(e.zone.name);if(e.type==='shop')shop();if(e.type==='travel')travel();
       if(e.type==='shrine'){toast(`${game.world.shrines.find(s=>s.id===e.id).name} đã thức tỉnh. +45 xu.`,true);save()}
       if(e.type==='boss'){toast('Mộc Quỷ thức tỉnh. Tuyệt kỹ đã sẵn sàng!');save()}
     }
@@ -125,6 +130,7 @@
     const boss=game.world.enemies.find(e=>e.type==='boss'&&e.alive);$('bossHud').classList.toggle('hidden',!boss||Math.hypot(boss.x-p.x,boss.y-p.y)>1000);if(boss){$('bossName').textContent=boss.name+(boss.phase===3?' · KÝ ỨC VỠ':boss.phase===2?' · CUỒNG SƯƠNG':'');$('bossBar').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%'}renderer.map($('minimap'));
     const w=game.weapon,ws=game.weaponStateActive;$('weaponName').textContent=w.name+' +'+ws.level;$('weaponName').style.color=w.color;$('weaponAmmo').textContent=ws.reload>0?'Đang nạp · '+ws.reload.toFixed(1)+'s':ws.ammo+' / '+w.clip+' · V nạp';$('passiveHud').textContent=game.hero.id==='hoavi'?'Mã Lệnh '+p.code+'/8 · Khiên '+Math.ceil(p.shield)+(p.overclock>0?' · OVERCLOCK '+p.overclock.toFixed(1)+'s':''):DTContent.passives[game.hero.id].name;
     const activeShrine=game.world.shrines.find(s=>game.challenge[s.id].started&&!game.challenge[s.id].complete&&!s.active);$('challengeHud').classList.toggle('hidden',!activeShrine);if(activeShrine){const st=game.challenge[activeShrine.id];$('challengeHud').textContent=activeShrine.id==='sen'?'ĐÈN SEN '+Math.ceil(st.hp)+'% · '+Math.max(0,Math.ceil(36-st.timer))+' GIÂY':'LÒ TRO · '+st.ids.filter(id=>game.world.enemies.some(e=>e.id===id&&e.alive)).length+' LÕI CÒN LẠI';}
+    const outpost=game.world.beacons.find(b=>game.outposts[b.id].started&&!game.outposts[b.id].complete&&Math.hypot(b.x-p.x,b.y-p.y)<850);if(!activeShrine&&outpost){const st=game.outposts[outpost.id];$('challengeHud').classList.remove('hidden');$('challengeHud').textContent=outpost.name.toUpperCase()+' · ĐỢT '+st.wave+'/2 · '+st.ids.filter(id=>game.world.enemies.some(e=>e.id===id&&e.alive)).length+' HỘ VỆ';}
 
   }
   $('startButton').onclick=()=>begin(false);$('continueButton').onclick=()=>begin(true);$('helpButton').onclick=help;$('creditsButton').onclick=credits;$('pauseButton').onclick=pause;$('soundButton').onclick=()=>audio.toggle();$('mapButton').onclick=toggleMap;$('closeMap').onclick=toggleMap;$('fullscreenButton').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.()};

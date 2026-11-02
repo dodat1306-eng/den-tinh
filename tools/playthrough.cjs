@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});
 const reports=[];
 for(const hero of Object.keys(DTWorld.HEROES)){
@@ -43,4 +43,4 @@ for(const hero of Object.keys(DTWorld.HEROES)){
   assert(fight({x:1830,y:610},()=>g.victory,18000),`${hero} cannot beat boss`);
   const report={hero,completed:true,simulatedSeconds:Math.round(ticks/60),deaths:g.deaths,level:g.player.level,kills:g.kills,hp:Math.round(g.player.hp),seals:stage};reports.push(report);console.log(JSON.stringify(report));
 }
-fs.writeFileSync(path.join(root,'qa','playthrough-report.json'),JSON.stringify({method:'Actual v0.2 combat simulation for four heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.',results:reports},null,2));
+fs.writeFileSync(path.join(root,'qa','playthrough-report.json'),JSON.stringify({method:'Actual v0.3 combat simulation for four heroes: miniboss, timed defense, forge cores and three-phase final boss. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller chooses existing talents and uses normal attacks, skills, potions and dodges.',results:reports},null,2));
