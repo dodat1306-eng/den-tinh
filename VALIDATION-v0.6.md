@@ -20,6 +20,8 @@ Chrome headless/Playwright: 11 kiểm tra giao diện, không có lỗi JavaScri
 
 ## Build và phát hành
 
-`npm run build:web` tạo 37 tệp game cùng `_headers`, chỉ từ danh sách cho phép. Wrangler được kiểm tra bằng `deploy --dry-run`; bản công khai triển khai qua Cloudflare Workers Builds theo nhánh `main`. Sau triển khai, chạy `tools/verify-public.cjs` đối chiếu SHA-256 của 37 tệp và 11 đường dẫn riêng trả 404; báo cáo riêng tại `runtime/cloudflare-v06-report.json`. Bộ thử trình duyệt cũng có thể chạy trên link công khai bằng `DENTINH_BROWSER_URL`, với browser context mới và báo cáo trong `runtime/`.
+`npm run build:web` tạo 37 tệp game cùng `_headers`, chỉ từ danh sách cho phép. Wrangler được kiểm tra bằng `deploy --dry-run`. Cloudflare Workers Builds theo nhánh `main` đã nhận commit nhưng kẹt ở bước khởi tạo môi trường; bản 0.6 được triển khai trực tiếp bằng ZIP của `dist/` qua Dashboard, phiên bản `a83919e2`, trạng thái Ready/100% traffic. Không đổi tài khoản, token hoặc quyền truy cập.
+
+Sau triển khai, `tools/verify-public.cjs` đã đối chiếu khớp SHA-256 của cả 37 tệp và xác nhận 11 đường dẫn riêng trả 404; báo cáo tại `runtime/cloudflare-v06-report.json`. Bộ thử trình duyệt chạy trên link công khai bằng `DENTINH_BROWSER_URL`, với browser context mới và báo cáo trong `runtime/qa-public-v06-20261104/`.
 
 Save chính được sao lưu tại `runtime/backup-before-v06-20261103` và đối chiếu hash trước/sau. Không đưa runtime, save, cache hay hồ sơ trình duyệt lên GitHub/Cloudflare. Hồ sơ nâng cấp làng nằm trong localStorage trên cùng trình duyệt, không có đồng bộ tài khoản; xóa dữ liệu trang sẽ xóa hồ sơ. Chiêu/đạn/hiểm họa tạm thời không được phục hồi qua save; thử thách đang chạy và quái của nó được lưu riêng. Không thay bản Unity cũ hoặc cung cấp Unity Player mới.
