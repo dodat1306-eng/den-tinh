@@ -37,7 +37,7 @@
   setInterval(()=>{
     const g=denTinh.game,show=touch.active&&g.started&&!g.paused&&!g.dead;$('touchControls').classList.toggle('hidden',!show);mobile.classList.toggle('hidden',!touch.active||!g.started);
     if(touch.active&&g.started){const p=g.player;$('mobileHero').textContent=g.hero.name+' · Cấp '+p.level;$('mobileStats').textContent='♥ '+Math.ceil(p.hp)+'/'+p.maxHp+' · Linh lực '+Math.floor(p.mp)+'/'+p.maxMp+' · '+(g.signature?.name||'Pháp khí riêng');$('mobileQuest').textContent=g.objective().text}
-    if(touch.active&&g.started){for(const key of['q','e','r','dash']){const b=document.querySelector('[data-touch="'+key+'"]'),p=g.player,cd=key==='r'?100-p.ult:p.cd[key];b.disabled=key==='r'?p.ult<100:cd>0||(key==='q'?p.mp<24:key==='e'?p.mp<38:false);b.textContent=key==='r'?'R '+Math.floor(p.ult)+'%':key==='dash'?cd>0?cd.toFixed(1):'↝':key.toUpperCase()+(cd>0?' '+cd.toFixed(1):'')}}
+    if(touch.active&&g.started){for(const key of['q','e','r','dash']){const b=document.querySelector('[data-touch="'+key+'"]'),p=g.player,cd=key==='r'?100-p.ult:p.cd[key];const recast=key==='e'&&g.canRecastE?.(),cost=g.skillDescriptions?.[key]?.cost??(key==='q'?24:key==='e'?38:0);b.disabled=recast?false:key==='r'?p.ult<100:cd>0||p.mp<cost;b.textContent=recast?(g.hero.id==='an'?'E · NỔ':'E · VỀ'):key==='r'?'R '+Math.floor(p.ult)+'%':key==='dash'?cd>0?cd.toFixed(1):'↝':key.toUpperCase()+(cd>0?' '+cd.toFixed(1):'')}}
     document.body.classList.toggle('game-active',g.started);
   },150);
   // The browser release and Unity project use the same checked-in key art.

@@ -5,7 +5,7 @@ const projectRoot = path.resolve(__dirname, '..');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' };
 const allowed = new Set(['index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','frontier.js','scenery.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png','assets/environment-v03.png','assets/actors-v03.png','elemental.js','elemental-visuals.js','elemental-ui.js','elemental.css','assets/thien-vu-v04.png']);
 const isLoopback = address => address === '::1' || /^127\./.test(address || '') || /^::ffff:127\./i.test(address || '');
-for(const file of ['mythic-content.js','ascension.js','endless.js','ascension-visuals.js','ascension-ui.js','ascension.css','fonts.css','assets/fonts/NotoSans-Regular.ttf','assets/fonts/NotoSans-Bold.ttf','assets/fonts/OFL.txt'])allowed.add(file);
+for(const file of ['journey.js','journey-ui.js','journey-visuals.js','journey.css','mythic-content.js','ascension.js','endless.js','ascension-visuals.js','ascension-ui.js','ascension.css','fonts.css','assets/fonts/NotoSans-Regular.ttf','assets/fonts/NotoSans-Bold.ttf','assets/fonts/OFL.txt'])allowed.add(file);
 
 function createGameServer(options = {}) {
   const root = options.root || projectRoot;
@@ -18,7 +18,7 @@ function createGameServer(options = {}) {
     if (url === '/health') {
       const address = server.address();
       res.writeHead(200, headers);
-      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 5, contentVersion:'0.5.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
+      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 6, contentVersion:'0.6.0', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
       return;
     }
     if (url === '/save') {

@@ -38,6 +38,8 @@
 !/qa/v05-relics.png
 !/qa/v05-ho-tinh.png
 !/qa/cloudflare-v05-report.json
+!/qa/journey-report.json
+!/qa/browser-v06-report.json
 
 # Build output and dependencies
 /node_modules/

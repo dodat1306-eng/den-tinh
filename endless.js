@@ -60,8 +60,8 @@
       }
       const tier=Math.min(6,Math.floor(Math.max(Math.abs(cx),Math.abs(cy))/5)),count=5;
       for(let i=0;i<count;i++){
-        const p=point(150);if(!allowed(p)||!free(p)||D.nearPath(p.x,p.y,40))continue;const type=['shade','archer','wisp','boar','slime'][(i+hash(world.seed,cx,cy))%5],hp=64+tier*28+(type==='boar'?35:0);
-        chunk.enemies.push({id:'stream-enemy-'+key+'-'+i,streamKey:key,streamIndex:i,type,...p,homeX:p.x,homeY:p.y,r:type==='boar'?20:15,hp:delta.damaged[i]||hp,maxHp:hp,speed:type==='archer'?65:88+tier*4,damage:9+tier*2,xp:16+tier*3,gold:5+tier,alive:!delta.dead.includes(i),cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true});
+        const p=point(150);if(!allowed(p)||!free(p)||D.nearPath(p.x,p.y,40))continue;const type=['shade','archer','wisp','boar','slime'][(i+hash(world.seed,cx,cy))%5],elite=hash(world.seed+607,cx*7+i,cy)%100<5?['fire','ice','lightning'][hash(world.seed+13,cx*7+i,cy)%3]:null,hp=Math.round((64+tier*28+(type==='boar'?35:0))*(elite?1.65:1));
+        chunk.enemies.push({id:'stream-enemy-'+key+'-'+i,streamKey:key,streamIndex:i,type,elite,...p,homeX:p.x,homeY:p.y,r:type==='boar'?20:15,hp:delta.damaged[i]||hp,maxHp:hp,speed:type==='archer'?65:88+tier*4,damage:(9+tier*2)*(elite?1.2:1),xp:(16+tier*3)*(elite?2:1),gold:(5+tier)*(elite?2:1),alive:!delta.dead.includes(i),cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true});
       }
       for(let i=0;i<2;i++){const p=point(150);if(!allowed(p)||!free(p))continue;chunk.chests.push({id:'stream-chest-'+key+'-'+i,streamKey:key,streamIndex:i,...p,open:delta.open.includes(i)})}
       const kinds=['campfire','barrel','ore','spiritTree','shrine'];
@@ -69,6 +69,7 @@
         const p=point(110);if(!allowed(p)||!free(p))continue;const type=kinds[(i+hash(world.seed+31,cx,cy))%kinds.length],saved=delta.used[i];
         chunk.environment.push({id:'stream-environment-'+key+'-'+i,streamKey:key,streamIndex:i,type,...p,r:0,name:{campfire:'Bếp Lửa Lữ Khách',barrel:'Thùng Nhựa Thông',ore:'Mạch Quặng Linh',spiritTree:'Cây Nguyện Ước',shrine:'Miếu Kể Chuyện'}[type],used:!!saved?.used,elementalState:saved?.state||''});
       }
+      if(hash(world.seed+93,cx,cy)%4===0){const p=point(170);if(allowed(p)&&free(p)){const type=hash(world.seed+95,cx,cy)%2?'trial':'fog',saved=delta.used[3];chunk.environment.push({id:'stream-event-'+key,streamKey:key,streamIndex:3,type,...p,r:0,name:type==='trial'?'Đài Tế Nguyện Ước':'Đèn Lạc · Sương Đậm',used:!!saved?.used,elementalState:''})}}
       for(const p of chunk.props)if(p.destroyed)p.r=0;
       return chunk;
     }
@@ -107,7 +108,7 @@
         const value=entry[1],clean={dead:[],damaged:{},open:[],used:{},broken:[]};
         for(const [field,max]of[['dead',5],['open',2],['broken',42]])clean[field]=(Array.isArray(value[field])?value[field]:[]).filter(n=>Number.isInteger(n)&&n>=0&&n<max);
         for(const [i,hp]of Object.entries(value.damaged||{}))if(/^\d$/.test(i)&&Number(i)<5&&Number.isFinite(hp)&&hp>0)clean.damaged[i]=Math.min(10000,hp);
-        for(const [i,v]of Object.entries(value.used||{}))if(/^[0-2]$/.test(i)&&v&&typeof v==='object')clean.used[i]={used:!!v.used,state:typeof v.state==='string'?v.state.slice(0,30):''};
+        for(const [i,v]of Object.entries(value.used||{}))if(/^[0-3]$/.test(i)&&v&&typeof v==='object')clean.used[i]={used:!!v.used,state:typeof v.state==='string'?v.state.slice(0,30):''};
         changes.set(entry[0],clean);
       }
       active.clear();anchor='';world.ensureChunks(x,y);

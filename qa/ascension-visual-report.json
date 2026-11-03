@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-11-03T14:30:05.023Z",
+  "checkedAt": "2026-11-03T17:06:28.589Z",
   "numericCanvasValidation": true,
   "visualInspection": false,
-  "drawCalls": 195867,
+  "drawCalls": 195894,
   "results": [
     {
       "name": "All five heroes and seven elemental forms retain their original sprite atlas cells",

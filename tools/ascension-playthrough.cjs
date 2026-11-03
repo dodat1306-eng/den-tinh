@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});
 const reports=[];
 for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_HERO]:Object.keys(DTWorld.HEROES))){
@@ -9,7 +9,7 @@ for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_H
     for(let i=0;i<limit;i++){
       if(done())return true;const p=g.player;
       if(g.dead){g.respawn();p.x=center.x+230;p.y=center.y+55;g.paused=false;if(center.sagaEncounter){p.x=center.x;p.y=center.y+95;assert(g.interact());p.x=center.x+230;p.y=center.y+55}}
-      const foes=g.world.enemies.filter(e=>e.alive&&Math.hypot(e.x-p.x,e.y-p.y)<800).sort((a,b)=>Number(!!b.root||!!b.guard||!!b.sagaAnchor)-Number(!!a.root||!!a.guard||!!a.sagaAnchor)||Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y));
+      const foes=g.world.enemies.filter(e=>e.alive&&Math.hypot(e.x-p.x,e.y-p.y)<800).sort((a,b)=>Number(!!b.root||!!b.guard||!!b.sagaAnchor||b.type==='core')-Number(!!a.root||!!a.guard||!!a.sagaAnchor||a.type==='core')||Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y));
       const e=foes[0];let dx=0,dy=0,ax=center.x,ay=center.y;
       if(e){ax=e.x;ay=e.y;const d=Math.hypot(p.x-e.x,p.y-e.y),a=Math.atan2(p.y-e.y,p.x-e.x),orbit=.55;
         const near=hero==='kiet'?90:hero==='an'?150:210,far=hero==='kiet'?160:hero==='an'?260:330;const retreat=d<near?1:d>far?-.65:0;dx=Math.cos(a)*retreat-Math.sin(a)*orbit;dy=Math.sin(a)*retreat+Math.cos(a)*orbit;
@@ -55,4 +55,4 @@ for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_H
   assert.equal(g.saga.stage,'complete');
   const report={hero,completed:true,simulatedSeconds:Math.round(ticks/60),deaths:g.deaths,level:g.player.level,kills:g.kills,hp:Math.round(g.player.hp),seals:stage,saga};reports.push(report);console.log(JSON.stringify(report));
 }
-fs.writeFileSync(path.join(root,'qa','ascension-playthrough-report.json'),JSON.stringify({method:'Actual v0.5 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.',results:reports},null,2));
+fs.writeFileSync(path.join(root,'qa','ascension-playthrough-report.json'),JSON.stringify({method:'Actual v0.6 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.',results:reports},null,2));

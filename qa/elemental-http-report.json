@@ -1,13 +1,17 @@
 {
-  "checkedAt": "2026-11-03T11:28:49.745Z",
+  "checkedAt": "2026-11-03T17:05:51.043Z",
   "isolatedSave": true,
   "results": [
     {
-      "name": "Release health, v0.5 modules and local Vietnamese fonts are served",
+      "name": "Release health, v0.6 modules and local Vietnamese fonts are served",
       "pass": true
     },
     {
       "name": "HTTP accepts and returns a real seven-body elemental save",
+      "pass": true
+    },
+    {
+      "name": "HTTP round trip retains v0.6 purchases, mastery, village and active trial",
       "pass": true
     },
     {

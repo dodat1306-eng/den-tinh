@@ -1,19 +1,23 @@
-# Đèn Tinh: Miền Sương Lạc — 0.5
+# Đèn Tinh: Miền Sương Lạc — 0.6
 
-Game hành động 2D tiếng Việt, một người chơi. Bản 0.5 chuyển sang **bảo khí cố định theo nhân vật và phát triển kỹ năng**, thêm thế giới sinh liên tục, sáu chương hậu truyện và 20 cổ vật truyền thuyết.
+Game hành động 2D tiếng Việt, một người chơi. Bản 0.6 bổ sung **kinh tế xu, chuyên hóa kỹ năng, phát triển sau bậc 3, tinh anh nguyên tố và sự kiện khám phá**, trên nền bảo khí riêng, thế giới sinh liên tục và sáu chương hậu truyện của 0.5.
 
 ## Chơi tại máy
 
 Nhấp đúp **CHOI_GAME.bat** trong `E:\Games\DenTinh`. Bộ khởi chạy dùng Node.js đi kèm, mở game tại `http://127.0.0.1:4174/` và tự thay máy chủ cũ khi cần. Không cần tải thư viện hay font từ CDN.
 
-Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** tạo lượt mới với nhân vật được chọn. Bản lưu 0.1–0.4 vẫn đọc được: giữ nhân vật, cấp, tiền, di vật, ấn và trạm đã mở; cấp nâng trang bị cũ đổi thành điểm kỹ năng.
+Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** tạo lượt mới với nhân vật được chọn. Bản lưu 0.1–0.5 vẫn đọc được: giữ nhân vật, cấp, tiền, di vật, ấn và trạm đã mở; cấp nâng trang bị cũ đổi thành điểm kỹ năng. Nâng cấp làng của 0.6 được giữ qua hành trình mới trên cùng trình duyệt.
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 33 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 37 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v06-report.json`.
 
 ## Các thay đổi chính
 
+- **F tại Chú Bảy** mở cửa hàng: cổ vật 105 xu, đổi bộ hàng từ 30 xu, bình linh lực 35 xu và bùa 60 giây giá 80 xu. Nâng cấp làng giữ qua hành trình mới trên cùng trình duyệt; bình máu và các nâng cấp cũ vẫn mua được.
+- Sau khi Q/E/R đều bậc 3, mở bốn nhánh Căn Cốt, Dưỡng Khí, Thân Pháp, Phá Thế; mỗi nhánh tối đa 50 bậc, dùng tổng cộng 600 điểm. Mỗi Q/E/R bậc 3 được chọn một trong hai chuyên hóa miễn phí, giữ trong hành trình đó.
+- Hòa Âm Thiên Vũ có hồi nội tại 6 giây và giới hạn khiên; giảm 30% sức mạnh đòn của phân thân. Kiệt được bảo vệ lúc lao Q; An có thể nhấn E lần hai để hút quái thường và nổ đèn.
+- Lướt hủy thu thế; các đòn đã cam kết vẫn nhả đúng một lần. Vùng mới có khoảng 5% quái tinh anh Hỏa/Băng/Lôi, Đài Tế ba đợt trong 30 giây và vùng sương có XP gấp đôi.
 - Mỗi nhân vật gắn với một bảo khí riêng; bỏ đổi ô trang bị, băng đạn, nạp đạn, nhặt và nâng vũ khí rơi.
 - **K** mở bốn nhánh Q, E, R và nội tại, mỗi nhánh ba bậc. Khởi đầu có ba điểm; lên cấp, nối chương và khám phá môi trường cho thêm điểm.
 - **I** mở mô tả nội tại dài, thuộc tính, cổ vật và hành trình. Cổ vật mới có nguồn truyện và cơ chế chiến đấu riêng.
@@ -25,11 +29,11 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 
 | Nhân vật | Nội tại và cách phối hợp | Q / E / R |
 | --- | --- | --- |
-| An · Tâm Đăng | Đánh địch đang cháy để tích sáu Tàn Lửa; đặt tối đa ba đèn có dây nối, hồi máu khi đứng gần | Quét lửa hình quạt / đặt đèn kết giới / phượng hỏa dọc hướng ngắm |
+| An · Tâm Đăng | Đánh địch đang cháy để tích sáu Tàn Lửa; đặt tối đa ba đèn có dây nối, hồi máu khi đứng gần | Quét lửa hình quạt / đặt đèn, nhấn E lại trong 3 giây để nổ / phượng hỏa dọc hướng ngắm |
 | Linh · Cung Trúc Hồi Âm | Chạy tích tám Nhịp Trúc, đòn cường hóa xuyên và ghim dấu; Q bắn nối dấu | Giương cung xuyên tuyến / lộn lùi đặt bẫy / thiên tiễn lần lượt săn mục tiêu |
 | Kiệt · Lôi Thương | Đâm, lướt và chặn đạn tích năm Lôi Tức; Q cường hóa lao thương | Đâm xuyên hàng / chiến tuyến chặn đạn / bốn cọc lôi nối thành thiên lao |
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
-| Thiên Vũ · Thất Linh Tâm Ấn | Kỹ năng trúng bằng ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
+| Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
 
 Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. Phân thân là đồng minh AI, có máu và thời gian tồn tại; chưa có co-op.
 
@@ -42,6 +46,10 @@ Giữ nguyên làng và vùng gốc 6400 × 4480 cùng nhiệm vụ ba ấn/Cộ
 Chỉ giữ tối đa **25 vùng 1024 px** quanh người chơi. Quái bị hạ hoặc bị thương, rương đã mở, vật thể đã dùng và đạo cụ đã phá được ghi thành thay đổi nhỏ để giữ đúng khi quay lại hoặc tải bản lưu. Đây là thế giới sinh thủ tục không có điểm kết thúc cố định; nội dung từng vùng không được viết tay toàn bộ.
 
 Nhấn **F** ở bếp lửa, quặng, cây nguyện, miếu và thùng nhựa thông. Bếp lửa hồi sức và đặt điểm hồi sinh; quặng/miếu/cây cho cổ vật. Lửa nổ thùng nhựa thông, Thổ phá quặng và đá ở vùng sinh, Mộc đánh thức cây nguyện, Lôi kích hoạt miếu. Cổ vật Thủy Phủ tạo nước phản ứng với Hỏa/Băng/Lôi. Các vật thể có thể dùng và cho thưởng một lần theo trạng thái.
+
+Ở vùng mới, **F tại Đài Tế** bắt đầu thử thách một lượt: ba đợt quái trong tổng 30 giây, rời quá 650 px sẽ thất bại. Thắng rồi nhấn F nhận 120 xu và một cổ vật truyền thuyết còn thiếu, hoặc thêm 80 xu nếu đã đủ. Tiến độ thử thách đang chạy được lưu.
+
+**Sương Mù** hạn chế tầm nhìn; quái trong bán kính 360 px nhận ít hơn 28% sát thương và cho gấp đôi XP khi hạ. F tại Đèn Lạc xua sương một lần, nhận 40 xu. Tinh anh có vòng sáng riêng, đòn nguyên tố và dấu báo trước cho đòn diện rộng.
 
 ## Sáu chương tiếp nối
 
@@ -77,14 +85,15 @@ Các hiệu ứng như chặn đòn chí tử, biên dịch thêm đòn, dây le
 | F | Tương tác |
 | K / I | Học kỹ năng / nhân vật và cổ vật |
 | H | Dùng bình máu |
+| B | Dùng bình linh lực, hồi 60 MP, mang tối đa 6 bình |
 | M / Esc | Bản đồ lân cận / tạm dừng |
 | C, 1–7, G, X | Chọn dạng và phân thân của Thiên Vũ |
 
-Trên điện thoại có hai cần và các nút kỹ năng/K; nên dùng màn hình ngang. Cảm ứng chưa được xác nhận trên điện thoại thật của người dùng.
+Trên điện thoại có hai cần và các nút kỹ năng/K/bình linh lực; nút E hiện NỔ hoặc VỀ khi được tái kích. Đã kiểm tra giả lập màn hình ngang/dọc; chưa xác nhận trên điện thoại thật của người dùng.
 
 ## Lưu và bản dự phòng
 
-Tự lưu mỗi 12 giây và sau các thao tác quan trọng. Chủ máy dùng `runtime/save.json`; LAN và bản web dùng tiến độ riêng của từng trình duyệt. Bản dự phòng trước 0.5 nằm ở `runtime/backup-before-v05-20261103`. Bộ ZIP phát hành không chứa save, hồ sơ trình duyệt hoặc cache của chủ máy.
+Tự lưu mỗi 12 giây và sau các thao tác quan trọng. Chủ máy dùng `runtime/save.json`; LAN và bản web dùng tiến độ riêng của từng trình duyệt. Bản dự phòng trước 0.6 nằm ở `runtime/backup-before-v06-20261103`. Bản web không chứa save, hồ sơ trình duyệt hoặc cache của chủ máy. Nâng cấp làng được giữ bằng hồ sơ localStorage riêng, không đồng bộ thiết bị; xóa dữ liệu trang sẽ xóa hồ sơ này.
 
 Phân thân giữ dạng, HP và vị trí hợp lệ khi tải lại ở miền xa. Các chiêu đang chờ, trường kỹ năng và checkpoint không được khôi phục qua bản lưu; chết, hồi sinh và dịch chuyển hủy chúng.
 
@@ -98,9 +107,9 @@ npm run test:lan
 npm run build:web
 ```
 
-Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp toàn bộ logic 0.5, cho năm nhân vật hoàn thành ba ấn, Cội Đa và sáu chương tiếp nối bằng đòn/kỹ năng thật. Nó rút ngắn di chuyển giữa đấu trường; thời gian mô phỏng không đại diện cho thời lượng chơi hoặc độ khó với người thật.
+Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp toàn bộ logic 0.6, cho năm nhân vật hoàn thành ba ấn, Cội Đa và sáu chương tiếp nối bằng đòn/kỹ năng thật. Nó rút ngắn di chuyển giữa đấu trường; thời gian mô phỏng không đại diện cho thời lượng chơi hoặc độ khó với người thật.
 
-Xem [thay đổi 0.5](CHANGELOG-v0.5.md), [kiểm chứng và giới hạn](VALIDATION-v0.5.md), [nguồn tham khảo](ART-v0.5.md). [README 0.4](README-v0.4.md) được giữ làm lịch sử.
+Xem [thay đổi 0.6](CHANGELOG-v0.6.md), [kiểm chứng và giới hạn](VALIDATION-v0.6.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
 
 Nội dung mới áp dụng cho bản trình duyệt. Dự án Unity vẫn giữ nền nội dung cũ và chưa có bản .exe đã xuất/xác nhận; không đồng bộ tiến độ giữa hai bản.
 

@@ -121,7 +121,7 @@
       if(p.hp<=0){this.dead=true;this.emit('death')}
     }
     damageEnemy(e,amount,charge=true){
-      if(!e.alive)return;const crit=this.rng()<this.player.crit,dmg=Math.round(amount*(crit?1.7:1));e.hp-=dmg;e.hit=.12;
+      if(!e.alive)return;const crit=this.rng()<this.player.crit,dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));e.hp-=dmg;e.hit=.12;
       if(charge)this.player.ult=Math.min(100,this.player.ult+Math.min(2.5,dmg*.04));
       if(this.floaters.length<70)this.floaters.push({x:e.x+(this.rng()-.5)*15,y:e.y-e.r-15,text:String(dmg)+(crit?'!':''),color:crit?'#ffda83':'#e9ecce',life:.65,vy:-42});
       this.spark(e.x,e.y,5,e.type==='boss'?'#edb482':'#cce5c1',100,.23);

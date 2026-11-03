@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-11-03T17:01:18.194Z",
+  "url": "http://127.0.0.1:58714/",
+  "results": [
+    {
+      "name": "F at Chu Bay opens the functional shop",
+      "pass": true
+    },
+    {
+      "name": "Shop purchases, rerolls and village investments update real state",
+      "pass": true
+    },
+    {
+      "name": "The real K panel spends mastery points and selects an exclusive specialization",
+      "pass": true
+    },
+    {
+      "name": "B consumes a potion and reload retains purchases, mastery and specialization",
+      "pass": true
+    },
+    {
+      "name": "A real seeded altar starts through F and displays its waves and timer",
+      "pass": true
+    },
+    {
+      "name": "Fog overlay and elemental elite aura render in the endless world",
+      "pass": true
+    },
+    {
+      "name": "Touch K and mana button fit 844x390",
+      "pass": true
+    },
+    {
+      "name": "Touch E recasts An lamps during cooldown at 844x390",
+      "pass": true
+    },
+    {
+      "name": "Touch K and mana button fit 390x844",
+      "pass": true
+    },
+    {
+      "name": "Touch E recasts An lamps during cooldown at 390x844",
+      "pass": true
+    },
+    {
+      "name": "Desktop, reload and touch profiles have no uncaught JavaScript errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "note": "Purchasing fixtures supply gold and skill points to exercise UI. Combat and actual resource rules are tested separately; touch profiles are emulation, not physical devices."
+}

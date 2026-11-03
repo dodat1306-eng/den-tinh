@@ -1,0 +1,99 @@
+{
+  "checkedAt": "2026-11-03T17:06:28.961Z",
+  "tests": [
+    {
+      "name": "Smith interaction opens the actual shop rather than intercepting it with skills",
+      "pass": true
+    },
+    {
+      "name": "Shop offers, paid rerolls and sold slots survive loading without free changes",
+      "pass": true
+    },
+    {
+      "name": "Failed purchases and full consumable stocks do not deduct gold",
+      "pass": true
+    },
+    {
+      "name": "Mana potions heal real MP once and cannot be used while paused or full",
+      "pass": true
+    },
+    {
+      "name": "Talisman lasts sixty active seconds, does not stack and preserves base speed",
+      "pass": true
+    },
+    {
+      "name": "Village investments cap, persist and do not multiply HP on repeated restore",
+      "pass": true
+    },
+    {
+      "name": "Surplus mastery requires Q/E/R rank3, spends increasing points and caps at50",
+      "pass": true
+    },
+    {
+      "name": "Mastery has actual MP regen, dash velocity and critical damage effects",
+      "pass": true
+    },
+    {
+      "name": "Tier3 specializations are mutually exclusive and saved",
+      "pass": true
+    },
+    {
+      "name": "Linh specialization emits a ten-target arrow or a real impact explosion",
+      "pass": true
+    },
+    {
+      "name": "E and R specializations change lifetime, cooldown and actual recovery",
+      "pass": true
+    },
+    {
+      "name": "Dash cancels recovery without clearing or duplicating released follow-up attacks",
+      "pass": true
+    },
+    {
+      "name": "Dashing during windup keeps a single release and cancels subsequent recovery",
+      "pass": true
+    },
+    {
+      "name": "Kiet Q has bounded protection and dash retains its existing iframe window",
+      "pass": true
+    },
+    {
+      "name": "An can detonate lamps once, pull normal foes and retain E cost/cooldown",
+      "pass": true
+    },
+    {
+      "name": "Harmony cannot be spammed and clone power cannot proc it",
+      "pass": true
+    },
+    {
+      "name": "Seeded elites are stable after stream eviction and occur around5percent",
+      "pass": true
+    },
+    {
+      "name": "Elite ice shots slow only on a damaging hit; invulnerability prevents slow",
+      "pass": true
+    },
+    {
+      "name": "Fog makes enemies tougher and awards exactly double kill XP",
+      "pass": true
+    },
+    {
+      "name": "Altar advances three waves, saves active enemies and rewards only once",
+      "pass": true
+    },
+    {
+      "name": "Altar timeout or leaving clears summons and never awards progress",
+      "pass": true
+    },
+    {
+      "name": "Old v0.5 progress migrates; malformed additions stay bounded",
+      "pass": true
+    },
+    {
+      "name": "Village meta progression starts new journeys with its buffs and extra supplies",
+      "pass": true
+    }
+  ],
+  "passed": 23,
+  "total": 23
+}
