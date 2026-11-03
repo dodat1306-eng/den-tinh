@@ -4,7 +4,7 @@
 
 - `tools/ascension-test.cjs`: 43 kiểm tra tích hợp cho năm bộ chiêu, thời gian phát chiêu, bốn nhánh nâng cấp, chuyển/lưu tiến độ, 20 cổ vật, bảy nguyên tố, Hòa Âm và hủy hành động khi dịch chuyển/chết. Báo cáo `qa/ascension-report.json`.
 - `tools/endless-test.cjs`: 11 kiểm tra về seed, tọa độ âm, giới hạn 25 vùng, lưu thay đổi khi rời/quay lại, bản lưu xa, phân thân, môi trường, sáu chương và sát thương hậu truyện. Báo cáo `qa/endless-report.json`.
-- `tools/visual-math-test.cjs`: 7 kiểm tra khớp tay/chân, tư thế, font, vẽ toàn cảnh ở tọa độ âm/xa, trường kỹ năng theo hình học và sáu boss. Báo cáo `qa/ascension-visual-report.json`. Canvas giả dùng để kiểm tra tọa độ/lệnh vẽ, không tự chứng minh chất lượng hình ảnh.
+- `tools/visual-math-test.cjs`: kiểm tra đúng atlas gốc cho năm nhân vật, bảy dạng và phân thân; tư thế, font, vẽ toàn cảnh ở tọa độ âm/xa, trường kỹ năng theo hình học và sáu boss. Báo cáo `qa/ascension-visual-report.json`. Canvas giả dùng để kiểm tra tài nguyên/lệnh vẽ, không tự chứng minh chất lượng hình ảnh.
 - Các bộ kiểm tra lõi cũ: 13 nền gốc, 20 expansion, 16 frontier, 18 elemental. Chúng giữ kiểm tra lớp cũ và khả năng đọc nội dung trước đó; các kiểm tra trang bị cũ chỉ chạy ở lớp cũ, không phải hành vi trang bị của bản 0.5 cuối cùng.
 - HTTP tích hợp: 5 kiểm tra module/font, lưu Thiên Vũ bảy bản thể, bản lưu lỗi, Origin và đường dẫn riêng tư. Kiểm tra HTTP cơ bản: 7. Kiểm tra LAN: 10; không mở thêm firewall trong đợt này.
 

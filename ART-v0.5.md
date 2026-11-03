@@ -4,7 +4,7 @@
 
 Đã tham khảo bài [Clarity in League của Riot Games](https://www.leagueoflegends.com/en-us/news/dev/clarity-in-league/): ưu tiên vùng tác động dễ đọc và thứ bậc hình ảnh. Áp dụng vào đường báo đòn, hình vuông Tứ Trụ Thiên Lao, tường phản đạn, đường nối đèn và mức sáng của các hiệu ứng hỗ trợ. Không sao chép sprite, nhân vật hoặc tài nguyên của Riot.
 
-Động tác được dựng tại máy bằng canvas: các khớp tay/chân, hướng ngắm, thế lấy đà/ra đòn/thu thế, độ nghiêng thân, dây cung, thương và bảo khí. Sáu boss và các trường kỹ năng mới dùng hình học riêng. Giữ các atlas/key art sẵn có của dự án; đợt 0.5 không tải tài nguyên thương mại của game khác.
+Nhân vật dùng đúng sprite gốc trong `assets/heroes.png` và `assets/thien-vu-v04.png`, gồm bảy dạng Thiên Vũ và các phân thân. Đợt sửa đồ họa đã bỏ mô hình nhân vật ghép từ hình học của bản 0.5 đầu tiên. Nhịp chạy, hướng ngắm, độ nghiêng và chuyển động lấy đà/ra đòn/thu thế áp dụng lên sprite gốc, giữ khuôn mặt, trang phục và hình dáng từng dạng. Sáu boss và các trường kỹ năng mới vẫn dùng hình học riêng. Đợt 0.5 không tải tài nguyên thương mại của game khác.
 
 ## Font
 

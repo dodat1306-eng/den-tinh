@@ -17,7 +17,7 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 - Mỗi nhân vật gắn với một bảo khí riêng; bỏ đổi ô trang bị, băng đạn, nạp đạn, nhặt và nâng vũ khí rơi.
 - **K** mở bốn nhánh Q, E, R và nội tại, mỗi nhánh ba bậc. Khởi đầu có ba điểm; lên cấp, nối chương và khám phá môi trường cho thêm điểm.
 - **I** mở mô tả nội tại dài, thuộc tính, cổ vật và hành trình. Cổ vật mới có nguồn truyện và cơ chế chiến đấu riêng.
-- Tay, chân, thân và bảo khí chuyển động độc lập. Đòn thường và kỹ năng có lấy đà, ra đòn, thu thế; hiệu ứng tồn tại được vẽ theo hình tác động.
+- Giữ hình nhân vật gốc trong các atlas, gồm đủ bảy dạng Thiên Vũ. Nhịp chạy, hướng ngắm, độ nghiêng và chuyển động lấy đà/ra đòn/thu thế được áp dụng lên sprite; hiệu ứng tồn tại được vẽ theo hình tác động.
 - Font Noto Sans tiếng Việt được đóng gói tại máy cho DOM và chữ trên canvas; không thay font hệ điều hành.
 - Vẫn có đồ họa **Tự động / Chi tiết cao / Nhẹ**, giảm rung/chớp, âm lượng và điều khiển cảm ứng trong Cài đặt.
 

@@ -8,7 +8,7 @@ Hoàn thiện tại máy ngày 03/11/2026. Nội dung mới áp dụng cho bản
 - Bốn nhánh kỹ năng cho mỗi nhân vật; Q/E/R và nội tại có ba bậc, dùng điểm từ lên cấp và khám phá.
 - Nội tại nhiều bước: Tàn Lửa/đèn nối của An; Nhịp Trúc/dấu ghim của Linh; Lôi Tức/tuyến chặn của Kiệt; mã biên dịch/checkpoint của HoaVi; phản ứng nguyên tố/Hòa Âm của Thiên Vũ.
 - Kỹ năng có lấy đà, phát chiêu theo nhịp mô phỏng rồi thu thế. Hủy chiêu chờ khi chết, hồi sinh, dịch chuyển trạm hoặc về làng bằng ấn.
-- Động tác tay, chân, thân và bảo khí được tính riêng; di chuyển có tăng/giảm tốc, kể cả cần cảm ứng.
+- Dùng sprite nhân vật gốc cho năm nhân vật và bảy dạng Thiên Vũ; thêm lấy đà, nhích theo đòn và thu thế trên sprite. Đã bỏ phần thay nhân vật bằng mô hình hình học của bản 0.5 đầu tiên. Di chuyển vẫn có tăng/giảm tốc, kể cả cần cảm ứng.
 - Hiệu ứng mới gồm quét lửa, đường thương, dây đèn, lồng vuông, gương phản đạn, vệ tinh, đạn quay về, vườn và dây leo.
 
 ## Thế giới và truyện

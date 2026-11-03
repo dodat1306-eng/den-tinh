@@ -16,6 +16,10 @@
     c.restore();
   }
   root.DTDrawWeapon=weapon;
+  function heroWeapon(h){
+    const game=root.denTinh?.game;
+    return game&&game.hero.id===h.id&&!game.skillRanks?game.weapon.id:({an:'lantern',linh:'bamboo',kiet:'thunder',hoavi:'terminal'}[h.id]||'lantern');
+  }
   root.DTVisualHero=function(c,p,h,time=0,scale=1,npc=false){
     if(!npc&&atlas.complete&&atlas.naturalWidth){
       const moving=p.moving&&Math.hypot(p.velocityX??1,p.velocityY??1)>3,phase=p.stride??time*14;
@@ -24,7 +28,7 @@
       c.save();c.translate(Math.round(p.x),Math.round(p.y));c.scale(scale,scale);oval(c,0,2,dashing?21:16,dashing?4:5,'#071c2566');if(p.invulnerable>0&&Math.floor(time*12)%2===0)c.globalAlpha=.7;c.scale(face,1);
       if(moving&&!calm){const wave=Math.sin(phase*.7)*4;c.globalAlpha*=.78;poly(c,[[-8,-31],[-27-wave,-23+lift],[-41-wave,-28],[-25,-30],[-12,-35]],h.accent);c.globalAlpha/= .78}
       c.save();c.translate(0,lift-cast*2);c.rotate(lean*face);c.scale(dashing&&!calm?1.13:1,dashing&&!calm?.91:1+cast*.025);c.drawImage(atlas,frame*cw,row*ch,cw,ch,-34,-64,68,68);c.restore();
-      const g=root.denTinh?.game,id=g&&g.hero.id===h.id?g.weapon.id:({an:'lantern',linh:'bamboo',kiet:'thunder',hoavi:'terminal'}[h.id]);const a=face===1?(p.facing||0):Math.PI-(p.facing||0),recoil=Math.min(1,(p.recoil||0)/.1)*5;weapon(c,id,16-recoil,-25+lift,a,.7);c.fillStyle='#eac49e';c.fillRect(10-recoil,-27+lift,5,5);
+      const id=heroWeapon(h);const a=face===1?(p.facing||0):Math.PI-(p.facing||0),recoil=Math.min(1,(p.recoil||0)/.1)*5;weapon(c,id,16-recoil,-25+lift,a,.7);c.fillStyle='#eac49e';c.fillRect(10-recoil,-27+lift,5,5);
       if(p.shield>0){c.strokeStyle='#b4dbffc0';c.lineWidth=1.5;c.beginPath();c.ellipse(0,-26,30,39,0,0,TAU);c.stroke();halo(c,0,-25,42,'#b6baff',.08)}c.restore();return;
     }
     c.save();c.translate(Math.round(p.x),Math.round(p.y));c.scale(scale,scale);
@@ -47,7 +51,7 @@
       c.fillStyle='#15263f';c.fillRect(-10,-27,19,3);c.fillStyle='#76e9d8';c.fillRect(-9,-22,4,3);c.fillRect(7,-18,3,8);
       for(let i=0;i<3;i++){const a=time*1.8+i*TAU/3;c.fillStyle=i%2?'#f6a6e7':'#77f5e4';c.globalAlpha=.6;c.font='bold 8px monospace';c.fillText(i%2?'01':'<>',Math.cos(a)*27,Math.sin(a)*13-22)}c.globalAlpha=1;
     }
-    if(!npc){const g=root.denTinh?.game,id=g&&g.hero.id===h.id?g.weapon.id:({an:'lantern',linh:'bamboo',kiet:'thunder',hoavi:'terminal'}[h.id]);const a=face===1?(p.facing||0):Math.PI-(p.facing||0);weapon(c,id,16-(p.recoil>0?3:0),-20,a,.75);c.fillStyle='#efc69e';c.fillRect(11,-23,6,6)}
+    if(!npc){const id=heroWeapon(h);const a=face===1?(p.facing||0):Math.PI-(p.facing||0);weapon(c,id,16-(p.recoil>0?3:0),-20,a,.75);c.fillStyle='#efc69e';c.fillRect(11,-23,6,6)}
     if(p.shield>0){c.strokeStyle='#c6abffbb';c.lineWidth=2;c.beginPath();c.ellipse(0,-22,26,35,0,0,TAU);c.stroke()}
     c.restore();
   };

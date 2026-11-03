@@ -3,6 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const project=path.resolve(__dirname,'..');
 let drawCalls=0;
+const imageCalls=[];
 function checked(name,args){
   drawCalls++;
   for(const arg of args)if(typeof arg==='number')assert(Number.isFinite(arg),name+' received non-finite coordinate');
@@ -12,19 +13,34 @@ function context(){
   const proto={};Object.defineProperty(proto,'font',{get(){return currentFont},set(v){currentFont=v},configurable:true});
   const c=Object.create(proto);
   Object.assign(c,{fillStyle:'#000',strokeStyle:'#000',globalAlpha:1,lineWidth:1,canvas:{width:1280,height:720},measureText:t=>({width:String(t).length*7}),createRadialGradient(...a){checked('radial',a);return{addColorStop(){}}},createLinearGradient(...a){checked('linear',a);return{addColorStop(){}}}});
-  for(const name of['save','restore','beginPath','closePath','fill','stroke','clip','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','ellipse','arc','arcTo','rect','fillRect','strokeRect','clearRect','translate','rotate','scale','transform','setTransform','resetTransform','drawImage','fillText','strokeText','setLineDash'])c[name]=function(...args){checked(name,args);if((name==='arc'||name==='ellipse')&&typeof args[2]==='number')assert(args[2]>=0,name+' radius must be nonnegative')};
+  for(const name of['save','restore','beginPath','closePath','fill','stroke','clip','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','ellipse','arc','arcTo','rect','fillRect','strokeRect','clearRect','translate','rotate','scale','transform','setTransform','resetTransform','drawImage','fillText','strokeText','setLineDash'])c[name]=function(...args){checked(name,args);if(name==='drawImage'&&args[0]?._src)imageCalls.push({src:args[0]._src,args:args.slice(1)});if((name==='arc'||name==='ellipse')&&typeof args[2]==='number')assert(args[2]>=0,name+' radius must be nonnegative')};
   return c;
 }
 function canvas(w=1280,h=720){const c=context();return{width:w,height:h,getContext:()=>c,toDataURL:()=>'',ctx:c}}
 global.document={createElement:()=>canvas(),querySelectorAll:()=>[]};
-global.Image=class{constructor(){this.complete=false;this.naturalWidth=0;this.decoding='async'}set src(v){this._src=v}};
+global.Image=class{constructor(){this.complete=false;this.naturalWidth=0;this.decoding='async'}set src(v){this._src=v;this.complete=true;this.naturalWidth=this.naturalHeight=1254}};
 global.DTSettings={graphics:'high',reducedMotion:false};
 for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','render.js','visuals.js','scenery.js','elemental-visuals.js','ascension-visuals.js'])if(fs.existsSync(path.join(project,f)))vm.runInThisContext(fs.readFileSync(path.join(project,f),'utf8'),{filename:f});
 const results=[];
 function test(name,fn){try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(e){results.push({name,pass:false,error:e.stack});console.error('FAIL '+name+' '+e.stack)}}
 const Art=DTAscensionArt;
-test('IK joint has constant upper-arm length for near and distant targets',()=>{
-  for(let i=0;i<100;i++){const a=i/100*Math.PI*2,q=Art.joint(3,7,3+Math.cos(a)*40,7+Math.sin(a)*40,12,13,i%2?1:-1);assert(Math.abs(Math.hypot(q.x-3,q.y-7)-12)<1e-8)}
+test('All five heroes and seven elemental forms retain their original sprite atlas cells',()=>{
+  const c=context();
+  for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning']){
+    const before=imageCalls.length;
+    Art.drawSpriteHero(c,{x:100,y:100,facing:0,elementForm:element},hero,0);
+    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thien-vu-v04.png'].includes(call.src));
+    assert.equal(drawn.length,1,hero.id+' needs one original body sprite');
+    const index=hero.id==='thienvu'?DTElements.forms.findIndex(f=>f.id===element)*2:0;
+    assert.equal(drawn[0].src,hero.id==='thienvu'?'assets/thien-vu-v04.png':'assets/heroes.png');
+    assert.equal(drawn[0].args[0],hero.id==='thienvu'?index%4*313.5:0);
+    assert.equal(drawn[0].args[1],hero.id==='thienvu'?Math.floor(index/4)*313.5:['an','linh','kiet','hoavi'].indexOf(hero.id)*313.5);
+  }
+  const g=new DTGame('thienvu',71426),r=new DTRenderer(canvas(),g);g.start();g.skipTutorial?.();
+  for(const element of DTElements.forms.map(f=>f.id)){
+    const before=imageCalls.length;r.drawElementClone({x:100,y:100,element,hp:20,maxHp:40,facing:Math.PI,alive:true});
+    assert(imageCalls.slice(before).some(call=>call.src==='assets/thien-vu-v04.png'),'clone must use original form sprite');
+  }
 });
 test('Cast poses remain finite and complete at anticipation, release and recovery',()=>{
   for(const key of['attack','q','e','r'])for(let i=0;i<=100;i++){
@@ -32,10 +48,10 @@ test('Cast poses remain finite and complete at anticipation, release and recover
     for(const value of Object.values(p))if(typeof value==='number')assert(Number.isFinite(value));assert(p.progress>=0&&p.progress<=1);assert(p.anticipation>=0&&p.anticipation<=1);
   }
 });
-test('All five heroes and seven forms draw articulated poses in both facing directions',()=>{
+test('Original sprites keep finite cast motion in both facing directions',()=>{
   const c=context();let count=0;
   for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning'])for(const face of[0,Math.PI])for(const key of['attack','q','e','r'])for(const elapsed of[0,.1,.2,.35,.6]){
-    Art.articulatedHero(c,{x:100,y:100,velocityX:120,velocityY:35,stride:1.4,moving:true,facing:face,shield:14,elementForm:element,action:{key,elapsed,duration:.65,windup:.2,release:.2,recovery:.25,angle:face}},hero,elapsed);count++;
+    Art.drawSpriteHero(c,{x:100,y:100,velocityX:120,velocityY:35,stride:1.4,moving:true,facing:face,shield:14,elementForm:element,action:{key,elapsed,duration:.65,windup:.2,release:.2,recovery:.25,angle:face}},hero,elapsed);count++;
   }
   assert(count>=400);
 });

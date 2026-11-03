@@ -23,12 +23,6 @@
     }catch(_){/* A context may be non-extensible; explicit labels below still use the font. */}
     fontContexts.add(c);return c;
   }
-  // Two-bone IK, so hands and feet follow their targets without detached sprite pieces.
-  function joint(ax,ay,bx,by,l1,l2,bend=1){
-    const dx=bx-ax,dy=by-ay,raw=Math.hypot(dx,dy),d=clamp(raw,.01,l1+l2-.01),a=Math.atan2(dy,dx);
-    const k=Math.acos(clamp((l1*l1+d*d-l2*l2)/(2*l1*d),-1,1))*bend;
-    return{x:ax+Math.cos(a+k)*l1,y:ay+Math.sin(a+k)*l1};
-  }
   function actionPose(p,time){
     const a=p.action,phase=Number(p.stride)||time*9;
     const speed=Math.hypot(Number(p.velocityX)||0,Number(p.velocityY)||0);
@@ -43,114 +37,32 @@
     return{phase,move,speed,anticipation,strike,recover,progress,key:a?.key||'',angle:Number.isFinite(a?.angle)?a.angle:(p.facing||0),active:!!a};
   }
   const oldHero=root.DTVisualHero;
-  function signature(c,id,element,x,y,angle,time,pose,color){
-    c.save();c.translate(x,y);c.rotate(angle);c.lineCap=c.lineJoin='round';
-    const tension=pose.anticipation,impact=pose.strike;
-    if(id==='an'){
-      line(c,[[-7,1],[17,1]],'#233b3c',5);line(c,[[-6,0],[17,0]],'#c7a36d',2);
-      line(c,[[14,-1],[17,5]],'#c9a56b',2);
-      c.save();c.translate(17,12);c.rotate(-angle*.8+Math.sin(time*4)*.08+impact*.24);
-      poly(c,[[-9,-7],[7,-7],[11,-3],[8,12],[-8,12],[-11,-3]],'#694c3c');poly(c,[[-6,-5],[5,-5],[7,0],[5,9],[-5,9],[-7,0]],'#ffcd78');
-      line(c,[[-9,-6],[9,-6]],'#e2c58a',3);line(c,[[-7,10],[7,10]],'#e2c58a',2);line(c,[[0,-5],[0,9]],'#fff2bf',2);halo(c,0,3,23+impact*12,'#ffc66c',.28);c.restore();
-    }else if(id==='linh'){
-      c.strokeStyle='#1b3636';c.lineWidth=6;c.beginPath();c.moveTo(3,-23);c.bezierCurveTo(25,-16,25,16,3,23);c.stroke();c.strokeStyle='#b5df9f';c.lineWidth=3;c.stroke();
-      line(c,[[3,-23],[-6-tension*12,0],[3,23]],'#f4e6ba',1);line(c,[[-11-tension*12,0],[26,0]],'#dceec0',2);poly(c,[[23,-4],[32,0],[23,4]],'#f1f6c8');
-    }else if(id==='kiet'){
-      line(c,[[-32,0],[41,0]],'#273648',7);line(c,[[-31,-1],[40,-1]],'#b0a27c',3);
-      poly(c,[[32,-7],[54,0],[32,7],[38,0]],'#a4c9f8');poly(c,[[39,-3],[54,0],[39,1]],'#eff8ff');line(c,[[31,-8],[31,8]],'#e9bc6b',3);
-      if(impact>.2){line(c,[[16,-5],[24,-12],[30,-5],[39,-11],[50,-5]],'#b3c5ff',1.5);}
-    }else if(id==='hoavi'){
-      c.rotate(-angle*.65);c.save();c.transform(1,-.12,.22,1,0,0);poly(c,[[-15,-13],[16,-13],[16,8],[-15,8]],'#182e42');c.strokeStyle='#92fbe8';c.lineWidth=1.5;c.strokeRect(-15,-13,31,21);
-      for(let i=0;i<4;i++){line(c,[[-10,-8+i*4],[3+(i%3)*4,-8+i*4]],i%2?'#e3a9ee':'#76dfdb',1.4)}c.restore();
-      line(c,[[-16,10],[16,10],[21,15],[-20,15],[-16,10]],'#7cc6c2',2);halo(c,0,-4,30,'#91f2df',.13);
-    }else{
-      const f=root.DTElements?.byId(element)||{color,accent:'#fff5d8'};c.rotate(-angle);c.strokeStyle=f.color;c.lineWidth=2;c.beginPath();c.arc(0,0,11,time*.5,time*.5+TAU*.78);c.stroke();star(c,0,0,7+impact*3,f.accent,time*.6);
-      if(element==='earth')poly(c,[[-13,-10],[-5,-15],[10,-11],[15,3],[5,11],[-11,6]],f.color);
-      if(element==='ice')poly(c,[[2,-27],[8,-8],[3,5],[-3,-7]],'#bcefff');
-      if(element==='nature'){line(c,[[-8,8],[-2,-16],[5,-22]],'#81ca89',3);poly(c,[[0,-12],[-12,-21],[-8,-9],[0,-7]],'#b8ed99')}
-      if(element==='fire'){for(let i=0;i<3;i++)poly(c,[[i*7-12,5],[i*7-7,-15-Math.sin(time*8+i)*5],[i*7-3,5]],i%2?'#ffe6a1':f.color)}
-      if(element==='wind'){c.beginPath();c.arc(0,0,17,-1.5+time*2,1+time*2);c.stroke()}
-      if(element==='lightning')line(c,[[-2,-23],[6,-9],[-3,-7],[5,12]],'#d7d8ff',3);
-    }
-    c.restore();
-  }
-  function articulatedHero(c,p,h,time=0,scale=1,npc=false,clone=false){
+  // Keep the original painted sprites. Cast motion transforms the sprite as a
+  // whole; it must never replace the face, outfit or elemental silhouette.
+  function drawSpriteHero(c,p,h,time=0,scale=1,npc=false,clone=false){
     if(npc||!['an','linh','kiet','hoavi','thienvu'].includes(h.id))return oldHero(c,p,h,time,scale,npc);
-    const pose=actionPose(p,time),still=reduced(),face=Math.cos(p.facing||0)<0?-1:1;
+    const pose=actionPose(p,time),calm=reduced(),face=Math.cos(p.facing||0)<0?-1:1;
     const form=p.elementForm||p.element||'lightning',f=h.id==='thienvu'?root.DTElements?.byId(form):null;
-    const palette={coat:f?.color||h.cloth||'#4b9290',trim:f?.accent||h.accent||h.color,glow:f?.color||h.color,hair:h.id==='thienvu'?'#e3e8f0':h.id==='linh'?'#263e3b':'#243344'};
-    const swing=still?Math.sin(pose.phase)*pose.move*.45:Math.sin(pose.phase)*pose.move;
-    const run=still?0:pose.move,bob=still?0:-Math.abs(Math.sin(pose.phase))*2*run+Math.sin(time*2.2)*.4*(1-run);
-    const wind=still?pose.anticipation*.35:pose.anticipation,hit=still?pose.strike*.4:pose.strike;
-    const dash=p.dashTime>0,aim=face===1?pose.angle:Math.PI-pose.angle,vertical=clamp(Math.sin(aim),-.6,.6);
-    const brace=pose.key==='e'?.8:0,ultimate=pose.key==='r'?1:0;
-    const tilt=still?0:clamp(Number(p.lean)||0,-.16,.16)*face-wind*.13+hit*.12;
-    const hipY=-17+bob+(dash?2:0)+wind*(h.id==='kiet'?2:0),shoulderY=-35+bob;
-    c.save();fontContext(c);c.translate(p.x,p.y);c.scale(scale,scale);c.lineCap=c.lineJoin='round';
-    oval(c,0,2,17+dash*6,5-dash,'#091e2966');
-    if(p.invulnerable>0&&Math.floor(time*12)%2===0)c.globalAlpha=.72;
+    const wind=calm?0:pose.anticipation,hit=calm?0:pose.strike;
+    const pull={an:2,linh:3,kiet:4,hoavi:1,thienvu:2}[h.id];
+    const reach={an:4,linh:3,kiet:7,hoavi:2,thienvu:4}[h.id];
+    const shift=-wind*pull+hit*reach;
+    const hop=!calm&&h.id==='linh'&&pose.key==='e'?Math.sin(pose.progress*Math.PI)*5:0;
+    const rise=!calm&&pose.key==='r'?Math.sin(pose.progress*Math.PI)*2:0;
+    const avatar={...p,x:0,y:0,elementForm:form,facing:pose.active?pose.angle:p.facing,cast:pose.active?0:p.cast};
+    c.save();fontContext(c);c.translate(p.x,p.y);c.scale(scale,scale);
     if(clone)c.globalAlpha*=.88;
-    c.scale(face,1);
-    if(!still){
-      const stream=Math.sin(time*5+pose.phase*.3)*2+run*8+dash*8;
-      poly(c,[[-6,shoulderY],[-18-stream,-24+bob],[-34-stream,-19+bob],[-22-stream,-29+bob],[-8,-39+bob]],palette.trim+'b0');
-      if(h.id==='linh'||h.id==='thienvu')poly(c,[[-7,-40+bob],[-20-stream,-37+bob],[-36-stream,-39+bob],[-18,-43+bob]],palette.trim+'d0');
+    if(pose.active&&pose.key!=='attack'&&!clone){
+      c.save();c.globalAlpha*=.2+wind*.15;c.strokeStyle=f?.color||h.color;c.lineWidth=1.1;
+      c.beginPath();c.ellipse(0,2,23+wind*4,7+wind,0,0,TAU);c.stroke();c.restore();
     }
-    c.save();c.rotate(tilt);
-    // Articulated back arm and legs precede the torso; front hand follows the implement.
-    const backHand={x:-12-swing*6-wind*3,y:-20+bob+wind*4-hit*4};
-    let elbow=joint(-9,shoulderY,backHand.x,backHand.y,10,11,-1);
-    line(c,[[-9,shoulderY],[elbow.x,elbow.y],[backHand.x,backHand.y]],'#142d3c',9);
-    line(c,[[-9,shoulderY],[elbow.x,elbow.y],[backHand.x,backHand.y-3]],palette.coat,6);
-    oval(c,backHand.x,backHand.y,3.2,3.5,'#edc39a');
-    for(const side of[-1,1]){
-      const sx=side*5,step=swing*side,target={x:sx+(dash?side*8:step*8)-wind*3+hit*4,y:(step>0?-step*3:0)+(dash?-3:0)};
-      const knee=joint(sx,hipY,target.x,target.y-2,10,11,side);
-      line(c,[[sx,hipY],[knee.x,knee.y],[target.x,target.y-2]],'#142838',8);
-      line(c,[[sx,hipY],[knee.x,knee.y],[target.x,target.y-3]],h.id==='kiet'?'#62758c':'#34495a',5);
-      line(c,[[target.x-2,target.y],[target.x+4,target.y]],'#182e39',6);
-      line(c,[[target.x-1,target.y-1],[target.x+4,target.y-1]],'#acaa8c',1);
-    }
-    // Coat tails deform independently and follow the stride rather than a whole-body bob.
-    poly(c,[[-11,shoulderY+3],[-15-run*2,-11+bob+swing*2],[-5,-13+bob],[0,-9+bob],[12+run*2,-11+bob-swing*2],[11,shoulderY+3]],'#193342');
-    poly(c,[[-10,shoulderY+3],[-11,-13+bob+swing*2],[-2,-15+bob],[2,-12+bob],[11,-13+bob-swing*2],[10,shoulderY+3]],palette.coat);
-    poly(c,[[-8,shoulderY+4],[-3,shoulderY+8],[-5,-17+bob],[-10,-16+bob]],'#e2ffe029');
-    line(c,[[0,shoulderY+4],[1,-16+bob]],palette.trim,3);line(c,[[-10,-20+bob],[11,-20+bob]],'#172e37',5);line(c,[[-10,-21+bob],[11,-21+bob]],palette.trim,2);
-    if(h.id==='kiet'){for(const side of[-1,1]){poly(c,[[side*8,shoulderY-2],[side*17,shoulderY+1],[side*16,shoulderY+11],[side*8,shoulderY+8]],'#819eb5');line(c,[[side*9,shoulderY+1],[side*15,shoulderY+3]],'#d3e0dc',2)}}
-    if(h.id==='hoavi'){line(c,[[-9,shoulderY+5],[-7,-26+bob]],'#91ece1',1.2);c.fillStyle='#dba6df';c.fillRect(5,-27+bob,4,5)}
-    if(h.id==='thienvu'){poly(c,[[-9,-33+bob],[0,-25+bob],[9,-33+bob],[6,-17+bob],[0,-20+bob],[-7,-17+bob]],'#294b65');star(c,0,-27+bob,4,palette.trim,time*.3)}
-    const headY=-45+bob+(still?0:-wind*1.4+hit*.9),headTilt=still?0:vertical*.06-wind*.06;
-    c.save();c.translate(0,headY);c.rotate(headTilt);
-    oval(c,0,0,11,13,'#172c36');oval(c,1,1,9.3,11,'#d89f7e');oval(c,-1,-1,8.8,9.5,'#eec59d');
-    poly(c,[[-10,-1],[-10,-10],[-4,-14],[6,-13],[11,-6],[8,-1],[4,-7],[-1,-5],[-4,-2]],palette.hair);
-    poly(c,[[-10,-7],[-12,5],[-8,9],[-6,-4]],palette.hair);
-    oval(c,9,2,2.7,3.4,'#e6b18d');line(c,[[2,1],[4,1]],'#203d43',1.8);line(c,[[7,1],[8,1]],'#203d43',1.5);line(c,[[4,7],[7,7]],'#b77765',1);
-    if(h.id==='an'){poly(c,[[-23,-5],[0,-22],[23,-5],[15,-1],[-15,-1]],'#795e42');poly(c,[[-21,-6],[0,-21],[21,-6]],'#d6bc82');line(c,[[-18,-6],[18,-6]],'#f0d6a0',2);for(let i=-2;i<=2;i++)line(c,[[i*6,-7],[i*2,-18]],'#af935d',.6)}
-    if(h.id==='linh'){poly(c,[[-12,-9],[-6,-17],[8,-16],[13,-7],[9,-5],[4,-12],[-9,-3]],'#315954');line(c,[[-11,-6],[10,-7]],palette.trim,3);poly(c,[[-10,-7],[-17,-1],[-14,5],[-9,-4]],palette.trim)}
-    if(h.id==='kiet'){poly(c,[[-12,-7],[-10,-15],[0,-18],[11,-12],[13,-4],[8,-6],[3,-10],[-5,-7]],'#6c89a3');line(c,[[-10,-8],[9,-10]],'#d1dce5',2);poly(c,[[-4,-16],[0,-23],[4,-16]],palette.trim)}
-    if(h.id==='hoavi'){c.strokeStyle='#9ef4e5';c.lineWidth=1.1;c.strokeRect(-1,-1,5.4,4.5);c.strokeRect(6.5,-1,5,4.5);line(c,[[4.5,.5],[6.5,.5]],'#9ef4e5',1);line(c,[[-8,-9],[-3,-11]],'#e6a6da',3)}
-    if(h.id==='thienvu'){poly(c,[[-11,-6],[-8,-14],[-2,-17],[2,-12],[9,-17],[8,-8],[12,-4],[5,-6],[-1,-9],[-5,-5]],palette.hair);line(c,[[-9,-6],[9,-6]],palette.glow,3);star(c,0,-7,3,palette.trim);if(form==='fire')poly(c,[[1,-15],[3,-25],[7,-16]],palette.glow);if(form==='earth')poly(c,[[-12,-4],[-16,-10],[-7,-9]],'#caa06d')}
+    c.translate(Math.cos(pose.angle)*shift,Math.sin(pose.angle)*shift*.45-hop-rise);
+    c.rotate(calm?0:face*(-wind*.035+hit*.05));
+    if(clone&&root.DTElementArt)root.DTElementArt.drawAvatar(c,avatar,form,time,1,true);
+    else oldHero(c,avatar,h,time,1,npc);
     c.restore();
-    // Each Q/E/R changes the hand target, torso stance and implement angle.
-    const overhead=ultimate*(wind*.8+hit*.5),out=pose.key==='attack'?hit*.8:hit;
-    let hand={x:15+out*14-wind*9-brace*5,y:-28+bob+vertical*12-wind*3-overhead*22};
-    if(h.id==='linh'&&pose.active)hand={x:20+hit*4,y:-30+bob+vertical*10-overhead*12};
-    if(h.id==='hoavi')hand={x:15-wind*3+Math.sin(time*18)*pose.active,y:-25+bob-overhead*10};
-    elbow=joint(9,shoulderY+1,hand.x,hand.y,12,13,1);
-    line(c,[[9,shoulderY+1],[elbow.x,elbow.y],[hand.x,hand.y]],'#142a36',8);line(c,[[10,shoulderY+1],[elbow.x,elbow.y],[hand.x-2,hand.y]],palette.coat,5.5);
-    const implementAngle=aim+(h.id==='kiet'?-wind*.5+hit*.12:h.id==='an'?-wind*.7+hit*.35:-wind*.15)-overhead*.8;
-    signature(c,h.id,form,hand.x,hand.y,implementAngle,time,pose,palette.glow);oval(c,hand.x-2,hand.y+1,3.5,3,'#efc49c');
-    if(h.id==='linh'&&pose.active){const drawHand={x:2-wind*12,y:hand.y+1};const e=joint(-5,shoulderY+1,drawHand.x,drawHand.y,11,12,-1);line(c,[[-5,shoulderY+1],[e.x,e.y],[drawHand.x,drawHand.y]],'#1c3b3d',7);line(c,[[-5,shoulderY+1],[e.x,e.y],[drawHand.x,drawHand.y]],palette.coat,4);oval(c,drawHand.x,drawHand.y,3,3,'#efc49c')}
-    c.restore();
-    if(p.shield>0){c.strokeStyle=palette.glow+'90';c.lineWidth=1.2;c.beginPath();c.ellipse(0,-28,30,39,0,0,TAU);c.stroke();}
-    if(pose.active&&pose.key!=='attack'){
-      c.globalAlpha*=.35+pose.anticipation*.3;c.strokeStyle=palette.glow;c.lineWidth=1.2;c.beginPath();c.ellipse(0,3,24+wind*11,8+wind*3,0,0,TAU);c.stroke();
-      if(!still)for(let i=0;i<(ultimate?7:3);i++){const a=i/(ultimate?7:3)*TAU-time*.8;star(c,Math.cos(a)*(26+wind*11),Math.sin(a)*11-4-wind*12,ultimate?3.5:2.2,palette.trim,a)}
-    }
-    c.restore();
-    if(clone){c.save();fontContext(c);c.font='600 10px "DenTinh Sans"';c.textAlign='center';c.fillStyle=palette.glow;c.fillText(f?.name||h.name,p.x,p.y-72);if(p.hp<p.maxHp){c.fillStyle='#152b37';c.fillRect(p.x-17,p.y+9,34,3);c.fillStyle=palette.glow;c.fillRect(p.x-17,p.y+9,34*clamp(p.hp/p.maxHp,0,1),3)}c.restore()}
   }
-  root.DTVisualHero=articulatedHero;
+  root.DTVisualHero=drawSpriteHero;
   const terrainBase=root.DTScenery?.Terrain;
   const palettes=root.DTScenery?.palettes||{forest:['#1d4540','#244e45','#2c594b','#3a6953','#72a17a']};
   function paletteAt(x,y){const z=D.zoneAt(x,y),id=z.paletteId||z.id.replace(/^endless-/,''),pal=palettes[id]||palettes.forest;return{z,id,pal}}
@@ -180,7 +92,7 @@
     constructor(canvas,game){super(canvas,game);fontContext(this.ctx);this.smoothDt=.016}
     makeGround(world){return world.infinite&&terrainBase?new BoundlessTerrain(world):super.makeGround(world)}
     setGame(game){super.setGame(game);this.camera={x:game.player.x-640/this.zoom,y:game.player.y-360/this.zoom}}
-    drawElementClone(clone){const f=root.DTElements?.byId(clone.element);articulatedHero(this.ctx,{...clone,elementForm:clone.element,action:clone.action}, {...D.HEROES.thienvu,color:f?.color,accent:f?.accent},this.game.time,.92,false,true)}
+    drawElementClone(clone){const f=root.DTElements?.byId(clone.element);drawSpriteHero(this.ctx,{...clone,elementForm:clone.element,action:clone.action}, {...D.HEROES.thienvu,color:f?.color,accent:f?.accent},this.game.time,.92,false,true)}
     drawProp(o){
       if(!o.destroyed){super.drawProp(o);return}
       const c=this.ctx;c.save();c.translate(o.x,o.y);oval(c,0,2,22,7,'#172f3955');
@@ -414,7 +326,7 @@
       for(const o of g.world.npcs||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawNpc(o)});
       for(const o of g.world.chests||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
       for(const e of g.world.enemies||[])if(e.alive&&inView(e))objects.push({y:e.y,draw:()=>this.drawEnemy(e)});
-      objects.push({y:p.y,draw:()=>articulatedHero(c,p,g.hero,g.time)});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
+      objects.push({y:p.y,draw:()=>drawSpriteHero(c,p,g.hero,g.time)});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
       for(const b of g.projectiles||[])if(inView(b))this.drawProjectile(b);for(const e of g.effects||[])this.drawEffect(e);
       c.save();c.globalCompositeOperation='lighter';for(const pt of g.particles||[])if(inView(pt)){c.globalAlpha=clamp(pt.life/pt.maxLife,0,1);c.fillStyle=pt.color;c.fillRect(pt.x,pt.y,pt.size,pt.size)}c.restore();
       for(const f of g.floaters||[]){c.save();c.globalAlpha=clamp(f.life*2,0,1);c.font='700 12px "DenTinh Sans"';c.textAlign='center';c.fillStyle='#122734';c.fillText(f.text,f.x+1,f.y+1);c.fillStyle=f.color;c.fillText(f.text,f.x,f.y);c.restore()}
@@ -448,5 +360,5 @@
     }
   }
   root.DTRenderer=AscensionRenderer;
-  root.DTAscensionArt={actionPose,joint,noise,fontContext,articulatedHero,BoundlessTerrain};
+  root.DTAscensionArt={actionPose,noise,fontContext,drawSpriteHero,BoundlessTerrain};
 })(globalThis);

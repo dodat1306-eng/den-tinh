@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-11-03T14:08:05.424Z",
+  "checkedAt": "2026-11-03T14:30:05.023Z",
   "numericCanvasValidation": true,
   "visualInspection": false,
-  "drawCalls": 298740,
+  "drawCalls": 195867,
   "results": [
     {
-      "name": "IK joint has constant upper-arm length for near and distant targets",
+      "name": "All five heroes and seven elemental forms retain their original sprite atlas cells",
       "pass": true
     },
     {
@@ -13,7 +13,7 @@
       "pass": true
     },
     {
-      "name": "All five heroes and seven forms draw articulated poses in both facing directions",
+      "name": "Original sprites keep finite cast motion in both facing directions",
       "pass": true
     },
     {
