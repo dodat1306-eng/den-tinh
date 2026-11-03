@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $gameRoot = $PSScriptRoot
 $gameNode = Join-Path $gameRoot 'runtime\node.exe'
 $gameServer = Join-Path $gameRoot 'tools\server.cjs'
-$gameServerVersion = 4
+$gameServerVersion = 5
 if (-not (Test-Path -LiteralPath $gameNode)) {
   $gameNodeCommand = Get-Command node.exe -ErrorAction SilentlyContinue
   if ($gameNodeCommand) { $gameNode = $gameNodeCommand.Source }

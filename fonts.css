@@ -1,0 +1,7 @@
+@font-face{font-family:'DenTinh Sans';src:url('assets/fonts/NotoSans-Regular.ttf') format('truetype');font-style:normal;font-weight:100 599;font-display:swap}
+@font-face{font-family:'DenTinh Sans';src:url('assets/fonts/NotoSans-Bold.ttf') format('truetype');font-style:normal;font-weight:600 900;font-display:swap}
+html,body,button,input,select,textarea,kbd,h1,h2,h3,.hero-card .name,.menu-copy h1,.modal-card h2,.world-map-card h2{font-family:'DenTinh Sans','Segoe UI',Arial,sans-serif!important}
+body{font-synthesis:none;text-rendering:optimizeLegibility}
+.menu-copy h1{font-weight:700;font-size:76px;line-height:1.2;letter-spacing:5px}
+.hero-card .name{font-weight:700;line-height:1.5}
+.skill span{line-height:1.45;padding:0 4px}

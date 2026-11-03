@@ -1,0 +1,215 @@
+{
+  "method": "Actual v0.5 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.",
+  "results": [
+    {
+      "hero": "an",
+      "completed": true,
+      "simulatedSeconds": 112,
+      "deaths": 0,
+      "level": 9,
+      "kills": 97,
+      "hp": 200,
+      "seals": 3,
+      "saga": [
+        {
+          "chapter": "river",
+          "completed": true,
+          "simulatedSeconds": 4
+        },
+        {
+          "chapter": "fox",
+          "completed": true,
+          "simulatedSeconds": 11
+        },
+        {
+          "chapter": "bell",
+          "completed": true,
+          "simulatedSeconds": 5
+        },
+        {
+          "chapter": "serpent",
+          "completed": true,
+          "simulatedSeconds": 11
+        },
+        {
+          "chapter": "machine",
+          "completed": true,
+          "simulatedSeconds": 10
+        },
+        {
+          "chapter": "weaver",
+          "completed": true,
+          "simulatedSeconds": 11
+        }
+      ]
+    },
+    {
+      "hero": "linh",
+      "completed": true,
+      "simulatedSeconds": 99,
+      "deaths": 0,
+      "level": 9,
+      "kills": 109,
+      "hp": 180,
+      "seals": 3,
+      "saga": [
+        {
+          "chapter": "river",
+          "completed": true,
+          "simulatedSeconds": 3
+        },
+        {
+          "chapter": "fox",
+          "completed": true,
+          "simulatedSeconds": 6
+        },
+        {
+          "chapter": "bell",
+          "completed": true,
+          "simulatedSeconds": 4
+        },
+        {
+          "chapter": "serpent",
+          "completed": true,
+          "simulatedSeconds": 6
+        },
+        {
+          "chapter": "machine",
+          "completed": true,
+          "simulatedSeconds": 9
+        },
+        {
+          "chapter": "weaver",
+          "completed": true,
+          "simulatedSeconds": 10
+        }
+      ]
+    },
+    {
+      "hero": "kiet",
+      "completed": true,
+      "simulatedSeconds": 127,
+      "deaths": 0,
+      "level": 9,
+      "kills": 107,
+      "hp": 235,
+      "seals": 3,
+      "saga": [
+        {
+          "chapter": "river",
+          "completed": true,
+          "simulatedSeconds": 5
+        },
+        {
+          "chapter": "fox",
+          "completed": true,
+          "simulatedSeconds": 11
+        },
+        {
+          "chapter": "bell",
+          "completed": true,
+          "simulatedSeconds": 9
+        },
+        {
+          "chapter": "serpent",
+          "completed": true,
+          "simulatedSeconds": 10
+        },
+        {
+          "chapter": "machine",
+          "completed": true,
+          "simulatedSeconds": 11
+        },
+        {
+          "chapter": "weaver",
+          "completed": true,
+          "simulatedSeconds": 13
+        }
+      ]
+    },
+    {
+      "hero": "hoavi",
+      "completed": true,
+      "simulatedSeconds": 108,
+      "deaths": 0,
+      "level": 9,
+      "kills": 91,
+      "hp": 190,
+      "seals": 3,
+      "saga": [
+        {
+          "chapter": "river",
+          "completed": true,
+          "simulatedSeconds": 5
+        },
+        {
+          "chapter": "fox",
+          "completed": true,
+          "simulatedSeconds": 6
+        },
+        {
+          "chapter": "bell",
+          "completed": true,
+          "simulatedSeconds": 4
+        },
+        {
+          "chapter": "serpent",
+          "completed": true,
+          "simulatedSeconds": 6
+        },
+        {
+          "chapter": "machine",
+          "completed": true,
+          "simulatedSeconds": 6
+        },
+        {
+          "chapter": "weaver",
+          "completed": true,
+          "simulatedSeconds": 8
+        }
+      ]
+    },
+    {
+      "hero": "thienvu",
+      "completed": true,
+      "simulatedSeconds": 89,
+      "deaths": 0,
+      "level": 9,
+      "kills": 100,
+      "hp": 205,
+      "seals": 3,
+      "saga": [
+        {
+          "chapter": "river",
+          "completed": true,
+          "simulatedSeconds": 5
+        },
+        {
+          "chapter": "fox",
+          "completed": true,
+          "simulatedSeconds": 12
+        },
+        {
+          "chapter": "bell",
+          "completed": true,
+          "simulatedSeconds": 3
+        },
+        {
+          "chapter": "serpent",
+          "completed": true,
+          "simulatedSeconds": 3
+        },
+        {
+          "chapter": "machine",
+          "completed": true,
+          "simulatedSeconds": 6
+        },
+        {
+          "chapter": "weaver",
+          "completed": true,
+          "simulatedSeconds": 10
+        }
+      ]
+    }
+  ]
+}

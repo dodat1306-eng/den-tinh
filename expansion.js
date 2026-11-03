@@ -128,13 +128,13 @@
     update(dt){
       if(this.paused||this.dead||!this.started)return;
       const p=this.player;
-      if(root.DTTouch?.active){const t=root.DTTouch;if(t.move.x||t.move.y){this.input.dx=t.move.x;this.input.dy=t.move.y}if(t.aim.fire){this.input.fire=true;this.input.aimX=p.x+t.aim.x*450;this.input.aimY=p.y+t.aim.y*450}}
+      if(root.DTTouch?.active){const t=root.DTTouch;if(!this.skillRanks&&(t.move.x||t.move.y)){this.input.dx=t.move.x;this.input.dy=t.move.y}if(t.aim.fire){this.input.fire=true;this.input.aimX=p.x+t.aim.x*450;this.input.aimY=p.y+t.aim.y*450}}
       if(this.hitStop>0){this.hitStop-=dt;return}this.hitStop=this.pendingHitStop;this.pendingHitStop=0;
-      for(const s of p.weapons)if(s.reload>0){s.reload-=dt;if(s.reload<=0){s.reload=0;s.ammo=C.weapon(s.id).clip}}
+      for(const s of p.weapons||[])if(s.reload>0){s.reload-=dt;if(s.reload<=0){s.reload=0;s.ammo=C.weapon(s.id).clip}}
       p.overclock=Math.max(0,p.overclock-dt);p.firewall=Math.max(0,p.firewall-dt);p.recoil=Math.max(0,(p.recoil||0)-dt);
       p.motion=this.input.dx||this.input.dy?p.motion+dt:0;
       const oldX=p.x,oldY=p.y;super.update(dt);this.tutorial.moved+=Math.hypot(p.x-oldX,p.y-oldY);
-      if(p.overclock>0){p.droneCd-=dt;if(p.droneCd<=0){p.droneCd=.35;const e=this.world.enemies.filter(e=>e.alive&&dist(e,p)<600).sort((a,b)=>dist(a,p)-dist(b,p))[0];if(e){for(const side of[-1,1]){const x=p.x+Math.cos(this.time*3+side)*52,y=p.y+Math.sin(this.time*3+side)*34;this.shoot(x,y,Math.atan2(e.y-y,e.x-x),880,p.damage*1.2,'#7affe5',{kind:'code',pierce:1,charge:false})}}}}
+      if(p.overclock>0&&!this.skillRanks){p.droneCd-=dt;if(p.droneCd<=0){p.droneCd=.35;const e=this.world.enemies.filter(e=>e.alive&&dist(e,p)<600).sort((a,b)=>dist(a,p)-dist(b,p))[0];if(e){for(const side of[-1,1]){const x=p.x+Math.cos(this.time*3+side)*52,y=p.y+Math.sin(this.time*3+side)*34;this.shoot(x,y,Math.atan2(e.y-y,e.x-x),880,p.damage*1.2,'#7affe5',{kind:'code',pierce:1,charge:false})}}}}
       for(const e of this.world.enemies)if(e.alive&&e.burn>0){e.burn-=dt;e.burnTick=(e.burnTick||0)-dt;if(e.burnTick<=0){e.burnTick=.5;this.damageEnemy(e,p.damage*.23,false);this.spark(e.x,e.y,3,'#ffaf6b',40,.35)}}
       this.updateChallenges(dt);this.updateTutorial();this.updateCompanion(dt);
       if(root.DTSettings?.reducedMotion)this.shake=0;

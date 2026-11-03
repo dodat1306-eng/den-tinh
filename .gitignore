@@ -28,6 +28,16 @@
 !/qa/v04-split-7.png
 !/qa/v04-seven-convergence.png
 !/qa/v04-mobile-split.png
+!/qa/ascension-report.json
+!/qa/endless-report.json
+!/qa/ascension-visual-report.json
+!/qa/ascension-playthrough-report.json
+!/qa/v05-browser-checks.json
+!/qa/v05-an-lantern.png
+!/qa/v05-an-cast.png
+!/qa/v05-relics.png
+!/qa/v05-ho-tinh.png
+!/qa/cloudflare-v05-report.json
 
 # Build output and dependencies
 /node_modules/

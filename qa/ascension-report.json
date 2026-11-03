@@ -1,0 +1,180 @@
+{
+  "checkedAt": "2026-11-03T14:08:04.820Z",
+  "scope": "Simulation behavior for v0.5 with all gameplay modules loaded; test arena removes scenery collision except environment compatibility test. Does not establish native browser rendering or live deployment.",
+  "passed": 43,
+  "total": 43,
+  "tests": [
+    {
+      "name": "All five heroes own a fixed signature and four rankable skill paths without gear inventory",
+      "pass": true
+    },
+    {
+      "name": "All hero Q/E/R actions have anticipation, consume resources once and delay the main release",
+      "pass": true
+    },
+    {
+      "name": "Hero E mechanics create different persistent gameplay states",
+      "pass": true
+    },
+    {
+      "name": "An can connect three lamps and consumes six embers to empower his cone",
+      "pass": true
+    },
+    {
+      "name": "Linh earns eight wind stacks by moving and her next hit marks and roots the target",
+      "pass": true
+    },
+    {
+      "name": "Kiet wall blocks hostile projectiles, earns thunder and empowers a forward thrust",
+      "pass": true
+    },
+    {
+      "name": "HoaVi Q faults targets and repeats with code; E safely returns to checkpoint",
+      "pass": true
+    },
+    {
+      "name": "All hero ultimates and delayed damage do not recharge themselves",
+      "pass": true
+    },
+    {
+      "name": "Learning spends available points, caps every path at three, and level rewards add points",
+      "pass": true
+    },
+    {
+      "name": "V0.4 saves migrate gear levels to skill points while retaining hero, relics, money and outposts",
+      "pass": true
+    },
+    {
+      "name": "V0.5 rank and relic progress survive JSON save/restore while actions are cancelled",
+      "pass": true
+    },
+    {
+      "name": "Death, respawn and beacon travel remove pending casts, fields and checkpoint",
+      "pass": true
+    },
+    {
+      "name": "An awakened seal returning to the village cancels pending casts, fields and elemental allies",
+      "pass": true
+    },
+    {
+      "name": "Exactly twenty new relics have unique ids and Vietnamese/world origin plus distinct trigger text",
+      "pass": true
+    },
+    {
+      "name": "Kim Quy reflects once and grants a bounded shield on damage",
+      "pass": true
+    },
+    {
+      "name": "Giong creates a noncharging bamboo strike on the fifth primary attack",
+      "pass": true
+    },
+    {
+      "name": "Thach Sanh E roots ordinary enemies with a bounded cooldown",
+      "pass": true
+    },
+    {
+      "name": "Chu Dong Tu rewards a fresh interaction only, including after save and restore",
+      "pass": true
+    },
+    {
+      "name": "Son Tinh standing guard reduces the next hit and then requires cooldown",
+      "pass": true
+    },
+    {
+      "name": "Thuy Tinh Q creates water which slows an enemy in the target area",
+      "pass": true
+    },
+    {
+      "name": "Thuy Tinh water reacts once to fire, ice and lightning without proc recursion or R charge",
+      "pass": true
+    },
+    {
+      "name": "Tam dash creates a temporary decoy and movement boon",
+      "pass": true
+    },
+    {
+      "name": "An Tiem rewards every eighth defeated enemy without recursive damage",
+      "pass": true
+    },
+    {
+      "name": "Cuoi saves one lethal hit only and preserves that use across death and respawn",
+      "pass": true
+    },
+    {
+      "name": "Trau Cau potion adds shield and mana with one potion spent",
+      "pass": true
+    },
+    {
+      "name": "Mjolnir sixth attack chains to at most three targets without R feedback",
+      "pass": true
+    },
+    {
+      "name": "Aegis Q/E shield requires no existing shield, respects cooldown, and excludes R",
+      "pass": true
+    },
+    {
+      "name": "Hermes controlled skill hit reduces dash cooldown once per window",
+      "pass": true
+    },
+    {
+      "name": "Ariadne low-health dash adds escape invulnerability with a cooldown",
+      "pass": true
+    },
+    {
+      "name": "Phoenix R heals and burns without earning R from the burn ticks",
+      "pass": true
+    },
+    {
+      "name": "Ankh kills on a controlled target heal four exactly once",
+      "pass": true
+    },
+    {
+      "name": "Wukong E schedules exactly three bounded noncharging echoes",
+      "pass": true
+    },
+    {
+      "name": "Aladdin spending ninety mana refunds twenty-five and fires a noncharging beam",
+      "pass": true
+    },
+    {
+      "name": "Jack interaction plants one trap per eight-second window",
+      "pass": true
+    },
+    {
+      "name": "Cinderella counts close projectile dodges once each, ignores distant threats and empowers one Q",
+      "pass": true
+    },
+    {
+      "name": "Duplicate mythic relics give coins instead of unbounded stacking",
+      "pass": true
+    },
+    {
+      "name": "All relics together keep ultimate damage noncharging and field/projectile counts bounded",
+      "pass": true
+    },
+    {
+      "name": "Seven elemental Qs all damage after release and preserve their original form while queued",
+      "pass": true
+    },
+    {
+      "name": "Seven elemental Es implement different defenses and sustain states",
+      "pass": true
+    },
+    {
+      "name": "Seven elemental Rs damage without self charging, including delayed sweeps and rings",
+      "pass": true
+    },
+    {
+      "name": "Harmony requires actual hits from three distinct elements; misses and repeats do not fill it",
+      "pass": true
+    },
+    {
+      "name": "Full stack provides environment reactions and successful interactions invoke relic hooks",
+      "pass": true
+    },
+    {
+      "name": "New gameplay and UI source parses as UTF-8 without replacement characters",
+      "pass": true
+    }
+  ]
+}

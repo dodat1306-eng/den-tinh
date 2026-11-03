@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-11-03T11:32:13.335Z",
+  "url": "http://127.0.0.1:4175/",
+  "relicCards": 20,
+  "errorLogs": [],
+  "verified": [
+    "Vietnamese menu and canvas text",
+    "Continue preserves two skill points and learned rank",
+    "E consumes mana and places a persistent lantern",
+    "Keyboard D advances the movement tutorial",
+    "Q enters cast action and consumes mana",
+    "Skill tree and twenty-relic compendium open",
+    "Isolated Ho Tinh encounter loads on an infinite region at x=8879,y=-357, shows three anchors and actual incoming damage"
+  ],
+  "limitations": [
+    "No manual playthrough of all seven forms or six bosses",
+    "No real phone test"
+  ],
+  "isolatedSave": true,
+  "sceneFixture": "Synthetic isolated save for visual inspection; main user progress was untouched"
+}

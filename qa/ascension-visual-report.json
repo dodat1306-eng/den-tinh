@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-11-03T14:08:05.424Z",
+  "numericCanvasValidation": true,
+  "visualInspection": false,
+  "drawCalls": 298740,
+  "results": [
+    {
+      "name": "IK joint has constant upper-arm length for near and distant targets",
+      "pass": true
+    },
+    {
+      "name": "Cast poses remain finite and complete at anticipation, release and recovery",
+      "pass": true
+    },
+    {
+      "name": "All five heroes and seven forms draw articulated poses in both facing directions",
+      "pass": true
+    },
+    {
+      "name": "Bundled font is applied to inherited canvas text setters",
+      "pass": true
+    },
+    {
+      "name": "Full renderer draws terrain, effects, map, enemies and environment beyond negative and positive core edges",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion renders the same complete game without dropping action state",
+      "pass": true
+    },
+    {
+      "name": "All persistent fields and all six named boss silhouettes draw each frame",
+      "pass": true
+    }
+  ]
+}

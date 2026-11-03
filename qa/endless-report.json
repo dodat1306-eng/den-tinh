@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-03T14:08:05.226Z",
+  "passed": 11,
+  "total": 11,
+  "tests": [
+    {
+      "name": "Infinite streaming is deterministic across positive and negative coordinates and bounded after long travel",
+      "pass": true
+    },
+    {
+      "name": "The old map edge can be crossed, and invalid coordinates still collide",
+      "pass": true
+    },
+    {
+      "name": "Defeats, partial damage, chests and environmental state survive chunk eviction and revisit",
+      "pass": true
+    },
+    {
+      "name": "Save/restore preserves distant negative position and changed chunks without serializing generated chunks",
+      "pass": true
+    },
+    {
+      "name": "A v0.4 save retains original hero, HP, gold and original quest and receives infinite terrain",
+      "pass": true
+    },
+    {
+      "name": "Elemental targeting and saved clones retain their distant coordinates instead of clamping to the old map",
+      "pass": true
+    },
+    {
+      "name": "New F interactions activate Chu Dong Tu and Jack relic hooks when the full skill module is loaded",
+      "pass": true
+    },
+    {
+      "name": "Core environmental objects can be used once and persist; elemental barrel explosion cannot recur",
+      "pass": true
+    },
+    {
+      "name": "All six chapters enforce three echoes, start distinct bosses, award once and allow postgame exploration",
+      "pass": true
+    },
+    {
+      "name": "Saga fight save preserves boss and anchors, discards pending attacks and death resets the encounter",
+      "pass": true
+    },
+    {
+      "name": "Post-Coi-Da endless enemies and ring/line boss attacks still deal real damage",
+      "pass": true
+    }
+  ]
+}

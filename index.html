@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="expansion.css">
   <link rel="stylesheet" href="elemental.css">
+  <link rel="stylesheet" href="ascension.css">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="preload" href="assets/fonts/NotoSans-Regular.ttf" as="font" type="font/ttf" crossorigin>
 </head>
 <body>
   <main id="stage">
@@ -31,7 +34,7 @@
         <div class="seal-row" id="sealRow"></div>
       </section>
       <section class="quest glass"><span class="eyebrow">NGỌN ĐÈN DẪN LỐI</span><strong id="questTitle"></strong><p id="questText"></p></section>
-      <section id="weaponHud" class="weapon-hud glass"><span class="eyebrow">VŨ KHÍ · TAB ĐỔI Ô</span><strong id="weaponName"></strong><span id="weaponAmmo"></span><small id="passiveHud"></small></section>
+      <section id="weaponHud" class="weapon-hud glass"><span class="eyebrow">BẢO KHÍ RIÊNG · K KỸ NĂNG</span><strong id="weaponName"></strong><span id="weaponAmmo"></span><small id="passiveHud"></small></section>
       <div id="challengeHud" class="challenge-hud hidden"></div>
       <div id="bossHud" class="hidden"><strong id="bossName"></strong><div class="bar"><i id="bossBar"></i></div></div>
       <section class="skill-tray">
@@ -41,7 +44,7 @@
         <div class="skill ultimate" id="skill-r"><kbd>R</kbd><b>☀</b><span id="rName"></span><i></i></div>
         <div class="skill" id="skill-heal"><kbd>H</kbd><b>✚</b><span id="potionLabel">3 bình máu</span><i></i></div>
       </section>
-      <div class="bottom-info"><span>WASD · Chuột bắn · F tương tác · TAB đổi súng · V nạp</span><button id="pauseButton">Ⅱ Tạm dừng</button><button id="soundButton">♫ Âm thanh</button><button id="settingsHud">⚙ Cài đặt</button></div>
+      <div class="bottom-info"><span>WASD · Chuột đánh · F tương tác · K kỹ năng · I cổ vật</span><button id="pauseButton">Ⅱ Tạm dừng</button><button id="soundButton">♫ Âm thanh</button><button id="settingsHud">⚙ Cài đặt</button></div>
       <div id="interactHint" class="hidden"><kbd>F</kbd><span></span></div>
       <div id="toastBox"></div>
     </div>
@@ -55,14 +58,14 @@
         <div id="heroCards" class="hero-cards"></div>
         <div class="menu-actions"><button id="startButton" class="primary">Bắt đầu hành trình <span>→</span></button><button id="continueButton" class="secondary hidden">Tiếp tục</button></div>
         <div class="menu-links"><button id="helpButton">Cách chơi</button><button id="fullscreenButton">Toàn màn hình</button><button id="settingsMenu">Cài đặt</button><button id="creditsButton">Về thế giới này</button></div>
-        <div class="edition-tag">BẢN 0.4 · THIÊN VŨ / THẤT LINH PHÂN THÂN</div>
+        <div class="edition-tag">BẢN 0.5 · VÔ HẠN / THỨC TỈNH TRUYỀN THUYẾT</div>
       </div>
-      <div class="menu-footer"><span>9 VÙNG ĐẤT · 5 NHÂN VẬT · 13 VŨ KHÍ</span><span>ĐÈN TINH / 04</span></div>
+      <div class="menu-footer"><span>THẾ GIỚI VÔ HẠN · 5 NHÂN VẬT · 20 CỔ VẬT MỚI</span><span>ĐÈN TINH / 05</span></div>
     </section>
     <section id="modal" class="modal-layer hidden" role="dialog" aria-modal="true" aria-label="Hội thoại và bảng thông tin game"><div id="modalContent" class="modal-card"></div></section>
-    <section id="mapOverlay" class="modal-layer hidden"><div class="world-map-card"><div class="world-map-head"><div><p class="eyebrow">CHÍN VÙNG ĐẤT · MỘT NGỌN ĐÈN</p><h2>Miền Sương Lạc</h2></div><button id="closeMap">Đóng · M</button></div><canvas id="worldMap" width="850" height="520"></canvas><p>Vàng: ngươi · Hồng: ấn linh · Tròn ngọc: trạm đã mở · Tròn cam: trạm chưa mở · Đỏ: cội đa</p></div></section>
+    <section id="mapOverlay" class="modal-layer hidden"><div class="world-map-card"><div class="world-map-head"><div><p class="eyebrow">NHỮNG MIỀN ĐẤT KHÔNG CÙNG</p><h2>Miền Sương Lạc</h2></div><button id="closeMap">Đóng · M</button></div><canvas id="worldMap" width="850" height="520"></canvas><p>Bản đồ quanh người · Vàng: ngươi · Hồng: ấn linh · Ngọc: trạm · Tím: chương truyện. F ở lửa trại để hồi sức và đặt điểm hồi sinh.</p></div></section>
     <div id="fatalError" class="hidden"></div>
-    <div id="touchControls" class="hidden" aria-label="Điều khiển cảm ứng"><div class="touch-stick move-stick" id="moveStick"><span></span><b>DI CHUYỂN</b></div><div class="touch-stick aim-stick" id="aimStick"><span></span><b>NGẮM / BẮN</b></div><div class="touch-actions"><button data-touch="dash" aria-label="Lướt né">↝</button><button data-touch="q">Q</button><button data-touch="e">E</button><button data-touch="r">R</button><button data-touch="heal" aria-label="Hồi máu">✚</button><button data-touch="interact" aria-label="Tương tác">F</button><button data-touch="swap" aria-label="Đổi vũ khí">⇄</button><button data-touch="reload" aria-label="Nạp vũ khí">V</button></div></div>
+    <div id="touchControls" class="hidden" aria-label="Điều khiển cảm ứng"><div class="touch-stick move-stick" id="moveStick"><span></span><b>DI CHUYỂN</b></div><div class="touch-stick aim-stick" id="aimStick"><span></span><b>NGẮM / ĐÁNH</b></div><div class="touch-actions"><button data-touch="dash" aria-label="Lướt né">↝</button><button data-touch="q">Q</button><button data-touch="e">E</button><button data-touch="r">R</button><button data-touch="heal" aria-label="Hồi máu">✚</button><button data-touch="interact" aria-label="Tương tác">F</button><button data-touch="skills" aria-label="Học kỹ năng">K</button></div></div>
   </main>
   <script src="world.js"></script>
   <script src="content.js"></script>
@@ -70,12 +73,17 @@
   <script src="expansion.js"></script>
   <script src="frontier.js"></script>
   <script src="elemental.js"></script>
+  <script src="mythic-content.js"></script>
+  <script src="ascension.js"></script>
+  <script src="endless.js"></script>
   <script src="render.js"></script>
   <script src="visuals.js"></script>
   <script src="scenery.js"></script>
   <script src="elemental-visuals.js"></script>
+  <script src="ascension-visuals.js"></script>
   <script src="app.js"></script>
   <script src="controls.js"></script>
   <script src="elemental-ui.js"></script>
+  <script src="ascension-ui.js"></script>
 </body>
 </html>

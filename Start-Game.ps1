@@ -14,7 +14,7 @@ if (-not (Test-Path -LiteralPath $gameNode)) {
 }
 $gameServer = Join-Path $gameDirectory 'tools\server.cjs'
 $gamePort = 4174
-$gameServerVersion = 4
+$gameServerVersion = 5
 $gameServerReady = $false
 try {
   $gameHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$gamePort/health" -TimeoutSec 2

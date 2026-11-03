@@ -1,141 +1,106 @@
-# Đèn Tinh: Miền Sương Lạc — 0.4
+# Đèn Tinh: Miền Sương Lạc — 0.5
 
-Game hành động 2D tiếng Việt, một người chơi, lấy chất liệu từ làng Việt, rừng trúc, đầm sen và ký ức trong sương. Bản web 0.4 thêm **Thiên Vũ — Thất Linh Sứ**: bảy ngoại hình nguyên tố, 21 kỹ năng, phân thân 3/5/7 và hợp kích. Giữ thế giới chín vùng, ba trạm khám phá, đồ họa môi trường và tuyến truyện của bản 0.3.
+Game hành động 2D tiếng Việt, một người chơi. Bản 0.5 chuyển sang **bảo khí cố định theo nhân vật và phát triển kỹ năng**, thêm thế giới sinh liên tục, sáu chương hậu truyện và 20 cổ vật truyền thuyết.
 
-## Chơi ngay
+## Chơi tại máy
 
-- Chơi công khai tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Dùng **Tiếp tục** để giữ tiến độ; bản lưu cũ vẫn đọc được.
-- Nhấp đúp **CHOI_GAME.bat** trong `E:\Games\DenTinh`, hoặc mở `http://127.0.0.1:4174/` khi máy chủ đã chạy.
-- Chọn một trong năm nhân vật rồi **Bắt đầu hành trình**. Muốn chơi nhân vật mới, chọn **Thiên Vũ** ở màn đầu. **Tiếp tục** vẫn mở lượt chơi với nhân vật đã lưu. Có hướng dẫn bằng hành động trong làng, có thể bỏ qua trong Cài đặt.
-- Muốn chia sẻ với người cùng Wi-Fi/LAN: chạy **CHOI_CHUNG_MANG.bat**. Địa chỉ hiện tại nằm trong `runtime/lan-info.json`. Giữ máy chủ bật và cùng kết nối mạng.
-- Mỗi người chơi qua IP LAN có tiến độ riêng trong trình duyệt. Đây là các lượt chơi độc lập, chưa phải co-op.
+Nhấp đúp **CHOI_GAME.bat** trong `E:\Games\DenTinh`. Bộ khởi chạy dùng Node.js đi kèm, mở game tại `http://127.0.0.1:4174/` và tự thay máy chủ cũ khi cần. Không cần tải thư viện hay font từ CDN.
 
-Bản ZIP đầy đủ dùng Node.js đi kèm trong `runtime/node.exe`; không cần npm install, CDN hoặc tài khoản. Mã nguồn GitHub không chứa runtime thực thi: cài **Node.js 22 trở lên**, rồi chạy `npm start` hoặc `CHOI_GAME.bat`. Bộ khởi chạy ưu tiên runtime đi kèm và tự tìm Node.js trên PATH nếu không có. Muốn chia sẻ LAN từ source có thể chạy `npm run start:lan` hoặc `CHOI_CHUNG_MANG.bat`. Cache, hồ sơ trình duyệt của bộ khởi chạy và bản lưu máy chủ nằm trong thư mục dự án.
+Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** tạo lượt mới với nhân vật được chọn. Bản lưu 0.1–0.4 vẫn đọc được: giữ nhân vật, cấp, tiền, di vật, ấn và trạm đã mở; cấp nâng trang bị cũ đổi thành điểm kỹ năng.
 
-## Xuất bản web trên Cloudflare Workers
+Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Dự án có thể xuất bản bằng Workers Static Assets, từ repository GitHub hoặc từ máy cá nhân:
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 33 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404.
 
-```sh
-npm run build:web
-npm run deploy
-```
+## Các thay đổi chính
 
-Trong Cloudflare Workers Builds, chọn nhánh `main`, thư mục gốc `/`, build command `exit 0` và deploy command `npm run deploy`. Lệnh deploy tạo lại `dist/`, rồi dùng Wrangler phiên bản cố định để triển khai. `wrangler.jsonc` bật địa chỉ `workers.dev` và chỉ phục vụ `dist/`; tệp không tồn tại trả 404.
+- Mỗi nhân vật gắn với một bảo khí riêng; bỏ đổi ô trang bị, băng đạn, nạp đạn, nhặt và nâng vũ khí rơi.
+- **K** mở bốn nhánh Q, E, R và nội tại, mỗi nhánh ba bậc. Khởi đầu có ba điểm; lên cấp, nối chương và khám phá môi trường cho thêm điểm.
+- **I** mở mô tả nội tại dài, thuộc tính, cổ vật và hành trình. Cổ vật mới có nguồn truyện và cơ chế chiến đấu riêng.
+- Tay, chân, thân và bảo khí chuyển động độc lập. Đòn thường và kỹ năng có lấy đà, ra đòn, thu thế; hiệu ứng tồn tại được vẽ theo hình tác động.
+- Font Noto Sans tiếng Việt được đóng gói tại máy cho DOM và chữ trên canvas; không thay font hệ điều hành.
+- Vẫn có đồ họa **Tự động / Chi tiết cao / Nhẹ**, giảm rung/chớp, âm lượng và điều khiển cảm ứng trong Cài đặt.
 
-Bản web công khai lưu tiến độ riêng trong localStorage của từng trình duyệt. Không tải lên bản lưu chủ máy, Node runtime, công cụ kiểm tra hoặc dự án Unity. Khi dùng trên thiết bị khác, tiến độ không tự đồng bộ.
+## Năm lối chơi
 
-## Bản Unity
+| Nhân vật | Nội tại và cách phối hợp | Q / E / R |
+| --- | --- | --- |
+| An · Tâm Đăng | Đánh địch đang cháy để tích sáu Tàn Lửa; đặt tối đa ba đèn có dây nối, hồi máu khi đứng gần | Quét lửa hình quạt / đặt đèn kết giới / phượng hỏa dọc hướng ngắm |
+| Linh · Cung Trúc Hồi Âm | Chạy tích tám Nhịp Trúc, đòn cường hóa xuyên và ghim dấu; Q bắn nối dấu | Giương cung xuyên tuyến / lộn lùi đặt bẫy / thiên tiễn lần lượt săn mục tiêu |
+| Kiệt · Lôi Thương | Đâm, lướt và chặn đạn tích năm Lôi Tức; Q cường hóa lao thương | Đâm xuyên hàng / chiến tuyến chặn đạn / bốn cọc lôi nối thành thiên lao |
+| HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
+| Thiên Vũ · Thất Linh Tâm Ấn | Kỹ năng trúng bằng ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
 
-Nội dung mới của đợt 0.4 áp dụng cho bản web ở link trên. Dự án Unity hiện giữ nền nội dung 0.2; ba vùng mở rộng và Thiên Vũ cần một đợt chuyển đổi riêng.
+Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. Phân thân là đồng minh AI, có máu và thời gian tồn tại; chưa có co-op.
 
-Thư mục **Unity/** chứa dự án C# Unity 6.3 LTS thật, dùng SpriteRenderer, hoạt ảnh sprite, Camera trực giao, LineRenderer, ParticleSystem và AudioSource. Logic C# đã được biên dịch và kiểm tra độc lập. **Chưa có bản .exe Unity được xuất và xác nhận chạy**, vì Editor chưa cài thành công và máy chưa có giấy phép Unity được kích hoạt.
+Tuyệt kỹ cần 100% lực từ chiến đấu. Sát thương từ R, phân thân và các đòn phụ của cổ vật không tự nạp R.
 
-Đọc [hướng dẫn Unity](Unity/README_VI.md). Dùng `MO_DU_AN_UNITY.bat` sau khi cài Editor 6000.3.27f1 và tự kích hoạt giấy phép trong Unity Hub; dùng `BUILD_UNITY.bat` để xuất Windows. Tiến độ Unity và trình duyệt lưu riêng, không tự đồng bộ qua hai bản.
+## Thế giới và môi trường
 
-## Năm nhân vật
+Giữ nguyên làng và vùng gốc 6400 × 4480 cùng nhiệm vụ ba ấn/Cội Đa. Khi đi qua biên cũ, game sinh các miền đất tiếp theo theo seed, cả tọa độ âm; không còn tường biên bản đồ. Rừng, sen, tro, di tích, đồng gió và suối ngọc xuất hiện ở vùng mới.
 
-| Nhân vật | Nội tại | Q | E | R |
-| --- | --- | --- | --- | --- |
-| An — Người Giữ Đèn | Lửa linh đốt quái | Liên Hỏa | Vòng Trấn | Thiên Đăng |
-| Linh — Trúc Ảnh | Di chuyển tăng tốc bắn | Xuyên Vân | Mưa Trúc | Phong Linh |
-| Kiệt — Lôi Vệ | 8% giáp, lướt phát xung điện | Lôi Liên | Chấn Địa | Thiên Lôi |
-| **HoaVi — Kiến Trúc Sư Mã Lệnh** | Đánh trúng tích tối đa 8 Mã Lệnh | **Debug Pulse**: năm luồng mã xuyên, tiêu thụ mã tăng sát thương/rút hồi chiêu | **Firewall**: chặn đạn, sát thương vùng, hồi 18 máu và thêm 32 khiên | **Overclock**: tăng tốc bắn 7 giây, hai drone, xóa đạn và hồi máu |
-| **Thiên Vũ — Thất Linh Sứ** | Thất Linh Cộng Hưởng: bảy dạng có đặc tính riêng | Đòn nguyên tố theo dạng hiện tại | Hộ thể, khống chế hoặc hồi phục theo dạng | Tuyệt kỹ nguyên tố; khi phân thân, các bản thể còn sống phối hợp hợp kích |
+Chỉ giữ tối đa **25 vùng 1024 px** quanh người chơi. Quái bị hạ hoặc bị thương, rương đã mở, vật thể đã dùng và đạo cụ đã phá được ghi thành thay đổi nhỏ để giữ đúng khi quay lại hoặc tải bản lưu. Đây là thế giới sinh thủ tục không có điểm kết thúc cố định; nội dung từng vùng không được viết tay toàn bộ.
 
-Tuyệt kỹ cần tích đủ 100% từ chiến đấu và không tự nạp năng lượng từ sát thương của chính nó.
+Nhấn **F** ở bếp lửa, quặng, cây nguyện, miếu và thùng nhựa thông. Bếp lửa hồi sức và đặt điểm hồi sinh; quặng/miếu/cây cho cổ vật. Lửa nổ thùng nhựa thông, Thổ phá quặng và đá ở vùng sinh, Mộc đánh thức cây nguyện, Lôi kích hoạt miếu. Cổ vật Thủy Phủ tạo nước phản ứng với Hỏa/Băng/Lôi. Các vật thể có thể dùng và cho thưởng một lần theo trạng thái.
 
-## Thiên Vũ: biến hình và phân thân
+## Sáu chương tiếp nối
 
-Lấy cảm hứng từ cơ chế điều khiển nguyên tố của [BoBoiBoy trên trang Monsta](https://monsta.com/animations/boboiboy/). Thiên Vũ có tên, thiết kế ngoại hình, sprite và bộ tên kỹ năng riêng cho thế giới Đèn Tinh.
+Sau khi giải thoát Cội Đa, theo mũi hướng nhiệm vụ tới trạm ở Bến Nước Không Tên. Mỗi chương có hội thoại mở, ba tiếng vọng, người canh cần đối mặt và đoạn kết kèm cổ vật, 150 xu, hai điểm kỹ năng.
 
-| Phím nhanh / dạng | Q | E | R |
-| --- | --- | --- | --- |
-| 1 · Lôi Ảnh | Lôi Ảnh Liên Kích | Lôi Vực Chấn Tâm | Thiên Lôi Thất Phạt |
-| 2 · Thiên Phong | Phong Liêm Tam Trảm | Phong Nhãn Hộ Thể | Thiên Phong Long Quyển |
-| 3 · Nham Giáp | Địa Mạch Trỗi Dậy | Nham Giáp Trấn Địa | Địa Long Thiên Chấn |
-| 4 · Xích Diệm | Hỏa Long Truy Kích | Hỏa Luân Hộ Giới | Xích Diệm Thiên Long |
-| 5 · Băng Tinh | Băng Tinh Xuyên Tâm | Băng Kính Vĩnh Tỏa | Băng Hà Thiên Táng |
-| 6 · Linh Mộc | Mộc Long Quấn Rễ | Sinh Mệnh Linh Viên | Vạn Mộc Thiên Ấn |
-| 7 · Thái Dương | Quang Tuyến Thiên Minh | Quang Kính Phản Chiếu | Thái Dương Diệt Ảnh |
+| Chương | Boss và cơ chế chính |
+| --- | --- |
+| Bến Nước Không Tên | Hà Bá: sóng vành khăn có khoảng an toàn ở giữa, tuyến sóng song song |
+| Rừng Gương Hồ Tinh | Hồ Tinh chín đuôi: phá ba gương/neo để gỡ khiên, né đường cắt chéo |
+| Miếu Chuông Quên Giờ | Thần Trùng: các tuyến báo đòn theo nhịp chuông ba |
+| Khe Chín Dòng | Cửu Khúc Xà: quạt nanh và cú lao theo tuyến khóa hướng |
+| Tháp Đếm Những Vì Sao | Thiết Điểu: tia quay, hai lõi yếu và chim hộ vệ |
+| Khung Cửi Bên Kia Chân Trời | Kẻ Dệt Sương: vòng dệt có khe hở, neo ký ức và tia chéo |
 
-**C** mở bảng chọn dạng có hình và mô tả; **1–7** đổi nhanh. Mỗi dạng có ngoại hình, đạn thường và nội tại riêng: sét lan, tăng tốc, giảm sát thương, thiêu đốt, đóng băng, độc/hồi phục hoặc đạn quang xuyên. Q tốn 24 linh lực, hồi 6 giây; E tốn 38, hồi 10 giây trước di vật. Đổi dạng giữ nguyên máu, linh lực, hồi chiêu Q/E và lực R.
+Kết thúc sáu chương vẫn được khám phá tiếp. Tuyến truyện là sáng tác fantasy; các vị thần và yêu quái là cách diễn giải cho thế giới game.
 
-**G** chọn tổng 3/5/7 bản thể, **X** phân thân hoặc thu hồi. Tổng này gồm **một nhân vật bạn điều khiển và 2/4/6 đồng minh AI**, mỗi đồng minh mang nguyên tố khác, tự di chuyển, bắn và dùng Q, có máu riêng và có thể bị hạ. Không phải co-op. Khi còn phân thân, **R** đồng thời gọi tuyệt kỹ hỗ trợ của các bản thể và vụ nổ hợp kích. Đòn của đồng minh và hợp kích không tự tích lại lực R.
+## Hai mươi cổ vật mới
 
-| Tổng bản thể | Linh lực | Thời gian tồn tại | Hồi phân thân |
-| --- | --- | --- | --- |
-| 3 | 30 | 10 giây | 18 giây |
-| 5 | 45 | 12 giây | 24 giây |
-| 7 | 60 | 14 giây | 30 giây |
+**Việt Nam:** Móng Kim Quy, Đốt Tre Phù Đổng, Dây Đàn Thạch Sanh, Hạt Sương Chử Đồng Tử, Ấn Núi Tản Viên, Giọt Nước Thủy Phủ, Hài Gấm Tấm, Hạt Dưa Mai An Tiêm, Lá Đa Chú Cuội, Lá Trầu Nghĩa Tình.
 
-Thu hồi sớm giữ nguyên thời gian hồi. Chuyển vùng bằng trạm hoặc hồi sinh sẽ hủy phân thân và các đòn đang chờ. Lưu rồi tiếp tục giữ dạng hiện tại, số bản thể đã chọn, máu đồng minh và thời gian phân thân còn lại. Trên điện thoại dùng nút **DẠNG**, **3/5/7 DẠNG**, **TÁCH/HỢP** cạnh cụm kỹ năng.
+**Thế giới:** Ấn Búa Mjölnir, Mảnh Khiên Aegis, Lông Cánh Hermes, Sợi Chỉ Ariadne, Lông Phượng Hoàng, Nút Sinh Mệnh Ankh, Sợi Lông Tề Thiên, Tàn Đèn Aladdin, Hạt Đậu Jack, Mảnh Hài Thủy Tinh.
 
-## Vũ khí và di vật
-
-Hai ô vũ khí độc lập, mỗi ô có băng đạn, thời gian nạp và cấp nâng riêng. Đạn dự trữ không giới hạn. Nhặt vũ khí bằng F; vũ khí cũ được thả ra ngoài tầm tương tác để tránh vòng đổi liên tục. Chú Bảy nâng vũ khí tối đa +5, mỗi cấp thêm 18% sát thương.
-
-13 vũ khí: Đèn Lưu Hỏa, Cung Trúc Ảnh, Lôi Thương, Terminal 01, Liên Hoa Tán, Hỏa Pháo Tro Tàn, Ngọc Xuyên Sơn, Compiler X, Phong Lôi Cầm, Sen Nguyệt Kiếm, Firewall.exe, Rễ Ký Ức và **Thất Linh Ấn**. Thất Linh Ấn là vũ khí khởi đầu của Thiên Vũ, có 21 phát/băng và đổi đặc tính đạn theo nguyên tố.
-
-12 di vật: Tâm Hỏa, Bền Rễ, Gió Trúc, Tâm Ngọc, Lửa Truyền, Dấu Chân Sấm, Nhánh Trúc, Xuyên Mây, Sương Sen, Mạch Lôi, Tản Nhiệt, Lời Hứa Của Đốm. Nhận từ lên cấp, ấn, rương, mảnh ký ức và cửa hàng. Xem nội tại, vũ khí và di vật bằng I.
-
-## Hành trình
-
-- **Bản đồ 6400 × 4480:** diện tích gấp 2,59 lần bản 0.2, giữ nguyên tọa độ, seed và tuyến truyện của khu cũ.
-- **Thác Ngọc:** sông ngăn đường, hai cầu gỗ đi được, thác nước, liễu và tinh thể.
-- **Thung Lũng Đèn:** đồng cỏ, hoa, cối xay gió và các cột đèn.
-- **Phế Tích Thiên Cơ:** cổng đá, trụ cổ, tháp và những mạch sáng ngọc.
-- Mỗi vùng mới có một trạm đèn: nhấn **F**, hạ hai đợt hộ vệ, rồi nhấn **F** lần nữa để nhận di vật, 75 xu và mở trạm. Có thể dịch chuyển giữa trạm đã mở và Trạm Làng Đèn phía nam làng. Ba thử thách này là nhánh khám phá, không thay đổi điều kiện ba ấn của cốt truyện.
-- Tổng cộng 33 rương; bản 0.3 thêm 18 rương và 48 quái lang thang ở vùng mới. Nhấn **M** để xem đường nối vòng và các trạm.
-- **Rừng Trúc:** săn miniboss Trúc Vệ, né cú lao và loạt trúc.
-- **Đầm Sen:** nhấn F ở ấn để bảo vệ Đèn Sen trong 36 giây; đèn tắt có thể thử lại.
-- **Đồi Tro:** nhấn F ở ấn, phá ba lõi tro và né vòng lửa báo trước.
-- **Cội Đa:** cần đủ ba ấn. Boss tạo rễ bảo vệ ở khoảng 65% máu; phá rễ để gỡ khiên. Dưới 30% máu thêm các cụm rễ xoay.
-
-Làng Đèn là vùng nghỉ an toàn. Giếng Ngọc hồi đầy máu, linh lực và bổ sung ít nhất ba bình. Các ấn đã thức tỉnh đưa bạn về làng. Có ba mảnh ký ức, thành tựu và Đốm đánh dấu khám phá gần người. Thắng boss có thể khám phá tiếp hoặc bắt đầu **Hành trình +** với seed mới và quái mạnh hơn.
+Các hiệu ứng như chặn đòn chí tử, biên dịch thêm đòn, dây leo, phản đạn và cộng hưởng được sáng tạo cho game. Không trình bày hiệu ứng hư cấu là chi tiết có thật trong truyện. Mười hai di vật cũ vẫn đọc được và hoạt động.
 
 ## Điều khiển
 
 | Phím | Hành động |
 | --- | --- |
 | WASD / mũi tên | Di chuyển |
-| Chuột / giữ trái | Ngắm / bắn |
+| Chuột / giữ trái | Ngắm / đánh thường, không cần nạp |
 | Space | Lướt né |
-| Q, E, R | Kỹ năng và tuyệt kỹ |
-| C / 1–7 | Thiên Vũ: chọn dạng / biến hình nhanh |
-| G / X | Thiên Vũ: chọn tổng 3/5/7 bản thể / phân thân hoặc hợp thể |
-| F | Tương tác, nhặt vũ khí |
-| TAB / V | Đổi vũ khí / nạp băng |
-| H | Hồi 55% máu tối đa |
-| M, I, Esc | Bản đồ, thuộc tính, tạm dừng |
+| Q, E, R | Kỹ năng, tuyệt kỹ |
+| F | Tương tác |
+| K / I | Học kỹ năng / nhân vật và cổ vật |
+| H | Dùng bình máu |
+| M / Esc | Bản đồ lân cận / tạm dừng |
+| C, 1–7, G, X | Chọn dạng và phân thân của Thiên Vũ |
 
-Trên điện thoại, game tự bật hai cần cảm ứng và nút kỹ năng; dùng nằm ngang để nhìn rộng. Có nút thuộc tính, cài đặt, tạm dừng và bản đồ. Có thể bật/tắt cảm ứng thủ công, chỉnh âm lượng nhạc/hiệu ứng, cỡ chữ và giảm rung/chớp trong Cài đặt. Đã kiểm tra điều khiển bằng trình duyệt ở bố cục điện thoại; chưa xác nhận chơi trên điện thoại thật của người dùng.
+Trên điện thoại có hai cần và các nút kỹ năng/K; nên dùng màn hình ngang. Cảm ứng chưa được xác nhận trên điện thoại thật của người dùng.
 
-Đồ họa có chế độ **Tự động / Chi tiết cao / Nhẹ** trong Cài đặt. Tự động giảm hạt và giới hạn bộ nhớ nền trên thiết bị cảm ứng. Chạy sử dụng nhịp chân theo quãng đường thật; lướt có ảnh dư, tấn công có giật vũ khí, vệt đạn và tia trúng đích. Cây, nhà, quái, NPC và Đốm dùng hai atlas PNG trong `assets/`; dữ liệu nền được tạo và giữ theo từng ô 512 pixel. Thiên Vũ có atlas RGBA riêng với hai tư thế cho mỗi dạng, kết hợp nhịp chân, chuyển động thân, khăn/áo, ánh nguyên tố và vệt lướt. Kỹ năng có sét nhánh, phong liêm/lốc, địa trụ, hỏa long, tinh thể băng, dây leo và tia thái dương. Khi hợp kích, hiệu ứng hỗ trợ giảm kích thước/độ đậm để giữ nhân vật chính dễ thấy.
+## Lưu và bản dự phòng
 
-## Lưu và sao lưu
+Tự lưu mỗi 12 giây và sau các thao tác quan trọng. Chủ máy dùng `runtime/save.json`; LAN và bản web dùng tiến độ riêng của từng trình duyệt. Bản dự phòng trước 0.5 nằm ở `runtime/backup-before-v05-20261103`. Bộ ZIP phát hành không chứa save, hồ sơ trình duyệt hoặc cache của chủ máy.
 
-Tự lưu mỗi 12 giây và sau tương tác quan trọng. Bản chính chủ máy là `runtime/save.json`; có dự phòng trong hồ sơ trình duyệt. Chơi qua LAN dùng localStorage của từng trình duyệt, không được đọc/ghi bản lưu chủ máy.
+Phân thân giữ dạng, HP và vị trí hợp lệ khi tải lại ở miền xa. Các chiêu đang chờ, trường kỹ năng và checkpoint không được khôi phục qua bản lưu; chết, hồi sinh và dịch chuyển hủy chúng.
 
-Bản lưu cũ được đọc, giữ cấp độ/thuộc tính/xu/ấn và bổ sung dữ liệu mới. Bản sao trước đợt này nằm trong `runtime/backup-before-v04-20261102`; các bản sao trước 0.2/0.3 vẫn được giữ. **Bắt đầu hành trình** mở lượt mới; **Tiếp tục** giữ lượt đang có. Sao lưu `runtime/save.json` trước khi chuyển máy hoặc xóa dữ liệu trình duyệt.
-
-## Kiểm tra và mã nguồn
+## Kiểm tra và đóng gói
 
 ```sh
 npm test
-npm run test:elemental-http
 npm run test:combat
-npm run test:frontier-combat
+npm run test:elemental-http
 npm run test:lan
-npm run test:http
-npm run export:unity
+npm run build:web
 ```
 
-Trên máy này có thể gọi `runtime/node.exe` thay `node`. Kiểm tra C# thuần bằng `tools/Test-Unity-Core.ps1`; kết quả ở `qa/unity-core-tests.txt`, `qa/unity-combat-tests.txt`. Các kiểm tra này không thay thế import, Play và build bằng Unity Editor.
+Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp toàn bộ logic 0.5, cho năm nhân vật hoàn thành ba ấn, Cội Đa và sáu chương tiếp nối bằng đòn/kỹ năng thật. Nó rút ngắn di chuyển giữa đấu trường; thời gian mô phỏng không đại diện cho thời lượng chơi hoặc độ khó với người thật.
 
-`world.js`, `engine.js` là nền gốc; `content.js`, `expansion.js` chứa catalog/gameplay 0.2. `frontier.js` mở rộng thế giới và trạm đèn; `scenery.js` dựng nền theo ô, đồ họa, hoạt ảnh và hiệu ứng 0.3. `elemental.js` chứa logic bảy dạng, trạng thái và AI đồng minh; `elemental-visuals.js` dựng sprite/hiệu ứng; `elemental-ui.js`, `elemental.css` thêm bộ chọn và điều khiển. `visuals.js`, `controls.js`, `expansion.css` bổ sung hình ảnh, UI và cảm ứng. `app.js` nối các phần. Unity có simulation C# riêng. `qa/` chứa báo cáo/screenshot được chọn để kiểm tra. Mô phỏng chiến đấu rút ngắn di chuyển giữa đấu trường, thời gian báo cáo không phải thời lượng chơi thực tế.
+Xem [thay đổi 0.5](CHANGELOG-v0.5.md), [kiểm chứng và giới hạn](VALIDATION-v0.5.md), [nguồn tham khảo](ART-v0.5.md). [README 0.4](README-v0.4.md) được giữ làm lịch sử.
 
-Chi tiết thay đổi: [CHANGELOG-v0.4.md](CHANGELOG-v0.4.md). Cơ sở tham khảo, giới hạn kiểm tra và nguồn ảnh: [VALIDATION-v0.4.md](VALIDATION-v0.4.md), [ART-v0.4.md](ART-v0.4.md). Tài liệu 0.2/0.3 được giữ như các mốc lịch sử.
-
-Hình minh họa, sprite và hiệu ứng làm riêng cho Đèn Tinh. Soul Knight là tham chiếu trải nghiệm game hành động 2D; không dùng nhân vật hoặc tài nguyên của trò chơi đó.
+Nội dung mới áp dụng cho bản trình duyệt. Dự án Unity vẫn giữ nền nội dung cũ và chưa có bản .exe đã xuất/xác nhận; không đồng bộ tiến độ giữa hai bản.
 
