@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-03T17:06:28.961Z",
+  "checkedAt": "2026-11-07T07:17:49.870Z",
   "tests": [
     {
       "name": "Smith interaction opens the actual shop rather than intercepting it with skills",

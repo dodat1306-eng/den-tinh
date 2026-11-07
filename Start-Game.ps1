@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 $gameDirectory = $PSScriptRoot
 $gameProfile = Join-Path $gameDirectory 'runtime\browser-profile'
 $gameTemp = Join-Path $gameDirectory 'runtime\temp'
@@ -14,7 +14,7 @@ if (-not (Test-Path -LiteralPath $gameNode)) {
 }
 $gameServer = Join-Path $gameDirectory 'tools\server.cjs'
 $gamePort = 4174
-$gameServerVersion = 6
+$gameServerVersion = 7
 $gameServerReady = $false
 try {
   $gameHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$gamePort/health" -TimeoutSec 2

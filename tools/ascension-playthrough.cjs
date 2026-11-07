@@ -1,5 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+global.Image=class{constructor(){this.complete=false;this.naturalWidth=0}set src(v){this._src=v}};global.document={querySelectorAll:()=>[],createElement:()=>({getContext:()=>({})})};
+const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js','render.js','visuals.js','scenery.js','elemental-visuals.js','ascension-visuals.js','journey-visuals.js','choreography.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});
 const reports=[];
 for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_HERO]:Object.keys(DTWorld.HEROES))){
@@ -55,4 +56,4 @@ for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_H
   assert.equal(g.saga.stage,'complete');
   const report={hero,completed:true,simulatedSeconds:Math.round(ticks/60),deaths:g.deaths,level:g.player.level,kills:g.kills,hp:Math.round(g.player.hp),seals:stage,saga};reports.push(report);console.log(JSON.stringify(report));
 }
-fs.writeFileSync(path.join(root,'qa','ascension-playthrough-report.json'),JSON.stringify({method:'Actual v0.6 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.',results:reports},null,2));
+fs.writeFileSync(path.join(root,'qa','ascension-playthrough-report.json'),JSON.stringify({method:'Actual v0.7 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.',results:reports},null,2));

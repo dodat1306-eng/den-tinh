@@ -1,5 +1,5 @@
 {
-  "method": "Actual v0.6 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.",
+  "method": "Actual v0.7 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.",
   "results": [
     {
       "hero": "an",

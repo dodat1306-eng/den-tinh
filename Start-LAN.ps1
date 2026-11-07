@@ -1,9 +1,9 @@
-param([switch]$NoBrowser)
+﻿param([switch]$NoBrowser)
 $ErrorActionPreference = 'Stop'
 $gameRoot = $PSScriptRoot
 $gameNode = Join-Path $gameRoot 'runtime\node.exe'
 $gameServer = Join-Path $gameRoot 'tools\server.cjs'
-$gameServerVersion = 6
+$gameServerVersion = 7
 if (-not (Test-Path -LiteralPath $gameNode)) {
   $gameNodeCommand = Get-Command node.exe -ErrorAction SilentlyContinue
   if ($gameNodeCommand) { $gameNode = $gameNodeCommand.Source }

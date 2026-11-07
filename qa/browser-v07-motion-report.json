@@ -1,0 +1,119 @@
+{
+  "checkedAt": "2026-11-07T07:16:33.467Z",
+  "url": "http://127.0.0.1:54633/",
+  "results": [
+    {
+      "name": "an walking uses original painted sprites and animated mesh",
+      "pass": true
+    },
+    {
+      "name": "an Q uses real windup and release timing",
+      "pass": true
+    },
+    {
+      "name": "an E renders its signature release effect",
+      "pass": true
+    },
+    {
+      "name": "an R renders with its own visual language",
+      "pass": true
+    },
+    {
+      "name": "An running, dash and skills captured as a real canvas animation clip",
+      "pass": true
+    },
+    {
+      "name": "linh walking uses original painted sprites and animated mesh",
+      "pass": true
+    },
+    {
+      "name": "linh Q uses real windup and release timing",
+      "pass": true
+    },
+    {
+      "name": "linh E renders its signature release effect",
+      "pass": true
+    },
+    {
+      "name": "linh R renders with its own visual language",
+      "pass": true
+    },
+    {
+      "name": "kiet walking uses original painted sprites and animated mesh",
+      "pass": true
+    },
+    {
+      "name": "kiet Q uses real windup and release timing",
+      "pass": true
+    },
+    {
+      "name": "kiet E renders its signature release effect",
+      "pass": true
+    },
+    {
+      "name": "kiet R renders with its own visual language",
+      "pass": true
+    },
+    {
+      "name": "hoavi walking uses original painted sprites and animated mesh",
+      "pass": true
+    },
+    {
+      "name": "hoavi Q uses real windup and release timing",
+      "pass": true
+    },
+    {
+      "name": "hoavi E renders its signature release effect",
+      "pass": true
+    },
+    {
+      "name": "hoavi R renders with its own visual language",
+      "pass": true
+    },
+    {
+      "name": "thienvu walking uses original painted sprites and animated mesh",
+      "pass": true
+    },
+    {
+      "name": "thienvu Q uses real windup and release timing",
+      "pass": true
+    },
+    {
+      "name": "thienvu E renders its signature release effect",
+      "pass": true
+    },
+    {
+      "name": "thienvu R renders with its own visual language",
+      "pass": true
+    },
+    {
+      "name": "Seven bodies retain distinct elemental sprites and ally casting poses",
+      "pass": true
+    },
+    {
+      "name": "Seven-body synchronous draw timing (headless, paused scene)",
+      "pass": true,
+      "median": 1.7000000476837158,
+      "p95": 7.600000023841858,
+      "triangles": 140
+    },
+    {
+      "name": "Reduced motion and low detail retain all seven bodies without mesh trails",
+      "pass": true
+    },
+    {
+      "name": "Animated touch skill works at 844x390",
+      "pass": true
+    },
+    {
+      "name": "Animated touch skill works at 390x844",
+      "pass": true
+    },
+    {
+      "name": "All five heroes, splits, detail modes and touch scenes have no uncaught JavaScript errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "note": "Skill resource fixtures stage visual previews. Real combat is tested separately. Timing is synchronous JS draw cost in a headless paused scene, not a cross-device FPS promise. Touch profiles are emulated."
+}

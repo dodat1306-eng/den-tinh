@@ -1,6 +1,6 @@
 {
   "name": "den-tinh",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Đèn Tinh: Miền Sương Lạc — game hành động 2D với bối cảnh fantasy Việt Nam.",
   "scripts": {
@@ -8,7 +8,7 @@
     "deploy": "npm run build:web && npx wrangler@4.156.0 deploy",
     "start": "node tools/server.cjs",
     "start:lan": "node tools/server.cjs --lan",
-    "test": "node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs",
+    "test": "node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs && node tools/choreography-test.cjs",
     "test:ascension": "node tools/ascension-test.cjs",
     "test:endless": "node tools/endless-test.cjs",
     "test:elemental": "node tools/elemental-test.cjs",
@@ -20,7 +20,9 @@
     "test:combat": "node tools/ascension-playthrough.cjs",
     "test:http": "node tools/http-test.cjs",
     "test:lan": "node tools/lan-test.cjs",
-    "test:journey": "node tools/journey-test.cjs"
+    "test:journey": "node tools/journey-test.cjs",
+    "test:choreography": "node tools/choreography-test.cjs",
+    "test:browser-motion": "node tools/choreography-browser.cjs"
   },
   "engines": {
     "node": ">=22"

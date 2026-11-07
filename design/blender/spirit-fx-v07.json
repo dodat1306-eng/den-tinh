@@ -1,0 +1,20 @@
+{
+  "blender": "5.2.3 LTS",
+  "atlas": "assets/spirit-fx-v07.png",
+  "tile": 128,
+  "frames": 8,
+  "rows": [
+    "fire",
+    "wind",
+    "earth",
+    "lightning",
+    "ice",
+    "nature",
+    "light"
+  ],
+  "dimensions": [
+    1024,
+    896
+  ],
+  "method": "Native Blender geometry and keyframed animation, transparent PNG flipbook"
+}

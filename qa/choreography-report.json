@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-11-07T07:17:50.488Z",
+  "results": [
+    {
+      "name": "Blender flipbook contains the seven declared rows and eight transparent PNG frames",
+      "pass": true
+    },
+    {
+      "name": "Walk, windup, release, recovery and dash vertices remain finite across five heroes and seven forms",
+      "pass": true
+    },
+    {
+      "name": "Elemental gait profiles distinguish heavy earth from flowing wind and light",
+      "pass": true
+    },
+    {
+      "name": "Mesh rendering retains the original atlas and restores Canvas methods, alpha and stack",
+      "pass": true
+    },
+    {
+      "name": "Detail levels bound triangle work and reduced motion uses a single undeformed sprite",
+      "pass": true
+    },
+    {
+      "name": "Visual hooks preserve actual hit damage and charge resources",
+      "pass": true
+    },
+    {
+      "name": "Restored v0.6 journeys retain the new visual hooks without serializing transient actions",
+      "pass": true
+    },
+    {
+      "name": "All split counts preserve their original mana costs and animate real ally casts",
+      "pass": true
+    },
+    {
+      "name": "Transform effects only mark a successful changed form",
+      "pass": true
+    },
+    {
+      "name": "Extra impacts are bounded and travel cancellation clears visual history",
+      "pass": true
+    },
+    {
+      "name": "Full renderer draws new hero skills, seven elements and clone effects in each detail mode",
+      "pass": true
+    },
+    {
+      "name": "Rewinding or teleporting a surviving ally clears stale synthetic poses",
+      "pass": true
+    },
+    {
+      "name": "A failed paint call does not leave the Canvas drawImage interception installed",
+      "pass": true
+    },
+    {
+      "name": "Pausing freezes motion progress and does not advance a committed skill",
+      "pass": true
+    }
+  ],
+  "numericCanvas": true,
+  "actualDamageCompared": true,
+  "visualInspection": false
+}

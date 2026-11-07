@@ -1,9 +1,9 @@
 {
-  "checkedAt": "2026-11-03T17:05:51.043Z",
+  "checkedAt": "2026-11-07T06:59:49.879Z",
   "isolatedSave": true,
   "results": [
     {
-      "name": "Release health, v0.6 modules and local Vietnamese fonts are served",
+      "name": "Release health, v0.7 modules and local Vietnamese fonts are served",
       "pass": true
     },
     {

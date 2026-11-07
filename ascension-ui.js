@@ -39,7 +39,7 @@
   function tabs(current){return '<nav class="ascension-tabs" aria-label="Bảng nhân vật">'+[['skills','Kỹ năng · K'],['inventory','Nhân vật · I'],['relics','Cổ vật & truyền thuyết']].map(([id,label])=>'<button data-asc-tab="'+id+'" class="'+(current===id?'selected':'')+'" aria-current="'+(current===id?'page':'false')+'">'+label+'</button>').join('')+'</nav>'}
   function shell(tab,title,body){
     const g=game();
-    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 0.6 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
+    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 0.7 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
     $('ascensionClose').onclick=()=>app().closeAndContinue();
     $('modalContent').querySelectorAll('[data-asc-tab]').forEach(b=>b.onclick=()=>b.dataset.ascTab==='skills'?showSkills():b.dataset.ascTab==='relics'?showRelics():showInventory());
   }
@@ -77,7 +77,7 @@
   document.querySelector('.bottom-info>span').textContent='WASD di chuyển · Chuột đánh · F tương tác · K kỹ năng · I cổ vật';
   document.querySelectorAll('[data-touch="swap"],[data-touch="reload"]').forEach(b=>b.remove());
   const touch=document.querySelector('[data-touch="skills"]')||document.createElement('button');touch.dataset.touch='skills';touch.textContent='K';touch.setAttribute('aria-label','Học kỹ năng và xem nội tại');touch.onclick=showSkills;if(!touch.parentNode)document.querySelector('.touch-actions').appendChild(touch);
-  const edition=document.querySelector('.edition-tag');if(edition)edition.textContent='BẢN 0.6 · LỬA MỚI TRÊN ĐƯỜNG XA';
+  const edition=document.querySelector('.edition-tag');if(edition)edition.textContent='BẢN 0.7 · NHỊP CHIÊU · THẤT LINH';
   const footer=document.querySelectorAll('.menu-footer span');if(footer[0])footer[0].textContent='THẾ GIỚI VÔ HẠN · 5 BỘ KỸ NĂNG · 20 CỔ VẬT MỚI';if(footer[1])footer[1].textContent='ĐÈN TINH / 05';
   const mapLabel=document.querySelector('.world-map-head .eyebrow');if(mapLabel)mapLabel.textContent='MIỀN ĐẤT CŨ · NHỮNG CHÂN TRỜI MỚI';
   $('mobileInventory')?.setAttribute('aria-label','Nhân vật, kỹ năng và cổ vật');

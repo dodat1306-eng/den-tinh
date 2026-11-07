@@ -1,6 +1,6 @@
-# Đèn Tinh: Miền Sương Lạc — 0.6
+# Đèn Tinh: Miền Sương Lạc — 0.7
 
-Game hành động 2D tiếng Việt, một người chơi. Bản 0.6 bổ sung **kinh tế xu, chuyên hóa kỹ năng, phát triển sau bậc 3, tinh anh nguyên tố và sự kiện khám phá**, trên nền bảo khí riêng, thế giới sinh liên tục và sáu chương hậu truyện của 0.5.
+Game hành động 2D tiếng Việt, một người chơi. Bản 0.7 thêm **chuyển động và hiệu ứng chiêu riêng cho năm nhân vật, bảy nguyên tố và phân thân**, giữ hướng hình ảnh của concept đầu tiên cùng hệ thống gameplay 0.6.
 
 ## Chơi tại máy
 
@@ -10,9 +10,11 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 37 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v06-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 39 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v07-report.json`.
 
 ## Các thay đổi chính
+
+- **0.7:** chuyển động thân/chân/vạt áo theo nhịp chiêu, tư thế tung chiêu AI, vệt lướt và bộ hiệu ứng Blender 56 khung. Phượng lửa, âm vang trúc, lôi thương, mã lệnh cùng bảy nguyên tố có hình ảnh riêng; giảm ánh sáng chồng lên nhân vật. Giữ hình vẽ gốc và hỗ trợ Giảm chuyển động.
 
 - **F tại Chú Bảy** mở cửa hàng: cổ vật 105 xu, đổi bộ hàng từ 30 xu, bình linh lực 35 xu và bùa 60 giây giá 80 xu. Nâng cấp làng giữ qua hành trình mới trên cùng trình duyệt; bình máu và các nâng cấp cũ vẫn mua được.
 - Sau khi Q/E/R đều bậc 3, mở bốn nhánh Căn Cốt, Dưỡng Khí, Thân Pháp, Phá Thế; mỗi nhánh tối đa 50 bậc, dùng tổng cộng 600 điểm. Mỗi Q/E/R bậc 3 được chọn một trong hai chuyên hóa miễn phí, giữ trong hành trình đó.
@@ -107,9 +109,9 @@ npm run test:lan
 npm run build:web
 ```
 
-Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp toàn bộ logic 0.6, cho năm nhân vật hoàn thành ba ấn, Cội Đa và sáu chương tiếp nối bằng đòn/kỹ năng thật. Nó rút ngắn di chuyển giữa đấu trường; thời gian mô phỏng không đại diện cho thời lượng chơi hoặc độ khó với người thật.
+Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp toàn bộ logic 0.7, cho năm nhân vật hoàn thành ba ấn, Cội Đa và sáu chương tiếp nối bằng đòn/kỹ năng thật. Nó rút ngắn di chuyển giữa đấu trường; thời gian mô phỏng không đại diện cho thời lượng chơi hoặc độ khó với người thật.
 
-Xem [thay đổi 0.6](CHANGELOG-v0.6.md), [kiểm chứng và giới hạn](VALIDATION-v0.6.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
+Xem [thay đổi 0.7](CHANGELOG-v0.7.md), [kiểm chứng và giới hạn](VALIDATION-v0.7.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
 
 Nội dung mới áp dụng cho bản trình duyệt. Dự án Unity vẫn giữ nền nội dung cũ và chưa có bản .exe đã xuất/xác nhận; không đồng bộ tiến độ giữa hai bản.
 

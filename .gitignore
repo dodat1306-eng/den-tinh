@@ -40,6 +40,8 @@
 !/qa/cloudflare-v05-report.json
 !/qa/journey-report.json
 !/qa/browser-v06-report.json
+!/qa/choreography-report.json
+!/qa/browser-v07-motion-report.json
 
 # Build output and dependencies
 /node_modules/
@@ -62,3 +64,7 @@ credentials*.json
 .idea/
 .DS_Store
 Thumbs.db
+
+# Rejected style drafts and Blender automatic backups
+/design/archive/
+/design/blender/*.blend1

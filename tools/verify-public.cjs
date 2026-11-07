@@ -17,9 +17,9 @@ const report = {
 };
 
 async function verify() {
-  assert.equal(version, '0.6.0');
+  assert.equal(version, '0.7.0');
   const files = walk(dist).filter(file => file !== '_headers').sort();
-  assert.equal(files.length, 37, 'Build the complete v0.6 web release first');
+  assert.equal(files.length, 39, 'Build the complete v0.7 web release first');
   for (let offset = 0; offset < files.length; offset += 4) {
     await Promise.all(files.slice(offset, offset + 4).map(async file => {
       const response = await fetch(new URL(file, base), {
@@ -52,7 +52,7 @@ verify().catch(error => {
 }).finally(() => {
   report.assets.sort((a, b) => a.file.localeCompare(b.file));
   fs.mkdirSync(path.join(root, 'qa'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'runtime/cloudflare-v06-report.json'), JSON.stringify(report, null, 2));
+  fs.writeFileSync(path.join(root, 'runtime/cloudflare-v07-report.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ url: base, version, commit: report.commit,
     matchingAssets: report.assets.filter(asset => asset.matchesLocal).length,
     privatePaths404: report.privatePaths.filter(item => item.status === 404).length,

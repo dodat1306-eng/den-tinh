@@ -326,7 +326,7 @@
       for(const o of g.world.npcs||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawNpc(o)});
       for(const o of g.world.chests||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
       for(const e of g.world.enemies||[])if(e.alive&&inView(e))objects.push({y:e.y,draw:()=>this.drawEnemy(e)});
-      objects.push({y:p.y,draw:()=>drawSpriteHero(c,p,g.hero,g.time)});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
+      objects.push({y:p.y,draw:()=>root.DTVisualHero(c,p,g.hero,g.time)});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
       for(const b of g.projectiles||[])if(inView(b))this.drawProjectile(b);for(const e of g.effects||[])this.drawEffect(e);
       c.save();c.globalCompositeOperation='lighter';for(const pt of g.particles||[])if(inView(pt)){c.globalAlpha=clamp(pt.life/pt.maxLife,0,1);c.fillStyle=pt.color;c.fillRect(pt.x,pt.y,pt.size,pt.size)}c.restore();
       for(const f of g.floaters||[]){c.save();c.globalAlpha=clamp(f.life*2,0,1);c.font='700 12px "DenTinh Sans"';c.textAlign='center';c.fillStyle='#122734';c.fillText(f.text,f.x+1,f.y+1);c.fillStyle=f.color;c.fillText(f.text,f.x,f.y);c.restore()}

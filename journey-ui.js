@@ -14,5 +14,5 @@
   addEventListener('keydown',e=>{if(e.key.toLowerCase()==='b'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey){if(denTinh.game.useManaPotion())denTinh.save()}});
   setInterval(()=>{const g=denTinh.game;status.classList.toggle('hidden',!g.started);if(!g.started)return;const t=g.trial,fog=g.fogAt(g.player.x,g.player.y);status.textContent='B · Bình linh lực '+g.manaPotions+(g.charmTime>0?' · Bùa '+Math.ceil(g.charmTime)+'s':'')+(g.harmonyCooldown>0?' · Hòa Âm '+Math.ceil(g.harmonyCooldown)+'s':'')+(t?' · Đài '+t.wave+'/3 · '+(t.state==='claim'?'F nhận Rương Vàng':Math.ceil(t.remaining)+'s'):'')+(fog?' · SƯƠNG ĐẬM · XP ×2':'');mana.textContent='B '+g.manaPotions;mana.disabled=g.manaPotions<1||g.player.mp>=g.player.maxMp},150);
   root.DTJourneyUI={showShop,enhanceSkills};
-  document.querySelector('.edition-tag').textContent='BẢN 0.6 · LỬA MỚI TRÊN ĐƯỜNG XA';document.querySelectorAll('.menu-footer span')[1].textContent='ĐÈN TINH / 06';
+  document.querySelector('.edition-tag').textContent='BẢN 0.7 · NHỊP CHIÊU · THẤT LINH';document.querySelectorAll('.menu-footer span')[1].textContent='ĐÈN TINH / 07';
 })(globalThis);
