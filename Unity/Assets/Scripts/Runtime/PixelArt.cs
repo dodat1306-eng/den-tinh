@@ -8,13 +8,26 @@ namespace DenTinh.UnityRuntime {
         static readonly Dictionary<string,Sprite> cache=new Dictionary<string,Sprite>();
         static Texture2D atlas;static bool triedAtlas;
         public static Material Material;
+        [Serializable] public class Cell {public int x,y,w,h;}
+        [Serializable] public class Clip {public string key,texture;public float fps;public Cell[] cells;}
+        [Serializable] public class Clips {public Clip[] clips;}
+        static Dictionary<string,Clip> clips;
+        static readonly Dictionary<string,Texture2D> textures=new Dictionary<string,Texture2D>();
+        static Clip GetClip(string key){if(clips==null){clips=new Dictionary<string,Clip>();TextAsset data=Resources.Load<TextAsset>("Art/ThienVuClips");if(data!=null){Clips parsed=JsonUtility.FromJson<Clips>(data.text);if(parsed!=null&&parsed.clips!=null)foreach(Clip c in parsed.clips)if(c.cells!=null&&c.cells.Length>0)clips[c.key]=c;}}Clip clip;return clips.TryGetValue(key,out clip)?clip:null;}
+        static Sprite Frame(string key,int index,bool actor){Clip clip=GetClip(key);if(clip==null)return Dot();index=Mathf.Clamp(index,0,clip.cells.Length-1);string id="atlas/"+key+"/"+index;if(cache.ContainsKey(id))return cache[id];Texture2D texture;if(!textures.TryGetValue(clip.texture,out texture)){texture=Resources.Load<Texture2D>("Art/"+clip.texture);if(texture==null)return Dot();texture.filterMode=FilterMode.Point;texture.wrapMode=TextureWrapMode.Clamp;textures[clip.texture]=texture;}Cell c=clip.cells[index];return cache[id]=Sprite.Create(texture,new Rect(c.x,texture.height-c.y-c.h,c.w,c.h),actor?new Vector2(.5f,6f/64):new Vector2(.5f,.5f),32,0,SpriteMeshType.FullRect);}
+        public static Sprite Vfx(string key,float time,bool calm=false){Clip c=GetClip(key);return Frame(key,c==null||calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,false);}
+        public static Sprite ElementActor(string form,string direction,bool moving,float dashTime,ActorAction action,float time,bool calm=false){
+            if(action!=null&&action.elapsed>=action.release&&action.elapsed<action.release+.14f){V2 aim=V2.Angle(action.angle);direction=Math.Abs(aim.x)>=Math.Abs(aim.y)?(aim.x>=0?"E":"W"):(aim.y>=0?"N":"S");}
+            string pose=dashTime>0?"dash":action!=null?(action.key=="q"?"q_cast":action.key=="e"?"e_cast":action.key=="r"?"r_ult":"attack"):moving?"run":"idle",key=form+"/"+pose+"/"+direction;Clip c=GetClip(key);if(c==null)return Dot();int frame=(int)(Math.Max(0,time)*c.fps)%c.cells.Length;
+            if(action!=null){int release=pose=="attack"?1:pose=="q_cast"?2:3;float wind=Math.Max(.001f,action.release),recovery=Math.Max(.001f,action.duration-wind);frame=action.elapsed<wind?(int)(action.elapsed/wind*release):release+(int)((action.elapsed-wind)/recovery*(c.cells.Length-release));}if(calm)frame=action==null?0:pose=="attack"?1:pose=="q_cast"?2:3;return Frame(key,frame,true);
+        }
         public static Color ColorOf(string hex){Color c;return ColorUtility.TryParseHtmlString(hex,out c)?c:Color.white;}
         static Texture2D Texture(int w,int h){Texture2D t=new Texture2D(w,h,TextureFormat.RGBA32,false);t.filterMode=FilterMode.Point;t.wrapMode=TextureWrapMode.Clamp;Color[] pixels=new Color[w*h];t.SetPixels(pixels);return t;}
         static void Box(Texture2D t,int x,int y,int w,int h,Color c){for(int yy=Math.Max(0,y);yy<Math.Min(t.height,y+h);yy++)for(int xx=Math.Max(0,x);xx<Math.Min(t.width,x+w);xx++)t.SetPixel(xx,yy,c);}
         static void Circle(Texture2D t,int x,int y,int rx,int ry,Color c){for(int yy=Math.Max(0,y-ry);yy<Math.Min(t.height,y+ry+1);yy++)for(int xx=Math.Max(0,x-rx);xx<Math.Min(t.width,x+rx+1);xx++)if((xx-x)*(xx-x)/(float)(rx*rx)+(yy-y)*(yy-y)/(float)(ry*ry)<=1)t.SetPixel(xx,yy,c);}
         static Sprite Finish(Texture2D t,float ppu,Vector2 pivot){t.Apply(false,false);return Sprite.Create(t,new Rect(0,0,t.width,t.height),pivot,ppu);}
         public static Sprite Hero(HeroDef h,int frame){
-            if(!triedAtlas){triedAtlas=true;atlas=Resources.Load<Texture2D>("Art/Heroes");if(atlas!=null)atlas.filterMode=FilterMode.Point;}
+            if(!triedAtlas){triedAtlas=true;atlas=Resources.Load<Texture2D>("Art/Heroes");if(atlas!=null){atlas.filterMode=FilterMode.Point;atlas.wrapMode=TextureWrapMode.Clamp;}}
             string key="hero-"+h.id+"-"+frame;if(cache.ContainsKey(key))return cache[key];
             if(atlas!=null){int row=h.id=="an"?0:h.id=="linh"?1:h.id=="kiet"?2:3;float w=atlas.width/4f,hh=atlas.height/4f;Sprite sprite=Sprite.Create(atlas,new Rect(frame%4*w,(3-row)*hh,w,hh),new Vector2(.5f,.14f),w/2f);cache[key]=sprite;return sprite;}
             Texture2D t=Texture(32,48);Color dark=ColorOf("#172535"),skin=ColorOf("#efc49b"),cloth=ColorOf(h.cloth),accent=ColorOf(h.accent);int step=frame%2==0?1:-1;

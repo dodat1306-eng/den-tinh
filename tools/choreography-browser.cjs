@@ -26,7 +26,7 @@ fs.mkdirSync(out,{recursive:true});const pass=name=>{results.push({name,pass:tru
  },{key,frames})}
  try{
   for(const id of['an','linh','kiet','hoavi','thienvu']){
-   const ctx=await browser.newContext({viewport:{width:1280,height:720}}),p=await prepare(ctx,id);
+   const ctx=await browser.newContext({viewport:{width:1280,height:720},recordVideo:id==='an'?{dir:out,size:{width:1280,height:720}}:undefined}),p=await prepare(ctx,id);
    const start=await p.evaluate(()=>denTinh.game.player.x);await p.keyboard.down('d');await p.waitForTimeout(320);await p.keyboard.up('d');
    assert(await p.evaluate(x=>denTinh.game.player.x>x+10,start));assert(await p.evaluate(()=>['hoavi','thienvu'].includes(denTinh.game.hero.id)?DTChoreography.metrics.atlas===1&&DTChoreography.metrics.triangles===0:DTChoreography.metrics.triangles>0));pass(id+' walking uses its animated atlas or sprite mesh');
    const wind=await stage(p,'q',5);assert.equal(wind.action,'q');assert(wind.pose.wind>0);const release=await stage(p,'q',22);assert(release.effects>0);assert(['hoavi','thienvu'].includes(id)?release.triangles===0:release.triangles>0);pass(id+' Q uses real windup and release timing');
@@ -44,19 +44,13 @@ fs.mkdirSync(out,{recursive:true});const pass=name=>{results.push({name,pass:tru
     for(const key of['run','dash','hit']){await p.evaluate(key=>{const g=denTinh.game,p=g.player;g.cancelActions();g.effects=[];g.world.enemies=[];p.facing=.2;p.moving=key==='run';p.dashTime=key==='dash'?.1:0;p.hit=key==='hit'?.1:0;denTinh.renderer.draw(.016)},key);await p.screenshot({path:path.join(review,'hoavi-game-'+key+'.png')})}
     await p.evaluate(()=>{DTSettings.reducedMotion=true;DTSettings.graphics='low';denTinh.renderer.draw(.016)});assert.equal(await p.evaluate(()=>DTChoreography.metrics.atlas),1);assert.equal(await p.evaluate(()=>DTChoreography.metrics.triangles),0);await p.screenshot({path:path.join(review,'hoavi-game-reduced.png')});pass('HoaVi run, dash, hit and reduced-motion atlas render without mesh warp');
    }
-   if(id==='an'){
-    await p.evaluate(()=>{const g=denTinh.game;g.paused=false;g.cancelActions();g.effects=[];g.player.mp=100;g.player.cd.dash=0;g.player.cd.q=0;g.consumeEvents();window.qaParts=[];const stream=document.querySelector('#gameCanvas').captureStream(30);window.qaStream=stream;window.qaVideo=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8',videoBitsPerSecond:1400000});qaVideo.ondataavailable=e=>{if(e.data.size)qaParts.push(e.data)};qaVideo.start()});
-    await p.keyboard.down('d');await p.waitForTimeout(350);await p.keyboard.press('Space');await p.waitForTimeout(240);await p.keyboard.up('d');await p.keyboard.press('q');await p.waitForTimeout(650);await p.evaluate(()=>{denTinh.game.player.ult=100});await p.keyboard.press('r');await p.waitForTimeout(1300);
-    const encoded=await p.evaluate(async()=>{await new Promise(resolve=>{qaVideo.onstop=resolve;qaVideo.stop()});qaStream.getTracks().forEach(t=>t.stop());const bytes=new Uint8Array(await new Blob(qaParts,{type:'video/webm'}).arrayBuffer());let s='';for(let i=0;i<bytes.length;i+=16384)s+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(s)});
-    fs.writeFileSync(path.join(out,'v07-an-motion.webm'),Buffer.from(encoded,'base64'));assert(fs.statSync(path.join(out,'v07-an-motion.webm')).size>10000);pass('An running, dash and skills captured as a real canvas animation clip');
-   }
    if(id==='thienvu'){
     const all=await p.evaluate(()=>{const g=denTinh.game;denTinh.renderer.draw(.016);return{bodies:DTChoreography.metrics.bodies,clones:g.elementClones.length,synthetic:g.elementClones.filter(c=>DTChoreography.synthetic.has(c)).length}});
     assert.equal(all.clones,6);assert.equal(all.bodies,7);assert(all.synthetic>0);pass('Seven bodies retain distinct elemental sprites and ally casting poses');
     const timings=await p.evaluate(()=>{const r=denTinh.renderer,a=[];for(let i=0;i<22;i++){const t=performance.now();r.draw(.016);a.push(performance.now()-t)}a.sort((x,y)=>x-y);return{median:a[11],p95:a[20],triangles:DTChoreography.metrics.triangles}});assert(timings.triangles<=7*48);results.push({name:'Seven-body synchronous draw timing (headless, paused scene)',pass:true,...timings});
     await p.evaluate(()=>{DTSettings.reducedMotion=true;DTSettings.graphics='low';denTinh.renderer.draw(.016)});assert.equal(await p.evaluate(()=>DTChoreography.metrics.triangles),0);await p.screenshot({path:path.join(out,'v07-reduced-motion.png')});pass('Reduced motion and low detail retain all seven bodies without mesh trails');
    }
-   await ctx.close();
+   await ctx.close();if(id==='an'){await p.video().saveAs(path.join(out,'v07-an-motion.webm'));assert(fs.statSync(path.join(out,'v07-an-motion.webm')).size>10000);pass('Native browser recording captures movement and skill previews');}
   }
   for(const viewport of[{width:844,height:390},{width:390,height:844}]){
    const ctx=await browser.newContext({viewport,isMobile:true,hasTouch:true}),p=await prepare(ctx,'an');await p.locator('[data-touch="q"]').click();await p.waitForTimeout(240);assert(await p.evaluate(()=>denTinh.game.player.cd.q>0));assert(await p.evaluate(()=>DTChoreography.metrics.triangles>0));await p.screenshot({path:path.join(out,'v07-touch-'+viewport.width+'.png')});pass('Animated touch skill works at '+viewport.width+'x'+viewport.height);await ctx.close();

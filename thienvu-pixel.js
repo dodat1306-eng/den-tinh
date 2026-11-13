@@ -14,7 +14,7 @@
     const form=p.elementForm||p.element||'lightning',meta=root.DTThienVuAtlas?.forms[form];if(!meta)return null;
     const a=p.action,hit=p.hit>0?Math.max(0,.18-p.hit):hurt;
     const key=p.dashTime>0?'dash':hit>=0&&hit<.18?'hit':a?.key==='attack'?'attack':a?.key==='q'?'q_cast':a?.key==='e'?'e_cast':a?.key==='r'?'r_ult':p.moving?'run':'idle';
-    const clip=meta.actions[key],view=direction(a?.angle??p.facing??Math.PI/2);let f;
+    const clip=meta.actions[key],view=direction(root.DTBodyAngle(p));let f;
     if(a&&['attack','q_cast','e_cast','r_ult'].includes(key)){
       const release={attack:1,q_cast:2,e_cast:3,r_ult:3}[key],wind=Math.max(.001,a.release??a.windup??.16),duration=Math.max(wind+.001,a.duration||.65),elapsed=Math.max(0,a.elapsed||0);
       f=elapsed<wind?Math.floor(elapsed/wind*release):release+Math.floor((elapsed-wind)/(duration-wind)*(clip.frames-release));
@@ -50,7 +50,7 @@
     if(!cv){cv=document.createElement('canvas');cv.width=w;cv.height=h;const oc=cv.getContext('2d'),data=oc.createImageData(w,h),sources=fs.map(pixels),ux=dx/len,uy=dy/len;
       for(let y=0;y<h;y++)for(let x=0;x<w;x++){
         const rx=(x+minX)*2+1,ry=(y+minY)*2+1,along=rx*ux+ry*uy,across=-rx*uy+ry*ux;if(along<0||along>len)continue;
-        const part=light?(along<48?0:along>len-48?2:1):0,src=fs[part],sy=Math.floor(across/2+src.h/2);if(sy<0||sy>=src.h)continue;
+        const part=light?(along<48?0:along>len-48?2:1):0,src=fs[part],sy=Math.floor(across/(key==='solar_beam'?56/src.h:2)+src.h/2);if(sy<0||sy>=src.h)continue;
         const sx=part===2?clamp(src.w-1-Math.floor((len-along)/2),0,src.w-1):Math.floor(along/2)%src.w,i=(sy*src.w+sx)*4;if(sources[part][i+3]===255)data.data.set(sources[part].subarray(i,i+4),(y*w+x)*4);
       }
       oc.putImageData(data,0,0);cache(cacheKey,cv);
@@ -65,7 +65,9 @@
   function hero(c,p,time=0,hurt=-Infinity,clone=false,shadow=true){
     if(!ready())return false;const pose=frame(p,time,hurt);if(!pose)return false;const unit=clone?1.5:2;
     screen(c,m=>{const s=point(m,p.x,p.y);if(shadow)flip(c,'pixel_shadow',0,s.x,s.y+2,clone?1.5:2);
+      if(p.hoverboard>0)flip(c,'hoverboard',calm()?0:Math.floor(time*12)%6,s.x,s.y-4,unit);
       if(!(p.invulnerable>0&&!calm()&&Math.floor(time*12)%2===0))cell(c,character,pose.cell,s.x,s.y,32,58,unit);
+      if(pose.form==='light'&&p.moving&&!calm()){c.fillStyle='#fffbe0';for(let i=1;i<=3;i++)c.fillRect(s.x-Math.round(Math.cos(p.moveFacing||0)*i*8)-2,s.y-74-Math.round(Math.sin(p.moveFacing||0)*i*8),4,2)}
       if(p.shield>0)flip(c,'shield_'+pose.form,calm()?0:Math.floor(time*6)%2,s.x,s.y-48,clone?1.5:2);
       if(clone&&p.hp<p.maxHp){c.fillStyle='#100b18';c.fillRect(s.x-18,s.y+8,36,4);c.fillStyle=root.DTThienVuAtlas.forms[pose.form].palette[13];c.fillRect(s.x-17,s.y+9,Math.round(34*clamp(p.hp/p.maxHp,0,1)),2)}
     });return true;
@@ -77,9 +79,21 @@
     });return true;
   }
   function field(renderer,f,legacy=false){
-    if(renderer.game.hero.id!=='thienvu'||!['wall','mirror','vortex','tornado','orbs','sigil','garden','vine'].includes(f.kind)&&!legacy)return false;
+    if(renderer.game.hero.id!=='thienvu'||!f.combat&&!['wall','mirror','vortex','tornado','orbs','sigil','garden','vine'].includes(f.kind)&&!legacy)return false;
     if(!ready()||f.life<=0)return true;const g=renderer.game,form=f.element||g.element.id,time=calm()?0:g.time;
     screen(renderer.ctx,m=>{const c=renderer.ctx,s=point(m,f.x,f.y),r=Math.max(8,(f.r||100)*Math.abs(m.a)),index=Math.floor(time*10),kind=f.kind||(f.key==='r'?{wind:'tornado',ice:'nova',nature:'garden',fire:'orbs'}[form]:'')||{lightning:'sigil',wind:'vortex',earth:'wall',fire:'orbs',ice:'mirror',nature:'garden',light:'mirror'}[form];
+      if(f.combat){
+        const draw=(key,x=s.x,y=s.y,unit=2,angle=0)=>flip(c,key,index%root.DTThienVuVFX.clips[key].frames,x,y,unit,angle);
+        if(f.behavior==='fire_breath'){const a=f.angle||0;draw('fire_breath',s.x+Math.cos(a)*105,s.y-46+Math.sin(a)*105,2,a)}
+        else if(f.behavior==='blizzard'){draw('freeze_cage',s.x,s.y-32);for(let i=0;i<8;i++){const a=i/8*TAU;draw('ice_nova_strip',s.x+Math.cos(a)*r*.8,s.y+Math.sin(a)*r*.8)}}
+        else if(['tornado','hurricane'].includes(f.behavior))draw('tornado_mesh',s.x,s.y-68,f.behavior==='hurricane'?4:2);
+        else if(f.behavior==='meteor'){draw(f.meteorDelay>0?'giant_fireball':'meteor_burst',s.x,s.y-(f.meteorDelay>0?90+f.meteorDelay*150:20),3)}
+        else if(f.behavior==='tremor')draw('earth_tremor',s.x,s.y,3);
+        else if(f.behavior==='sword_array')for(let i=0;i<8;i++){const a=i/8*TAU;draw('lightning_swords',s.x+Math.cos(a)*r,s.y+Math.sin(a)*r-40,1.5)}
+        else if(f.behavior==='lightning_prison')draw('lightning_sigil',s.x,s.y,3);
+        else if(f.behavior==='root'){draw('nature_garden');for(let i=0;i<6;i++){const a=i/6*TAU;draw('vine_root',s.x+Math.cos(a)*r*.7,s.y+Math.sin(a)*r*.7)}}
+        return;
+      }
       if(kind==='wall'||kind==='mirror'){
         const a=f.angle||0,start={x:s.x-Math.cos(a)*r,y:s.y-Math.sin(a)*r},end={x:s.x+Math.cos(a)*r,y:s.y+Math.sin(a)*r},key=kind==='wall'?'earth_wall':'crystal_mirror_'+(form==='light'?'light':'ice');
         const count=Math.max(2,Math.ceil(r*2/88));for(let i=0;i<=count;i++){const t=i/count;flip(c,key,index%4,start.x+(end.x-start.x)*t,start.y+(end.y-start.y)*t-20,2,a)}
@@ -101,19 +115,27 @@
     if(!own)return false;if(!ready())return true;
     const age=clamp(1-e.life/Math.max(.001,e.maxLife),0,.999),form=e.element||(['bolt','lightning'].includes(e.type)?'lightning':g.element.id),step=(n)=>calm()?Math.floor(n/2):Math.min(n-1,Math.floor(age*n));
     screen(renderer.ctx,m=>{const c=renderer.ctx,s=point(m,e.x,e.y),dest=point(m,e.tx??e.x,e.ty??e.y);
+      if(e.type==='element-afterimage'){const pose=frame({elementForm:form,moveDir:direction(e.angle||0),moving:true},g.time);if(pose){for(let row=0;row<64;row+=4)if((row/4+Math.floor(age*8))%3!==0)c.drawImage(character,pose.cell.x,pose.cell.y+row,64,2,s.x-64,s.y+(row-58)*2,128,4)}return}
+      if(e.type==='element-mesh'||e.type==='element-weapon'){
+        const key=e.clip||(form==='earth'?'earth_tremor':form==='ice'?'ice_shatter':form==='nature'?'giant_vine':'chain_bolt'),clip=root.DTThienVuVFX.clips[key];if(!clip)return;
+        if(key==='solar_beam'&&e.tx!=null){segment(c,'solar_beam',step(6),{x:s.x,y:s.y-42},{x:dest.x,y:dest.y-42});flip(c,'solar_prism',step(6),s.x,s.y-42);return}
+        flip(c,key,step(clip.frames),s.x,s.y-(key==='giant_vine'?30:20),2,e.angle||0);return;
+      }
       if(e.type==='element-transform'||e.type==='choreo-transform'){
         if(e.type==='choreo-transform')return;
         flip(c,'transform_ring_'+form,step(5),s.x,s.y);flip(c,'transform_pillar_'+form,step(5),s.x,s.y-56);
       }else if(e.type==='element-recall'){flip(c,'transform_ring_'+form,4-step(5),s.x,s.y);particles(c,s.x,s.y-36,form,age)}
       else if(e.type==='element-split'||e.type==='choreo-split'){
-        if(e.type==='element-split')return;flip(c,'split_seal',step(6),s.x,s.y);
+        if(e.type==='element-split'&&g.effects?.some(f=>f.type==='choreo-split'))return;flip(c,'split_matrix',step(6),s.x,s.y,2);
+        for(const [i,id] of Object.keys(root.DTThienVuAtlas.forms).entries()){const a=i/7*TAU;flip(c,'crest_'+id,step(4),s.x+Math.round(Math.cos(a)*112),s.y+Math.round(Math.sin(a)*65),2)}
         if(!calm())for(const p of e.points||[]){const end=point(m,p.x,p.y);segment(c,'split_beam_'+p.element,step(6),{x:s.x,y:s.y-40},{x:end.x,y:end.y-32})}
       }else if(e.type==='element-convergence'){
         for(const p of e.points||[]){const a=point(m,p.x,p.y);segment(c,'split_beam_'+p.element,step(6),{x:a.x,y:a.y-42},s)}
         flip(c,'convergence_star',step(6),s.x,s.y);flip(c,'convergence_hub',step(6),s.x,s.y,age>.45?3:2);
       }else if(e.type==='element-beam'||e.type==='mythic-tether'||e.type==='lightning'){
-        const key=e.type==='lightning'?'chain_bolt':qKeys[form];
-        segment(c,key,step(key==='light_beam'?5:4),{x:s.x,y:s.y-36},{x:dest.x,y:dest.y-36});
+        const key=e.type==='lightning'?'chain_bolt':form==='light'?'solar_beam':qKeys[form];
+        segment(c,key,step(key==='solar_beam'?6:4),{x:s.x,y:s.y-36},{x:dest.x,y:dest.y-36});
+        if(key==='solar_beam')flip(c,'solar_prism',step(6),s.x,s.y-36);
         flip(c,form==='ice'?'ice_shatter':form==='nature'?'vine_root':'impact_'+form,step(form==='nature'?5:4),dest.x,dest.y-24);
       }else if(e.type==='element-muzzle'){const a=e.angle||0;flip(c,'muzzle_'+form,step(3),s.x+Math.round(Math.cos(a)*28),s.y-18+Math.round(Math.sin(a)*10),2,a)}
       else if(e.type==='element-impact'||e.type==='blast'||e.type==='bolt'){
@@ -129,7 +151,8 @@
       else flip(c,'transform_ring_'+form,step(5),s.x,s.y);
     });return true;
   }
-  function status(renderer,e){if(!ready())return;screen(renderer.ctx,m=>{const s=point(m,e.x,e.y);if(e.frozen>0)flip(renderer.ctx,'ice_shatter',calm()?1:Math.floor(renderer.game.time*6)%4,s.x,s.y-25);if(e.poison>0||e.rooted>0)flip(renderer.ctx,'vine_root',calm()?2:Math.floor(renderer.game.time*5)%5,s.x,s.y)})}
-  root.DTThienVuPixel={character,vfx,ready,frame,hero,ghost,effect,projectile,field,status,screen,point,flip,segment,cacheStats:()=>({rasters:rasters.size,bytes:rasterBytes,sources:sourceCache.size})};
+  function status(renderer,e){if(!ready())return;screen(renderer.ctx,m=>{const s=point(m,e.x,e.y);if(e.frozen>0)flip(renderer.ctx,'freeze_cage',calm()?1:Math.floor(renderer.game.time*6)%4,s.x,s.y-25);if(e.poison>0||e.rooted>0)flip(renderer.ctx,'vine_root',calm()?2:Math.floor(renderer.game.time*5)%5,s.x,s.y)})}
+  function summon(renderer,s){if(!ready())return;screen(renderer.ctx,m=>{const c=renderer.ctx,p=point(m,s.x,s.y),key=s.kind==='golem'?(s.action?'golem_smash':'golem_walk'):(s.action?'treant_whip':'treant_walk'),index=calm()?0:Math.floor((s.action?s.action.elapsed:renderer.game.time)*12)%6;flip(c,key,index,p.x,p.y-(s.kind==='golem'?66:44),2);c.fillStyle='#12091a';c.fillRect(p.x-28,p.y+6,56,5);c.fillStyle=s.kind==='golem'?'#ffcf82':'#78d663';c.fillRect(p.x-27,p.y+7,Math.round(54*clamp(s.life/s.maxLife,0,1)),3)})}
+  root.DTThienVuPixel={character,vfx,ready,frame,hero,ghost,effect,projectile,field,status,summon,screen,point,flip,segment,cacheStats:()=>({rasters:rasters.size,bytes:rasterBytes,sources:sourceCache.size})};
   character.onload=vfx.onload=()=>{if(ready())for(const cv of document.querySelectorAll('canvas[data-thienvu]')){const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);hero(c,{x:64,y:116,facing:Math.PI/2})}};
 })(globalThis);

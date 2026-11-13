@@ -75,7 +75,7 @@
       }
       const def=this.skillDescriptions[key],cost=def.cost||0;if(key==='r'&&p.ult<100){this.emit('toast',{text:'Tuyệt kỹ cần 100% lực từ chiến đấu.'});return false}if(key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
       if(key==='r')p.ult=0;else{p.mp-=cost;p.cd[key]=def.cooldown*(1-.06*this.skillRanks[key])*(p.relics.cooling?.8:1)}
-      p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.facing,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
+      p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.aimAngle,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
       const empowered=key==='q'&&p.relics.cinderella&&(this.relicCounters.cinderella||0)>=3;if(empowered){this.relicCounters.cinderella=0;p.mp=Math.min(p.maxMp,p.mp+10)}
       const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
       this.castQueue.push({type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)});
@@ -103,7 +103,7 @@
       const p=this.player,previous=e.markElement;
       if(this.isElemental&&element&&previous&&previous!==element&&this.time-(e.markTime||0)<6){const rank=this.skillRanks.passive,reaction=(previous==='fire'&&element==='ice'||previous==='ice'&&element==='fire')?'Hóa Hơi':element==='wind'?'Cuốn Xoáy':element==='light'||previous==='light'?'Phá Ấn':'Cộng Hưởng';this.damageEnemy(e,p.damage*(.65+rank*.12),false);this.effect('element-impact',e.x,e.y,root.DTElements.byId(element).color,60,.45,{element});if(this.floaters.length<60)this.floaters.push({x:e.x,y:e.y-50,text:reaction,color:'#ffe4a4',life:.8,vy:-30});e.markElement=null}else if(element){e.markElement=element;e.markTime=this.time}
       this.damageEnemy(e,damage,charge);if(charge&&this.isElemental&&element)this.registerHarmony(element);
-      if(element==='fire'){e.burn=3;e.burnTick=0}if(element==='ice'){e.slow=2;e.frozen=e.type==='boss'||e.sagaBoss?.2:.65}if(element==='nature'){e.rooted=e.type==='boss'||e.sagaBoss?.3:1.25;e.poison=3;e.poisonPower=p.damage*.17}if(element==='lightning')e.slow=Math.max(e.slow||0,1);
+      if(element==='fire'){e.burn=3;e.burnTick=0}if(element==='ice'){e.slow=2;e.frozen=Math.max(e.frozen||0,.65)}if(element==='nature'){e.rooted=e.type==='boss'||e.sagaBoss?.3:1.25;e.poison=3;e.poisonPower=p.damage*.17}if(element==='lightning')e.slow=Math.max(e.slow||0,1);
       if(charge&&p.relics.hermes&&this.readyRelic('hermes',.8)){p.cd.dash=Math.max(0,p.cd.dash-.35);p.swiftTime=1}
     }
     releaseCast(c){
@@ -146,34 +146,8 @@
     }
     registerHarmony(id){const s=this.passiveState,p=this.player;if(!s.forms.includes(id))s.forms.push(id);s.formTime=12;if(s.forms.length>=3){s.forms=[];p.mp=Math.min(p.maxMp,p.mp+18+this.skillRanks.passive*5);p.shield=Math.min(110,p.shield+20+5*this.skillRanks.passive);this.emit('toast',{text:'Hòa Âm Tam Linh · hoàn linh lực và tạo khiên',reward:true})}}
     castElement(id,key,origin,scale=1,charge=false,target){
-      const p=this.player,t=target||this.elementTarget(origin,500),a=Math.atan2(t.y-origin.y,t.x-origin.x),power=p.damage*scale,f=root.DTElements.byId(id),leader=origin===p;
-      this.effect('element-cast',origin.x,origin.y,f.color,key==='r'?210:85,key==='r'?1:.65,{element:id,key,angle:a,tx:t.x,ty:t.y,support:!leader});
-      if(key==='q'){
-        if(id==='lightning'){const start={x:origin.x,y:origin.y};if(leader){this.moveEntity(p,Math.cos(a)*150,Math.sin(a)*150);p.invulnerable=Math.max(.22,p.invulnerable)}const end={x:origin.x+Math.cos(a)*260,y:origin.y+Math.sin(a)*260};this.lineHit(start,end,25,power*3,id,charge);const targets=this.world.enemies.filter(e=>e.alive&&dist(e,end)<170).slice(0,2);for(const e of targets)this.mythicHit(e,power,id,false)}
-        else if(id==='wind')for(let i=-1;i<=1;i++)this.shoot(origin.x,origin.y,a+i*.26,650,power*1.6,f.color,{kind:'element-wind',element:id,pierce:4,life:1.2,returning:true,charge,ally:!leader,sourceSkill:'q'});
-        else if(id==='earth')for(let i=1;i<=5;i++)this.castQueue.push({type:'eruption',delay:i*.09,x:origin.x+Math.cos(a)*i*80,y:origin.y+Math.sin(a)*i*80,r:62,power:power*1.6,element:id,charge});
-        else if(id==='fire'){const nearest=this.world.enemies.filter(e=>e.alive&&dist(e,t)<260).sort((x,y)=>dist(x,t)-dist(y,t))[0]||t;for(let i=-1;i<=1;i++)this.shoot(origin.x,origin.y,Math.atan2(nearest.y-origin.y,nearest.x-origin.x)+i*.16,620,power*1.9,f.color,{kind:'element-fire',element:id,life:1.4,pierce:1,charge,ally:!leader,sourceSkill:'q'});this.reactEnvironment?.('fire',t.x,t.y,120)}
-        else if(id==='ice'){const end={x:origin.x+Math.cos(a)*690,y:origin.y+Math.sin(a)*690};const frozen=this.world.enemies.filter(e=>e.alive&&e.frozen>0&&segment(e,origin,end)<35+e.r);this.lineHit(origin,end,25,power*3.8,id,charge);for(const e of frozen)this.areaDamage(e.x,e.y,95,power*1.4,100,false)}
-        else if(id==='nature'){this.lineHit(origin,t,32,power*2.7,id,charge);if(leader)p.hp=Math.min(p.maxHp,p.hp+8);this.addField('vine',t.x,t.y,{life:3,r:100,power:power*.65,element:id})}
-        else this.lineHit(origin,{x:origin.x+Math.cos(a)*850,y:origin.y+Math.sin(a)*850},20,power*4.5,id,charge);
-      }else if(key==='e'){
-        if(id==='earth'){this.addField('wall',origin.x+Math.cos(a)*70,origin.y+Math.sin(a)*70,{angle:a+Math.PI/2,r:145,life:5,power:power*.5,element:id});if(leader){p.earthArmor=5;p.shield=Math.min(110,p.shield+35)}}
-        else if(id==='lightning'){if(leader){this.moveEntity(p,Math.cos(a)*130,Math.sin(a)*130);p.invulnerable=Math.max(.3,p.invulnerable)}this.addField('sigil',origin.x,origin.y,{life:4,r:140,power:power*.9,element:id})}
-        else if(id==='ice'||id==='light')this.addField('mirror',t.x,t.y,{life:5,r:125,angle:a+Math.PI/2,power:power*.3,element:id});
-        else if(id==='wind')this.addField('vortex',origin.x,origin.y,{life:4,r:180,power:power*.5,element:id,follow:leader});
-        else if(id==='fire')this.addField('orbs',origin.x,origin.y,{life:5,r:130,power:power*.85,element:id,follow:leader});
-        else this.addField('garden',t.x,t.y,{life:6,r:180,power:power*.45,element:id});
-      }else{
-        if(id==='lightning'){for(let i=0;i<7;i++)this.castQueue.push({type:'thunder-hunt',delay:i*.16,target:{...t},power:power*2.1,element:id})}
-        else if(id==='wind')this.addField('tornado',origin.x,origin.y,{angle:a,life:5,r:190,power:power*.9,element:id});
-        else if(id==='earth')for(let i=1;i<=6;i++)this.castQueue.push({type:'eruption',delay:i*.12,x:origin.x+Math.cos(a)*i*75,y:origin.y+Math.sin(a)*i*75,r:95,power:power*2.4,element:id});
-        else if(id==='fire')for(let i=0;i<8;i++)this.castQueue.push({type:'eruption',delay:i*.11,x:origin.x+Math.cos(a)*i*82,y:origin.y+Math.sin(a)*i*82,r:85,power:power*2.6,element:id});
-        else if(id==='ice')for(let i=1;i<=4;i++)this.castQueue.push({type:'ice-ring',delay:i*.22,x:t.x,y:t.y,r:i*80,power:power*2,element:id});
-        else if(id==='nature'){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,t)<380).slice(0,8);if(!targets.length)this.addField('garden',t.x,t.y,{life:7,r:240,power,element:id});for(const e of targets){this.addField('vine',e.x,e.y,{life:5,r:100,power:power*.8,element:id});this.mythicHit(e,power*2,id,false)}}
-        else for(let i=-2;i<=2;i++)this.castQueue.push({type:'light-sweep',delay:.16+(i+2)*.13,x:origin.x,y:origin.y,angle:a+i*.14,power:power*3.2,element:id});
-        if(leader)p.invulnerable=Math.max(.8,p.invulnerable);
-      }
-      this.reactEnvironment?.(id,t.x,t.y,key==='r'?220:130);
+      super.castElement(id,key,origin,scale,charge,target);
+      const t=target||origin;this.reactEnvironment?.(id,t.x,t.y,key==='r'?220:130);
     }
     onBulletHit(b,e){
       const wasBurning=e.burn>0;super.onBulletHit(b,e);const p=this.player,s=this.passiveState;if(this.isElemental&&b.sourceSkill&&b.charge!==false&&!b.ally)this.registerHarmony(b.element);if(!b.signature||b.ally||b.charge===false)return;
@@ -204,7 +178,7 @@
     }
     updateProjectiles(dt){
       const p=this.player;
-      for(const b of this.projectiles){b.age=(b.age||0)+dt;if(b.returning&&b.age>.35){const a=Math.atan2(p.y-b.y,p.x-b.x);b.vx=Math.cos(a)*760;b.vy=Math.sin(a)*760;b.angle=a;if(dist(b,p)<28)b.life=0}
+      for(const b of this.projectiles){b.age=(b.age||0)+dt;if(b.returning&&b.age>.35){const owner=b.owner&&b.owner!=='player'?this.elementClones.find(c=>c.id===b.owner&&c.alive):p;if(!owner){b.life=0;continue}const a=Math.atan2(owner.y-b.y,owner.x-b.x);b.vx=Math.cos(a)*760;b.vy=Math.sin(a)*760;b.angle=a;if(dist(b,owner)<28)b.life=0}
         if(b.friendly)continue;
         if(p.relics.cinderella&&p.dashTime>0&&!b.dodgeCounted&&dist(b,p)<p.r+b.r+20){b.dodgeCounted=true;this.relicCounters.cinderella=Math.min(3,(this.relicCounters.cinderella||0)+1);this.effect('mythic-orbit',p.x,p.y,'#cdefff',34,.3)}
         for(const f of this.mythicFields){
@@ -217,7 +191,7 @@
       }
       this.projectiles=this.projectiles.filter(b=>b.life>0);super.updateProjectiles(dt);
     }
-    updateEnemies(dt){const held=[];for(const e of this.world.enemies)if(e.alive&&e.rooted>0){held.push([e,e.speed]);e.speed*=e.sagaBoss||e.type==='boss'?.65:0;e.rooted=Math.max(0,e.rooted-dt)}try{super.updateEnemies(dt)}finally{for(const [e,s] of held)e.speed=s}for(const e of this.world.enemies){if(e.trucMark>0)e.trucMark-=dt;if(e.codeFault>0)e.codeFault-=dt}}
+    updateEnemies(dt){const held=[];for(const e of this.world.enemies)if(e.alive&&e.rooted>0){held.push([e,e.speed]);e.rootHeld=true;e.speed=0;e.rooted=Math.max(0,e.rooted-dt)}try{super.updateEnemies(dt)}finally{for(const [e,s] of held){e.speed=s;e.rootHeld=false}}for(const e of this.world.enemies){if(e.trucMark>0)e.trucMark-=dt;if(e.codeFault>0)e.codeFault-=dt}}
     reactEnvironment(element,x,y,r=150){
       let count=0;
       for(const f of this.mythicFields){if(f.kind!=='water'||f.life<=0||f.reacted||Math.hypot(f.x-x,f.y-y)>f.r+r)continue;
@@ -230,7 +204,7 @@
     }
     updateFields(dt){
       const p=this.player,lamps=this.mythicFields.filter(f=>f.kind==='lantern'&&f.life>0);
-      for(const f of this.mythicFields){f.life-=dt;f.tick-=dt;if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
+      for(const f of this.mythicFields){f.life-=dt;f.tick-=dt;if(f.combat){this.updateCombatField(f,dt,true);continue}if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
         if(f.kind==='lantern'&&dist(p,f)<95)p.hp=Math.min(p.maxHp,p.hp+dt*(1.5+this.skillRanks.passive*.5));
         if(f.kind==='garden'&&dist(p,f)<f.r)p.hp=Math.min(p.maxHp,p.hp+dt*4);
         if(f.kind==='decoy')for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,f)<f.r){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*e.speed*dt*.9,Math.sin(a)*e.speed*dt*.9);e.cool=Math.max(.3,e.cool)}
@@ -258,8 +232,8 @@
     }
     update(dt){
       if(this.paused||this.dead||!this.started)return;dt=clamp(dt,0,.04);if(!dt)return;const touch=root.DTTouch,p=this.player,x=p.x,y=p.y,t=this.time,dx=touch?.active?touch.move.x:this.input.dx,dy=touch?.active?touch.move.y:this.input.dy,speed=p.speed;
-      const blend=1-Math.exp(-dt*20);this.motion.vx+=(dx-this.motion.vx)*blend;this.motion.vy+=(dy-this.motion.vy)*blend;if(Math.abs(this.motion.vx)<.002)this.motion.vx=0;if(Math.abs(this.motion.vy)<.002)this.motion.vy=0;this.input.dx=this.motion.vx;this.input.dy=this.motion.vy;
-      if(p.swiftTime>0)p.speed*=p.relics.tam?1.2:1.12;if(p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.release)p.speed*=.65;
+      const blend=1-Math.exp(-dt*42);this.motion.vx=dx*this.motion.vx<=0||!dx?dx:this.motion.vx+(dx-this.motion.vx)*blend;this.motion.vy=dy*this.motion.vy<=0||!dy?dy:this.motion.vy+(dy-this.motion.vy)*blend;if(Math.abs(this.motion.vx)<.002)this.motion.vx=0;if(Math.abs(this.motion.vy)<.002)this.motion.vy=0;this.input.dx=this.motion.vx;this.input.dy=this.motion.vy;
+      if(p.swiftTime>0)p.speed*=p.relics.tam?1.2:1.12;
       try{super.update(dt)}finally{this.input.dx=dx;this.input.dy=dy;p.speed=speed}if(t===this.time)return;
       if(p.action){p.action.elapsed+=dt;if(p.action.elapsed>=p.action.duration)p.action=null}
       for(const id in this.relicCooldowns)this.relicCooldowns[id]=Math.max(0,this.relicCooldowns[id]-dt);
@@ -274,7 +248,7 @@
     transformElement(id){const ok=super.transformElement(id);if(ok&&this.signature){this.signature.color=this.element.color}return ok}
     updateTutorial(){const before=this.tutorial.step;super.updateTutorial();if(before<5&&this.tutorialDone){this.events=this.events.filter(e=>!(e.type==='toast'&&/TAB/.test(e.text)));this.emit('toast',{text:'Đã sẵn sàng! K học kỹ năng, I xem nội tại và cổ vật.'})}}
     grantRelic(id){if(C.relic(id)?.mythic&&this.player.relics[id]){this.player.gold+=35;this.emit('toast',{text:'Cổ vật đã sở hữu · nhận 35 xu thay thế',reward:true});return true}return super.grantRelic(id)}
-    cancelActions(){this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
+    cancelActions(){this.elementSummons=[];this.elementActions=[];this.elementFields=[];this.player.hoverboard=0;for(const c of this.elementClones||[])c.action=null;this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
     travelTo(id){const ok=super.travelTo(id);if(ok)this.cancelActions();return ok}
     respawn(){super.respawn();this.cancelActions();this.passiveState.embers=0;this.passiveState.thunder=0}
     serialize(){const data=super.serialize();data.ascensionVersion=5;data.ascension={points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;data.expansion.weaponDrops=[];return data}

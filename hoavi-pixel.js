@@ -14,7 +14,7 @@
   function frame(p,time=0,hurt=-Infinity){
     const meta=root.DTHoaViAtlas;if(!meta)return null;const a=p.action,hit=p.hit>0?Math.max(0,.18-p.hit):hurt;
     const key=p.dashTime>0?'dash':hit>=0&&hit<.18?'hit':a?.key==='q'?'q_debug':a?.key==='e'?(a.blink?'e_blink':'e_cast'):a?.key==='r'?'r_overclock':a?.key==='attack'?'attack':p.moving?'run':'idle';
-    const clip=meta.actions[key];if(!clip)return null;const facing=direction(a?.angle??p.facing??Math.PI/2);let f;
+    const clip=meta.actions[key];if(!clip)return null;const facing=direction(root.DTBodyAngle(p));let f;
     if(a&&['attack','q_debug','e_cast','e_blink','r_overclock'].includes(key)){
       const release=key==='attack'?2:key==='r_overclock'?5:2,wind=Math.max(.001,a.release??a.windup??.16),duration=Math.max(wind+.001,a.duration||.65),elapsed=a.elapsed||0;
       f=elapsed<wind?Math.floor(elapsed/wind*release):release+Math.floor((elapsed-wind)/(duration-wind)*(clip.frames-release));

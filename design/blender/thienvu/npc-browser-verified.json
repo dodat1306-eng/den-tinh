@@ -1,0 +1,36 @@
+{
+  "pass": true,
+  "physicalDevice": false,
+  "stagedCombatFixtures": true,
+  "results": [
+    {
+      "name": "Tap R picker traps focus; Escape resumes without spending ultimate",
+      "pass": true
+    },
+    {
+      "name": "Hold R spawns seven forms without opening picker",
+      "pass": true
+    },
+    {
+      "name": "Independent NPC combat, golem, treants, hoverboard, breath and freeze render together",
+      "pass": true
+    },
+    {
+      "name": "All 25 Blender mesh clips render with binary alpha and declared palette",
+      "pass": true
+    },
+    {
+      "name": "Touch R opens split picker at zero ultimate; selection spawns three forms",
+      "pass": true
+    },
+    {
+      "name": "Native touch hold spawns seven forms after 450ms",
+      "pass": true
+    },
+    {
+      "name": "No browser errors in desktop and touch flows",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

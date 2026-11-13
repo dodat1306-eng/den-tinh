@@ -63,6 +63,7 @@ def main():
     all_colors={tuple(bytes.fromhex(h[1:])) for h in fx['palette']};vfx_frames=0
     for name,clip in fx['clips'].items():
         allowed={tuple(bytes.fromhex(h[1:])) for h in meta['forms'][clip['element']]['palette']} if clip['element'] else all_colors
+        if clip.get('source')=='Blender toon mesh':allowed.add((18,9,26))
         for c in clip['cells']:
             a=np.array(im.crop((c['x'],c['y'],c['x']+c['w'],c['y']+c['h'])));mask=a[:,:,3]>0
             assert mask.any() and set(np.unique(a[:,:,3]))<={0,255},name

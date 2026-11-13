@@ -6,13 +6,17 @@
   class Game{
     constructor(hero='an',seed=71426){
       this.world=D.makeWorld(seed);this.rng=D.rand(seed+123);this.hero=D.HEROES[hero]||D.HEROES.an;
-      this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:65,gold:0,potions:3,ult:0,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0},dashTime:0,dashX:0,dashY:0,facing:0,moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
+      this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:65,gold:0,potions:3,ult:0,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
       this.projectiles=[];this.effects=[];this.particles=[];this.loot=[];this.floaters=[];this.telegraphs=[];this.events=[];
       this.time=0;this.paused=true;this.started=false;this.dead=false;this.victory=false;this.storyStarted=false;this.bossStarted=false;this.kills=0;this.deaths=0;this.upgrades=0;this.pendingLevels=0;this.visited=new Set(['village']);this.zone='village';this.shake=0;this.hitFlash=0;this.activeEffects=[];this.respawnPoint={x:740,y:2200};
       this.input={dx:0,dy:0,fire:false,aimX:1000,aimY:2200};
     }
     emit(type,data={}){this.events.push({type,...data})}
     consumeEvents(){return this.events.splice(0)}
+    faceMovement(actor,dx,dy){
+      actor.moving=Math.hypot(dx,dy)>.05;
+      if(actor.moving){actor.moveFacing=Math.atan2(dy,dx);actor.moveDir=dx<-.05?'W':dx>.05?'E':dy>.05?'S':'N';actor.flipX=actor.moveDir==='W'}
+    }
     start(){this.started=true;this.paused=false;this.storyStarted=true;this.emit('dialogue',{id:'intro'})}
     moveEntity(obj,dx,dy){
       const parts=Math.max(1,Math.ceil(Math.hypot(dx,dy)/7));
@@ -29,7 +33,7 @@
       p.invulnerable=Math.max(0,p.invulnerable-dt);p.mp=Math.min(p.maxMp,p.mp+13*dt);p.hp=Math.min(p.maxHp,p.hp+p.regen*dt);
       this.shake=Math.max(0,this.shake-dt*22);this.hitFlash=Math.max(0,this.hitFlash-dt*3);
       let dx=this.input.dx,dy=this.input.dy;const len=Math.hypot(dx,dy);if(len>1){dx/=len;dy/=len}
-      p.moving=len>0;p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);
+      this.faceMovement(p,dx,dy);p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);
       if(p.dashTime>0){p.dashTime-=dt;this.moveEntity(p,p.dashX*850*dt,p.dashY*850*dt);this.spark(p.x,p.y,2,this.hero.color,45,.2)}
       else this.moveEntity(p,dx*p.speed*dt,dy*p.speed*dt);
       if(this.input.fire)this.fire();
@@ -172,7 +176,7 @@
             }
           }else{
             if(dist>e.r+p.r){mx=Math.cos(a)*e.speed;my=Math.sin(a)*e.speed}
-            if(e.type==='shade'&&e.cool<=0&&dist>160&&dist<430){const nx=p.x-Math.cos(a)*95,ny=p.y-Math.sin(a)*95;if(!this.world.collision(nx,ny,e.r)){this.spark(e.x,e.y,16,'#918ba9',120,.3);e.x=nx;e.y=ny;this.effect('ring',nx,ny,'#ae9bb7',34,.3)}e.cool=4}
+            if(e.type==='shade'&&!e.rooted&&!e.rootHeld&&e.cool<=0&&dist>160&&dist<430){const nx=p.x-Math.cos(a)*95,ny=p.y-Math.sin(a)*95;if(!this.world.collision(nx,ny,e.r)){this.spark(e.x,e.y,16,'#918ba9',120,.3);e.x=nx;e.y=ny;this.effect('ring',nx,ny,'#ae9bb7',34,.3)}e.cool=4}
           }
           if(dist<e.r+p.r+5)this.damagePlayer(e.type==='boar'&&e.phase===2?e.damage*1.4:e.damage);
         }
@@ -296,5 +300,6 @@
       g.victory=!!data.victory;g.bossStarted=!!data.bossStarted;g.started=true;g.paused=false;g.zone=D.zoneAt(g.player.x,g.player.y).id;return g;
     }
   }
+  root.DTBodyAngle=p=>{const a=p.action;return a&&a.elapsed>=a.release&&a.elapsed<a.release+.14?a.angle:({S:Math.PI/2,E:0,N:-Math.PI/2,W:Math.PI}[p.moveDir]??p.moveFacing??p.facing??Math.PI/2)};
   root.DTGame=Game;
 })(globalThis);

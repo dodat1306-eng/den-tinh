@@ -144,7 +144,7 @@
       const dx=Number.isFinite(this.input.aimX)?this.input.aimX-origin.x:Math.cos(origin.facing||0)*max,dy=Number.isFinite(this.input.aimY)?this.input.aimY-origin.y:Math.sin(origin.facing||0)*max,l=Math.hypot(dx,dy),f=l>max?max/l:1;
       return{x:origin.x+dx*f,y:origin.y+dy*f};
     }
-    applyElementStatus(e,id,power=0,strong=false){super.applyElementStatus(e,id,power,strong);if(e.sagaBoss&&e.frozen>.2)e.frozen=.2}
+    applyElementStatus(e,id,power=0,strong=false){super.applyElementStatus(e,id,power,strong)}
     nearby(){
       const base=super.nearby(),o=this.world.environment.filter(o=>!o.used&&dist(o,this.player)<86).sort((a,b)=>dist(a,this.player)-dist(b,this.player))[0];
       if(!o||base&&dist(base,this.player)<dist(o,this.player)-10)return base;
@@ -209,7 +209,7 @@
       }
       if(index===1){
         const b=e.pattern%2?Math.PI/4:-Math.PI/4;for(const sign of[-1,1])this.sagaWarn('line',{x:p.x-Math.cos(b*sign)*360,y:p.y-Math.sin(b*sign)*360,x2:p.x+Math.cos(b*sign)*360,y2:p.y+Math.sin(b*sign)*360,r:24,color},1);
-        if(e.phase===2){const nx=e.homeX+Math.cos(e.pattern*2.1)*160,ny=e.homeY+Math.sin(e.pattern*2.1)*140;if(!this.world.collision(nx,ny,e.r)){this.effect('ring',e.x,e.y,color,80,.4);e.x=nx;e.y=ny}}
+        if(e.phase===2&&!e.rooted&&!e.rootHeld){const nx=e.homeX+Math.cos(e.pattern*2.1)*160,ny=e.homeY+Math.sin(e.pattern*2.1)*140;if(!this.world.collision(nx,ny,e.r)){this.effect('ring',e.x,e.y,color,80,.4);e.x=nx;e.y=ny}}
       }
       if(index===2){
         for(let beat=0;beat<3;beat++){const angle=(e.pattern%2?0:Math.PI/4)+beat*Math.PI/6;for(const sign of[-1,1])this.sagaWarn('line',{x:e.x-Math.cos(angle)*380*sign,y:e.y-Math.sin(angle)*380*sign,x2:e.x+Math.cos(angle)*380*sign,y2:e.y+Math.sin(angle)*380*sign,r:20,color},.7+beat*.45)}
@@ -232,7 +232,7 @@
     updateEnemies(dt){
       const custom=this.world.enemies.filter(e=>(e.sagaBoss||e.sagaAnchor)&&e.alive);for(const e of custom)e.alive=false;
       try{super.updateEnemies(dt)}finally{for(const e of custom)e.alive=true}
-      for(const e of custom)if(e.sagaBoss){const held=e.rooted>0||e.frozen>0;e.rooted=Math.max(0,(e.rooted||0)-dt);e.frozen=Math.max(0,(e.frozen||0)-dt);e.slow=Math.max(0,(e.slow||0)-dt);if(held)e.cool+=dt*.35;this.updateSagaBoss(e,dt)}else e.hit=Math.max(0,e.hit-dt);
+      for(const e of custom)if(e.sagaBoss){const held=e.rooted>0||e.frozen>0,disabled=e.frozen>0||e.stunned>0;e.rootHeld=e.rooted>0;e.rooted=Math.max(0,(e.rooted||0)-dt);e.frozen=Math.max(0,(e.frozen||0)-dt);e.slow=Math.max(0,(e.slow||0)-dt);if(disabled){e.stunned=Math.max(0,(e.stunned||0)-dt);continue}if(held)e.cool+=dt*.35;this.updateSagaBoss(e,dt);e.rootHeld=false}else e.hit=Math.max(0,e.hit-dt);
     }
     damageEnemy(e,amount,charge=true){
       if(e.sagaBoss&&this.world.enemies.some(a=>a.sagaAnchor&&a.alive&&a.sagaIndex===e.sagaIndex))amount*=.15;

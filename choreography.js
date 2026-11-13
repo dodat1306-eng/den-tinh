@@ -112,7 +112,7 @@
   const transform=G.transformElement;
   G.transformElement=function(id){const from=this.element?.id,result=transform.call(this,id);if(result&&from&&from!==this.element.id){transitions.set(this.player,{from,start:this.time});emit(this,'choreo-transform',this.player.x,this.player.y,this.element.color,95,.65,{element:this.element.id,from})}return result};
   const split=G.splitElementals;
-  G.splitElementals=function(){const before=this.elementClones.length,result=split.call(this);if(this.elementClones.length>before)emit(this,'choreo-split',this.player.x,this.player.y,this.element.color,320,.8,{points:this.elementClones.filter(c=>c.alive).map(c=>({x:c.x,y:c.y,element:c.element})),element:this.element.id});return result};
+  G.splitElementals=function(){const before=this.elementClones.length,result=split.call(this);if(this.elementClones.length>before)emit(this,'choreo-split',this.player.x,this.player.y,this.element.color,320,.55,{points:this.elementClones.filter(c=>c.alive).map(c=>({x:c.x,y:c.y,element:c.element})),element:this.element.id});return result};
   const cancel=G.cancelActions;
   G.cancelActions=function(...args){const result=cancel.apply(this,args);if(this.player){history.delete(this.player);transitions.delete(this.player);synthetic.delete(this.player);hurtTimes.delete(this.player)}for(const c of this.elementClones||[])synthetic.delete(c);this.effects=this.effects.filter(e=>!e.type?.startsWith('choreo-'));return result};
 

@@ -67,7 +67,7 @@
   }
   function sync(g){
     const s=signature(g),p=passive(g);$('weaponName').textContent=s.name;$('weaponName').style.color=s.color||g.hero.color;$('weaponAmmo').textContent='K · Kỹ năng · '+points(g)+' điểm';$('passiveHud').textContent=status(g);$('passiveHud').title=p.desc;
-    for(const key of['q','e','r']){const el=$('skill-'+key),k=skill(g,key);el.title=key.toUpperCase()+' · '+k.name+'\n'+k.desc;el.setAttribute('aria-label',key.toUpperCase()+' · '+k.name+'. '+k.desc)}
+    for(const key of['q','e','r']){const el=$('skill-'+key),k=key==='r'&&g.isElemental?{name:'Chọn Phân Thân',desc:'Nhấn R chọn 3/5/7 dạng. Giữ R 0,45 giây tách bảy. Tuyệt kỹ '+g.element.r+' dùng nút riêng trong vòng chọn.'}:skill(g,key);el.title=key.toUpperCase()+' · '+k.name+'\n'+k.desc;el.setAttribute('aria-label',key.toUpperCase()+' · '+k.name+'. '+k.desc)}
     const o=objective(g);if(o.title)$('questTitle').textContent=o.title;if(o.text)$('questText').textContent=o.text;
     const skillButton=$('openSkillTree');if(skillButton)skillButton.textContent='K · Kỹ năng'+(points(g)?' · '+points(g):'');
   }

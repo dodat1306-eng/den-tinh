@@ -73,3 +73,5 @@ Thumbs.db
 # Generated Python caches
 __pycache__/
 *.pyc
+
+/design/blender/thienvu/*.blend1

@@ -5,6 +5,7 @@
   function drawAvatar(c,p,form,time=0,scale=1,clone=false){return P()?.hero(c,{...p,elementForm:form},time,-Infinity,clone)}
   root.DTVisualHero=function(c,p,h,time=0,scale=1,npc=false){if(h.id!=='thienvu'||npc)return oldHero(c,p,h,time,scale,npc);drawAvatar(c,p,p.elementForm||'lightning',time)};
   R.drawElementClone=function(clone){drawAvatar(this.ctx,clone,clone.element,this.game.time,1,true)};
+  R.drawElementSummon=function(summon){P()?.summon(this,summon)};
   R.drawEffect=function(e){if(!P()?.effect(this,e))oldEffect.call(this,e)};
   R.drawProjectile=function(b){if(!P()?.projectile(this,b))oldProjectile.call(this,b)};
   R.drawEnemy=function(e){oldEnemy.call(this,e);if(this.game.hero.id==='thienvu')P()?.status(this,e)};

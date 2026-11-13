@@ -1,6 +1,6 @@
 # Đèn Tinh: Miền Sương Lạc — 0.7
 
-Game hành động 2D tiếng Việt, một người chơi. Bản 0.7 thêm **chuyển động và hiệu ứng chiêu riêng cho năm nhân vật, bảy nguyên tố và phân thân**, giữ hướng hình ảnh của concept đầu tiên cùng hệ thống gameplay 0.6. HoaVi đã làm lại theo [chibi pixel 64×64](design/blender/hoavi/README.md): 9 động tác, 4 hướng, 208 frame nhân vật và 70 frame hiệu ứng; đủ đánh thường/Q/E/R, Q có bóng lặp đồng bộ 0,35 giây. Thiên Vũ dùng [bảy bộ trang bị pixel riêng](design/blender/thienvu/README.md): 8 động tác × 4 hướng, 980 frame nhân vật và 325 frame hiệu ứng, phân thân 3/5/7 cùng hợp kích theo điểm ngắm.
+Game hành động 2D tiếng Việt, một người chơi. Bản 0.7 thêm **chuyển động và hiệu ứng chiêu riêng cho năm nhân vật, bảy nguyên tố và phân thân**, giữ hướng hình ảnh của concept đầu tiên cùng hệ thống gameplay 0.6. HoaVi đã làm lại theo [chibi pixel 64×64](design/blender/hoavi/README.md): 9 động tác, 4 hướng, 208 frame nhân vật và 70 frame hiệu ứng; đủ đánh thường/Q/E/R, Q có bóng lặp đồng bộ 0,35 giây. Thiên Vũ dùng [bảy bộ trang bị pixel riêng](design/blender/thienvu/README.md): 8 động tác × 4 hướng, 980 frame nhân vật và 459 frame hiệu ứng. Phân thân 3/5/7 tự di chuyển, né nguy hiểm, đánh thường và tung Q/E/R với hồi chiêu riêng; Web/Unity dùng chung atlas.
 
 ## Chơi tại máy
 
@@ -18,7 +18,7 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 
 - **F tại Chú Bảy** mở cửa hàng: cổ vật 105 xu, đổi bộ hàng từ 30 xu, bình linh lực 35 xu và bùa 60 giây giá 80 xu. Nâng cấp làng giữ qua hành trình mới trên cùng trình duyệt; bình máu và các nâng cấp cũ vẫn mua được.
 - Sau khi Q/E/R đều bậc 3, mở bốn nhánh Căn Cốt, Dưỡng Khí, Thân Pháp, Phá Thế; mỗi nhánh tối đa 50 bậc, dùng tổng cộng 600 điểm. Mỗi Q/E/R bậc 3 được chọn một trong hai chuyên hóa miễn phí, giữ trong hành trình đó.
-- Hòa Âm Thiên Vũ có hồi nội tại 6 giây và giới hạn khiên; giảm 30% sức mạnh đòn của phân thân. Kiệt được bảo vệ lúc lao Q; An có thể nhấn E lần hai để hút quái thường và nổ đèn.
+- Hòa Âm Thiên Vũ có hồi nội tại 6 giây và giới hạn khiên; phân thân dùng 62% sát thương bản chính, không tiêu linh lực hay tự nạp tuyệt kỹ. Kiệt được bảo vệ lúc lao Q; An có thể nhấn E lần hai để hút quái thường và nổ đèn.
 - Lướt hủy thu thế; các đòn đã cam kết vẫn nhả đúng một lần. Vùng mới có khoảng 5% quái tinh anh Hỏa/Băng/Lôi, Đài Tế ba đợt trong 30 giây và vùng sương có XP gấp đôi.
 - Mỗi nhân vật gắn với một bảo khí riêng; bỏ đổi ô trang bị, băng đạn, nạp đạn, nhặt và nâng vũ khí rơi.
 - **K** mở bốn nhánh Q, E, R và nội tại, mỗi nhánh ba bậc. Khởi đầu có ba điểm; lên cấp, nối chương và khám phá môi trường cho thêm điểm.
@@ -37,7 +37,7 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
 | Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
 
-Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. Phân thân là đồng minh AI, có máu và thời gian tồn tại; chưa có co-op.
+Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **Nhấn R** mở chọn 3/5/7, **giữ R 0,45 giây** tách bảy dạng; tuyệt kỹ/hợp kích dùng nút riêng trong vòng chọn. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; Băng đóng băng hoàn toàn 2 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
 
 Tuyệt kỹ cần 100% lực từ chiến đấu. Sát thương từ R, phân thân và các đòn phụ của cổ vật không tự nạp R.
 
@@ -80,10 +80,10 @@ Các hiệu ứng như chặn đòn chí tử, biên dịch thêm đòn, dây le
 
 | Phím | Hành động |
 | --- | --- |
-| WASD / mũi tên | Di chuyển |
+| WASD / mũi tên | Di chuyển; thân quay theo phím, đi chéo ưu tiên hướng ngang; chuột ngắm riêng |
 | Chuột / giữ trái | Ngắm / đánh thường, không cần nạp |
 | Space | Lướt né |
-| Q, E, R | Kỹ năng, tuyệt kỹ |
+| Q, E, R | Kỹ năng, tuyệt kỹ; Thiên Vũ nhấn/giữ R để chọn/tách phân thân |
 | F | Tương tác |
 | K / I | Học kỹ năng / nhân vật và cổ vật |
 | H | Dùng bình máu |

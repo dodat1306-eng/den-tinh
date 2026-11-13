@@ -4,7 +4,7 @@ from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[2]
-WORK=ROOT/'runtime/thienvu-pixel'
+WORK=ROOT/'runtime/thienvu-npc-pixel'
 VIEWS={'S':0,'E':math.pi/2,'N':math.pi,'W':-math.pi/2}
 
 def worker(args):
@@ -26,7 +26,9 @@ def worker(args):
             for direction,angle in VIEWS.items():
                 rig.rotation_euler.z=angle
                 for f in range(clip['frames']):
-                    scene.frame_set(f+1);bpy.context.view_layer.update();key=f'{name}-{direction}-{f:02}'
+                    scene.frame_set(f+1)
+                    if form=='light':rig.pose.bones['orbit'].rotation_euler.z=math.tau*f/clip['frames']
+                    bpy.context.view_layer.update();key=f'{name}-{direction}-{f:02}'
                     def point(owner,v):
                         bone=rig.pose.bones[owner]
                         mat=bone.matrix@rig.data.bones[owner].matrix_local.inverted()
@@ -125,7 +127,35 @@ def pack():
     report={'pass':True,'baseFrames':index,'engine':'CYCLES CPU, 1 sample, unlit emission','alpha':[0,255],'idleHeight':heights,'gauntletTravelPixels':motions,'clippedFrames':clipped}
     (HERE/'bake-pixel-v08.json').write_text(json.dumps(report,indent=2),encoding='utf-8');print(json.dumps(report))
 
+def review():
+    from PIL import Image,ImageDraw,ImageFont
+    meta=json.loads((ROOT/'assets/thienvu-pixel-v08.json').read_text(encoding='utf-8'))
+    fx=json.loads((ROOT/'assets/thienvu-vfx-pixel.json').read_text(encoding='utf-8'))
+    atlas=Image.open(ROOT/meta['image']).convert('RGBA');vfx=Image.open(ROOT/fx['image']).convert('RGBA')
+    out=Image.new('RGB',(1280,1440),'#102632');d=ImageDraw.Draw(out)
+    font=lambda size:ImageFont.truetype('C:/Windows/Fonts/arial.ttf',size)
+    d.text((28,22),'THIÊN VŨ / BẢY NGUYÊN TỐ',font=font(34),fill='#fff0bd')
+    d.text((28,68),'Vũ khí riêng · NPC tự chiến đấu · Atlas dùng chung Web / Unity',font=font(21),fill='#a9c9ce')
+    labels=[('SÉT','Kiếm Sét'),('GIÓ','Quạt Chiến'),('ĐẤT','Đôi Găng Đá'),('LỬA','Vòng Cưa Lửa'),('BĂNG','Búa Tạ Băng'),('MỘC','Roi Dây Gai'),('ÁNH SÁNG','Mắt / Vòng Sáng')]
+    def tile(sheet,c,scale=2):
+        return sheet.crop((c['x'],c['y'],c['x']+c['w'],c['y']+c['h'])).resize((c['w']*scale,c['h']*scale),Image.Resampling.NEAREST)
+    for i,(form,data) in enumerate(meta['forms'].items()):
+        x=24+i*176;col=data['palette'][13];d.rectangle((x,110,x+166,366),fill='#183441')
+        im=tile(atlas,data['actions']['idle']['directions']['S'][0]);out.paste(im,(x+19,118),im)
+        d.text((x+12,250),labels[i][0],font=font(22),fill=col);d.text((x+12,282),labels[i][1],font=font(17),fill='#d2e3df')
+        im=tile(vfx,fx['clips']['crest_'+form]['cells'][1]);out.paste(im,(x+59,310),im)
+    samples=[('golem_smash','GOLEM / 18s'),('treant_whip','TREANT / 30s'),('fire_breath','PHUN LỬA'),('tornado_mesh','LỐC XOÁY'),('earth_spikes','DÃY NÚI ĐÁ'),('solar_prism','LĂNG KÍNH')]
+    for i,(key,label) in enumerate(samples):
+        x=24+i*208;im=tile(vfx,fx['clips'][key]['cells'][2]);im.thumbnail((192,190),Image.Resampling.NEAREST)
+        out.paste(im,(x+(192-im.width)//2,394+(190-im.height)//2),im);d.text((x+5,592),label,font=font(19),fill='#fff0bd')
+    shot=HERE/'thienvu-npc-summons.png'
+    if shot.exists():out.paste(Image.open(shot).convert('RGB'),(0,650))
+    d.text((28,1392),'Ảnh game dùng cảnh kiểm tra tái lập · Pixel nearest · Alpha 0/255',font=font(20),fill='#a9c9ce')
+    out.save(HERE/'thienvu-boboiboy-7elements-preview.png')
+
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worker',action='store_true');p.add_argument('--forms',default='lightning');p.add_argument('--smoke',action='store_true');p.add_argument('--resume',action='store_true')
+    p=argparse.ArgumentParser();p.add_argument('--worker',action='store_true');p.add_argument('--forms',default='lightning');p.add_argument('--smoke',action='store_true');p.add_argument('--resume',action='store_true');p.add_argument('--review',action='store_true')
     a=p.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else None)
-    worker(a) if a.worker else pack()
+    if a.review:review()
+    elif a.worker:worker(a)
+    else:pack();review()

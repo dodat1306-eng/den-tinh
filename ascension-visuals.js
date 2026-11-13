@@ -323,7 +323,8 @@
       const objects=[];
       for(const a of g.elementClones||[])if(a.alive&&inView(a))objects.push({y:a.y,draw:()=>this.drawElementClone(a)});
       for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
-      for(const o of g.world.props||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawProp(o)});
+      for(const a of g.elementSummons||[])if(a.life>0&&inView(a))objects.push({y:a.y,draw:()=>this.drawElementSummon?.(a)});
+      for(const o of g.world.props||[])if(inView(o)&&!g.elementSummons?.some(s=>s.sourceProp===o&&s.life>0))objects.push({y:o.y,draw:()=>this.drawProp(o)});
       for(const o of g.world.environment||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawEnvironment(o)});
       for(const o of g.world.npcs||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawNpc(o)});
       for(const o of g.world.chests||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
