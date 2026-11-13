@@ -1,0 +1,349 @@
+{
+  "checkedAtUTC": "2026-11-13T09:06:12.372588+00:00",
+  "pass": true,
+  "scope": "HoaVi chibi pixel remake: all 9 actions / 4 views / attack-Q-E-R. Local build; no public deployment.",
+  "rig": {
+    "bones": 36,
+    "meshes": 1,
+    "triangles": 1000,
+    "materials": 20,
+    "clips": {
+      "idle": {
+        "frames": 6,
+        "fps": 8
+      },
+      "run": {
+        "frames": 8,
+        "fps": 14
+      },
+      "dash": {
+        "frames": 4,
+        "fps": 21
+      },
+      "attack": {
+        "frames": 5,
+        "fps": 18
+      },
+      "q_debug": {
+        "frames": 6,
+        "fps": 10
+      },
+      "e_cast": {
+        "frames": 6,
+        "fps": 12
+      },
+      "e_blink": {
+        "frames": 6,
+        "fps": 12
+      },
+      "r_overclock": {
+        "frames": 8,
+        "fps": 12
+      },
+      "hit": {
+        "frames": 3,
+        "fps": 17
+      }
+    },
+    "palette": [
+      "#12091a",
+      "#071824",
+      "#f6c9b2",
+      "#dca088",
+      "#b87664",
+      "#1b1026",
+      "#2e1c44",
+      "#523478",
+      "#261338",
+      "#482466",
+      "#733d9c",
+      "#a566cc",
+      "#9c897e",
+      "#d6c3b4",
+      "#f2e5d8",
+      "#8c5622",
+      "#cf8d36",
+      "#f7cb63",
+      "#f291c7",
+      "#0b2b3d",
+      "#126b82",
+      "#1fc8db",
+      "#66fff7",
+      "#eeffff",
+      "#ff3b6b"
+    ],
+    "dimensions": [
+      1.1748270988464355,
+      0.7767270803451538,
+      1.9708937406539917
+    ],
+    "shading": "Emission, exact sRGB region colors",
+    "source": "E:\\Games\\DenTinh\\design\\blender\\hoavi\\hoavi-pixel-v08.blend"
+  },
+  "geometry": {
+    "pass": true,
+    "errors": [],
+    "warnings": [],
+    "maxIkErrorM": 2.5138109877802473e-05
+  },
+  "assets": {
+    "pass": true,
+    "baseFrames": 208,
+    "ghostFrames": 24,
+    "ghostCyanPurpleScanlines": true,
+    "vfxFrames": 70,
+    "paletteColors": 25,
+    "binaryAlpha": true,
+    "onePixelOutline": true,
+    "allClipsMove": true
+  },
+  "bake": {
+    "pass": true,
+    "baseFrames": 208,
+    "ghostFrames": 24,
+    "cell": [
+      64,
+      64
+    ],
+    "paletteColors": 25,
+    "alpha": [
+      0,
+      255
+    ],
+    "idleHeight": [
+      47,
+      48,
+      48,
+      48,
+      47,
+      47,
+      50,
+      50,
+      50,
+      50,
+      49,
+      49,
+      47,
+      47,
+      46,
+      46,
+      46,
+      46,
+      49,
+      50,
+      50,
+      50,
+      49,
+      49
+    ],
+    "engine": "BLENDER_EEVEE",
+    "clippedFrames": 0
+  },
+  "tests": [
+    {
+      "file": "tools/test.cjs",
+      "exit": 0,
+      "passed": 13,
+      "tail": [
+        "13/13 checks passed"
+      ]
+    },
+    {
+      "file": "tools/expansion-test.cjs",
+      "exit": 0,
+      "passed": 20,
+      "tail": [
+        "20/20 expansion checks passed"
+      ]
+    },
+    {
+      "file": "tools/frontier-test.cjs",
+      "exit": 0,
+      "passed": 16,
+      "tail": [
+        "16/16 frontier checks passed"
+      ]
+    },
+    {
+      "file": "tools/elemental-test.cjs",
+      "exit": 0,
+      "passed": 18,
+      "tail": [
+        "18/18 elemental checks passed"
+      ]
+    },
+    {
+      "file": "tools/ascension-test.cjs",
+      "exit": 0,
+      "passed": 43,
+      "tail": [
+        "43/43 ascension checks passed"
+      ]
+    },
+    {
+      "file": "tools/endless-test.cjs",
+      "exit": 0,
+      "passed": 11,
+      "tail": [
+        "11/11 endless checks passed"
+      ]
+    },
+    {
+      "file": "tools/visual-math-test.cjs",
+      "exit": 0,
+      "passed": 7,
+      "tail": [
+        "PASS All persistent fields and all six named boss silhouettes draw each frame"
+      ]
+    },
+    {
+      "file": "tools/journey-test.cjs",
+      "exit": 0,
+      "passed": 23,
+      "tail": [
+        "23/23 journey tests passed"
+      ]
+    },
+    {
+      "file": "tools/choreography-test.cjs",
+      "exit": 0,
+      "passed": 18,
+      "tail": [
+        "18/18 choreography checks passed"
+      ]
+    },
+    {
+      "file": "tools/hoavi-pixel-test.cjs",
+      "exit": 0,
+      "passed": 5,
+      "tail": [
+        "PASS No uncaught browser errors"
+      ]
+    },
+    {
+      "file": "tools/choreography-browser.cjs",
+      "exit": 0,
+      "passed": 28,
+      "tail": [
+        "PASS All five heroes, splits, detail modes and touch scenes have no uncaught JavaScript errors"
+      ]
+    },
+    {
+      "file": "tools/build-web.cjs",
+      "exit": 0,
+      "passed": 0,
+      "tail": [
+        "Web build ready: 46 game files and _headers in E:\\Games\\DenTinh\\dist"
+      ]
+    }
+  ],
+  "namedPassChecks": 202,
+  "browser": {
+    "pass": true,
+    "results": [
+      {
+        "name": "Binary alpha, exact palette, 2x pixels, bounded beams and Canvas restore at DPR 1",
+        "pass": true,
+        "sampledOpaquePixels": 64576,
+        "zoom": [
+          0.8,
+          1.28,
+          2
+        ],
+        "angles": 5,
+        "beamPhases": 5
+      },
+      {
+        "name": "Q miss and stored ghost origin, exact echo delay, checkpoint endpoints and satellite damage origins",
+        "pass": true,
+        "echoDelay": 0.35,
+        "missEcho": true,
+        "blinkEndpoints": true,
+        "satelliteOrigins": [
+          {
+            "x": 1522.379775318497,
+            "y": 925.0212404973494,
+            "tx": 1750,
+            "ty": 1000
+          },
+          {
+            "x": 1517.620224681503,
+            "y": 1074.9787595026507,
+            "tx": 1750,
+            "ty": 1000
+          }
+        ]
+      },
+      {
+        "name": "Q, checkpoint, 12-slice recall and R screenshots captured in actual browser",
+        "pass": true
+      },
+      {
+        "name": "Binary alpha, exact palette, 2x pixels, bounded beams and Canvas restore at DPR 2",
+        "pass": true,
+        "sampledOpaquePixels": 64576,
+        "zoom": [
+          0.8,
+          1.28,
+          2
+        ],
+        "angles": 5,
+        "beamPhases": 5
+      },
+      {
+        "name": "No uncaught browser errors",
+        "pass": true
+      }
+    ],
+    "errors": [],
+    "note": "Headless Chrome, DPR 1/2 and emulated zoom; staged combat screenshots."
+  },
+  "webBuild": {
+    "files": 46,
+    "allMatchSource": true,
+    "oldHoaViAtlasNotPublished": true
+  },
+  "artifacts": {
+    "hoavi-pixel-v08.blend": 185159,
+    "hoavi-pixel-motion.gif": 256529,
+    "hoavi-pixel-review.png": 1187692,
+    "hoavi-pixel-sheet-preview.png": 322204,
+    "hoavi-pixel-game-q.png": 1050645,
+    "hoavi-pixel-game-echo.png": 1074856,
+    "hoavi-pixel-game-e.png": 1074097,
+    "hoavi-pixel-game-blink.png": 1065183,
+    "hoavi-pixel-game-r.png": 1076301
+  },
+  "atlasSHA256": "4aa8089524d347776bedb668e79b2cf65313d0376af1ec75156af5b689cb3057",
+  "router": {
+    "reviewProvider": "codex",
+    "model": "cx/gpt-6.1-sol",
+    "reportedTokens": 1076,
+    "reviewReport": "C:\\Users\\ASUS\\.codex\\tools\\nine-router-team\\runs\\20261113T082544Z-d1a0f0cf30\\report.json",
+    "unavailableProviders": [
+      "antigravity",
+      "gemini"
+    ],
+    "reason": "No permitted text model discovered; router status still exposes no model for these providers.",
+    "quotaFailureObserved": false
+  },
+  "notes": [
+    "The literal Hex list contains 25 colors, although prompt calls it 24.",
+    "Pixel scale refers to Canvas backing pixels; CSS may fit whole game to viewport.",
+    "Character views: four. VFX beam raster follows actual clipped aim; projectiles use actual angle.",
+    "Browser combat screenshots use staged fixtures; touch coverage is emulated.",
+    "E/W use three-quarter artwork at +/-60 degrees for readable face and outfit. Movement and beam aim retain their true directions."
+  ],
+  "renderFallbackSmoke": {
+    "pass": true,
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 32
+  },
+  "viewYawDegrees": {
+    "S": 0,
+    "E": 60,
+    "N": 180,
+    "W": -60
+  }
+}

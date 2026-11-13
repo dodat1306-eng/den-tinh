@@ -1,0 +1,98 @@
+[
+  {
+    "file": "tools/test.cjs",
+    "exit": 0,
+    "passed": 13,
+    "tail": [
+      "13/13 checks passed"
+    ]
+  },
+  {
+    "file": "tools/expansion-test.cjs",
+    "exit": 0,
+    "passed": 20,
+    "tail": [
+      "20/20 expansion checks passed"
+    ]
+  },
+  {
+    "file": "tools/frontier-test.cjs",
+    "exit": 0,
+    "passed": 16,
+    "tail": [
+      "16/16 frontier checks passed"
+    ]
+  },
+  {
+    "file": "tools/elemental-test.cjs",
+    "exit": 0,
+    "passed": 18,
+    "tail": [
+      "18/18 elemental checks passed"
+    ]
+  },
+  {
+    "file": "tools/ascension-test.cjs",
+    "exit": 0,
+    "passed": 43,
+    "tail": [
+      "43/43 ascension checks passed"
+    ]
+  },
+  {
+    "file": "tools/endless-test.cjs",
+    "exit": 0,
+    "passed": 11,
+    "tail": [
+      "11/11 endless checks passed"
+    ]
+  },
+  {
+    "file": "tools/visual-math-test.cjs",
+    "exit": 0,
+    "passed": 7,
+    "tail": [
+      "PASS All persistent fields and all six named boss silhouettes draw each frame"
+    ]
+  },
+  {
+    "file": "tools/journey-test.cjs",
+    "exit": 0,
+    "passed": 23,
+    "tail": [
+      "23/23 journey tests passed"
+    ]
+  },
+  {
+    "file": "tools/choreography-test.cjs",
+    "exit": 0,
+    "passed": 18,
+    "tail": [
+      "18/18 choreography checks passed"
+    ]
+  },
+  {
+    "file": "tools/hoavi-pixel-test.cjs",
+    "exit": 0,
+    "passed": 5,
+    "tail": [
+      "PASS No uncaught browser errors"
+    ]
+  },
+  {
+    "file": "tools/choreography-browser.cjs",
+    "exit": 0,
+    "passed": 28,
+    "tail": [
+      "PASS All five heroes, splits, detail modes and touch scenes have no uncaught JavaScript errors"
+    ]
+  },
+  {
+    "file": "tools/build-web.cjs",
+    "exit": 0,
+    "passed": 0,
+    "tail": [
+      "Web build ready: 46 game files and _headers in E:\\Games\\DenTinh\\dist"
+    ]
+  }
+]
