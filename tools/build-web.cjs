@@ -12,7 +12,7 @@ const files = [
   'assets/environment-v03.png',
   'assets/actors-v03.png',
   'elemental.js', 'elemental-visuals.js', 'elemental-ui.js', 'elemental.css', 'assets/thien-vu-v04.png',
-  'choreography.js','assets/spirit-fx-v07.png','journey.js', 'journey-ui.js', 'journey-visuals.js', 'journey.css', 'mythic-content.js', 'ascension.js', 'endless.js', 'ascension-visuals.js', 'ascension-ui.js', 'ascension.css', 'fonts.css',
+  'choreography.js','assets/spirit-fx-v07.png','assets/hoavi-pixel-v08.png','assets/hoavi-pixel-v08.js','assets/hoavi-pixel-v08.json','assets/hoavi-vfx-pixel.png','assets/hoavi-vfx-pixel.js','assets/hoavi-vfx-pixel.json','hoavi-pixel.js','journey.js', 'journey-ui.js', 'journey-visuals.js', 'journey.css', 'mythic-content.js', 'ascension.js', 'endless.js', 'ascension-visuals.js', 'ascension-ui.js', 'ascension.css', 'fonts.css',
   'assets/fonts/NotoSans-Regular.ttf', 'assets/fonts/NotoSans-Bold.ttf', 'assets/fonts/OFL.txt',
 ];
 

@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "baseFrames": 208,
+  "ghostFrames": 24,
+  "ghostCyanPurpleScanlines": true,
+  "vfxFrames": 70,
+  "paletteColors": 25,
+  "binaryAlpha": true,
+  "onePixelOutline": true,
+  "allClipsMove": true
+}

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-07T07:17:50.488Z",
+  "checkedAt": "2026-11-13T09:18:09.657Z",
   "results": [
     {
       "name": "Blender flipbook contains the seven declared rows and eight transparent PNG frames",
@@ -14,7 +14,23 @@
       "pass": true
     },
     {
-      "name": "Mesh rendering retains the original atlas and restores Canvas methods, alpha and stack",
+      "name": "Hero rendering retains each atlas and restores Canvas methods, alpha and stack",
+      "pass": true
+    },
+    {
+      "name": "HoaVi ships all 208 nonclipped RGBA frames with fixed foot anchor and synchronized metadata",
+      "pass": true
+    },
+    {
+      "name": "HoaVi selects every action and cardinal view without applying the sprite warp",
+      "pass": true
+    },
+    {
+      "name": "HoaVi gates missing atlas, retains bounded dash ghosts and restores Canvas on paint failure",
+      "pass": true
+    },
+    {
+      "name": "Q echo damage and phantom share the .35-second queue event, stored origin and clipped endpoint",
       "pass": true
     },
     {

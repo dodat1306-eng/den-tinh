@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
   const C=root.DTContent,D=root.DTWorld,TAU=Math.PI*2,cache=new Map();
-  const atlas=new Image();atlas.onload=()=>{document.querySelectorAll('#heroCards canvas').forEach((canvas,i)=>{const h=Object.values(D.HEROES)[i];if(h){const c=canvas.getContext('2d');c.clearRect(0,0,canvas.width,canvas.height);root.DTVisualHero(c,{x:28,y:67},h,0,.82)}})};atlas.src='assets/heroes.png';
+  const atlas=new Image();atlas.onload=()=>{document.querySelectorAll('#heroCards canvas').forEach((canvas,i)=>{const h=Object.values(D.HEROES)[i];if(h){const c=canvas.getContext('2d');c.clearRect(0,0,canvas.width,canvas.height);root.DTVisualHero(c,h.id==='hoavi'?{x:64,y:116,facing:Math.PI/2}:{x:28,y:67},h,0,.82)}})};atlas.src='assets/heroes.png';
   const poly=(c,p,color)=>{c.fillStyle=color;c.beginPath();p.forEach((v,i)=>i?c.lineTo(...v):c.moveTo(...v));c.closePath();c.fill()};
   const oval=(c,x,y,rx,ry,col)=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,rx,ry,0,0,TAU);c.fill()};
   function halo(c,x,y,r,color,alpha=.25){c.save();c.globalAlpha=alpha;const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,color);g.addColorStop(1,'transparent');c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2);c.restore()}
@@ -106,8 +106,8 @@
     const c=this.ctx,g=this.game,p=g.player;c.save();c.scale(this.zoom,this.zoom);c.translate(-Math.round(this.camera.x),-Math.round(this.camera.y));
     for(const d of g.weaponDrops||[]){if(Math.abs(d.x-p.x)>700||Math.abs(d.y-p.y)>450)continue;const w=C.weapon(d.weaponId);halo(c,d.x,d.y-10,40,w.color,.25);weapon(c,d.weaponId,d.x,d.y-15+Math.sin(g.time*3+d.x)*3,-.3,.85);c.font='10px Segoe UI';c.textAlign='center';c.fillStyle=w.color;c.fillText(w.name,d.x,d.y+13)}
     for(const l of C.lore)if(!g.memories.includes(l.id)&&Math.abs(l.x-p.x)<700&&Math.abs(l.y-p.y)<400){halo(c,l.x,l.y-20,40,'#d5b8ff',.25);c.fillStyle='#e6d9ff';c.fillRect(l.x-8,l.y-28,16,20);c.fillStyle='#9c81b5';c.fillRect(l.x-5,l.y-23,10,2);c.fillRect(l.x-5,l.y-18,7,2)}
-    for(const b of g.projectiles){if(b.kind!=='code'&&b.kind!=='blade')continue;c.save();c.translate(b.x,b.y-18);c.rotate(b.angle);c.fillStyle=b.color;c.shadowColor=b.color;c.shadowBlur=8;if(b.kind==='code'){c.font='bold 12px Consolas,monospace';c.fillText('<>',-7,4)}else{c.strokeStyle=b.color;c.lineWidth=4;c.beginPath();c.arc(-3,0,15,-1,1);c.stroke()}c.restore()}
-    if(p.overclock>0)for(let i=0;i<2;i++){const a=g.time*3+(i?1:-1),x=p.x+Math.cos(a)*52,y=p.y+Math.sin(a)*34;c.fillStyle='#152e44';c.fillRect(x-10,y-5,20,10);c.fillStyle='#78ffdf';c.fillRect(x-6,y-2,12,4);halo(c,x,y,20,'#6bffe1',.35)}
+    for(const b of g.projectiles){if(b.kind!=='blade')continue;c.save();c.translate(b.x,b.y-18);c.rotate(b.angle);c.strokeStyle=b.color;c.lineWidth=4;c.beginPath();c.arc(-3,0,15,-1,1);c.stroke();c.restore()}
+    if(g.hero.id!=='hoavi'&&p.overclock>0)for(let i=0;i<2;i++){const a=g.time*3+(i?1:-1),x=p.x+Math.cos(a)*52,y=p.y+Math.sin(a)*34;c.fillStyle='#152e44';c.fillRect(x-10,y-5,20,10);c.fillStyle='#78ffdf';c.fillRect(x-6,y-2,12,4);halo(c,x,y,20,'#6bffe1',.35)}
     if(p.firewall>0){c.strokeStyle='#f5a4df';c.lineWidth=3;const r=152;c.setLineDash([12,5]);c.beginPath();c.arc(p.x,p.y,r,g.time,g.time+TAU);c.stroke();c.setLineDash([])}
     c.restore();
   };

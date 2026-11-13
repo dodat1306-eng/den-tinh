@@ -6,9 +6,12 @@
   const reduced=()=>!!root.DTSettings?.reducedMotion;
   const quality=()=>root.DTSettings?.graphics==='low'||root.DTTouch?.active&&root.DTSettings?.graphics!=='high'?0:root.DTSettings?.graphics==='high'?2:1;
   const forms=['fire','wind','earth','lightning','ice','nature','light'];
-  const synthetic=new WeakMap(),transitions=new WeakMap(),history=new WeakMap(),hitTimes=new WeakMap();
+  const synthetic=new WeakMap(),transitions=new WeakMap(),history=new WeakMap(),hitTimes=new WeakMap(),hurtTimes=new WeakMap();
   const texture=new Image();texture.decoding='async';texture.src='assets/spirit-fx-v07.png';
-  const metrics={bodies:0,triangles:0,ghosts:0};
+  const metrics={bodies:0,triangles:0,ghosts:0,atlas:0};
+  const hoaviTexture=root.DTHoaViPixel.character;
+  function hoaviFrame(p,time=0,identity=p){return root.DTHoaViPixel.frame(p,time,time-(hurtTimes.get(identity)??-Infinity))}
+  function drawHoavi(c,p,time=0,scale=1,identity=p,shadow=true){return root.DTHoaViPixel.hero(c,p,time,time-(hurtTimes.get(identity)??-Infinity),shadow,scale>=2?3:2)}
   const profiles={an:{pull:1.9,reach:3.5,cloth:1.1,step:1},linh:{pull:2.5,reach:-1.5,cloth:1.6,step:1.15},kiet:{pull:3.1,reach:4.1,cloth:.65,step:.75},hoavi:{pull:1,reach:1.3,cloth:1.15,step:.85},thienvu:{pull:1.9,reach:2.6,cloth:1.2,step:1}};
   const elementalProfiles={lightning:{reach:3.6,cloth:.9},wind:{reach:1.6,cloth:2.1,step:1.1},earth:{pull:2.8,reach:2.3,cloth:.4,step:.6},fire:{reach:3.5,cloth:1.3},ice:{reach:1.9,cloth:.7},nature:{reach:1.8,cloth:1.5},light:{reach:1.4,cloth:1.6}};
   function profile(hero,form){return{...(profiles[hero]||profiles.an),...(hero==='thienvu'?elementalProfiles[form]||{}:{})}}
@@ -55,6 +58,9 @@
   }
   const sprite=A.drawSpriteHero;
   function drawHero(c,p,h,time=0,scale=1,npc=false,clone=false,identity=p){
+    if(!npc&&h.id==='hoavi'&&!root.DTHoaViPixel.ready())return;
+    const atlasReady=!npc&&h.id==='hoavi'&&root.DTHoaViPixel.ready();
+    if(atlasReady&&(reduced()||p.hp===0)){drawHoavi(c,p,time,scale,identity);metrics.bodies++;metrics.atlas++;return}
     if(npc||!profiles[h.id]||reduced()||p.hp===0)return sprite(c,p,h,time,scale,npc,clone);
     let old=history.get(identity);
     if(old&&(time<(old.seenTime??old.time)||Math.hypot(p.x-old.x,p.y-old.y)>140)){history.delete(identity);synthetic.delete(identity);transitions.delete(identity);old=null}
@@ -66,10 +72,11 @@
     if(time>trail.time+.035){trail.points.push({x:trail.x,y:trail.y,time:trail.time});trail.x=p.x;trail.y=p.y;trail.time=time;while(trail.points.length>5)trail.points.shift()}
     if(s.dash>0&&!clone&&quality()>0){
       const samples=trail.points.filter(t=>time-t.time<.15).slice(-(quality()===2?2:1));
-      for(const t of samples){c.save();c.globalAlpha*=.10;sprite(c,{...actor,x:t.x,y:t.y,shield:0,invulnerable:0,hit:0,action:null},h,time,scale,false,false);c.restore();metrics.ghosts++}
+      for(const t of samples){c.save();try{c.globalAlpha*=.10;const ghost={...actor,x:t.x,y:t.y,shield:0,invulnerable:0,hit:0,action:null};if(atlasReady)drawHoavi(c,ghost,time,scale,identity,false);else sprite(c,ghost,h,time,scale,false,false)}finally{c.restore()}metrics.ghosts++}
     }
     const trans=transitions.get(identity);
     if(h.id==='thienvu'&&trans&&time>=trans.start&&time-trans.start<.32){c.save();c.globalAlpha*=.42*(1-(time-trans.start)/.32);sprite(c,{...p,elementForm:trans.from,shield:0,invulnerable:0},h,time,scale,false,clone);c.restore()}
+    if(atlasReady){drawHoavi(c,actor,time,scale,identity);metrics.bodies++;metrics.atlas++;return}
     const native=c.drawImage,own=Object.hasOwn(c,'drawImage');
     c.drawImage=function(...args){const src=String(args[0]?.src||args[0]?._src||'');if(args.length===9&&/(?:heroes|thien-vu-v04)\.png(?:$|[?#])/.test(src))warp(c,native,args,s);else native.apply(c,args)};
     try{sprite(c,actor,h,time,scale,npc,clone);metrics.bodies++}finally{if(own)c.drawImage=native;else delete c.drawImage}
@@ -96,13 +103,17 @@
   const release=G.releaseCast;
   G.releaseCast=function(c){const p=this.player,origin={x:p.x,y:p.y};const result=release.call(this,c);if(!this.dead&&this.hero.id!=='thienvu'&&['q','e','r'].includes(c.key))emit(this,'choreo-release',origin.x,origin.y,this.hero.color,this.hero.id==='an'&&c.key==='r'?660:160,c.key==='r'?1.05:.65,{hero:this.hero.id,key:c.key,angle:c.angle||0,tx:p.x,ty:p.y,element:this.hero.id==='an'?'fire':this.hero.id==='linh'?'nature':this.hero.id==='kiet'?'lightning':'light'});return result};
   const damage=G.damageEnemy;
-  G.damageEnemy=function(e,...args){const hp=e?.hp,result=damage.call(this,e,...args);if(e&&hp>e.hp&&this.time-(hitTimes.get(e)??-10)>.07){hitTimes.set(e,this.time);emit(this,'choreo-hit',e.x,e.y-12,'#ffe8b8',34,.26,{element:e.markElement||this.element?.id||'light',seed:e.x*.1+e.y*.2})}return result};
+  G.damageEnemy=function(e,...args){const hp=e?.hp,result=damage.call(this,e,...args);if(e&&hp>e.hp&&this.time-(hitTimes.get(e)??-10)>.07){hitTimes.set(e,this.time);emit(this,'choreo-hit',e.x,e.y-12,'#ffe8b8',34,.26,{hero:this.hero.id,element:e.markElement||this.element?.id||'light',seed:e.x*.1+e.y*.2})}return result};
+  const hurt=G.damagePlayer;
+  G.damagePlayer=function(...args){const p=this.player,hp=p.hp,shield=p.shield||0,result=hurt.apply(this,args);if(p.hp<hp||(p.shield||0)<shield)hurtTimes.set(p,this.time);return result};
+  const fire=G.fire;
+  G.fire=function(...args){const result=fire.apply(this,args);if(result&&this.hero.id==='hoavi')emit(this,'choreo-code-shot',this.player.x,this.player.y,'#8af0ed',36,.12,{angle:this.player.facing});return result};
   const transform=G.transformElement;
   G.transformElement=function(id){const from=this.element?.id,result=transform.call(this,id);if(result&&from&&from!==this.element.id){transitions.set(this.player,{from,start:this.time});emit(this,'choreo-transform',this.player.x,this.player.y,this.element.color,95,.65,{element:this.element.id,from})}return result};
   const split=G.splitElementals;
   G.splitElementals=function(){const before=this.elementClones.length,result=split.call(this);if(this.elementClones.length>before)emit(this,'choreo-split',this.player.x,this.player.y,this.element.color,320,.8,{points:this.elementClones.filter(c=>c.alive).map(c=>({x:c.x,y:c.y,element:c.element})),element:this.element.id});return result};
   const cancel=G.cancelActions;
-  G.cancelActions=function(...args){const result=cancel.apply(this,args);if(this.player){history.delete(this.player);transitions.delete(this.player);synthetic.delete(this.player)}for(const c of this.elementClones||[])synthetic.delete(c);this.effects=this.effects.filter(e=>!e.type?.startsWith('choreo-'));return result};
+  G.cancelActions=function(...args){const result=cancel.apply(this,args);if(this.player){history.delete(this.player);transitions.delete(this.player);synthetic.delete(this.player);hurtTimes.delete(this.player)}for(const c of this.elementClones||[])synthetic.delete(c);this.effects=this.effects.filter(e=>!e.type?.startsWith('choreo-'));return result};
 
   const line=(c,pts,col,w=2)=>{c.strokeStyle=col;c.lineWidth=w;c.beginPath();pts.forEach((p,i)=>i?c.lineTo(...p):c.moveTo(...p));c.stroke()};
   const polygon=(c,pts,col)=>{c.fillStyle=col;c.beginPath();pts.forEach((p,i)=>i?c.lineTo(...p):c.moveTo(...p));c.closePath();c.fill()};
@@ -179,13 +190,7 @@
     const simple=reduced(),q=quality(),col=e.color,count=e.support?2:q===2?10:q===1?6:3;
     if(simple){c.globalAlpha*=.45;ring(c,0,-18,e.key==='r'?35:22,col);return}
     if(e.hero==='an'&&e.key==='r'){phoenix(c,e,age);return}
-    if(e.hero==='hoavi'){
-      if(e.key==='e'){ring(c,0,0,35+age*22,'#92ffe1');ring(c,0,0,28+age*22,'#c7fff0')}
-      c.translate(Math.cos(e.angle||0)>=0?58:-58,-48-age*14);c.rotate(Math.sin(age*3)*.05);
-      c.fillStyle='#102d39aa';c.fillRect(-34,-22,68,43);c.strokeStyle='#8affdb';c.lineWidth=1.5;c.strokeRect(-34,-22,68,43);
-      const n=e.key==='r'?5:3;for(let i=0;i<n;i++){const width=12+((i*13+17)%37)*Math.min(1,age*9);line(c,[[-24,-13+i*7],[-24+width,-13+i*7]],i%2?'#d5fff0':'#72dace',1.5)}
-      c.fillStyle='#efffe3';if(Math.floor(age*14)%2===0)c.fillRect(14,11,7,2);
-    }else if(e.hero==='linh'){
+    if(e.hero==='linh'){
       c.rotate(e.angle);for(let i=0;i<(e.key==='r'?4:3);i++){const x=25+i*24+age*35;c.lineWidth=1.5;ring(c,x,-21,(8+i*3)*(1-age*.35),'#d5f6b1',1.8)}
       if(e.key==='e')for(let i=0;i<count;i++)mote(c,-age*35+i*9,-10+Math.sin(i)*8,18,'nature',age,i);
     }else if(e.hero==='kiet'){
@@ -213,6 +218,7 @@
   }
   const effect=R.drawEffect;
   R.drawEffect=function(e){
+    if(root.DTHoaViPixel.effect(this,e))return;
     if(legacyEffect(this,e))return;
     if(!e.type?.startsWith('choreo-'))return effect.call(this,e);
     const c=this.ctx,age=clamp(1-e.life/Math.max(.01,e.maxLife),0,1),fade=clamp(e.life/.18,0,1);
@@ -233,11 +239,16 @@
   };
   const projectile=R.drawProjectile;
   R.drawProjectile=function(b){
+    if(root.DTHoaViPixel.projectile(this,b))return;
     projectile.call(this,b);if(reduced()||!b.friendly||quality()===0||!b.signature)return;
     const c=this.ctx,dx=b.vx||0,dy=b.vy||0,l=Math.hypot(dx,dy)||1,tail=b.kind==='arrow'?30:18;
     c.save();c.globalAlpha*=.45;line(c,[[b.x-dx/l*tail,b.y-dy/l*tail],[b.x,b.y]],b.color||'#d1ffe8',b.kind==='arrow'?1.1:2);c.restore();
   };
+  const enemy=R.drawEnemy;
+  R.drawEnemy=function(e){enemy.call(this,e);root.DTHoaViPixel.fault(this,e)};
+  const field=R.drawMythicField;
+  R.drawMythicField=function(f){if(!root.DTHoaViPixel.field(this,f))field.call(this,f)};
   const draw=R.draw;
-  R.draw=function(...args){metrics.bodies=metrics.triangles=metrics.ghosts=0;return draw.apply(this,args)};
-  root.DTChoreography={profile,state,vertex,drawHero,warp,metrics,texture,forms,quality,synthetic,transitions};
+  R.draw=function(...args){metrics.bodies=metrics.triangles=metrics.ghosts=metrics.atlas=0;return draw.apply(this,args)};
+  root.DTChoreography={profile,state,vertex,drawHero,warp,metrics,texture,forms,quality,synthetic,transitions,hoaviFrame,hoaviTexture};
 })(globalThis);
