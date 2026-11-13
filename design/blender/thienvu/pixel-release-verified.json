@@ -1,0 +1,82 @@
+{
+  "checkedAt": "2026-11-13T10:24:13.818978+00:00",
+  "pass": true,
+  "hostSaveUnchanged": true,
+  "results": [
+    {
+      "command": "node tools/test.cjs",
+      "exit": 0,
+      "checks": 13
+    },
+    {
+      "command": "node tools/expansion-test.cjs",
+      "exit": 0,
+      "checks": 20
+    },
+    {
+      "command": "node tools/frontier-test.cjs",
+      "exit": 0,
+      "checks": 16
+    },
+    {
+      "command": "node tools/elemental-test.cjs",
+      "exit": 0,
+      "checks": 18
+    },
+    {
+      "command": "node tools/elemental-http-test.cjs",
+      "exit": 0,
+      "checks": 6
+    },
+    {
+      "command": "node tools/ascension-test.cjs",
+      "exit": 0,
+      "checks": 43
+    },
+    {
+      "command": "node tools/endless-test.cjs",
+      "exit": 0,
+      "checks": 11
+    },
+    {
+      "command": "node tools/visual-math-test.cjs",
+      "exit": 0,
+      "checks": 7
+    },
+    {
+      "command": "node tools/journey-test.cjs",
+      "exit": 0,
+      "checks": 23
+    },
+    {
+      "command": "node tools/choreography-test.cjs",
+      "exit": 0,
+      "checks": 18
+    },
+    {
+      "command": "node tools/build-web.cjs",
+      "exit": 0,
+      "checks": 0
+    }
+  ],
+  "pixelBrowserChecks": 11,
+  "motionBrowserChecks": 29,
+  "physicalDevice": false,
+  "stagedCombatFixtures": true,
+  "pixelAssets": {
+    "pass": true,
+    "baseFrames": 980,
+    "distinctSilhouettes": 7,
+    "vfxClips": 75,
+    "vfxFrames": 325,
+    "binaryAlpha": true,
+    "onePixelOutline": true,
+    "palettePerForm": true,
+    "minGauntletTravel": 8.94,
+    "clippedFrames": 0
+  },
+  "geometryChecks": 76,
+  "geometryErrors": 0,
+  "acceptedFloatingOrnamentWarnings": 69,
+  "publicFiles": 53
+}

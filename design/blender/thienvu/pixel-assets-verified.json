@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "baseFrames": 980,
+  "distinctSilhouettes": 7,
+  "vfxClips": 75,
+  "vfxFrames": 325,
+  "binaryAlpha": true,
+  "onePixelOutline": true,
+  "palettePerForm": true,
+  "minGauntletTravel": 8.94,
+  "clippedFrames": 0
+}
