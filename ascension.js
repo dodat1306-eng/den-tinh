@@ -70,14 +70,16 @@
       if(p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.duration)return false;
       if(this.hero.id==='hoavi'&&key==='e'&&this.checkpoint){
         const c=this.checkpoint;this.checkpoint=null;const spot=this.elementSafeSpot(c.x,c.y);if(!spot)return false;
-        this.effect('mythic-tether',p.x,p.y,'#72f4de',20,.5,{tx:spot.x,ty:spot.y});this.lineHit(p,spot,46,p.damage*2,'light',true);
-        this.projectiles=this.projectiles.filter(b=>b.friendly||segment(b,p,spot)>70);p.x=spot.x;p.y=spot.y;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*(.08+.04*this.skillRanks.passive));p.invulnerable=Math.max(.45,p.invulnerable);this.beginAction('e',p.facing);return true;
+        this.effect('choreo-pixel-blink',p.x,p.y,'#1fc8db',20,.5,{hero:'hoavi',tx:spot.x,ty:spot.y,angle:p.facing});this.lineHit(p,spot,46,p.damage*2,'light',true,{hero:'hoavi',key:'blink'});
+        this.projectiles=this.projectiles.filter(b=>b.friendly||segment(b,p,spot)>70);p.x=spot.x;p.y=spot.y;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*(.08+.04*this.skillRanks.passive));p.invulnerable=Math.max(.45,p.invulnerable);this.beginAction('e',p.facing);p.action.blink=true;return true;
       }
       const def=this.skillDescriptions[key],cost=def.cost||0;if(key==='r'&&p.ult<100){this.emit('toast',{text:'Tuyệt kỹ cần 100% lực từ chiến đấu.'});return false}if(key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
       if(key==='r')p.ult=0;else{p.mp-=cost;p.cd[key]=def.cooldown*(1-.06*this.skillRanks[key])*(p.relics.cooling?.8:1)}
       p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.facing,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
       const empowered=key==='q'&&p.relics.cinderella&&(this.relicCounters.cinderella||0)>=3;if(empowered){this.relicCounters.cinderella=0;p.mp=Math.min(p.maxMp,p.mp+10)}
-      this.castQueue.push({type:'cast',delay:windup,key,angle:a,target,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)});
+      const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
+      this.castQueue.push({type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)});
+      if(pixelOrigin&&p.code>=4)this.effect('choreo-code-wait',p.x,p.y,'#1fc8db',64,windup+.35,{hero:'hoavi',angle:a});
       this.tutorial.skills++;this.onRelicCast(key,cost,target);this.emit('sound',{name:key==='r'?'ultimate':'skill'});this.effect('mythic-rune',p.x,p.y,this.hero.color,key==='r'?115:48,windup+.1,{key,angle:a});return true;
     }
     onRelicCast(key,cost,target){
@@ -90,10 +92,10 @@
       if(p.relics.aladdin){this.relicCounters.aladdin=(this.relicCounters.aladdin||0)+cost;if(this.relicCounters.aladdin>=90){this.relicCounters.aladdin-=90;p.mp=Math.min(p.maxMp,p.mp+25);this.lineHit(p,target,30,p.damage*2,'light',false)}}
     }
     elementTarget(origin,max=540){const a=Math.atan2(this.input.aimY-origin.y,this.input.aimX-origin.x),r=Math.min(max,Math.hypot(this.input.aimX-origin.x,this.input.aimY-origin.y));return{x:origin.x+Math.cos(a)*r,y:origin.y+Math.sin(a)*r}}
-    lineHit(a,b,width,power,element,charge=true){
+    lineHit(a,b,width,power,element,charge=true,visual={}){
       let endpoint={...b};const length=dist(a,b),angle=Math.atan2(b.y-a.y,b.x-a.x);for(let n=12;n<length;n+=12)if(this.world.collision(a.x+Math.cos(angle)*n,a.y+Math.sin(angle)*n,2)){endpoint={x:a.x+Math.cos(angle)*n,y:a.y+Math.sin(angle)*n};break}
       for(const e of this.world.enemies)if(e.alive&&segment(e,a,endpoint)<width+e.r)this.mythicHit(e,power,element,charge);
-      this.effect(element==='light'?'element-beam':'mythic-tether',a.x,a.y,this.isElemental?root.DTElements.byId(element).color:this.hero.color,width,.35,{element:element||'light',tx:endpoint.x,ty:endpoint.y,angle});
+      this.effect(element==='light'?'element-beam':'mythic-tether',a.x,a.y,this.isElemental?root.DTElements.byId(element).color:this.hero.color,width,.35,{element:element||'light',tx:endpoint.x,ty:endpoint.y,angle,...visual});
       this.reactEnvironment?.(element,endpoint.x,endpoint.y,width+45);return endpoint;
     }
     mythicHit(e,damage,element,charge=true){
@@ -134,8 +136,9 @@
       }
       if(id==='hoavi'){
         if(key==='q'){
-          const end={x:p.x+Math.cos(a)*650,y:p.y+Math.sin(a)*650};for(const e of this.world.enemies)if(e.alive&&segment(e,p,end)<24+e.r)e.codeFault=5;
-          this.lineHit(p,end,22,power*3.5,'light',true);if(p.code>=4){p.code-=4;this.castQueue.push({type:'code-echo',delay:.35,x:p.x,y:p.y,tx:end.x,ty:end.y,power:power*(1.7+.15*this.skillRanks.passive)})}this.reactEnvironment?.('lightning',end.x,end.y,120);
+          const start=c.origin||origin,end={x:start.x+Math.cos(a)*650,y:start.y+Math.sin(a)*650};
+          const hit=this.lineHit(start,end,22,power*3.5,'light',true,{hero:'hoavi',key:'q'});for(const e of this.world.enemies)if(e.alive&&segment(e,start,hit)<24+e.r)e.codeFault=5;
+          if(p.code>=4){p.code-=4;this.castQueue.push({type:'code-echo',delay:.35,x:start.x,y:start.y,tx:end.x,ty:end.y,power:power*(1.7+.15*this.skillRanks.passive)});if(!this.effects.some(e=>e.type==='choreo-code-wait'))this.effect('choreo-code-wait',start.x,start.y,'#1fc8db',64,.35,{hero:'hoavi',angle:a})}this.reactEnvironment?.('lightning',hit.x,hit.y,120);
         }
         if(key==='e'){this.checkpoint={x:p.x,y:p.y,life:5};p.shield=Math.min(90,p.shield+20);this.effect('mythic-rune',p.x,p.y,'#7fffea',80,5,{key:'checkpoint'})}
         if(key==='r'){this.addField('satellites',p.x,p.y,{life:8+this.skillRanks.r*.7,power:power*.85,r:170,element:'light',follow:true});p.overclock=8;p.code=8;this.effect('overclock',p.x,p.y,'#79fbe5',260,1.1);p.invulnerable=Math.max(.75,p.invulnerable)}
@@ -235,7 +238,7 @@
         if(f.kind==='lantern'){for(const other of lamps)if(other.id!==f.id&&other.id>f.id)this.lineHit(f,other,17,f.power,'fire',false);for(const e of this.world.enemies)if(e.alive&&dist(e,f)<55)this.mythicHit(e,f.power,'fire',false)}
         else if(f.kind==='trap'){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,f)<f.r);if(targets.length){for(const e of targets){this.mythicHit(e,f.power,'nature',true);e.trucMark=6+this.skillRanks.passive;e.rooted=e.sagaBoss||e.type==='boss'?.45:2}f.life=0;this.effect('leaves',f.x,f.y,'#b5e79d',f.r,.7)}}
         else if(f.kind==='cage'){const points=[{x:f.x-f.r,y:f.y-f.r},{x:f.x+f.r,y:f.y-f.r},{x:f.x+f.r,y:f.y+f.r},{x:f.x-f.r,y:f.y+f.r}];for(let i=0;i<4;i++)this.lineHit(points[i],points[(i+1)%4],22,f.power,'lightning',false)}
-        else if(f.kind==='satellites'){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,p)<650).sort((a,b)=>(b.codeFault>0)-(a.codeFault>0)||b.hp-a.hp);for(const side of [-1,1]){const a=this.time*1.7+side*Math.PI/2,o={x:p.x+Math.cos(a)*100,y:p.y+Math.sin(a)*75};if(targets.length)this.lineHit(o,targets[side===1?0:Math.min(1,targets.length-1)],12,f.power,'light',false);this.effect('mythic-orbit',o.x,o.y,'#73f7dc',22,.5,{angle:a})}}
+        else if(f.kind==='satellites'){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,p)<650).sort((a,b)=>(b.codeFault>0)-(a.codeFault>0)||b.hp-a.hp);f.pixelAim=[];for(const side of [-1,1]){const a=this.time*1.7+side*Math.PI/2,o={x:p.x+Math.cos(a)*100,y:p.y+Math.sin(a)*75};if(targets.length){const target=targets[side===1?0:Math.min(1,targets.length-1)],end=this.lineHit(o,target,12,f.power,'light',false,{hero:'hoavi',key:'satellite',side});f.pixelAim.push({side,x:o.x,y:o.y,tx:end.x,ty:end.y,targetId:target.id})}}}
         else if(['vine','garden','vortex','orbs','sigil','tornado'].includes(f.kind)){for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r){this.mythicHit(e,f.power,f.element,false);if(['vortex','tornado'].includes(f.kind)){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*20,Math.sin(a)*20)}}this.effect('element-pulse',f.x,f.y,root.DTElements.byId(f.element).color,f.r,.5,{element:f.element})}
         else if(f.kind==='water')for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r)e.slow=1;
         this.effect('mythic-rune',f.x,f.y,f.element==='fire'?'#ffb06b':f.element==='water'?'#6fbccc':this.hero.color,f.r,.5,{kind:f.kind,angle:f.angle});
@@ -245,7 +248,7 @@
     updateCastQueue(dt){const due=[];for(const c of this.castQueue){c.delay-=dt;if(c.delay<=0)due.push(c)}this.castQueue=this.castQueue.filter(c=>c.delay>0);
       for(const c of due){if(this.dead)break;
         if(c.type==='cast')this.releaseCast(c);
-        else if(c.type==='code-echo')this.lineHit(c,{x:c.tx,y:c.ty},23,c.power,'light',false);
+        else if(c.type==='code-echo'){const end=this.lineHit(c,{x:c.tx,y:c.ty},23,c.power,'light',false,{hero:'hoavi',key:'q',echo:true});this.effects=this.effects.filter(e=>e.type!=='choreo-code-wait');this.effect('choreo-code-echo',c.x,c.y,'#1fc8db',650,.35,{hero:'hoavi',angle:Math.atan2(c.ty-c.y,c.tx-c.x),tx:end.x,ty:end.y})}
         else if(c.type==='echo'){const e=this.world.enemies.filter(e=>e.alive&&dist(e,c)<570).sort((a,b)=>dist(a,c)-dist(b,c))[0];if(e){this.shoot(c.x,c.y,Math.atan2(e.y-c.y,e.x-c.x),820,c.power,'#d8e8ff',{charge:false,echo:true});this.effect('afterimage',c.x,c.y,'#d8e8ff',35,.35,{hero:this.hero.id,facing:0})}}
         else if(c.type==='arrow-rain'||c.type==='thunder-hunt'){const e=this.world.enemies.filter(e=>e.alive&&dist(e,this.player)<800).sort((a,b)=>(b.trucMark>0)-(a.trucMark>0)||dist(a,c.target)-dist(b,c.target))[0],t=e||c.target;if(e)this.mythicHit(e,c.power,c.element||'nature',false);this.effect(c.type==='arrow-rain'?'mythic-spear':'bolt',t.x,t.y,c.type==='arrow-rain'?'#b5edaa':'#bec5ff',95,.5,{angle:Math.PI/2,tx:t.x,ty:t.y})}
         else if(c.type==='light-sweep')this.lineHit(c,{x:c.x+Math.cos(c.angle)*850,y:c.y+Math.sin(c.angle)*850},40,c.power,'light',false);

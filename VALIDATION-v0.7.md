@@ -27,3 +27,12 @@ Blender 5.2.3 LTS tạo 56 khung PNG và bake thành `assets/spirit-fx-v07.png`,
 Save chính được sao lưu tại `runtime/backup-before-v07-20261107` và đối chiếu hash trước/sau. Một lượt review qua 9Router kiểm tra phần wrapper render/trạng thái; các gợi ý được xét và kiểm tra tại máy, không dùng câu trả lời AI làm bằng chứng kiểm thử.
 
 Có thể tái hiện bộ thử hình ảnh bằng `npm install --prefix runtime/qa-tools playwright`, sau đó `npm run test:browser-motion` (dùng Chrome đã cài). Chỉ thư viện QA nằm trong runtime; game web không tải thư viện này.
+
+
+## Cập nhật HoaVi pixel — 13/11/2026
+
+HoaVi dùng atlas 64×64 với 208 frame nhân vật, 24 frame bóng và 70 frame hiệu ứng. Đánh thường/Q/E/R đã nối vào game; Q lặp từ gốc đã lưu sau 0,35 giây, E hồi quy 12 lát, hai vệ tinh R dùng cùng ray sát thương. Canvas giữ lưới 2×, palette cố định và alpha 0/255. Nguồn Blender, script tái tạo và báo cáo nằm trong `design/blender/hoavi/`.
+
+202 kiểm tra PASS: 169 logic/render, 5 kiểm tra pixel trên Chrome và 28 kiểm tra chuyển động/trình duyệt. Đã thử DPR 1/2, zoom 0,8/1,28/2, ray chéo/ngược/độ dài 0, lưu gốc Q, delay echo, hai đầu E và gốc ray vệ tinh. Cảnh combat và cảm ứng dùng fixture/giả lập.
+
+Build hiện tại gồm 46 tệp game và `_headers`; `tools/verify-public.cjs` xác nhận hash toàn bộ tệp, cache và 11 đường dẫn riêng tư. Báo cáo local trước phát hành: `design/blender/hoavi/verification-pixel-v08.json`.

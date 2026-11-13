@@ -22,6 +22,7 @@
     "test:lan": "node tools/lan-test.cjs",
     "test:journey": "node tools/journey-test.cjs",
     "test:choreography": "node tools/choreography-test.cjs",
+    "test:hoavi-pixel": "node tools/hoavi-pixel-test.cjs",
     "test:browser-motion": "node tools/choreography-browser.cjs"
   },
   "engines": {

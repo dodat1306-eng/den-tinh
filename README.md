@@ -1,6 +1,6 @@
 # Đèn Tinh: Miền Sương Lạc — 0.7
 
-Game hành động 2D tiếng Việt, một người chơi. Bản 0.7 thêm **chuyển động và hiệu ứng chiêu riêng cho năm nhân vật, bảy nguyên tố và phân thân**, giữ hướng hình ảnh của concept đầu tiên cùng hệ thống gameplay 0.6.
+Game hành động 2D tiếng Việt, một người chơi. Bản 0.7 thêm **chuyển động và hiệu ứng chiêu riêng cho năm nhân vật, bảy nguyên tố và phân thân**, giữ hướng hình ảnh của concept đầu tiên cùng hệ thống gameplay 0.6. HoaVi đã làm lại theo [chibi pixel 64×64](design/blender/hoavi/README.md): 9 động tác, 4 hướng, 208 frame nhân vật và 70 frame hiệu ứng; đủ đánh thường/Q/E/R, Q có bóng lặp đồng bộ 0,35 giây.
 
 ## Chơi tại máy
 
@@ -10,7 +10,7 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 39 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v07-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 46 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v07-report.json`.
 
 ## Các thay đổi chính
 

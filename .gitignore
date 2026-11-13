@@ -68,3 +68,8 @@ Thumbs.db
 # Rejected style drafts and Blender automatic backups
 /design/archive/
 /design/blender/*.blend1
+/design/blender/hoavi/*.blend1
+
+# Generated Python caches
+__pycache__/
+*.pyc
