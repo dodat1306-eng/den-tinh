@@ -2,9 +2,10 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const projectRoot = path.resolve(__dirname, '..');
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' };
 const allowed = new Set(['index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','frontier.js','scenery.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png','assets/environment-v03.png','assets/actors-v03.png','elemental.js','elemental-visuals.js','elemental-ui.js','elemental.css','assets/thien-vu-v04.png']);
 const isLoopback = address => address === '::1' || /^127\./.test(address || '') || /^::ffff:127\./i.test(address || '');
+for(const file of ['assets/hoavi-pixel-v08.png','assets/hoavi-pixel-v08.js','assets/hoavi-pixel-v08.json','assets/hoavi-vfx-pixel.png','assets/hoavi-vfx-pixel.js','assets/hoavi-vfx-pixel.json','hoavi-pixel.js'])allowed.add(file);
 for(const file of ['choreography.js','assets/spirit-fx-v07.png','journey.js','journey-ui.js','journey-visuals.js','journey.css','mythic-content.js','ascension.js','endless.js','ascension-visuals.js','ascension-ui.js','ascension.css','fonts.css','assets/fonts/NotoSans-Regular.ttf','assets/fonts/NotoSans-Bold.ttf','assets/fonts/OFL.txt'])allowed.add(file);
 
 function createGameServer(options = {}) {
