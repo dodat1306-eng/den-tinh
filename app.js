@@ -38,7 +38,7 @@
   addEventListener('resize',resize);resize();
   function heroCards(){
     $('heroCards').innerHTML='';for(const hero of Object.values(H)){
-      const b=document.createElement('button'),pixel=hero.id==='hoavi';b.className='hero-card'+(hero.id===selected?' selected':'');b.setAttribute('aria-label',`Chọn ${hero.name}, ${hero.role}`);b.innerHTML=`<canvas width="${pixel?128:56}" height="${pixel?128:70}" ${pixel?'data-hoavi style="width:64px;height:64px;image-rendering:pixelated"':''}></canvas><span class="name">${hero.name}</span><span class="role">${hero.role}</span><span class="desc">${hero.desc}</span>`;
+      const b=document.createElement('button'),pixel=['hoavi','thienvu'].includes(hero.id);b.className='hero-card'+(hero.id===selected?' selected':'');b.setAttribute('aria-label',`Chọn ${hero.name}, ${hero.role}`);b.innerHTML=`<canvas width="${pixel?128:56}" height="${pixel?128:70}" ${pixel?'data-'+hero.id+' style="width:64px;height:64px;image-rendering:pixelated"':''}></canvas><span class="name">${hero.name}</span><span class="role">${hero.role}</span><span class="desc">${hero.desc}</span>`;
       b.onclick=()=>{selected=hero.id;heroCards();DTArt.titleArt($('titleArt'),hero)};
       $('heroCards').appendChild(b);DTArt.drawHero(b.querySelector('canvas').getContext('2d'),pixel?{x:64,y:116,facing:Math.PI/2}:{x:28,y:67},hero,0,.82);
     }

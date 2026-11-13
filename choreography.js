@@ -58,9 +58,10 @@
   }
   const sprite=A.drawSpriteHero;
   function drawHero(c,p,h,time=0,scale=1,npc=false,clone=false,identity=p){
-    if(!npc&&h.id==='hoavi'&&!root.DTHoaViPixel.ready())return;
-    const atlasReady=!npc&&h.id==='hoavi'&&root.DTHoaViPixel.ready();
-    if(atlasReady&&(reduced()||p.hp===0)){drawHoavi(c,p,time,scale,identity);metrics.bodies++;metrics.atlas++;return}
+    const pixel=npc?null:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
+    if(pixel&&!pixel.ready())return;
+    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,clone?1.5:2);
+    if(atlasReady&&(reduced()||p.hp===0)){paint(p);metrics.bodies++;metrics.atlas++;return}
     if(npc||!profiles[h.id]||reduced()||p.hp===0)return sprite(c,p,h,time,scale,npc,clone);
     let old=history.get(identity);
     if(old&&(time<(old.seenTime??old.time)||Math.hypot(p.x-old.x,p.y-old.y)>140)){history.delete(identity);synthetic.delete(identity);transitions.delete(identity);old=null}
@@ -72,11 +73,11 @@
     if(time>trail.time+.035){trail.points.push({x:trail.x,y:trail.y,time:trail.time});trail.x=p.x;trail.y=p.y;trail.time=time;while(trail.points.length>5)trail.points.shift()}
     if(s.dash>0&&!clone&&quality()>0){
       const samples=trail.points.filter(t=>time-t.time<.15).slice(-(quality()===2?2:1));
-      for(const t of samples){c.save();try{c.globalAlpha*=.10;const ghost={...actor,x:t.x,y:t.y,shield:0,invulnerable:0,hit:0,action:null};if(atlasReady)drawHoavi(c,ghost,time,scale,identity,false);else sprite(c,ghost,h,time,scale,false,false)}finally{c.restore()}metrics.ghosts++}
+      for(const t of samples){c.save();try{c.globalAlpha*=.10;const ghost={...actor,x:t.x,y:t.y,shield:0,invulnerable:0,hit:0,action:null};if(atlasReady)paint(ghost,false);else sprite(c,ghost,h,time,scale,false,false)}finally{c.restore()}metrics.ghosts++}
     }
     const trans=transitions.get(identity);
-    if(h.id==='thienvu'&&trans&&time>=trans.start&&time-trans.start<.32){c.save();c.globalAlpha*=.42*(1-(time-trans.start)/.32);sprite(c,{...p,elementForm:trans.from,shield:0,invulnerable:0},h,time,scale,false,clone);c.restore()}
-    if(atlasReady){drawHoavi(c,actor,time,scale,identity);metrics.bodies++;metrics.atlas++;return}
+    if(h.id==='thienvu'&&trans&&time>=trans.start&&time-trans.start<.32)pixel.ghost(c,p,time,trans.from,clone?1.5:2,time-trans.start);
+    if(atlasReady){paint(actor);metrics.bodies++;metrics.atlas++;return}
     const native=c.drawImage,own=Object.hasOwn(c,'drawImage');
     c.drawImage=function(...args){const src=String(args[0]?.src||args[0]?._src||'');if(args.length===9&&/(?:heroes|thien-vu-v04)\.png(?:$|[?#])/.test(src))warp(c,native,args,s);else native.apply(c,args)};
     try{sprite(c,actor,h,time,scale,npc,clone);metrics.bodies++}finally{if(own)c.drawImage=native;else delete c.drawImage}
@@ -218,7 +219,7 @@
   }
   const effect=R.drawEffect;
   R.drawEffect=function(e){
-    if(root.DTHoaViPixel.effect(this,e))return;
+    if(root.DTThienVuPixel?.effect(this,e)||root.DTHoaViPixel.effect(this,e))return;
     if(legacyEffect(this,e))return;
     if(!e.type?.startsWith('choreo-'))return effect.call(this,e);
     const c=this.ctx,age=clamp(1-e.life/Math.max(.01,e.maxLife),0,1),fade=clamp(e.life/.18,0,1);
@@ -239,7 +240,7 @@
   };
   const projectile=R.drawProjectile;
   R.drawProjectile=function(b){
-    if(root.DTHoaViPixel.projectile(this,b))return;
+    if(root.DTThienVuPixel?.projectile(this,b)||root.DTHoaViPixel.projectile(this,b))return;
     projectile.call(this,b);if(reduced()||!b.friendly||quality()===0||!b.signature)return;
     const c=this.ctx,dx=b.vx||0,dy=b.vy||0,l=Math.hypot(dx,dy)||1,tail=b.kind==='arrow'?30:18;
     c.save();c.globalAlpha*=.45;line(c,[[b.x-dx/l*tail,b.y-dy/l*tail],[b.x,b.y]],b.color||'#d1ffe8',b.kind==='arrow'?1.1:2);c.restore();

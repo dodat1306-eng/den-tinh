@@ -40,6 +40,7 @@
   // Keep the original painted sprites. Cast motion transforms the sprite as a
   // whole; it must never replace the face, outfit or elemental silhouette.
   function drawSpriteHero(c,p,h,time=0,scale=1,npc=false,clone=false){
+    if(h.id==='thienvu'&&!npc)return root.DTThienVuPixel?.hero(c,p,time,-Infinity,clone);
     if(npc||!['an','linh','kiet','hoavi','thienvu'].includes(h.id))return oldHero(c,p,h,time,scale,npc);
     const pose=actionPose(p,time),calm=reduced(),face=Math.cos(p.facing||0)<0?-1:1;
     const form=p.elementForm||p.element||'lightning',f=h.id==='thienvu'?root.DTElements?.byId(form):null;
@@ -145,7 +146,7 @@
       c.restore();
     }
     drawMythicField(f){
-      if(f.life<=0)return;
+      if(f.life<=0||root.DTThienVuPixel?.field(this,f))return;
       const c=this.ctx,g=this.game,time=reduced()?0:g.time,r=Math.max(1,f.r||100),fade=clamp(f.life/.35,0,1);
       const colors={fire:'#ffbe7b',ice:'#a6e9ff',earth:'#dab88a',wind:'#b7efdd',water:'#86d4e1',nature:'#b9e79f',light:'#fff0b9',lightning:'#c9c9ff'};
       const col=colors[f.element]||g.hero.color;
