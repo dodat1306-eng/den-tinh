@@ -34,6 +34,17 @@ def build():
         em.inputs['Color'].default_value = rgb
         m.node_tree.links.new(em.outputs[0], out.inputs['Surface'])
         mats[h] = m
+    # Mesh weapons use a real four-band normal-driven toon material.
+    for form,pal in COLORS.items():
+        material=bpy.data.materials.new('TV_Toon_'+form);nodes=material.node_tree.nodes;nodes.clear()
+        output=nodes.new('ShaderNodeOutputMaterial');emission=nodes.new('ShaderNodeEmission')
+        geometry=nodes.new('ShaderNodeNewGeometry');dot=nodes.new('ShaderNodeVectorMath');dot.operation='DOT_PRODUCT';dot.inputs[1].default_value=(.25,-.55,.8)
+        ramp=nodes.new('ShaderNodeValToRGB');ramp.color_ramp.interpolation='CONSTANT'
+        for item in list(ramp.color_ramp.elements)[1:]:ramp.color_ramp.elements.remove(item)
+        for i,h in enumerate(pal[:4]):
+            stop=ramp.color_ramp.elements[0] if i==0 else ramp.color_ramp.elements.new(i/4)
+            stop.position=i/4;stop.color=(*[linear(int(h[j:j+2],16)/255) for j in (0,2,4)],1)
+        links=material.node_tree.links;links.new(geometry.outputs['Normal'],dot.inputs[0]);links.new(dot.outputs['Value'],ramp.inputs['Fac']);links.new(ramp.outputs['Color'],emission.inputs['Color']);links.new(emission.outputs[0],output.inputs['Surface']);mats[form]=material
     data = bpy.data.armatures.new('THIENVU_Bones')
     rig = bpy.data.objects.new('THIENVU_Armature', data)
     scene.collection.objects.link(rig)
@@ -93,7 +104,7 @@ def build():
         prism('Hair_Layer', [(-.39,1.5),(-.46,1.74),(-.30,1.98),(-.13,2.05),(.17,2.05),(.40,1.89),(.43,1.59),(.29,1.65),(.27,1.85),(-.23,1.85),(-.27,1.59)], y,.15,'4a5268','head')
         locks = [(-.42,1.65,-.57,1.76,-.31,1.91),(-.35,1.88,-.46,2.06,-.12,2.00),(-.17,1.95,-.12,2.18,.08,2.00),(.06,1.97,.28,2.16,.30,1.92),(.28,1.88,.53,1.99,.42,1.69),(.32,1.66,.50,1.57,.30,1.52)]
         for j,v in enumerate(locks):
-            pts = list(zip(v[::2], v[1::2])); prism('Silver_Lock',pts,y-.03,.18,'8c98b3','head')
+            pts = list(zip(v[::2], v[1::2])); prism('Silver_Lock',pts,y-.03,.16,'8c98b3','head')
             a,b,c=pts; prism('Lock_Light',[a,b,((b[0]+c[0])/2,(b[1]+c[1])/2)],y-.04,.006,'dce5f7','head')
     prism('Fringe',[(-.34,1.88),(-.17,2.02),(.28,1.98),(.37,1.81),(.11,1.61),(.16,1.83),(-.09,1.65),(-.03,1.85),(-.31,1.66)],-.391,.05,'8c98b3','head')
     prism('Fringe_Ridge',[(-.29,1.87),(-.14,1.97),(.24,1.94),(.04,1.84),(-.10,1.73),(-.07,1.86)],-.405,.006,'dce5f7','head')
@@ -127,10 +138,10 @@ def build():
             pts=[(s*.12,.80),(s*.29,.78),(s*edge,.20),(s*.30,tip),(s*.19,.31)]
             prism('TV_'+form+'_Tail_'+side,pts,.04,.15,light_cloth,owner)
             prism('TV_'+form+'_Hem_'+side,[(s*.28,.74),(s*(edge-.015),.21),(s*.31,tip+.04),(s*(edge-.065),.24)],.027,.008,'cf8d36',owner)
-            box('Sleeve',s*.36,1.0,.22,.28,-.08,.27,dark,'arm.'+side)
+            box('Sleeve',s*.36,1.0,.22,.40,-.08,.27,dark,'arm.'+side)
             box('Hand',s*.48,.72,.15,.20,-.15,.19,'f6c9b2','hand.'+side)
             # Earth intentionally equips two oversized fists.
-            if side=='R' or form=='earth':
+            if form=='earth':
                 x=s*.49;z=.79;w=.35 if form!='earth' else .41;h=.38 if form!='earth' else .43
                 shape=[(x-w/2,z-h*.32),(x-w*.4,z+h*.5),(x+w*.25,z+h*.5),(x+w*.5,z+h*.13),(x+w*.43,z-h*.46),(x-w*.22,z-h*.5)]
                 prism('TV_'+form+'_Gauntlet_'+side,shape,-.26,.34,dark,'hand.'+side)
@@ -181,7 +192,7 @@ def build():
             for j in range(8):
                 a=j*math.tau/8;x=math.cos(a)*.60;z=1.30+math.sin(a)*.60
                 gem('Solar_Ray',x,z,.11,.20,.35,pale)
-            for s in [-1,1]:prism('Light_Ribbon',[(s*.34,1.0),(s*.76,1.26),(s*.91,1.01),(s*.72,.67),(s*.56,.79),(s*.72,1.05)],.28,.06,pale,'tail.'+('L' if s==1 else 'R'))
+            for s in [-1,1]:prism('Light_Ribbon',[(s*.34,1.0),(s*.76,1.26),(s*.91,1.01),(s*.72,.67),(s*.56,.79),(s*.72,1.05)],.16,.06,pale,'tail.'+('L' if s==1 else 'R'))
         count={'lightning':4,'wind':4,'earth':5,'fire':4,'ice':5,'nature':5,'light':0}[form]
         for j in range(count):
             a=j*math.tau/count;x=math.cos(a)*.79;z=1.12+math.sin(a)*.61
@@ -196,11 +207,46 @@ def build():
                 for j in range(5):
                     a=j*math.tau/5;gem('Peach_Petal',x+math.cos(a)*.06,z+math.sin(a)*.06,.08,.08,-.32,'f291c7','chest')
                 box('Peach_Core',x,z,.045,.045,-.334,.012,'ffe07d','chest')
+        def weapon(name,pts,y=-.39,depth=.10,color=None,owner='hand.R'):
+            ob=prism(name,pts,y,depth,color or form,owner);ob.name=name;ob['weapon']=True;return ob
+        if form=='lightning':
+            weapon('Weapon_LightningSword',[(-.57,.67),(-.46,.67),(-.41,1.02),(-.31,1.07),(-.42,1.12),(-.31,1.24),(-.39,1.29),(-.34,1.53),(-.53,1.34),(-.48,1.22),(-.59,1.15),(-.51,1.05)])
+            weapon('Weapon_LightningSword_Core',[(-.51,.84),(-.46,1.15),(-.43,1.14),(-.43,1.37),(-.49,1.19),(-.52,1.20)],y=-.405,depth=.01,color='ffe07d')
+        elif form=='wind':
+            weapon('Weapon_WindFan',[(-.53,.63),(-.88,.94),(-.79,1.20),(-.57,1.30),(-.31,1.20),(-.21,.95)],depth=.28)
+            for j in range(5):
+                a=math.pi*(.12+j*.19);x=-.54+math.cos(a)*.29;z=.92+math.sin(a)*.31
+                weapon('Weapon_WindFan_Rib_'+str(j),[(-.54,.70+j*.01),(x-.018,z),(x+.018,z),(-.51,.70+j*.01)],y=-.43-j*.025,depth=.21,color='e3fff8')
+        elif form=='earth':
+            for side in ['R','L']:
+                x=-.49 if side=='R' else .49
+                weapon('Weapon_EarthGauntlets_'+side,[(x-.20,.63),(x-.23,.95),(x-.09,1.05),(x+.18,.99),(x+.22,.68),(x+.06,.56)],y=-.34,depth=.11,owner='hand.'+side)
+        elif form=='ice':
+            weapon('Weapon_IceHammer_Handle',[(-.55,.52),(-.49,.52),(-.49,1.23),(-.55,1.23)],color='dce5f7')
+            weapon('Weapon_IceHammer',[(-.88,1.08),(-.80,1.37),(-.26,1.37),(-.17,1.09),(-.31,.99),(-.78,.99)],y=-.42,depth=.25)
+            weapon('Weapon_IceHammer_Core',[(-.75,1.13),(-.68,1.28),(-.38,1.28),(-.31,1.13)],y=-.436,depth=.01,color='e8ffff')
+        elif form=='fire':
+            for side,sign in [('R',-1),('L',1)]:
+                x=sign*.52
+                for j in range(12):
+                    a=j*math.tau/12;b=(j+1)*math.tau/12
+                    outer=.28 if j%2==0 else .23;weapon('Weapon_FireChakrams_'+side+'_'+str(j),[(x+math.cos(a)*.14,.86+math.sin(a)*.14),(x+math.cos(a)*outer,.86+math.sin(a)*outer),(x+math.cos(b)*.23,.86+math.sin(b)*.23),(x+math.cos(b)*.14,.86+math.sin(b)*.14)],owner='hand.'+side)
+        elif form=='nature':
+            points=[(-.48,.72),(-.76,.64),(-.91,.87),(-.83,1.08),(-.70,1.16),(-.61,1.06)]
+            for j,(x,z) in enumerate(points[:-1]):
+                u,v=points[j+1];weapon('Weapon_WoodWhip_'+str(j),[(x-.035,z),(u-.035,v),(u+.035,v),(x+.035,z)])
+                weapon('Weapon_WoodWhip_Thorn_'+str(j),[(x-.025,z), (x-.12,z+.11),(x+.025,z+.035)],y=-.405,color='78d663')
+        elif form=='light':
+            for j in range(8):
+                a=j*math.tau/8;x=math.cos(a)*.59;z=1.3+math.sin(a)*.59
+                weapon('Back_LightHalo_'+str(j),[(x-.035,z-.09),(x,z+.17),(x+.035,z-.09)],y=.42,owner='orbit',color='fffbe0')['intentional_floating']=True
+            for sign in [-1,1]:weapon('Head_GlowingEyes_'+str(sign),[(sign*.15-.035,1.51),(sign*.15+.035,1.51),(sign*.15+.035,1.56),(sign*.15-.035,1.56)],y=-.376,depth=.008,color='ffffff',owner='head')['intentional_floating']=True
+    bpy.ops.wm.save_as_mainfile(filepath=str(HERE.parents[2]/'runtime/thienvu-unjoined.blend'))
     # Join each loadout independently: easy visibility switches, simple rigid skin.
     for name,obs in parts.items():
         ornaments=[o for o in obs if o['intentional_floating']]
         for i,ob in enumerate(ornaments):ob.name='TV_'+name+'_Ornament_'+str(i)
-        obs=[o for o in obs if not o['intentional_floating']]
+        obs=[o for o in obs if not o['intentional_floating'] and not o.get('weapon')]
         bpy.ops.object.select_all(action='DESELECT')
         for ob in obs:ob.select_set(True)
         bpy.context.view_layer.objects.active=obs[0];bpy.ops.object.join()

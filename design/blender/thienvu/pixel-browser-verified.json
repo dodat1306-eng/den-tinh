@@ -1,6 +1,6 @@
 {
   "pass": true,
-  "source": "http://127.0.0.1:49679/",
+  "source": "http://127.0.0.1:58720/",
   "physicalDevice": false,
   "stagedCombatFixtures": true,
   "results": [
@@ -11,7 +11,7 @@
       "cache": {
         "rasters": 64,
         "bytes": 1904320,
-        "sources": 28
+        "sources": 26
       }
     },
     {
@@ -35,7 +35,7 @@
         "y": 1060
       },
       "synthetic": 0,
-      "effects": 5
+      "effects": 8
     },
     {
       "name": "Real browser combat fixture ice-e",
@@ -50,7 +50,7 @@
         "y": 1060
       },
       "synthetic": 0,
-      "effects": 6
+      "effects": 14
     },
     {
       "name": "Real browser combat fixture five-cast",
@@ -84,33 +84,33 @@
             "element": "lightning"
           },
           {
-            "x": 1605.8803908730276,
-            "y": 1009.321625519143,
+            "x": 1542.2403547720774,
+            "y": 950.9154108977074,
             "element": "wind"
           },
           {
-            "x": 1542.3697324543725,
-            "y": 1079.5791858158045,
+            "x": 1575.968180731229,
+            "y": 1063.6659855700875,
             "element": "earth"
           },
           {
-            "x": 1439.7622779091462,
-            "y": 1069.4046098318531,
+            "x": 1493.3034975898868,
+            "y": 993.2095539751595,
             "element": "fire"
           },
           {
-            "x": 1394.1196091269724,
-            "y": 990.678374480857,
+            "x": 1571.0835692961832,
+            "y": 1013.9791877915153,
             "element": "ice"
           },
           {
-            "x": 1457.6302675456272,
-            "y": 920.4208141841959,
+            "x": 1474.1552615827318,
+            "y": 885.9513108534495,
             "element": "nature"
           },
           {
-            "x": 1560.2377220908538,
-            "y": 930.595390168147,
+            "x": 1581.168091093478,
+            "y": 980.8580363211142,
             "element": "light"
           }
         ]
@@ -120,7 +120,7 @@
         "y": 1060
       },
       "synthetic": 6,
-      "effects": 56
+      "effects": 33
     },
     {
       "name": "Transform scanline ghost ends after 0.32 game seconds",
@@ -141,7 +141,7 @@
       "cache": {
         "rasters": 64,
         "bytes": 1904320,
-        "sources": 28
+        "sources": 26
       }
     },
     {

@@ -69,7 +69,8 @@
       const objects=[];
       if(this.drawElementClone)for(const ally of g.elementClones||[])if(ally.alive&&inView(ally))objects.push({y:ally.y,draw:()=>this.drawElementClone(ally)});
       if(this.drawBeacon)for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
-      for(const o of g.world.props)if(inView(o))objects.push({y:o.y,draw:()=>this.drawProp(o)});
+      for(const ally of g.elementSummons||[])if(ally.life>0&&inView(ally))objects.push({y:ally.y,draw:()=>this.drawElementSummon?.(ally)});
+      for(const o of g.world.props)if(inView(o)&&!g.elementSummons?.some(s=>s.sourceProp===o&&s.life>0))objects.push({y:o.y,draw:()=>this.drawProp(o)});
       for(const n of g.world.npcs)if(inView(n))objects.push({y:n.y,draw:()=>this.drawNpc(n)});
       for(const o of g.world.chests)if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
       for(const e of g.world.enemies)if(e.alive&&inView(e))objects.push({y:e.y,draw:()=>this.drawEnemy(e)});

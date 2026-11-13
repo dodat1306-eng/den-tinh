@@ -61,8 +61,6 @@
     addXp(amount){return super.addXp(amount*(this.xpSource&&this.fogAt(this.xpSource.x,this.xpSource.y)?2:1))}
     critMultiplier(){return 1.7+(this.mastery?.critical||0)*.02}
     registerHarmony(id){if(this.harmonyCooldown>0)return;const s=this.passiveState,p=this.player;if(!s.forms.includes(id))s.forms.push(id);s.formTime=12;if(s.forms.length>=3){s.forms=[];this.harmonyCooldown=6;p.mp=Math.min(p.maxMp,p.mp+12+this.skillRanks.passive*3);p.shield=Math.max(p.shield,Math.min(60,p.shield+10+3*this.skillRanks.passive));this.emit('toast',{text:'Hòa Âm Tam Linh · hồi linh lực và khiên, nghỉ 6 giây',reward:true})}}
-    elementPrimary(origin,id,power,...args){return super.elementPrimary(origin,id,power*(origin!==this.player?.7:1),...args)}
-    castElement(id,key,origin,scale=1,...args){return super.castElement(id,key,origin,scale*(origin!==this.player?.7:1),...args)}
     skill(key){
       const p=this.player;if(this.paused||this.dead||p.dashTime>0)return false;
       if(this.hero.id==='an'&&key==='e'&&this.time<this.anRecastUntil&&this.mythicFields.some(f=>f.kind==='lantern'&&f.life>0)&&(!p.action||p.action.elapsed>=p.action.release+.1)){

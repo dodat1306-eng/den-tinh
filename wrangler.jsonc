@@ -2,6 +2,7 @@
   "name": "den-tinh",
   "compatibility_date": "2026-10-31",
   "workers_dev": true,
+  "previews": {},
   "assets": {
     "directory": "./dist",
     "not_found_handling": "none"

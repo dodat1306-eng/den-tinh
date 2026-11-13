@@ -23,7 +23,7 @@
   root.DTVisualHero=function(c,p,h,time=0,scale=1,npc=false){
     if(!npc&&atlas.complete&&atlas.naturalWidth){
       const moving=p.moving&&Math.hypot(p.velocityX??1,p.velocityY??1)>3,phase=p.stride??time*14;
-      const row={an:0,linh:1,kiet:2,hoavi:3}[h.id]||0,frame=moving?Math.floor(phase*2/Math.PI)%4:0,cw=atlas.naturalWidth/4,ch=atlas.naturalHeight/4,face=Math.cos(p.facing||0)<0?-1:1;
+      const row={an:0,linh:1,kiet:2,hoavi:3}[h.id]||0,frame=moving?Math.floor(phase*2/Math.PI)%4:0,cw=atlas.naturalWidth/4,ch=atlas.naturalHeight/4,face=Math.cos(root.DTBodyAngle(p))<0?-1:1;
       const calm=!!root.DTSettings?.reducedMotion,lift=calm?0:moving?-Math.abs(Math.sin(phase))*2.5:Math.sin(time*2.5)*.55,dashing=p.dashTime>0,lean=calm?0:(p.lean||0),cast=calm?0:Math.sin(Math.min(1,(p.cast||0)/.7)*Math.PI);
       c.save();c.translate(Math.round(p.x),Math.round(p.y));c.scale(scale,scale);oval(c,0,2,dashing?21:16,dashing?4:5,'#071c2566');if(p.invulnerable>0&&Math.floor(time*12)%2===0)c.globalAlpha=.7;c.scale(face,1);
       if(moving&&!calm){const wave=Math.sin(phase*.7)*4;c.globalAlpha*=.78;poly(c,[[-8,-31],[-27-wave,-23+lift],[-41-wave,-28],[-25,-30],[-12,-35]],h.accent);c.globalAlpha/= .78}
@@ -32,7 +32,7 @@
       if(p.shield>0){c.strokeStyle='#b4dbffc0';c.lineWidth=1.5;c.beginPath();c.ellipse(0,-26,30,39,0,0,TAU);c.stroke();halo(c,0,-25,42,'#b6baff',.08)}c.restore();return;
     }
     c.save();c.translate(Math.round(p.x),Math.round(p.y));c.scale(scale,scale);
-    oval(c,0,2,17,6,'#071c2566');const phase=p.moving?Math.sin(time*14):Math.sin(time*2)*.15,face=Math.cos(p.facing||0)<0?-1:1;
+    oval(c,0,2,17,6,'#071c2566');const phase=p.moving?Math.sin(time*14):Math.sin(time*2)*.15,face=Math.cos(root.DTBodyAngle(p))<0?-1:1;
     if(p.invulnerable>0&&Math.floor(time*12)%2===0)c.globalAlpha=.65;
     c.translate(0,p.dashTime>0?-5:-Math.abs(phase)*1.5);c.scale(face,1);
     // Separate boots, arms, cloak and head keep the running animation legible.

@@ -24,6 +24,6 @@ namespace DenTinh.Editor {
         [MenuItem("Đèn Tinh/Build WebGL")] public static void BuildWeb(){Prepare();Directory.CreateDirectory("Builds/WebGL");BuildReport report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{ScenePath},locationPathName="Builds/WebGL",target=BuildTarget.WebGL,options=BuildOptions.None});if(report.summary.result!=BuildResult.Succeeded)throw new Exception("WebGL build failed: "+report.summary.result);}
     }
     public sealed class PixelTextureImporter : AssetPostprocessor {
-        void OnPreprocessTexture(){if(!assetPath.Contains("Resources/Art/"))return;TextureImporter importer=(TextureImporter)assetImporter;importer.textureType=TextureImporterType.Default;importer.filterMode=assetPath.Contains("KeyArt")?FilterMode.Bilinear:FilterMode.Point;importer.mipmapEnabled=false;importer.alphaIsTransparency=true;importer.textureCompression=TextureImporterCompression.Uncompressed;importer.maxTextureSize=2048;importer.isReadable=true;}
+        void OnPreprocessTexture(){if(!assetPath.Contains("Resources/Art/"))return;TextureImporter importer=(TextureImporter)assetImporter;importer.textureType=TextureImporterType.Default;importer.filterMode=FilterMode.Point;importer.wrapMode=TextureWrapMode.Clamp;importer.npotScale=TextureImporterNPOTScale.None;importer.mipmapEnabled=false;importer.alphaIsTransparency=true;importer.textureCompression=TextureImporterCompression.Uncompressed;importer.maxTextureSize=8192;importer.isReadable=true;}
     }
 }
