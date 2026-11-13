@@ -12,7 +12,7 @@ function context(){
   let currentFont='10px sans-serif';
   const proto={};Object.defineProperty(proto,'font',{get(){return currentFont},set(v){currentFont=v},configurable:true});
   const c=Object.create(proto);
-  Object.assign(c,{fillStyle:'#000',strokeStyle:'#000',globalAlpha:1,lineWidth:1,canvas:{width:1280,height:720},measureText:t=>({width:String(t).length*7}),createRadialGradient(...a){checked('radial',a);return{addColorStop(){}}},createLinearGradient(...a){checked('linear',a);return{addColorStop(){}}}});
+  Object.assign(c,{fillStyle:'#000',strokeStyle:'#000',globalAlpha:1,lineWidth:1,canvas:{width:1280,height:720},measureText:t=>({width:String(t).length*7}),createImageData(w,h){return{data:new Uint8ClampedArray(w*h*4),width:w,height:h}},getImageData(x,y,w,h){return this.createImageData(w,h)},putImageData(){},createRadialGradient(...a){checked('radial',a);return{addColorStop(){}}},createLinearGradient(...a){checked('linear',a);return{addColorStop(){}}}});
   for(const name of['save','restore','beginPath','closePath','fill','stroke','clip','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','ellipse','arc','arcTo','rect','fillRect','strokeRect','clearRect','translate','rotate','scale','transform','setTransform','resetTransform','drawImage','fillText','strokeText','setLineDash'])c[name]=function(...args){checked(name,args);if(name==='drawImage'&&args[0]?._src)imageCalls.push({src:args[0]._src,args:args.slice(1)});if((name==='arc'||name==='ellipse')&&typeof args[2]==='number')assert(args[2]>=0,name+' radius must be nonnegative')};
   return c;
 }
@@ -20,26 +20,35 @@ function canvas(w=1280,h=720){const c=context();return{width:w,height:h,getConte
 global.document={createElement:()=>canvas(),querySelectorAll:()=>[]};
 global.Image=class{constructor(){this.complete=false;this.naturalWidth=0;this.decoding='async'}set src(v){this._src=v;this.complete=true;this.naturalWidth=this.naturalHeight=1254}};
 global.DTSettings={graphics:'high',reducedMotion:false};
-for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','render.js','visuals.js','scenery.js','elemental-visuals.js','ascension-visuals.js'])if(fs.existsSync(path.join(project,f)))vm.runInThisContext(fs.readFileSync(path.join(project,f),'utf8'),{filename:f});
+for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','render.js','visuals.js','scenery.js','assets/thienvu-pixel-v08.js','assets/thienvu-vfx-pixel.js','thienvu-pixel.js','elemental-visuals.js','ascension-visuals.js'])if(fs.existsSync(path.join(project,f)))vm.runInThisContext(fs.readFileSync(path.join(project,f),'utf8'),{filename:f});
 const results=[];
 function test(name,fn){try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(e){results.push({name,pass:false,error:e.stack});console.error('FAIL '+name+' '+e.stack)}}
 const Art=DTAscensionArt;
-test('All five heroes and seven elemental forms retain their original sprite atlas cells',()=>{
+test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells and 96px clones',()=>{
   const c=context();
   for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning']){
     const before=imageCalls.length;
     Art.drawSpriteHero(c,{x:100,y:100,facing:0,elementForm:element},hero,0);
-    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thien-vu-v04.png'].includes(call.src));
-    assert.equal(drawn.length,1,hero.id+' needs one original body sprite');
-    const index=hero.id==='thienvu'?DTElements.forms.findIndex(f=>f.id===element)*2:0;
-    assert.equal(drawn[0].src,hero.id==='thienvu'?'assets/thien-vu-v04.png':'assets/heroes.png');
-    assert.equal(drawn[0].args[0],hero.id==='thienvu'?index%4*313.5:0);
-    assert.equal(drawn[0].args[1],hero.id==='thienvu'?Math.floor(index/4)*313.5:['an','linh','kiet','hoavi'].indexOf(hero.id)*313.5);
+    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thienvu-pixel-v08.png'].includes(call.src));
+    assert.equal(drawn.length,1,hero.id+' needs one body sprite');
+    if(hero.id==='thienvu'){
+      const cell=DTThienVuAtlas.forms[element].actions.idle.directions.E[0];
+      assert.equal(drawn[0].src,'assets/thienvu-pixel-v08.png');
+      assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
+      assert.deepEqual(drawn[0].args.slice(-2),[128,128]);
+    }else{
+      assert.equal(drawn[0].src,'assets/heroes.png');
+      assert.equal(drawn[0].args[0],0);
+      assert.equal(drawn[0].args[1],['an','linh','kiet','hoavi'].indexOf(hero.id)*313.5);
+    }
   }
   const g=new DTGame('thienvu',71426),r=new DTRenderer(canvas(),g);g.start();g.skipTutorial?.();
   for(const element of DTElements.forms.map(f=>f.id)){
     const before=imageCalls.length;r.drawElementClone({x:100,y:100,element,hp:20,maxHp:40,facing:Math.PI,alive:true});
-    assert(imageCalls.slice(before).some(call=>call.src==='assets/thien-vu-v04.png'),'clone must use original form sprite');
+    const drawn=imageCalls.slice(before).filter(call=>call.src==='assets/thienvu-pixel-v08.png');
+    const cell=DTThienVuAtlas.forms[element].actions.idle.directions.W[0];
+    assert.equal(drawn.length,1);assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
+    assert.deepEqual(drawn[0].args.slice(-2),[96,96]);
   }
 });
 test('Cast poses remain finite and complete at anticipation, release and recovery',()=>{

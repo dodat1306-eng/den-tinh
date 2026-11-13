@@ -19,7 +19,7 @@ const report = {
 async function verify() {
   assert.equal(version, '0.7.0');
   const files = walk(dist).filter(file => file !== '_headers').sort();
-  assert.equal(files.length, 46, 'Build the complete v0.7 web release with HoaVi pixel art first');
+  assert.equal(files.length, 53, 'Build the complete v0.7 web release with HoaVi and Thien Vu pixel art first');
   for (let offset = 0; offset < files.length; offset += 4) {
     await Promise.all(files.slice(offset, offset + 4).map(async file => {
       const response = await fetch(new URL(file, base), {
