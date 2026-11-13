@@ -1,0 +1,900 @@
+{
+  "blender": "5.2.3 LTS",
+  "buildHash": "e13b728c6880",
+  "rig": "THIENVU_Armature",
+  "bones": 13,
+  "clips": {
+    "idle": {
+      "frames": 4,
+      "fps": 7,
+      "loop": true
+    },
+    "run": {
+      "frames": 6,
+      "fps": 12,
+      "loop": true
+    },
+    "dash": {
+      "frames": 3,
+      "fps": 16,
+      "loop": false
+    },
+    "attack": {
+      "frames": 4,
+      "fps": 15,
+      "loop": false
+    },
+    "q_cast": {
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "e_cast": {
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "r_ult": {
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    },
+    "hit": {
+      "frames": 2,
+      "fps": 12,
+      "loop": false
+    }
+  },
+  "common": [
+    "#100b18",
+    "#f6c9b2",
+    "#dca088",
+    "#b87664",
+    "#4a5268",
+    "#8c98b3",
+    "#dce5f7",
+    "#6e471b",
+    "#cf8d36",
+    "#ffe07d",
+    "#ffffff"
+  ],
+  "forms": {
+    "lightning": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#1b1f5c",
+        "#3c47b8",
+        "#7b8eff",
+        "#d6deff",
+        "#ffe58e"
+      ],
+      "collection": "lightning"
+    },
+    "wind": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#114542",
+        "#228b7d",
+        "#5ce6cc",
+        "#e3fff8"
+      ],
+      "collection": "wind"
+    },
+    "earth": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#3d2314",
+        "#7d4925",
+        "#c9813a",
+        "#ffcf82"
+      ],
+      "collection": "earth"
+    },
+    "fire": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#4a1218",
+        "#a32424",
+        "#ff5938",
+        "#ffd470"
+      ],
+      "collection": "fire"
+    },
+    "ice": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#103561",
+        "#2176bd",
+        "#68d2ff",
+        "#e8ffff"
+      ],
+      "collection": "ice"
+    },
+    "nature": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#1b3d1c",
+        "#377d33",
+        "#78d663",
+        "#e4f7a6",
+        "#f291c7"
+      ],
+      "collection": "nature"
+    },
+    "light": {
+      "palette": [
+        "#100b18",
+        "#f6c9b2",
+        "#dca088",
+        "#b87664",
+        "#4a5268",
+        "#8c98b3",
+        "#dce5f7",
+        "#6e471b",
+        "#cf8d36",
+        "#ffe07d",
+        "#ffffff",
+        "#593e16",
+        "#b88428",
+        "#ffcf5c",
+        "#fffbe0"
+      ],
+      "collection": "light"
+    }
+  },
+  "meshes": {
+    "TV_earth_Mesh": {
+      "triangles": 448,
+      "dimensions": [
+        1.3362479209899902,
+        0.7535951733589172,
+        1.2134482860565186
+      ],
+      "materials": 9
+    },
+    "TV_earth_Ornament_0": {
+      "triangles": 16,
+      "dimensions": [
+        0.26999998092651367,
+        0.16999998688697815,
+        0.26999998092651367
+      ],
+      "materials": 1
+    },
+    "TV_earth_Ornament_1": {
+      "triangles": 16,
+      "dimensions": [
+        0.27000001072883606,
+        0.17000000178813934,
+        0.26999998092651367
+      ],
+      "materials": 1
+    },
+    "TV_earth_Ornament_2": {
+      "triangles": 16,
+      "dimensions": [
+        0.27000004053115845,
+        0.16999998688697815,
+        0.26999998092651367
+      ],
+      "materials": 1
+    },
+    "TV_earth_Ornament_3": {
+      "triangles": 16,
+      "dimensions": [
+        0.26999998092651367,
+        0.16999998688697815,
+        0.26999998092651367
+      ],
+      "materials": 1
+    },
+    "TV_earth_Ornament_4": {
+      "triangles": 16,
+      "dimensions": [
+        0.26999998092651367,
+        0.16999998688697815,
+        0.27000001072883606
+      ],
+      "materials": 1
+    },
+    "TV_fire_Mesh": {
+      "triangles": 396,
+      "dimensions": [
+        1.185617446899414,
+        0.8407372236251831,
+        2.1906089782714844
+      ],
+      "materials": 9
+    },
+    "TV_fire_Ornament_0": {
+      "triangles": 20,
+      "dimensions": [
+        0.25999999046325684,
+        0.08999999612569809,
+        0.31000006198883057
+      ],
+      "materials": 1
+    },
+    "TV_fire_Ornament_1": {
+      "triangles": 20,
+      "dimensions": [
+        0.25999999046325684,
+        0.08999999612569809,
+        0.31000006198883057
+      ],
+      "materials": 1
+    },
+    "TV_fire_Ornament_2": {
+      "triangles": 20,
+      "dimensions": [
+        0.25999999046325684,
+        0.09000000357627869,
+        0.31000006198883057
+      ],
+      "materials": 1
+    },
+    "TV_fire_Ornament_3": {
+      "triangles": 20,
+      "dimensions": [
+        0.25999999046325684,
+        0.08999999612569809,
+        0.3100000321865082
+      ],
+      "materials": 1
+    },
+    "TV_ice_Mesh": {
+      "triangles": 464,
+      "dimensions": [
+        1.1750069856643677,
+        0.7530364990234375,
+        2.2136504650115967
+      ],
+      "materials": 9
+    },
+    "TV_ice_Ornament_0": {
+      "triangles": 12,
+      "dimensions": [
+        0.18000000715255737,
+        0.09999999403953552,
+        0.3400000333786011
+      ],
+      "materials": 1
+    },
+    "TV_ice_Ornament_1": {
+      "triangles": 12,
+      "dimensions": [
+        0.18000002205371857,
+        0.10000000149011612,
+        0.3400000333786011
+      ],
+      "materials": 1
+    },
+    "TV_ice_Ornament_2": {
+      "triangles": 12,
+      "dimensions": [
+        0.18000000715255737,
+        0.10000000149011612,
+        0.3399999141693115
+      ],
+      "materials": 1
+    },
+    "TV_ice_Ornament_3": {
+      "triangles": 12,
+      "dimensions": [
+        0.18000000715255737,
+        0.09999999403953552,
+        0.3400000333786011
+      ],
+      "materials": 1
+    },
+    "TV_ice_Ornament_4": {
+      "triangles": 12,
+      "dimensions": [
+        0.18000002205371857,
+        0.10000000149011612,
+        0.3400000035762787
+      ],
+      "materials": 1
+    },
+    "TV_light_Mesh": {
+      "triangles": 348,
+      "dimensions": [
+        1.8155784606933594,
+        0.8632668256759644,
+        1.2296146154403687
+      ],
+      "materials": 9
+    },
+    "TV_light_Ornament_0": {
+      "triangles": 12,
+      "dimensions": [
+        0.10729905962944031,
+        0.05500000715255737,
+        0.214302659034729
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_1": {
+      "triangles": 12,
+      "dimensions": [
+        0.170890212059021,
+        0.05500000715255737,
+        0.20846498012542725
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_10": {
+      "triangles": 12,
+      "dimensions": [
+        0.20846490561962128,
+        0.05500000715255737,
+        0.170890212059021
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_11": {
+      "triangles": 12,
+      "dimensions": [
+        0.21430271863937378,
+        0.05500000715255737,
+        0.10729902982711792
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_12": {
+      "triangles": 12,
+      "dimensions": [
+        0.21430271863937378,
+        0.05500000715255737,
+        0.10729902982711792
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_13": {
+      "triangles": 12,
+      "dimensions": [
+        0.20846492052078247,
+        0.05500000715255737,
+        0.170890212059021
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_14": {
+      "triangles": 12,
+      "dimensions": [
+        0.170890212059021,
+        0.05500000715255737,
+        0.20846492052078247
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_15": {
+      "triangles": 12,
+      "dimensions": [
+        0.10729900002479553,
+        0.05500000715255737,
+        0.21430277824401855
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_16": {
+      "triangles": 12,
+      "dimensions": [
+        0.10999995470046997,
+        0.09999999403953552,
+        0.19999992847442627
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_17": {
+      "triangles": 12,
+      "dimensions": [
+        0.11000001430511475,
+        0.09999999403953552,
+        0.19999992847442627
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_18": {
+      "triangles": 12,
+      "dimensions": [
+        0.10999999940395355,
+        0.09999999403953552,
+        0.20000004768371582
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_19": {
+      "triangles": 12,
+      "dimensions": [
+        0.11000001430511475,
+        0.09999999403953552,
+        0.19999992847442627
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_2": {
+      "triangles": 12,
+      "dimensions": [
+        0.20846490561962128,
+        0.05500000715255737,
+        0.170890212059021
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_20": {
+      "triangles": 12,
+      "dimensions": [
+        0.10999995470046997,
+        0.09999999403953552,
+        0.19999992847442627
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_21": {
+      "triangles": 12,
+      "dimensions": [
+        0.11000001430511475,
+        0.09999999403953552,
+        0.19999998807907104
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_22": {
+      "triangles": 12,
+      "dimensions": [
+        0.10999999940395355,
+        0.09999999403953552,
+        0.19999998807907104
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_23": {
+      "triangles": 12,
+      "dimensions": [
+        0.11000001430511475,
+        0.09999999403953552,
+        0.19999998807907104
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_3": {
+      "triangles": 12,
+      "dimensions": [
+        0.21430271863937378,
+        0.05500000715255737,
+        0.10729897022247314
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_4": {
+      "triangles": 12,
+      "dimensions": [
+        0.21430271863937378,
+        0.05500000715255737,
+        0.10729897022247314
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_5": {
+      "triangles": 12,
+      "dimensions": [
+        0.20846490561962128,
+        0.05500000715255737,
+        0.170890212059021
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_6": {
+      "triangles": 12,
+      "dimensions": [
+        0.17089024186134338,
+        0.05500000715255737,
+        0.20846498012542725
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_7": {
+      "triangles": 12,
+      "dimensions": [
+        0.10729902982711792,
+        0.05500000715255737,
+        0.214302659034729
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_8": {
+      "triangles": 12,
+      "dimensions": [
+        0.10729900002479553,
+        0.05500000715255737,
+        0.21430277824401855
+      ],
+      "materials": 1
+    },
+    "TV_light_Ornament_9": {
+      "triangles": 12,
+      "dimensions": [
+        0.170890212059021,
+        0.05500000715255737,
+        0.20846492052078247
+      ],
+      "materials": 1
+    },
+    "TV_lightning_Mesh": {
+      "triangles": 308,
+      "dimensions": [
+        1.1945998668670654,
+        0.7515227794647217,
+        1.4017349481582642
+      ],
+      "materials": 9
+    },
+    "TV_lightning_Ornament_0": {
+      "triangles": 20,
+      "dimensions": [
+        0.21999996900558472,
+        0.09999999403953552,
+        0.3600000739097595
+      ],
+      "materials": 1
+    },
+    "TV_lightning_Ornament_1": {
+      "triangles": 20,
+      "dimensions": [
+        0.2199999988079071,
+        0.10000000149011612,
+        0.3599998950958252
+      ],
+      "materials": 1
+    },
+    "TV_lightning_Ornament_2": {
+      "triangles": 20,
+      "dimensions": [
+        0.2200000286102295,
+        0.10000000149011612,
+        0.36000001430511475
+      ],
+      "materials": 1
+    },
+    "TV_lightning_Ornament_3": {
+      "triangles": 20,
+      "dimensions": [
+        0.2199999988079071,
+        0.09999999403953552,
+        0.35999998450279236
+      ],
+      "materials": 1
+    },
+    "TV_nature_Mesh": {
+      "triangles": 444,
+      "dimensions": [
+        1.2221229076385498,
+        0.7434954643249512,
+        2.1067214012145996
+      ],
+      "materials": 9
+    },
+    "TV_nature_Ornament_0": {
+      "triangles": 12,
+      "dimensions": [
+        0.28999996185302734,
+        0.07999999821186066,
+        0.20000004768371582
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_1": {
+      "triangles": 12,
+      "dimensions": [
+        0.28999999165534973,
+        0.08000000566244125,
+        0.20000004768371582
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_10": {
+      "triangles": 12,
+      "dimensions": [
+        0.04499998688697815,
+        0.01199999451637268,
+        0.04500007629394531
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_11": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.10000000894069672,
+        0.08000004291534424
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_12": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999999403953552,
+        0.07999998331069946
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_13": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999999403953552,
+        0.08000004291534424
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_14": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999999403953552,
+        0.08000001311302185
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_15": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999999403953552,
+        0.08000001311302185
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_16": {
+      "triangles": 12,
+      "dimensions": [
+        0.04499998688697815,
+        0.01199999451637268,
+        0.04499995708465576
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_17": {
+      "triangles": 12,
+      "dimensions": [
+        0.08000001311302185,
+        0.09999999403953552,
+        0.08000001311302185
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_18": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999999403953552,
+        0.07999998331069946
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_19": {
+      "triangles": 12,
+      "dimensions": [
+        0.08000001311302185,
+        0.09999999403953552,
+        0.08000001311302185
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_2": {
+      "triangles": 12,
+      "dimensions": [
+        0.2900000214576721,
+        0.07999999821186066,
+        0.20000004768371582
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_20": {
+      "triangles": 12,
+      "dimensions": [
+        0.08000001311302185,
+        0.09999997913837433,
+        0.08000001311302185
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_21": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999997913837433,
+        0.08000001311302185
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_22": {
+      "triangles": 12,
+      "dimensions": [
+        0.04500001668930054,
+        0.01199999451637268,
+        0.04499998688697815
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_3": {
+      "triangles": 12,
+      "dimensions": [
+        0.28999999165534973,
+        0.07999999821186066,
+        0.19999998807907104
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_4": {
+      "triangles": 12,
+      "dimensions": [
+        0.28999999165534973,
+        0.07999999821186066,
+        0.20000001788139343
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_5": {
+      "triangles": 12,
+      "dimensions": [
+        0.08000001311302185,
+        0.09999997913837433,
+        0.07999992370605469
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_6": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999999403953552,
+        0.08000004291534424
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_7": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999997913837433,
+        0.07999992370605469
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_8": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.09999997913837433,
+        0.07999992370605469
+      ],
+      "materials": 1
+    },
+    "TV_nature_Ornament_9": {
+      "triangles": 12,
+      "dimensions": [
+        0.07999998331069946,
+        0.10000000894069672,
+        0.08000004291534424
+      ],
+      "materials": 1
+    },
+    "TV_TV_Common_Mesh": {
+      "triangles": 744,
+      "dimensions": [
+        1.1066961288452148,
+        0.8743187189102173,
+        2.1742305755615234
+      ],
+      "materials": 8
+    },
+    "TV_wind_Mesh": {
+      "triangles": 356,
+      "dimensions": [
+        1.8832638263702393,
+        0.8050985336303711,
+        2.122375249862671
+      ],
+      "materials": 9
+    },
+    "TV_wind_Ornament_0": {
+      "triangles": 24,
+      "dimensions": [
+        0.32999998331069946,
+        0.06000000238418579,
+        0.2900000214576721
+      ],
+      "materials": 1
+    },
+    "TV_wind_Ornament_1": {
+      "triangles": 24,
+      "dimensions": [
+        0.32999998331069946,
+        0.06000000238418579,
+        0.28999996185302734
+      ],
+      "materials": 1
+    },
+    "TV_wind_Ornament_2": {
+      "triangles": 24,
+      "dimensions": [
+        0.32999998331069946,
+        0.06000000238418579,
+        0.28999996185302734
+      ],
+      "materials": 1
+    },
+    "TV_wind_Ornament_3": {
+      "triangles": 24,
+      "dimensions": [
+        0.32999998331069946,
+        0.06000000238418579,
+        0.2900000214576721
+      ],
+      "materials": 1
+    }
+  }
+}
