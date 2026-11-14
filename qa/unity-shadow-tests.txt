@@ -13,7 +13,7 @@ PASS Legion waits for intro
 PASS R consumes souls and creates bounded 24 second legion
 PASS Legion fights autonomously without cooldown feedback
 PASS Legion expires
-PASS Idle legion keeps space around hero
+PASS Idle legion independently patrols
 PASS shadow_wolf waits for anticipation
 PASS shadow_wolf attacks
 PASS shadow_bear waits for anticipation

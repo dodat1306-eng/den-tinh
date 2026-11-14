@@ -1,8 +1,8 @@
-# Đèn Tinh: Miền Sương Lạc — 0.8.2
+# Đèn Tinh: Miền Sương Lạc — 0.8.3
 
 Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
 
-**0.8.2** đổi R của cả năm nhân vật sang hồi chiêu 18–20 giây, sẵn sàng từ đầu trận, với intro riêng dài 4,5 giây trước khi phát chiêu. Thiên Vũ mở trận đồ bảy nguyên tố rồi mới tách phân thân; Quân Lê có Hắc Giáp ôm thân đúng bốn hướng, tỷ lệ người và tóc được chỉnh lại. 22 bóng thú, golem và Mộc Tinh có động tác trỗi dậy, đứng, di chuyển và lấy đà ra đòn. Web và Unity dùng chung atlas. Xem [thay đổi 0.8.2](CHANGELOG-v0.8.2.md) và [trạng thái Unity](Unity/README_VI.md).
+**0.8.3** tách R Thiên Vũ khỏi X: R thi triển riêng nguyên tố sau 0,28 giây; X mở trận đồ 3/5/7 trong 4,2 giây rồi duy trì phân thân 18 giây. Sửa atlas Đại Kiếm Sét, hướng đánh và đạn Quân Lê; phân thân, bóng thú, golem và cây tự săn địch, tuần tra độc lập. HoaVi có 6–12 mắt laser trong 18–25,5 giây. Web và Unity dùng chung atlas. Xem [thay đổi 0.8.3](CHANGELOG-v0.8.3.md) và [trạng thái Unity](Unity/README_VI.md).
 
 ## Chơi tại máy
 
@@ -39,9 +39,9 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 | Linh · Cung Trúc Hồi Âm | Chạy tích tám Nhịp Trúc, đòn cường hóa xuyên và ghim dấu; Q bắn nối dấu | Giương cung xuyên tuyến / lộn lùi đặt bẫy / thiên tiễn lần lượt săn mục tiêu |
 | Quân Lê · Hắc Ấn Đoản Kiếm | Đánh thường phóng nguyệt nhận; linh hồn xác quái/cây đổ tồn tại 20 giây | Hắc Giáp 6,5 giây / triệu hồi bóng thú, tối đa 6 / binh đoàn 14 bóng thú trong 24 giây |
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
-| Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
+| Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; X phân thân 3/5/7, R riêng từng dạng |
 
-Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **R** mở intro trận đồ 4,5 giây rồi triệu hồi sáu phân thân và phát hợp kích bảy dạng. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; Băng đóng băng hoàn toàn 2 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
+Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **X** mở trận đồ 3/5/7 trong 4,2 giây, tạo tổng cộng 3/5/7 bản thể gồm bản chính trong 18 giây; nhấn lại để thu hồi. **R** tung tuyệt kỹ riêng của dạng hiện tại sau 0,28 giây, không ép phân thân hay hợp kích. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; R Băng đóng băng hoàn toàn 2,5 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
 
 R hồi sau 18 giây với HoaVi, An, Linh; 20 giây với Thiên Vũ, Quân Lê, giảm theo bậc kỹ năng và cổ vật. Hồi chiêu tính từ lúc bắt đầu intro. Trong intro, nhân vật miễn sát thương và khống chế, di chuyển còn 35%; địch trong 520 px di chuyển và ra đòn còn 25% tốc độ, bị đẩy nhẹ mỗi 0,8 giây. HUD hiển thị số giây còn lại.
 
@@ -87,7 +87,7 @@ Các hiệu ứng như chặn đòn chí tử, biên dịch thêm đòn, dây le
 | WASD / mũi tên | Di chuyển; thân quay theo phím, đi chéo ưu tiên hướng ngang; chuột ngắm riêng |
 | Chuột / giữ trái | Ngắm / đánh thường, không cần nạp |
 | Space | Lướt né |
-| Q, E, R | Kỹ năng; R mở intro tuyệt kỹ 4,5 giây khi hết hồi chiêu |
+| Q, E, R | Kỹ năng; R Thiên Vũ lấy đà 0,28 giây, bốn nhân vật khác có intro 4,5 giây |
 | F | Tương tác |
 | K / I | Học kỹ năng / nhân vật và cổ vật |
 | H | Dùng bình máu |
@@ -117,5 +117,5 @@ Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp to
 
 Xem [thay đổi 0.7](CHANGELOG-v0.7.md), [kiểm chứng và giới hạn](VALIDATION-v0.7.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
 
-Unity Windows 0.8.2 có cơ chế R và intro tương ứng bản Web. Tải gói Windows tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.8.2); xem [hướng dẫn Unity](Unity/README_VI.md). Chiến dịch sáu chương tiếp nối hiện chỉ có ở Web. Tiến độ giữa hai bản lưu riêng.
+Unity Windows 0.8.3 có cơ chế R và intro tương ứng bản Web. Tải gói Windows tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.8.3); xem [hướng dẫn Unity](Unity/README_VI.md). Chiến dịch sáu chương tiếp nối hiện chỉ có ở Web. Tiến độ giữa hai bản lưu riêng.
 

@@ -58,11 +58,10 @@
   }
   const sprite=A.drawSpriteHero;
   function drawHero(c,p,h,time=0,scale=1,npc=false,clone=false,identity=p){
-    if(!npc&&root.DTQuanLePixel?.hero(c,p,h,time)){metrics.bodies++;metrics.atlas++;return}
     if(!npc&&root.DTWorldPixel?.hero(c,p,h,time)){metrics.bodies++;metrics.atlas++;return}
-    const pixel=npc?null:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
+    const pixel=npc?null:h.id==='quanle'?root.DTQuanLePixel:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
     if(pixel&&!pixel.ready())return;
-    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,2);
+    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>h.id==='quanle'?pixel.hero(c,actor,h,time,shadow):h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,2);
     if(atlasReady&&(reduced()||p.hp===0)){paint(p);metrics.bodies++;metrics.atlas++;return}
     if(npc||!profiles[h.id]||reduced()||p.hp===0)return sprite(c,p,h,time,scale,npc,clone);
     let old=history.get(identity);
@@ -113,8 +112,8 @@
   G.fire=function(...args){const result=fire.apply(this,args);if(result&&this.hero.id==='hoavi')emit(this,'choreo-code-shot',this.player.x,this.player.y,'#8af0ed',36,.12,{angle:this.player.facing});return result};
   const transform=G.transformElement;
   G.transformElement=function(id){const from=this.element?.id,result=transform.call(this,id);if(result&&from&&from!==this.element.id){transitions.set(this.player,{from,start:this.time});emit(this,'choreo-transform',this.player.x,this.player.y,this.element.color,95,.65,{element:this.element.id,from})}return result};
-  const split=G.splitElementals;
-  G.splitElementals=function(){const before=this.elementClones.length,result=split.call(this);if(this.elementClones.length>before)emit(this,'choreo-split',this.player.x,this.player.y,this.element.color,320,.55,{points:this.elementClones.filter(c=>c.alive).map(c=>({x:c.x,y:c.y,element:c.element})),element:this.element.id});return result};
+  const split=G.updateElementSplitIntro;
+  G.updateElementSplitIntro=function(dt){const before=this.elementClones.length,result=split.call(this,dt);if(this.elementClones.length>before)emit(this,'choreo-split',this.player.x,this.player.y,this.element.color,320,.55,{points:this.elementClones.filter(c=>c.alive).map(c=>({x:c.x,y:c.y,element:c.element})),element:this.element.id});return result};
   const cancel=G.cancelActions;
   G.cancelActions=function(...args){const result=cancel.apply(this,args);if(this.player){history.delete(this.player);transitions.delete(this.player);synthetic.delete(this.player);hurtTimes.delete(this.player)}for(const c of this.elementClones||[])synthetic.delete(c);this.effects=this.effects.filter(e=>!e.type?.startsWith('choreo-'));return result};
 

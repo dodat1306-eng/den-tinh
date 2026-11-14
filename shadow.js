@@ -36,8 +36,12 @@
     g.shadowArmy.push(s);fx(g,'portal',s.x,s.y,70,.65);return s;
   }
   function primary(g,power){
-    const p=g.player;p.aimAngle=p.facing=Math.atan2(g.input.aimY-p.y,g.input.aimX-p.x);
-    g.shoot(p.x,p.y,p.facing,680,power*1.15,'#b86bff',{kind:'shadow-crescent',r:15,pierce:4,life:.95,signature:true,shadow:true});fx(g,'crescent',p.x,p.y,70,.25,{angle:p.facing});
+    const p=g.player,a=Math.atan2(g.input.aimY-p.y,g.input.aimX-p.x);p.aimAngle=p.facing=a;p.comboIndex=((p.comboIndex??-1)+1)%3;
+    p.action={key:'attack',hero:'quanle',angle:a,elapsed:0,duration:.24,release:.03,windup:.03};p.cast=.24;
+    const x=p.x+Math.cos(a)*28,y=p.y-16+Math.sin(a)*18;
+    for(const spread of p.comboIndex===2?[-.14,0,.14]:[0]){const angle=a+spread;g.shoot(x-Math.cos(angle)*20,y-Math.sin(angle)*20,angle,840,power*1.15,'#b86bff',{kind:'shadow-crescent',r:11,pierce:4,life:.95,signature:true,shadow:true})}
+    fx(g,'crescent',x,y,70,.25,{angle:a});
+
   }
   function release(g,c){
     if(g.dead)return;const p=g.player,power=p.damage*(c.power||1);
@@ -102,7 +106,7 @@
       this.player.shield=clamp(this.player.shield,0,this.hero.id==='quanle'?130:110);
       if(!saved)return;
       for(const c of (Array.isArray(saved.remains)?saved.remains:[]).slice(-384))if(c&&[c.x,c.y,c.life].every(Number.isFinite)&&Math.abs(c.x)<2e7&&Math.abs(c.y)<2e7&&['enemy','tree'].includes(c.sourceType))this.shadowRemains.push({x:c.x,y:c.y,life:clamp(c.life,0,20),sourceType:c.sourceType,enemyType:typeof c.enemyType==='string'?c.enemyType.slice(0,40):'slime',variant:variants.has(c.variant)?c.variant:null});
-      if(this.hero.id==='quanle')for(const unit of (Array.isArray(saved.army)?saved.army:[]).slice(0,14))if(unit&&byId.has(unit.kind)&&[unit.x,unit.y,unit.life,unit.hp,unit.power].every(Number.isFinite)&&Math.hypot(unit.x-this.player.x,unit.y-this.player.y)<1300){const s=spawn(this,unit.kind,unit,clamp(unit.life,0,24),unit.variant);s.hp=clamp(unit.hp,0,s.maxHp);s.power=clamp(unit.power,1,this.player.damage*4);s.attackCd=.3}
+      if(this.hero.id==='quanle')for(const unit of (Array.isArray(saved.army)?saved.army:[]).slice(0,14))if(unit&&byId.has(unit.kind)&&[unit.x,unit.y,unit.life,unit.hp,unit.power].every(Number.isFinite)&&Math.abs(unit.x)<=2e7&&Math.abs(unit.y)<=2e7){const s=spawn(this,unit.kind,unit,clamp(unit.life,0,24),unit.variant);s.hp=clamp(unit.hp,0,s.maxHp);s.power=clamp(unit.power,1,this.player.damage*4);s.attackCd=.3}
     }
     passiveNodeText(){return this.hero.id==='quanle'?'Mỗi bậc tăng 8% sức mạnh bóng thú và 5% sát thương gai Hắc Giáp. Linh hồn tồn tại 20 giây.':super.passiveNodeText()}
     passiveStatus(){return this.hero.id==='quanle'?'Bóng thú '+this.shadowArmy.length+'/14 · Linh hồn '+this.shadowRemains.length+(this.player.shadowArmor>0?' · Hắc Giáp '+this.player.shadowArmor.toFixed(1)+'s':''):super.passiveStatus()}
@@ -119,14 +123,14 @@
       for(const c of this.shadowRemains)c.life-=dt;this.shadowRemains=this.shadowRemains.filter(c=>c.life>0);
       if(p.shadowArmor>0){p.shadowArmor=Math.max(0,p.shadowArmor-dt);this.shadowTendril+=dt;if(this.shadowTendril>=.4){this.shadowTendril-=.4;const hits=area(this,{power:p.damage*(1+.05*this.skillRanks.passive)},p.x,p.y,125,.55);p.hp=Math.min(p.maxHp,p.hp+hits*1.5);fx(this,'tendrils',p.x,p.y,125,.3)}}
       for(const e of this.world.enemies)if(e.alive){e.shadowCorrosion=Math.max(0,(e.shadowCorrosion||0)-dt);if(e.shadowBleed>0){e.shadowBleed-=dt;e.shadowBleedTick=(e.shadowBleedTick||0)-dt;if(e.shadowBleedTick<=0){e.shadowBleedTick=.5;this.damageEnemy(e,e.shadowBleedPower||2,false)}}if(e.shadowFear>0){e.shadowFear-=dt;e.stunned=Math.max(e.stunned||0,.05);const a=Math.atan2(e.y-e.shadowFearY,e.x-e.shadowFearX);this.moveEntity(e,Math.cos(a)*100*dt,Math.sin(a)*100*dt)}}
-      for(const [i,s] of this.shadowArmy.entries()){
+      const assigned=new Map();for(const s of this.shadowArmy){
         s.life-=dt;s.spawnAge=Math.min(.45,(s.spawnAge||0)+dt);if(s.spawnAge<.45){s.moving=false;continue}s.attackCd-=dt;s.hurtCd-=dt;if(s.action){s.action.elapsed+=dt;if(!s.action.released&&s.action.elapsed>=s.action.release){s.action.released=true;const target=this.world.enemies.find(e=>e.id===s.action.targetId&&e.alive);if(target&&distance(target,s)<340)releaseAttack(this,s,target,byId.get(s.kind))}if(s.action.elapsed>=s.action.duration)s.action=null}if(s.life<=0||s.hp<=0)continue;
-        const spec=byId.get(s.kind),enemies=this.world.enemies.filter(e=>e.alive&&distance(e,s)<600),target=enemies.sort((a,b)=>distance(a,s)-distance(b,s))[0];s.moving=false;
-        let destination=target||(this.shadowArmy.length>6?formation(this,i):p);const hazard=[...(this.telegraphs||[]),...(this.eliteHazards||[])].find(h=>(h.timer??h.time)>0&&distance(s,h)<(h.r||60)+s.r+25);
+        const spec=byId.get(s.kind),target=this.allyTarget(s,assigned);s.moving=false;
+        let destination=target||this.patrolAlly(s,dt,200,550,2,4);s.aiState=target?'hunt':'roam';const hazard=[...(this.telegraphs||[]),...(this.eliteHazards||[])].find(h=>(h.timer??h.time)>0&&distance(s,h)<(h.r||60)+s.r+25);
         if(hazard){const a=Math.atan2(s.y-hazard.y,s.x-hazard.x);destination={x:s.x+Math.cos(a)*130,y:s.y+Math.sin(a)*130}}
-        if(distance(s,p)>1100){const spot=this.elementSafeSpot(p.x+60,p.y)||p;s.x=spot.x;s.y=spot.y}
+
         const ranged=['antlers','venom','feather','siphon','darkfire'].includes(spec.behavior),reach=ranged?250:90,d=distance(destination,s);
-        if(hazard||d>(target?reach:this.shadowArmy.length>6?20:100)){const a=Math.atan2(destination.y-s.y,destination.x-s.x),step=Math.min(d,spec.speed*(this.shadowFrenzy>0?1.4:1)*dt);s.aimAngle=a;s.moving=true;if(spec.flying){s.x+=Math.cos(a)*step;s.y+=Math.sin(a)*step}else this.moveEntity(s,Math.cos(a)*step,Math.sin(a)*step)}
+        if(hazard||d>(target?reach:18)){const a=Math.atan2(destination.y-s.y,destination.x-s.x),step=Math.min(d,spec.speed*(this.shadowFrenzy>0?1.4:1)*dt);s.aimAngle=a;s.moving=true;if(spec.flying){s.x+=Math.cos(a)*step;s.y+=Math.sin(a)*step}else this.moveEntity(s,Math.cos(a)*step,Math.sin(a)*step)}
         if(target&&!hazard&&distance(s,target)<reach+target.r&&s.attackCd<=0)attack(this,s,target,spec);
         for(const b of this.projectiles)if(!b.friendly&&b.life>0&&distance(b,s)<s.r+(b.r||0)){s.hp-=b.damage*(spec.behavior==='pincers'?.5:1);b.life=0}
         if(target&&distance(s,target)<s.r+target.r+12&&s.hurtCd<=0){s.hp-=target.damage*(spec.behavior==='pincers'?.5:1);s.hurtCd=.8}

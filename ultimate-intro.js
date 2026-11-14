@@ -6,6 +6,7 @@
   function line(c,pts,col,width=2){c.strokeStyle=col;c.lineWidth=width;c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(Math.round(x),Math.round(y)):c.moveTo(Math.round(x),Math.round(y)));c.stroke()}
   function poly(c,pts,col){c.fillStyle=col;c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(Math.round(x),Math.round(y)):c.moveTo(Math.round(x),Math.round(y)));c.closePath();c.fill()}
   function ring(c,x,y,r,col,ys=.44,spin=0,n=56){line(c,Array.from({length:n+1},(_,i)=>{const a=i/n*TAU+spin;return[x+Math.cos(a)*r,y+Math.sin(a)*r*ys]}),col)}
+  function runes(c,x,y,r,col,spin){for(let i=0;i<28;i++){const a=i*TAU/28+spin,co=Math.cos(a),si=Math.sin(a),at=(u,v)=>[x+co*(r+v)-si*u,y+(si*(r+v)+co*u)*.44];line(c,[at(0,-5),at(0,5),at(i%2?4:-4,1)],col,1);if(i%3===0)line(c,[at(-3,-2),at(3,2)],col,1)}}
   function crest(c,id,x,y){
     const col=colors[id];c.save();c.translate(x,y);ring(c,0,0,18,col,1,0,28);c.fillStyle='#080b19';c.fillRect(-12,-12,24,24);
     if(id===0)for(const d of[-4,4])poly(c,[[d+3,-13],[d-6,1],[d,0],[d-3,13],[d+8,-3],[d+2,-2]],d<0?'#EF4444':'#FACC15');
@@ -27,15 +28,20 @@
     if(i===5)line(c,Array.from({length:16},(_,n)=>[x+Math.sin(n*.6)*18,y-20+n*3]),col,3);
     if(i===6)ring(c,x,y-8,25,col,1);
   }
-  function thienvu(c,x,y,t,calm){
-    const radius=20+130*clamp(t/1.2),spin=calm?0:t*.35;
-    ring(c,x,y,radius,'#F59E0B',.44,spin);ring(c,x,y,radius*.88,'#FDE047',.44,-spin);
-    const points=Array.from({length:7},(_,i)=>{const a=-Math.PI/2+Math.PI/7+i*TAU/7+(t>4.1&&!calm?(t-4.1)*TAU/.4:0);return[x+Math.cos(a)*125,y+Math.sin(a)*55]});
-    line(c,Array.from({length:8},(_,i)=>points[(i*3)%7]),'#F59E0B');
-    points.forEach(([cx,cy],i)=>{const on=t>=1.2+i*.25;if(!on)return;const u=clamp((t-1.2-i*.25)/.25);pillar(c,cx,cy,colors[i],u);crest(c,i,cx,cy);
-      if(t>=3){const emerge=clamp((t-3)/1.1),bx=x+(cx-x)*emerge,by=y+(cy-y)*emerge;line(c,[[x,y-45],[bx,by-35]],colors[i]);c.save();c.globalAlpha=emerge*.8;poly(c,[[bx-10,by-15],[bx-13,by-45],[bx,by-56],[bx+13,by-45],[bx+10,by-15]],colors[i]);weapon(c,i,bx+(i%2?18:-18),by-35,colors[i]);c.restore()}
+  function thienvu(c,x,y,t,calm,st,g){
+    const count=st.splitCount||7,els=g.getSplitElementList(count),radius=20+130*clamp(t/1.2),spin=calm?0:t*.35;
+    const points=Array.from({length:count},(_,i)=>{const a=-Math.PI/2+i*TAU/count;return[x+Math.cos(a)*radius,y+Math.sin(a)*radius*.44]});
+    const connect=(step,col)=>line(c,Array.from({length:count+1},(_,i)=>points[i*step%count]),col);
+    for(let i=0;i<(count===7?3:2);i++){const r=radius*(1+i*.12),col=i%2?'#FDE047':'#F59E0B',a=spin*(i%2?-1:1);ring(c,x,y,r,col,.44,a);runes(c,x,y,r,col,a)}
+    if(count===3){connect(1,'#FDE047');line(c,Array.from({length:4},(_,i)=>{const a=Math.PI/2+i*TAU/3-spin;return[x+Math.cos(a)*radius*.65,y+Math.sin(a)*radius*.286]}),'#80D8FF')}
+    else if(count===5){connect(1,'#F59E0B');connect(2,'#FDE047');line(c,Array.from({length:21},(_,i)=>{const a=i*TAU/20+spin,r=radius*(i%2?1.18:1.32);return[x+Math.cos(a)*r,y+Math.sin(a)*r*.44]}),'#80D8FF')}
+    else{connect(2,'#FDE047');connect(3,'#80D8FF')}
+    const ids=['lightning','wind','earth','fire','ice','nature','light'];
+    points.forEach(([cx,cy],i)=>{const id=ids.indexOf(els[i].id),on=t>=1.2+i*.12;if(!on)return;const u=clamp((t-1.2-i*.12)/.25);pillar(c,cx,cy,colors[id],u);crest(c,id,cx,cy);
+      if(t/4.2>.35)line(c,[[x,y-45],[cx,cy-35]],colors[id]);
+      if(t>=2.8){const emerge=clamp((t-2.8)/1.1),bx=x+(cx-x)*emerge,by=y+(cy-y)*emerge;c.save();c.globalAlpha=emerge*.8;poly(c,[[bx-10,by-15],[bx-13,by-45],[bx,by-56],[bx+13,by-45],[bx+10,by-15]],colors[id]);weapon(c,id,bx+(i%2?18:-18),by-35,colors[id]);c.restore()}
     });
-    if(t>4.1&&!calm)for(let i=0;i<7;i++)ring(c,x,y,150+(t-4.1)*650,colors[i],.44+i*.025);
+    if(t>3.8&&!calm)for(const el of els)ring(c,x,y,150+(t-3.8)*650,el.color,.44);
   }
   function quanle(c,x,y,t,calm){
     const r=420*clamp(t/1.2);c.save();c.globalAlpha=.82;poly(c,Array.from({length:56},(_,i)=>{const a=i*TAU/56;return[x+Math.cos(a)*r,y+Math.sin(a)*r*.44]}),'#05030A');c.restore();ring(c,x,y,r,'#9333EA');ring(c,x,y,r*.98,'#38BDF8');
@@ -66,9 +72,9 @@
     const g=renderer.game,p=g.player,i=p.ultIntro;if(!i)return;
     const c=renderer.ctx,t=i.elapsed,id=g.hero.id,calm=!!root.DTSettings?.reducedMotion,z=renderer.zoom,x=(p.x-renderer.camera.x)*z,y=(p.y-renderer.camera.y)*z;
     c.save();try{c.setTransform(1,0,0,1,0,0);c.fillStyle='rgba(6,8,18,0.45)';c.fillRect(0,0,1280,720);c.textAlign='left';
-      if(id==='thienvu')thienvu(c,x,y,t,calm);else if(id==='quanle')quanle(c,x,y,t,calm);else if(id==='hoavi')hoavi(c,x,y,t,calm);else if(id==='an')an(c,x,y,t);else linh(c,x,y,t,calm);
+      if(id==='thienvu')thienvu(c,x,y,t,calm,i,g);else if(id==='quanle')quanle(c,x,y,t,calm);else if(id==='hoavi')hoavi(c,x,y,t,calm);else if(id==='an')an(c,x,y,t);else linh(c,x,y,t,calm);
       c.save();c.scale(z,z);c.translate(-renderer.camera.x,-renderer.camera.y);root.DTVisualHero(c,{...p,invulnerable:0,y:p.y-(id==='thienvu'&&t>=3?24:0)},g.hero,g.time);c.restore();
-      const h=28*clamp(t/.25),text=words[id]||words.an,stage=t<1.2?1:t<3?2:t<4.1?3:4;c.fillStyle='#03040b';c.fillRect(0,0,1280,h);c.fillRect(0,720-h,1280,h);c.font='bold 16px Segoe UI';c.textAlign='center';c.fillStyle=g.hero.color;c.fillText(text[0],640,21);c.font='13px Segoe UI';c.fillText(text[stage]+' · '+Math.max(0,4.5-t).toFixed(1)+'s',640,711);
+      const h=28*clamp(t/.25),text=id==='thienvu'?[{3:'TAM LINH · TAM GIÁC KÉP',5:'NGŨ LINH · NGÔI SAO NĂM CÁNH',7:'THẤT LINH · THẤT TINH KÉP'}[i.splitCount||7],'KHAI MỞ TRẬN ĐỒ','HUY HIỆU NGUYÊN TỐ','TÁCH BÓNG · TRIỆU KHÍ','PHÂN THÂN']:words[id]||words.an,stage=t<1.2?1:t<3?2:t<4.1?3:4;c.fillStyle='#03040b';c.fillRect(0,0,1280,h);c.fillRect(0,720-h,1280,h);c.font='bold 16px Segoe UI';c.textAlign='center';c.fillStyle=g.hero.color;c.fillText(text[0],640,21);c.font='13px Segoe UI';c.fillText(text[stage]+' · '+Math.max(0,i.duration-t).toFixed(1)+'s',640,711);
     }finally{c.restore()}
   }
   const R=root.DTRenderer.prototype,draw=R.draw;R.draw=function(...args){const result=draw.apply(this,args);if(!args[1])paint(this);return result};

@@ -65,7 +65,7 @@
       }
       oc.putImageData(data,0,0);raster={key,cv,x:minX*2,y:minY*2};beamCache.set(e,raster);
     }
-    c.drawImage(raster.cv,Math.round(a.x+raster.x),Math.round(a.y+raster.y-34),raster.cv.width*2,raster.cv.height*2);
+    c.drawImage(raster.cv,Math.round(a.x+raster.x),Math.round(a.y+raster.y-(satellite?0:34)),raster.cv.width*2,raster.cv.height*2);
   }
   function particles(c,x,y,age,count=6){
     if(calm()||low())return;
@@ -94,7 +94,7 @@
         return;
       }
       if(e.type==='choreo-code-shot'){flip(c,'muzzle_snap',calm()?1:Math.floor(age*4),s.x+Math.round(Math.cos(e.angle)*26),s.y-34+Math.round(Math.sin(e.angle)*10));return}
-      if(e.type==='choreo-hit'){flip(c,'hit_glitch',calm()?1:Math.floor(age*5),s.x,s.y-12);particles(c,s.x,s.y-12,age,low()?2:6);return}
+      if(e.type==='choreo-hit'){const y=s.y-(e.key==='satellite'?0:12);flip(c,'hit_glitch',calm()?1:Math.floor(age*5),s.x,y);particles(c,s.x,y,age,low()?2:6);return}
       if(e.type==='choreo-release'){
         if(e.key==='q'){flip(c,'code_window',calm()?2:Math.min(5,Math.floor(age*6)),s.x+Math.round(Math.cos(e.angle)*52)+(Math.abs(Math.cos(e.angle))<.5?26:0),s.y-24+Math.round(Math.sin(e.angle)*12));return}
         if(e.key==='e')return;
@@ -122,9 +122,9 @@
     });
   }
   function field(renderer,f){if(f.kind!=='satellites'||renderer.game.hero.id!=='hoavi')return false;if(!ready())return true;
-    const g=renderer.game;screen(renderer.ctx,m=>{for(const side of [-1,1]){
-      const a=g.time*1.7+side*Math.PI/2,x=g.player.x+Math.cos(a)*100,y=g.player.y+Math.sin(a)*75,s=point(m,x,y),aim=f.pixelAim?.find(p=>p.side===side),angle=aim?Math.atan2(aim.ty-y,aim.tx-x):a;
-      flip(renderer.ctx,'satellite_drone',(Math.round(angle/(Math.PI/4))+8)%8,s.x,s.y-34);
+    const g=renderer.game;screen(renderer.ctx,m=>{for(let i=0;i<(f.count||6);i++){
+      const o=root.DTSatellitePose(f,g.player,i),s=point(m,o.x,o.y),aim=f.pixelAim?.find(p=>p.eye===i),angle=aim?Math.atan2(aim.ty-o.y,aim.tx-o.x):o.angle;
+      flip(renderer.ctx,'satellite_drone',(Math.round(angle/(Math.PI/4))+8)%8,s.x,s.y);
     }});return true;
   }
   root.DTHoaViPixel={character,vfx,ready,frame,hero,effect,projectile,fault,field,screen,point,beam};

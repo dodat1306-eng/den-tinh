@@ -1,0 +1,164 @@
+{
+  "checkedAt": "2026-11-14T18:16:55.186Z",
+  "url": "http://127.0.0.1:60384/",
+  "pass": true,
+  "stagedCombatFixtures": true,
+  "physicalDevice": false,
+  "results": [
+    {
+      "name": "an R starts immediately without rage",
+      "pass": true,
+      "ok": true,
+      "cd": 18,
+      "elapsed": 0
+    },
+    {
+      "name": "an four intro stages defer gameplay until 4.5 seconds",
+      "pass": true,
+      "cd": 13.49999999999999,
+      "army": 0,
+      "clones": 0
+    },
+    {
+      "name": "an HUD shows seconds and cooldown sweep",
+      "pass": true,
+      "text": "13.5s",
+      "cooling": true,
+      "sweep": "scaleY(0.75)"
+    },
+    {
+      "name": "an reduced motion retains cinematic and hero",
+      "pass": true
+    },
+    {
+      "name": "linh R starts immediately without rage",
+      "pass": true,
+      "ok": true,
+      "cd": 18,
+      "elapsed": 0
+    },
+    {
+      "name": "linh four intro stages defer gameplay until 4.5 seconds",
+      "pass": true,
+      "cd": 13.49999999999999,
+      "army": 0,
+      "clones": 0
+    },
+    {
+      "name": "linh HUD shows seconds and cooldown sweep",
+      "pass": true,
+      "text": "13.5s",
+      "cooling": true,
+      "sweep": "scaleY(0.75)"
+    },
+    {
+      "name": "linh reduced motion retains cinematic and hero",
+      "pass": true
+    },
+    {
+      "name": "quanle R starts immediately without rage",
+      "pass": true,
+      "ok": true,
+      "cd": 20,
+      "elapsed": 0
+    },
+    {
+      "name": "quanle four intro stages defer gameplay until 4.5 seconds",
+      "pass": true,
+      "cd": 15.500000000000203,
+      "army": 14,
+      "clones": 0
+    },
+    {
+      "name": "quanle HUD shows seconds and cooldown sweep",
+      "pass": true,
+      "text": "15.5s",
+      "cooling": true,
+      "sweep": "scaleY(0.775)"
+    },
+    {
+      "name": "quanle reduced motion retains cinematic and hero",
+      "pass": true
+    },
+    {
+      "name": "hoavi R starts immediately without rage",
+      "pass": true,
+      "ok": true,
+      "cd": 18,
+      "elapsed": 0
+    },
+    {
+      "name": "hoavi four intro stages defer gameplay until 4.5 seconds",
+      "pass": true,
+      "cd": 13.49999999999999,
+      "army": 0,
+      "clones": 0
+    },
+    {
+      "name": "hoavi HUD shows seconds and cooldown sweep",
+      "pass": true,
+      "text": "13.5s",
+      "cooling": true,
+      "sweep": "scaleY(0.75)"
+    },
+    {
+      "name": "hoavi reduced motion retains cinematic and hero",
+      "pass": true
+    },
+    {
+      "name": "Desktop X 3 uses own geometry and releases 2 allies",
+      "pass": true,
+      "cd": 0,
+      "army": 0,
+      "clones": 2
+    },
+    {
+      "name": "Desktop X 5 uses own geometry and releases 4 allies",
+      "pass": true,
+      "cd": 0,
+      "army": 0,
+      "clones": 4
+    },
+    {
+      "name": "Desktop X 7 uses own geometry and releases 6 allies",
+      "pass": true,
+      "cd": 0,
+      "army": 0,
+      "clones": 6
+    },
+    {
+      "name": "HoaVi renders 6 eyes and matching lasers",
+      "pass": true,
+      "count": 6,
+      "life": 17.99,
+      "beams": 6
+    },
+    {
+      "name": "HoaVi renders 12 eyes and matching lasers",
+      "pass": true,
+      "count": 12,
+      "life": 25.49,
+      "beams": 12
+    },
+    {
+      "name": "Quân Lê follows movement and attack aim in four directions, preserves ghost opacity",
+      "pass": true,
+      "directions": 4,
+      "movementAndAttack": true,
+      "ghostAlpha": 0.25
+    },
+    {
+      "name": "Touch X starts split intro at 390x844",
+      "pass": true
+    },
+    {
+      "name": "Touch X starts split intro at 844x390",
+      "pass": true
+    },
+    {
+      "name": "No uncaught JavaScript errors across five heroes and touch layouts",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

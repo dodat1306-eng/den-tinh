@@ -373,20 +373,10 @@ def export_summons_and_effects(image,metadata):
     path=ROOT/'assets/thienvu-vfx-pixel.json';old=json.loads(path.read_text(encoding='utf-8'));sheet=Image.open(ROOT/old['image']).convert('RGBA')
     keys={'golem_spawn':'golem/spawn','golem_idle':'golem/idle','golem_walk':'golem/walk','golem_smash':'golem/smash','golem_punch':'golem/punch','golem_stomp':'golem/stomp','golem_throw':'golem/throw','treant_spawn':'treant/spawn','treant_idle':'treant/idle','treant_walk':'treant/walk','treant_whip':'treant/attack'}
     extras={k:k for k in ('tornado_mesh','tornado_hurricane','wind_tornado','giant_fireball','meteor_burst','earth_tremor','lightning_sigil','convergence_hub','weapon_swing_lightning','weapon_swing_earth','weapon_swing_ice','weapon_swing_nature','light_flash_step','light_backstab_slash','golem_rock')}
-    # Repack changed clips into appended native-sized cells; preserve every other source cell.
-    width=old['width'];base=old.get('v08BaseHeight') or min(c['y'] for k in keys if k in old['clips'] for c in old['clips'][k]['cells'])
-    old['v08BaseHeight']=base;sheet=sheet.crop((0,0,width,base));x=0;y=base;row=0;pending=[]
-    for key,source in {**keys,**extras}.items():
-        clip=metadata['clips'][source];cells=[]
-        for src in clip['cells']:
-            w,h=src['w'],src['h']
-            if x+w>width:x=0;y+=row;row=0
-            target={**src,'x':x,'y':y};cells.append(target);pending.append((src,target));x+=w;row=max(row,h)
-        old['clips'][key]={'frames':clip['frames'],'fps':clip['fps'],'cells':cells}
-    result=Image.new('RGBA',(width,y+row));result.paste(sheet,(0,0))
-    for src,target in pending:result.paste(image.crop((src['x'],src['y'],src['x']+src['w'],src['y']+src['h'])),(target['x'],target['y']))
-    old['palette']=list(dict.fromkeys(old['palette']+metadata['palette']))
-    old['height']=result.height;old['version']=json.loads((ROOT/'package.json').read_text(encoding='utf-8'))['version'];result.save(ROOT/old['image'],optimize=True)
+    from atlas_pack import merge_clips
+    clips={key:metadata['clips'][source] for key,source in {**keys,**extras}.items()}
+    result,old=merge_clips(sheet,old,image,clips,metadata['palette'])
+    old['version']=json.loads((ROOT/'package.json').read_text(encoding='utf-8'))['version'];result.save(ROOT/old['image'],optimize=True)
     path.write_text(json.dumps(old,separators=(',',':')),encoding='utf-8');(ROOT/'assets/thienvu-vfx-pixel.js').write_text('globalThis.DTThienVuVFX='+json.dumps(old,separators=(',',':'))+';\n',encoding='utf-8')
 
 def run():

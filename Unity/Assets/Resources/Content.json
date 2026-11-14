@@ -75,7 +75,7 @@
       "shotSpeed": 740,
       "q": "Debug · Điểm Gãy",
       "e": "Checkpoint · Hồi Quy",
-      "r": "Overclock · Song Tinh",
+      "r": "Overclock · Thiên Cơ Mắt Trận",
       "qCd": 5,
       "eCd": 10,
       "rCd": 18
@@ -369,7 +369,7 @@
     "id": "thienvu",
     "name": "Thiên Vũ",
     "role": "THẤT LINH SỨ",
-    "desc": "Biến đổi bảy nguyên tố; phân thân 3 / 5 / 7 và hợp kích.",
+    "desc": "Biến đổi bảy nguyên tố; X phân thân 3 / 5 / 7, R riêng từng dạng.",
     "color": "#b2b1ff",
     "cloth": "#334b71",
     "accent": "#ffe3a2",

@@ -1,6 +1,6 @@
 {
   "name": "den-tinh",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "description": "Đèn Tinh: Miền Sương Lạc — game hành động 2D với bối cảnh fantasy Việt Nam.",
   "scripts": {
@@ -8,7 +8,7 @@
     "deploy": "npm run build:web && npx wrangler@4.156.0 deploy",
     "start": "node tools/server.cjs",
     "start:lan": "node tools/server.cjs --lan",
-    "test": "node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs && node tools/choreography-test.cjs && node tools/elemental-npc-test.cjs && node tools/quanle-test.cjs",
+    "test": "node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs && node tools/choreography-test.cjs && node tools/elemental-npc-test.cjs && node tools/quanle-test.cjs && node tools/element-split-patrol-test.cjs",
     "test:ascension": "node tools/ascension-test.cjs",
     "test:endless": "node tools/endless-test.cjs",
     "test:elemental": "node tools/elemental-test.cjs",
@@ -28,7 +28,8 @@
     "test:browser-motion": "node tools/choreography-browser.cjs",
     "test:quanle": "node tools/quanle-test.cjs",
     "test:quanle-browser": "node tools/quanle-browser-test.cjs",
-    "test:ultimate-browser": "node tools/ultimate-browser-test.cjs"
+    "test:ultimate-browser": "node tools/ultimate-browser-test.cjs",
+    "test:atlas": "python tools/atlas-pack-test.py"
   },
   "engines": {
     "node": ">=22"

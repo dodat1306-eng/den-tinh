@@ -190,17 +190,32 @@ def weapons():
     for name,(w,h) in specs.items():
         for f,c in enumerate(atlas.cells('held_'+name,w,h,4,8)):
             m=Mesh()
-            def poly(pts,color):m.prism([((x-w/2)*PITCH,(h-6-y)*PITCH/UP.z) for x,y in pts],color,-m.serial*.0053,.04)
+            def poly(pts,color):m.prism([((x-w/2)*PITCH,(h-6-y)*PITCH/UP.z) for x,y in pts],color,-m.serial*.0053,.002 if name=='lightning_sword' else .04)
             def line(pts,color,r=1):
-                for j,((x,y),(xx,yy)) in enumerate(zip(pts,pts[1:])):m.rod(((x-w/2)*PITCH,-.03-m.serial*.0053,(h-6-y)*PITCH/UP.z),((xx-w/2)*PITCH,-.04-m.serial*.0053,(h-6-yy)*PITCH/UP.z),r*PITCH/2,color,sides=6,part=False)
+                for j,((x,y),(xx,yy)) in enumerate(zip(pts,pts[1:])):
+                    if name=='lightning_sword':
+                        length=math.hypot(xx-x,yy-y);nx=(yy-y)/length*r/2;ny=(x-xx)/length*r/2
+                        poly([(x+nx,y+ny),(xx+nx,yy+ny),(xx-nx,yy-ny),(x-nx,y-ny)],color)
+                    else:m.rod(((x-w/2)*PITCH,-.03-m.serial*.0053,(h-6-y)*PITCH/UP.z),((xx-w/2)*PITCH,-.04-m.serial*.0053,(h-6-yy)*PITCH/UP.z),r*PITCH/2,color,sides=6,part=False)
             def ring(cx,cy,r,width,color,n=24):
                 for i in range(n):
                     a=i*math.tau/n;b=(i+1)*math.tau/n
                     poly([(cx+math.cos(a)*r,cy+math.sin(a)*r),(cx+math.cos(b)*r,cy+math.sin(b)*r),(cx+math.cos(b)*(r-width),cy+math.sin(b)*(r-width)),(cx+math.cos(a)*(r-width),cy+math.sin(a)*(r-width))],color)
             if name=='lightning_sword':
-                poly([(3,22),(11,22),(11,26),(3,26)],'#593318');poly([(10,17),(14,17),(14,31),(10,31)],'#e68a00')
-                blade=[(14,21),(18,19),(19,17),(21,20),(24,17),(25,15),(27,19),(30,15),(31,13),(33,17),(36,13),(37,11),(39,15),(45,22),(36,27),(14,27)]
-                poly(blade,'#ffee55');poly([(15,23),(38,18),(43,22),(35,24),(15,25)],'#ffffff');line([(18,28),(22,30),(26,26),(30,28),(34,24),(40,25)],'#5ce1e6')
+                poly([(5,39),(8,34),(15,28),(19,32),(11,40),(8,42)],'#1A1025')
+                poly([(8,37),(15,30),(17,32),(10,39)],'#4b1d7a')
+                poly([(7,39),(10,36),(12,39),(9,42)],'#80D8FF')
+                poly([(13,27),(14,21),(21,25),(26,30),(31,33),(22,34),(18,31)],'#1A1025')
+                poly([(14,24),(21,28),(28,32),(22,31),(18,29)],'#FFD54F')
+                poly([(17,26),(22,18),(44,4),(38,18),(24,31),(20,32)],'#1A1025')
+                poly([(19,26),(24,19),(42,6),(36,18),(23,29)],'#FF8F00')
+                poly([(21,26),(26,19),(43,5),(33,20),(23,28)],'#FFD54F')
+                line([(21,27),(43,5)],'#80D8FF',2)
+                line([(22,26),(43,5)],'#FFFFFF',1)
+                for j in range(3):
+                    x=21+j*7+(f%2)*2;y=25-j*7
+                    side=1 if (j+f)%2 else -1
+                    line([(x,y),(x+side*4,y-2),(x+side*2,y-5),(x+side*6,y-7)],'#80D8FF',1)
             elif name=='wind_fan':
                 center=(24,40);pts=[(24+math.cos(math.pi+i*math.pi/12)*19,34+math.sin(math.pi+i*math.pi/12)*28) for i in range(13)]
                 poly([center]+pts,'#4ce8e0');line(pts,'#ffe4a0',2)
@@ -237,13 +252,10 @@ def weapons():
             poly([(x,y-1),(x+1,y),(x,y+1),(x-1,y)],'#ffffff')
             atlas.add(c,m,'held_'+name)
     image,meta=atlas.bake(HERE/'held-weapons','DTThienVuHeld',detached_parts='Raised luminous inlays and magic sparks are separate sprite layers; silhouettes and all material surfaces still receive geometry QA.')
-    path=ROOT/'assets/thienvu-vfx-pixel.json';v=json.loads(path.read_text(encoding='utf-8'));old=Image.open(ROOT/v['image']).convert('RGBA');base=v.get('heldBaseHeight',old.height);v['heldBaseHeight']=base
-    out=Image.new('RGBA',(v['width'],base+image.height));out.paste(old.crop((0,0,old.width,base)))
-    for key,clip in meta['clips'].items():
-        for c in clip['cells']:
-            out.paste(image.crop((c['x'],c['y'],c['x']+c['w'],c['y']+c['h'])),(c['x'],base+c['y']));c['y']+=base
-        v['clips'][key]=clip
-    v['height']=out.height;v['palette']=sorted(set(v['palette']+meta['palette']));v['version']='0.8.1';out.save(ROOT/v['image'],optimize=True);raw=json.dumps(v,separators=(',',':'));path.write_text(raw,encoding='utf-8');(ROOT/'assets/thienvu-vfx-pixel.js').write_text('globalThis.DTThienVuVFX='+raw+';\n',encoding='utf-8')
+    from atlas_pack import merge_clips
+    path=ROOT/'assets/thienvu-vfx-pixel.json';v=json.loads(path.read_text(encoding='utf-8'));old=Image.open(ROOT/v['image']).convert('RGBA')
+    out,v=merge_clips(old,v,image,meta['clips'],meta['palette'])
+    v['version']=json.loads((ROOT/'package.json').read_text(encoding='utf-8'))['version'];out.save(ROOT/v['image'],optimize=True);raw=json.dumps(v,separators=(',',':'));path.write_text(raw,encoding='utf-8');(ROOT/'assets/thienvu-vfx-pixel.js').write_text('globalThis.DTThienVuVFX='+raw+';\n',encoding='utf-8')
     # Light eyes are white cores in gold halos, using existing face landmarks.
     hp=ROOT/'assets/thienvu-pixel-v08.json';hero=json.loads(hp.read_text(encoding='utf-8'));sheet=Image.open(ROOT/hero['image']).convert('RGBA');pen=ImageDraw.Draw(sheet)
     for clip in hero['forms']['light']['actions'].values():

@@ -28,14 +28,50 @@ PASS hoavi pause freezes intro and cooldown
 PASS hoavi release at 4.5s
 PASS Overclock starts at release
 PASS hoavi cooldown prevents second release
-PASS thienvu R ready without rage
-PASS thienvu intro blocks other attacks
-PASS thienvu intro immunity
-PASS thienvu no release before 4.5s
-PASS thienvu pause freezes intro and cooldown
-PASS thienvu release at 4.5s
-PASS Six autonomous clones appear at release
-PASS thienvu cooldown prevents second release
+PASS X starts 3-body intro
+PASS X does not release before 4.2s
+PASS Pause freezes split intro
+PASS X releases selected bodies for 18s
+PASS X recalls without resetting cooldown
+PASS X starts 5-body intro
+PASS X does not release before 4.2s
+PASS Pause freezes split intro
+PASS X releases selected bodies for 18s
+PASS X recalls without resetting cooldown
+PASS X starts 7-body intro
+PASS X does not release before 4.2s
+PASS Pause freezes split intro
+PASS X releases selected bodies for 18s
+PASS X recalls without resetting cooldown
+PASS lightning R windup is 0.28s
+PASS lightning R does not release early or split
+PASS lightning R releases alone
+PASS wind R windup is 0.28s
+PASS wind R does not release early or split
+PASS wind R releases alone
+PASS earth R windup is 0.28s
+PASS earth R does not release early or split
+PASS earth R releases alone
+PASS fire R windup is 0.28s
+PASS fire R does not release early or split
+PASS fire R releases alone
+PASS ice R windup is 0.28s
+PASS ice R does not release early or split
+PASS ice R releases alone
+PASS nature R windup is 0.28s
+PASS nature R does not release early or split
+PASS nature R releases alone
+PASS light R windup is 0.28s
+PASS light R does not release early or split
+PASS light R releases alone
+PASS Solar R crosses screen beyond 800 pixels
+PASS Ice R immediately freezes for 2.5 seconds
+PASS Legacy elemental R validates target before migration
+PASS Restored split releases exactly once
+PASS Overclock count and lifetime rank 0
+PASS Overclock count and lifetime rank 1
+PASS Overclock count and lifetime rank 2
+PASS Overclock count and lifetime rank 3
 PASS Save preserves intro and target
 PASS Restored intro does not release early
 PASS Restored intro releases once
@@ -44,4 +80,4 @@ PASS Intro movement is 35 percent
 PASS 520px aura slows nearby movement and attacks by 75 percent
 PASS Rank and relic reduce R cooldown
 PASS Malformed ultimate save is bounded
-46 ultimate checks passed
+82 ultimate checks passed

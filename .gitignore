@@ -107,3 +107,23 @@ __pycache__/
 !/qa/v082/web-intro-contact.png
 !/qa/v082/touch-390.png
 !/qa/v082/touch-844.png
+
+# 0.8.3 acceptance evidence
+!/qa/v083/
+/qa/v083/*
+!/qa/v083/acceptance.json
+!/qa/v083/atlas-report.json
+!/qa/v083/gameplay-report.json
+!/qa/v083/browser-report.json
+!/qa/v083/thienvu-pixel-report.json
+!/qa/v083/hoavi-pixel-report.json
+!/qa/v083/quanle-browser-report.json
+!/qa/v083/unity-playmode-report.json
+!/qa/v083/windows-report.json
+!/qa/v083/thienvu-x-3.png
+!/qa/v083/thienvu-x-5.png
+!/qa/v083/thienvu-x-7.png
+!/qa/v083/hoavi-6-eyes.png
+!/qa/v083/hoavi-12-eyes.png
+!/qa/v083/sword-material.png
+!/qa/v083/sword-wire.png

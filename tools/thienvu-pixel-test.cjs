@@ -16,9 +16,9 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
         const native=c.drawImage;c.drawImage=function(...a){if(this.imageSmoothingEnabled)throw Error('smoothing');if(a.slice(1).some(v=>!Number.isInteger(v)))throw Error('fractional drawImage '+JSON.stringify(a.slice(1)));return native.apply(this,a)};
         const card=document.querySelector('canvas[data-thienvu]');if(!card||card.width!==128||!card.getContext('2d').getImageData(0,0,128,128).data.some(v=>v))throw Error('empty menu atlas');
         const check=(allowed)=>{const a=c.getImageData(0,0,720,560).data;let filled=0;for(let i=0;i<a.length;i+=4){if(![0,255].includes(a[i+3]))throw Error('fractional alpha');if(a[i+3]){const h=Array.from(a.slice(i,i+3),n=>n.toString(16).padStart(2,'0')).join('');if(!allowed.has(h))throw Error('palette '+h);filled++}}if(!filled)throw Error('empty paint');checks++;return a};
-        const all=new Set(DTThienVuVFX.palette.map(h=>h.slice(1)));
+        const all=new Set(DTThienVuVFX.palette.map(h=>h.slice(1).toLowerCase()));
         for(const [form,spec] of Object.entries(meta.forms)){
-          const palette=new Set([...spec.palette,...DTThienVuVFX.palette].map(h=>h.slice(1)));
+          const palette=new Set([...spec.palette,...DTThienVuVFX.palette].map(h=>h.slice(1).toLowerCase()));
           for(const [facing,view] of [[0,'E'],[Math.PI/2,'S'],[Math.PI,'W'],[-Math.PI/2,'N']])for(const key of ['idle','run','dash','attack','q','e','r','hit']){
             const actor={x:250,y:230,elementForm:form,facing,moving:key==='run',dashTime:key==='dash'?.1:0,hit:key==='hit'?.1:0};if(['attack','q','e','r'].includes(key))actor.action={key,angle:facing,elapsed:.24,release:.16,duration:.65};
             if(P.frame(actor,2).direction!==view)throw Error('view '+view);c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,720,560);c.setTransform(1.28,0,0,1.28,13.4,10.6);c.imageSmoothingEnabled=true;c.globalAlpha=.37;P.hero(c,actor,2);check(palette);
@@ -49,17 +49,17 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
           if(kind==='transform-q'){g.transformElement('fire');if(!g.skill('q'))throw Error('Q rejected')}
           if(kind==='ice-e'){g.transformElement('ice');if(!g.skill('e'))throw Error('E rejected')}
           if(kind==='five-cast'||kind==='seven-r'){
-            g.transformElement('lightning');g.selectSplitCount(kind==='five-cast'?5:7);if(!g.splitElementals())throw Error('split rejected');
+            g.transformElement('lightning');g.selectSplitCount(kind==='five-cast'?5:7);if(!g.splitElementals())throw Error('split rejected');g.updateElementSplitIntro(4.2);
             if(kind==='five-cast'){p.mp=p.maxMp;g.skill('q');for(const clone of g.elementClones)g.castElement(clone.element,'q',clone,.26,false,{x:g.input.aimX,y:g.input.aimY})}
             else {p.ult=100;if(!g.skill('r'))throw Error('R rejected')}
           }
-          for(let i=0;i<(kind==='seven-r'?275:13);i++){g.pendingHitStop=g.hitStop=0;g.update(1/60)}
+          for(let i=0;i<(kind==='seven-r'?20:13);i++){g.pendingHitStop=g.hitStop=0;g.update(1/60)}
           g.paused=true;g.consumeEvents();r.camera.x=p.x-520/r.zoom;r.camera.y=p.y-390/r.zoom;r.draw(.016);
           const convergence=g.effects.find(e=>e.type==='element-convergence');
           return {bodies:DTChoreography.metrics.bodies,atlas:DTChoreography.metrics.atlas,triangles:DTChoreography.metrics.triangles,clones:g.elementClones.length,convergence:convergence?{x:convergence.x,y:convergence.y,points:convergence.points}:null,aim:{x:g.input.aimX,y:g.input.aimY},synthetic:g.elementClones.filter(c=>DTChoreography.synthetic.has(c)).length,effects:g.effects.length};
         },kind)}
         await p.evaluate(()=>{const cv=document.createElement('canvas');cv.width=400;cv.height=400;const c=cv.getContext('2d');for(const name of ['lineTo','arc','ellipse','rotate','createRadialGradient'])c[name]=()=>{throw Error('outer projectile hook used '+name)};const r=Object.create(Object.getPrototypeOf(denTinh.renderer));r.ctx=c;r.game=denTinh.game;for(const element of Object.keys(DTThienVuAtlas.forms))r.drawProjectile({x:200,y:200,element,friendly:true,signature:true,angle:.3,vx:400,vy:120})});pass('Full projectile hook skips smooth signature trails');
-        for(const kind of ['transform-q','ice-e','five-cast','seven-r']){const state=await stage(kind);assert.equal(state.triangles,0);assert.equal(state.atlas,state.bodies);if(kind==='five-cast'){assert.equal(state.bodies,5);assert.equal(state.synthetic,4)}if(kind==='seven-r'){assert.equal(state.bodies,7);assert.equal(state.convergence.points.length,7);assert.deepEqual({x:state.convergence.x,y:state.convergence.y},state.aim)}await p.evaluate(()=>{DTElementUI.sync();DTAscensionUI.sync(denTinh.game)});await p.waitForTimeout(140);await p.screenshot({path:path.join(out,'thienvu-game-'+kind+'.png')});pass('Real browser combat fixture '+kind,state)}
+        for(const kind of ['transform-q','ice-e','five-cast','seven-r']){const state=await stage(kind);assert.equal(state.triangles,0);assert.equal(state.atlas,state.bodies);if(kind==='five-cast'){assert.equal(state.bodies,5);assert.equal(state.synthetic,4)}if(kind==='seven-r'){assert.equal(state.bodies,7);assert.equal(state.convergence,null)}await p.evaluate(()=>{DTElementUI.sync();DTAscensionUI.sync(denTinh.game)});await p.waitForTimeout(140);await p.screenshot({path:path.join(out,'thienvu-game-'+kind+'.png')});pass('Real browser combat fixture '+kind,state)}
         const transition=await p.evaluate(()=>{const g=denTinh.game,P=DTThienVuPixel;g.cancelActions();g.effects=[];g.elementClones=[];g.elementSplitTime=0;g.elementCinema=null;g.time=10;g.transformElement('fire');const from=DTChoreography.transitions.get(g.player).from,c=document.createElement('canvas').getContext('2d');let n=0;const fn=P.ghost;P.ghost=(...a)=>{n++;return fn(...a)};DTChoreography.drawHero(c,g.player,g.hero,g.time);const first=n;g.time+=.319;DTChoreography.drawHero(c,g.player,g.hero,g.time);const second=n;g.time+=.002;DTChoreography.drawHero(c,g.player,g.hero,g.time);P.ghost=fn;return{first,second,last:n,from}});assert.equal(transition.first,1);assert.equal(transition.second,2);assert.equal(transition.last,2);pass('Transform scanline ghost ends after 0.32 game seconds',transition);
         await p.evaluate(()=>{DTSettings.reducedMotion=true;DTSettings.graphics='low';denTinh.renderer.draw(.016)});assert.equal(await p.evaluate(()=>DTChoreography.metrics.triangles),0);pass('Reduced motion and low graphics keep the pixel atlas');
       }
@@ -67,5 +67,5 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
     }
     assert.deepEqual(errors,[]);pass('No browser JavaScript errors');
   }catch(error){results.push({name:'Thiên Vũ pixel acceptance',pass:false,error:error.stack});console.error(error);process.exitCode=1}
-  finally{await browser.close();await new Promise(r=>server.close(r));fs.writeFileSync(path.join(out,'pixel-browser-verified.json'),JSON.stringify({pass:results.every(r=>r.pass),source:url,physicalDevice:false,stagedCombatFixtures:true,results,errors},null,2))}
+  finally{await browser.close();await new Promise(r=>server.close(r));fs.writeFileSync(path.join(out,process.env.DENTINH_QA_OUTPUT?'thienvu-pixel-report.json':'pixel-browser-verified.json'),JSON.stringify({pass:results.every(r=>r.pass),source:url,physicalDevice:false,stagedCombatFixtures:true,results,errors},null,2))}
 })();
