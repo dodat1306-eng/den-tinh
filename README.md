@@ -117,5 +117,5 @@ Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp to
 
 Xem [thay đổi 0.7](CHANGELOG-v0.7.md), [kiểm chứng và giới hạn](VALIDATION-v0.7.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
 
-Nội dung mới áp dụng cho bản trình duyệt. Dự án Unity vẫn giữ nền nội dung cũ và chưa có bản .exe đã xuất/xác nhận; không đồng bộ tiến độ giữa hai bản.
+Unity Windows 0.8.1 đã build và chạy kiểm tra, có Quân Lê, 22 bóng thú, vũ khí Thiên Vũ, golem và NPC mới. Tải gói Windows tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.8.1); xem [hướng dẫn Unity](Unity/README_VI.md). Chiến dịch sáu chương tiếp nối hiện chỉ có ở Web. Tiến độ giữa hai bản lưu riêng.
 
