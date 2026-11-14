@@ -9,6 +9,70 @@ namespace DenTinh.Core {
         public List<EnemyState> Enemies=new List<EnemyState>();public List<Bullet> Bullets=new List<Bullet>();public List<Danger> Dangers=new List<Danger>();public List<ZoneEffect> Zones=new List<ZoneEffect>();public List<Effect> Effects=new List<Effect>();public List<Prop> Props=new List<Prop>();public List<Shrine> Shrines=new List<Shrine>();public List<Loot> Drops=new List<Loot>();public List<string> Memories=new List<string>(),Achievements=new List<string>();public Queue<SimEvent> Events=new Queue<SimEvent>();
         public int Seed,Cycle,Kills,Deaths,PendingLevels,Tutorial,Serial;public float Time,Shake;public bool Paused,Dead,Victory,BossStarted;public GameInput Input;public Random Rng;
         float moved,shots,droneTimer;int dashes,skills;bool chest;bool proc;
+        public readonly List<GroundDecal> Decals=new List<GroundDecal>();
+        readonly Dictionary<string,V2> worldSteps=new Dictionary<string,V2>();
+        static readonly HashSet<string> Burnable=new HashSet<string>{"tree","willow","banyan","pine","bamboo","fern","reed","flower","lotus","grass","deadTree","barrel","crate","lanternPost"};
+        static bool Destructible(Prop p){return Burnable.Contains(p.type)||p.type=="rock"||p.type=="crystal"||p.type=="pillar";}
+        static void InitProp(Prop p){if(p.baseRadius<0){p.baseRadius=p.radius;if(!Burnable.Contains(p.type)&&p.hp==80)p.hp=110;}if(p.damageStage>=3)p.radius=0;}
+        public void GroundTrace(string type,V2 at,float radius){
+            if(float.IsNaN(at.x)||float.IsNaN(at.y)||float.IsInfinity(at.x)||float.IsInfinity(at.y))return;
+            if(type!="scorch_mark"&&type!="crater_mark"&&type!="lightning_scar"&&type!="frost_patch"&&type!="ash_scatter")return;
+            if(Decals.Exists(d=>d.type==type&&d.age<.3f&&V2.Distance(d.position,at)<.3125f))return;
+            Decals.Add(new GroundDecal{type=type,position=at,size=radius>=2.8125f?"large":radius>=1.25f?"medium":"small",life=type=="frost_patch"?12:90,emberLife=type=="scorch_mark"?4.5f:0});
+            if(Decals.Count>384)Decals.RemoveRange(0,Decals.Count-384);
+        }
+        void WorldFx(string kind,Prop p){Fx("world/"+kind,p.position,.65f,"#d8e6e6",.65f);}
+        void CollapseProp(Prop p,bool shatter){
+            p.damageStage=3;p.radius=0;p.burnTimer=p.frozenTimer=p.charTimer=0;p.status=Burnable.Contains(p.type)?"ash_pile":p.type=="crystal"?"crystal_shards":"rubble";
+            GroundTrace(Burnable.Contains(p.type)?"scorch_mark":"crater_mark",p.position,1.25f);
+            if(shatter){WorldFx("frozen_shatter",p);foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,p.position)<1.484375f+e.radius)DamageEnemy(e,Player.damage*.85f,false);}
+        }
+        public bool HitProp(Prop p,string element,float power=45){
+            if(p==null||!Destructible(p)||float.IsNaN(power)||float.IsInfinity(power)||power<0)return false;InitProp(p);
+            if(p.damageStage>=3){if(element=="wind"||element=="physical")RustleProp(p);return false;}
+            if(element=="fire"&&p.status=="frozen"||element=="ice"&&p.status=="burning"){p.damageStage=0;p.status="intact";p.burnTimer=p.frozenTimer=p.spreadTimer=0;WorldFx("steam_cloud",p);return true;}
+            if(p.status=="frozen"&&(element=="earth"||element=="physical"||element=="wind"||element=="lightning")){CollapseProp(p,true);return true;}
+            if(p.damageStage==2&&element!="fire"&&element!="ice"&&element!="nature"){CollapseProp(p,false);return true;}
+            if(element=="fire"){
+                if(p.damageStage>=2||p.status=="burning"||p.status=="heated")return false;p.damageStage=1;p.status=Burnable.Contains(p.type)?"burning":"heated";p.burnTimer=2.5f;p.spreadTimer=p.heatTimer=0;GroundTrace("scorch_mark",p.position,1.25f);return true;
+            }
+            if(element=="ice"){p.beforeFreezeStage=p.damageStage;p.damageStage=1;p.status="frozen";p.frozenTimer=5;p.burnTimer=0;return true;}
+            if(element!="physical"&&element!="wind"&&element!="earth"&&element!="lightning"&&element!="light")return false;
+            p.hp=Math.Max(0,p.hp-power);p.sway=.16f;if(p.hp<=0){CollapseProp(p,false);return true;}
+            if(p.hp<=(Burnable.Contains(p.type)?40:55)){p.damageStage=2;p.status=Burnable.Contains(p.type)&&element!="earth"?"sliced":"cracked";p.charTimer=p.status=="sliced"?.6f:3;p.fallTime=0;}
+            else{p.damageStage=1;p.status=element=="lightning"?"electrified":"intact";p.afflictTimer=1;}return true;
+        }
+        public void ReactEnvironment(string element,V2 at,float radius,float power=45){
+            if(float.IsNaN(radius)||float.IsInfinity(radius)||radius<0||radius>40||float.IsNaN(at.x)||float.IsNaN(at.y)||float.IsInfinity(at.x)||float.IsInfinity(at.y))return;
+            if(element=="fire")for(int i=Decals.Count-1;i>=0;i--)if(Decals[i].type=="frost_patch"&&V2.Distance(Decals[i].position,at)<radius+.5f){Fx("world/steam_cloud",Decals[i].position,.65f,"#dbfbff",.65f);Decals.RemoveAt(i);}
+            string kind=element=="fire"||element=="light"?"scorch_mark":element=="earth"?"crater_mark":element=="lightning"?"lightning_scar":element=="ice"?"frost_patch":null;
+            if(kind!=null)GroundTrace(kind,at,radius);foreach(Prop p in Props)if(V2.Distance(p.position,at)<=radius)HitProp(p,element,power);
+        }
+        public void RustleProp(Prop p){
+            if(p.touchTimer>0)return;p.touchTimer=.22f;
+            if(p.damageStage==3){WorldFx("ash_burst",p);if(p.status=="ash_pile")GroundTrace("ash_scatter",p.position,.625f);}
+            else if(Burnable.Contains(p.type)){p.sway=.16f;WorldFx("leaf_burst",p);}
+        }
+        void WorldStep(string id,V2 at){
+            V2 last;bool moving=worldSteps.TryGetValue(id,out last)&&V2.Distance(last,at)>.002f;worldSteps[id]=at;if(!moving)return;
+            foreach(Prop p in Props)if(Destructible(p)&&V2.Distance(p.position,at)<Math.Max(p.baseRadius,.25f)+.40625f)RustleProp(p);
+        }
+        void UpdateEnvironment(float dt){
+            List<Prop> spread=new List<Prop>(),heat=new List<Prop>();
+            foreach(Prop p in Props){if(!Destructible(p))continue;InitProp(p);p.touchTimer=Math.Max(0,p.touchTimer-dt);p.sway*=(float)Math.Exp(-8*dt);if(p.status=="sliced")p.fallTime+=dt;
+                if(p.status=="burning"||p.status=="heated"){
+                    p.burnTimer=Math.Max(0,p.burnTimer-dt);p.spreadTimer+=dt;p.heatTimer+=dt;
+                    if(p.status=="burning"&&p.spreadTimer>=.9f){p.spreadTimer-=.9f;spread.Add(p);}if(p.status=="burning"&&p.heatTimer>=.5f){p.heatTimer-=.5f;heat.Add(p);}
+                    if(p.burnTimer<=.00001f){p.damageStage=2;p.status=Burnable.Contains(p.type)?"charred":"cracked";p.charTimer=3;}
+                }else if(p.damageStage==2){p.charTimer=Math.Max(0,p.charTimer-dt);if(p.charTimer<=.00001f)CollapseProp(p,false);}
+                else if(p.status=="frozen"){p.frozenTimer=Math.Max(0,p.frozenTimer-dt);if(p.frozenTimer<=.00001f){p.damageStage=p.beforeFreezeStage==2?2:0;p.status=p.damageStage==2?"charred":"intact";p.charTimer=p.damageStage==2?3:0;}}
+                else if(p.damageStage==1){p.afflictTimer=Math.Max(0,p.afflictTimer-dt);if(p.afflictTimer<=0){p.damageStage=0;p.status="intact";}}
+            }
+            foreach(Prop source in spread)foreach(Prop p in Props)if(p!=source&&p.damageStage==0&&Burnable.Contains(p.type)&&V2.Distance(p.position,source.position)<=1.328125f)HitProp(p,"fire",0);
+            foreach(Prop p in heat)foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,p.position)<1.328125f+e.radius)DamageEnemy(e,Math.Max(2,Player.damage*.16f),false);
+            WorldStep("player",Player.position);foreach(CloneState c in Clones)if(c.alive)WorldStep(c.id,c.position);foreach(SummonState s in Summons)WorldStep(s.id,s.position);foreach(EnemyState e in Enemies)if(e.alive&&V2.Distance(e.position,Player.position)<15.625f)WorldStep(e.id,e.position);
+            for(int i=Decals.Count-1;i>=0;i--){Decals[i].age+=dt;if(Decals[i].age>=Decals[i].life)Decals.RemoveAt(i);}
+        }
         public Simulation(ContentDatabase content,string hero,int seed,int cycle=0){Content=content;Hero=content.Hero(hero);Seed=seed;Cycle=cycle;Rng=new Random(seed);Player=new PlayerState{hp=Hero.hp,maxHp=Hero.hp,damage=Hero.damage,speed=Hero.speed/64,armor=hero=="kiet"?.08f:0};string first=hero=="thienvu"?"prism":hero=="linh"?"bamboo":hero=="kiet"?"thunder":hero=="hoavi"?"terminal":"lantern";Player.weapons=new[]{new WeaponState(Content.Weapon(first)),new WeaponState(Content.Weapon(hero=="hoavi"?"firewall":"lotus"))};Generate();}
         public WeaponState Active {get{return Player.weapons[Player.slot];}}public WeaponDef Weapon {get{return Content.Weapon(Active.id);}}
         public static string Zone(V2 p){if(V2.Distance(p,new V2(29,37))<7)return "ancient";if(p.x<21&&p.y<20)return "village";if(p.x>39&&p.y<23)return "lotus";if(p.x>37&&p.y>23)return "ash";if(p.x<23&&p.y>20)return "forest";return "crossroads";}
@@ -38,7 +102,7 @@ namespace DenTinh.Core {
             if(p.dashTime>0){p.dashTime-=dt;p.position=Move(p.position,p.dashDirection*13.3f*dt,.2f);}else p.position=Move(p.position,direction*p.speed*(p.hoverboard>0?1.65f:1)*(IsElemental&&p.element=="wind"?1.12f:1)*dt,.2f);moved+=V2.Distance(before,p.position);
             if(Input.attack)Fire();
             if(p.overclock>0){droneTimer-=dt;if(droneTimer<=0){droneTimer=.35f;EnemyState e=Nearest(p.position,9);if(e!=null){for(int i=0;i<2;i++){V2 from=p.position+V2.Angle(Time*3+(i==0?-1:1))*.8f;Shoot(from,Mathx.Angle(e.position-from),14,p.damage*1.2f,true,"code","#7affe5",1,"",false);}}}}
-            UpdateElements(dt);UpdateEnemies(dt);UpdateBullets(dt);UpdateDangers(dt);UpdateChallenges(dt);UpdateZones(dt);
+            UpdateElements(dt);UpdateEnemies(dt);UpdateBullets(dt);UpdateDangers(dt);UpdateChallenges(dt);UpdateZones(dt);UpdateEnvironment(dt);
             foreach(EnemyState e in Enemies.ToArray())if(e.alive){e.frozen=Math.Max(0,e.frozen-dt);e.rooted=Math.Max(0,e.rooted-dt);e.stunned=Math.Max(0,e.stunned-dt);if(e.poison>0){e.poison-=dt;e.poisonTick-=dt;if(e.poisonTick<=0){e.poisonTick=.5f;DamageEnemy(e,e.poisonPower,false);}}e.hit=Math.Max(0,e.hit-dt);e.slow=Math.Max(0,e.slow-dt);if(e.burn>0){e.burn-=dt;e.burnTick-=dt;if(e.burnTick<=0){e.burnTick=.5f;DamageEnemy(e,p.damage*.23f,false);}}}
             foreach(Loot l in Drops)if(!l.collected&&(l.kind=="gold"||l.kind=="potion")){float d=V2.Distance(l.position,p.position);if(d<(p.Has("dom")?5:2.8f))l.position+=(p.position-l.position).Unit*5*dt;if(d<.4f){l.collected=true;if(l.kind=="gold")p.gold+=l.amount;else p.potions=Math.Min(12,p.potions+1);Emit("sound","pickup");}}
             if(p.Has("dom"))p.hp=Math.Min(p.maxHp,p.hp+dt);
@@ -75,7 +139,7 @@ namespace DenTinh.Core {
         public bool Heal(){PlayerState p=Player;if(Paused||Dead||p.potions==0||p.hp>=p.maxHp)return false;p.potions--;p.hp=Math.Min(p.maxHp,p.hp+p.maxHp*.55f);Fx("ring",p.position,1,"#a4ecc3",.6f);Emit("sound","heal");return true;}
         public void ClearBullets(V2 at,float r){Bullets.RemoveAll(b=>!b.friendly&&V2.Distance(b.position,at)<r);}
         public void Beam(V2 a,V2 b,string color){Effects.Add(new Effect{kind="beam",position=a,end=b,color=color,time=.28f,maxTime=.28f});}
-        public void Area(V2 at,float radius,float damage,bool charge){foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,at)<radius+e.radius)DamageEnemy(e,damage,charge);Fx("ring",at,radius,Hero.color,.4f);}
+        public void Area(V2 at,float radius,float damage,bool charge){ReactEnvironment(IsElemental?Player.element:Hero.id=="an"?"fire":Hero.id=="linh"?"wind":Hero.id=="kiet"?"earth":"lightning",at,radius,damage);foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,at)<radius+e.radius)DamageEnemy(e,damage,charge);Fx("ring",at,radius,Hero.color,.4f);}
         public void DamagePlayer(float amount){PlayerState p=Player;if(Dead||Victory||p.invulnerable>0||amount<=0||Zone(p.position)=="village")return;if(IsElemental&&p.element=="earth")amount*=.88f;SummonState guard=Summons.Find(x=>x.kind=="golem"&&x.hp>0&&V2.Distance(x.position,p.position)<3.44f);if(guard!=null){float absorbed=Math.Min(guard.hp,amount*.6f);guard.hp-=absorbed;amount-=absorbed;}float shield=Math.Min(p.shield,amount);p.shield-=shield;amount-=shield;if(amount<=0){p.invulnerable=.2f;return;}float dmg=Math.Max(1,(float)Math.Round(amount*(1-p.armor)));p.hp=Math.Max(0,p.hp-dmg);p.invulnerable=.62f;Shake=.3f;Text(p.position+new V2(0,1),"-"+dmg,"#ffa6a4");Emit("sound","hurt");if(p.hp<=0){Dead=true;Emit("death","Ngọn đèn vẫn còn sáng.");}}
         public void DamageEnemy(EnemyState e,float amount,bool charge){
             if(!e.alive)return;if(e.type=="boss"&&Enemies.Exists(x=>x.alive&&x.root))amount*=.25f;bool crit=Rng.NextDouble()<Player.crit;float dmg=(float)Math.Round(amount*(crit?1.7f:1));e.hp-=dmg;e.hit=.12f;Text(e.position+new V2(0,.7f),dmg+(crit?"!":""),crit?"#ffe09a":"#e8f3d2");
@@ -126,7 +190,10 @@ namespace DenTinh.Core {
         }
         void UpdateBullets(float dt){
             foreach(Bullet b in Bullets.ToArray()){
-                if(!Bullets.Contains(b))continue;b.life-=dt;UpdateElementBullet(b,dt);V2 old=b.position;b.position+=b.velocity*dt;if(Collides(b.position,.04f))b.life=0;
+                if(!Bullets.Contains(b))continue;b.life-=dt;UpdateElementBullet(b,dt);V2 old=b.position;b.position+=b.velocity*dt;
+                string environmentElement=b.element??(b.friendly?(b.effect=="burn"||Hero.id=="an"?"fire":Hero.id=="kiet"?"lightning":Hero.id=="linh"?"wind":"physical"):null);
+                if(environmentElement!=null)foreach(Prop prop in Props)if(Destructible(prop)&&prop.damageStage<3&&!b.propHits.Contains(prop)&&Segment(prop.position,old,b.position)<Math.Max(prop.radius,.2f)+b.radius){b.propHits.Add(prop);HitProp(prop,environmentElement,b.damage);if(prop.radius>0){b.life=0;break;}}
+                if(Collides(b.position,.04f)){if(environmentElement!=null)ReactEnvironment(environmentElement,b.position,.4f,0);b.life=0;}
                 if(b.life>0&&b.friendly)foreach(EnemyState e in Enemies.ToArray())if(e.alive&&!b.hit.Contains(e.id)&&Segment(e.position,old,b.position)<e.radius+b.radius){DamageEnemy(e,b.damage,b.charge);b.hit.Add(e.id);if(b.element!=null)ElementBulletHit(b,e);if(b.effect=="burn"||Player.Has("wildfire")||Hero.id=="an"){e.burn=2.3f;e.burnTick=0;}if(b.effect=="shock")e.slow=.7f;
                     if((b.effect=="chain"||Player.Has("chain"))&&Rng.NextDouble()<.25){int hit=0;foreach(EnemyState other in Enemies.ToArray())if(other.alive&&other.id!=e.id&&V2.Distance(other.position,e.position)<2.8f&&hit++<2){DamageEnemy(other,b.damage*.45f,b.charge);Beam(e.position,other.position,"#c3c6ff");}}
                     if(b.effect=="explode"){foreach(EnemyState other in Enemies.ToArray())if(other.alive&&other.id!=e.id&&V2.Distance(other.position,e.position)<1.5f)DamageEnemy(other,b.damage*.55f,b.charge);Fx("circuit",e.position,1.5f,b.color,.4f);}
@@ -137,7 +204,7 @@ namespace DenTinh.Core {
             }
             if(Player.firewall>0){Player.droneTimer-=dt;if(Player.droneTimer<=0){Player.droneTimer=.32f;Area(Player.position,2.4f,Player.damage*.65f,true);}}
         }
-        void UpdateDangers(float dt){for(int i=Dangers.Count-1;i>=0;i--){Danger d=Dangers[i];d.time-=dt;if(d.time<=0){Fx("roots",d.position,d.radius,d.color,.55f);if(V2.Distance(Player.position,d.position)<d.radius+.2f)DamagePlayer(d.damage);foreach(CloneState c in Clones)if(c.alive&&V2.Distance(c.position,d.position)<d.radius+c.radius)HurtClone(c,d.damage);Dangers.RemoveAt(i);}}}
+        void UpdateDangers(float dt){for(int i=Dangers.Count-1;i>=0;i--){Danger d=Dangers[i];d.time-=dt;if(d.time<=0){ReactEnvironment("earth",d.position,d.radius,30);Fx("roots",d.position,d.radius,d.color,.55f);if(V2.Distance(Player.position,d.position)<d.radius+.2f)DamagePlayer(d.damage);foreach(CloneState c in Clones)if(c.alive&&V2.Distance(c.position,d.position)<d.radius+c.radius)HurtClone(c,d.damage);Dangers.RemoveAt(i);}}}
         void UpdateZones(float dt){for(int i=Zones.Count-1;i>=0;i--){ZoneEffect z=Zones[i];z.time-=dt;z.tick-=dt;if(z.follow)z.position=Player.position;if(z.tick<=0){z.tick=.32f;Area(z.position,z.radius,z.damage,z.charge);}if(z.time<=0)Zones.RemoveAt(i);}}
         public bool StartChallenge(Shrine s){if(s.active||s.started)return false;s.started=true;s.time=0;s.hp=100;s.wave=0;s.waveTimer=0;if(s.id=="tro"){s.enemies.Clear();for(int j=0;j<3;j++){EnemyState e=Spawn("core",s.position+V2.Angle(j/3f*Mathx.Tau)*2.2f,true);e.challenge=s.id;e.speed=e.damage=0;e.hp=e.maxHp=180;e.radius=.35f;e.gold=e.xp=0;s.enemies.Add(e.id);}}Emit("toast",s.id=="sen"?"Bảo vệ Đèn Sen trong 36 giây!":"Phá ba lõi Tro, né vòng lửa!");return true;}
         void UpdateChallenges(float dt){foreach(Shrine s in Shrines){if(!s.started||s.complete||s.active)continue;s.time+=dt;s.waveTimer-=dt;if(s.id=="sen"){
@@ -165,7 +232,18 @@ namespace DenTinh.Core {
         public void Respawn(){CancelElements();Dead=false;Deaths++;Player.position=new V2(11.5f,10);Player.hp=Player.maxHp;Player.mp=Player.maxMp;Player.gold=(int)(Player.gold*.9f);Player.potions=Math.Max(3,Player.potions);Player.invulnerable=2;Player.shield=Player.overclock=Player.firewall=0;Bullets.Clear();Dangers.Clear();Zones.Clear();foreach(Shrine s in Shrines)if(s.started&&!s.complete){ClearChallenge(s);s.started=false;s.time=0;s.hp=100;}foreach(EnemyState e in Enemies)if(e.type=="boss"&&e.alive){e.hp=e.maxHp;e.position=e.home;}}
         public void Unlock(string id,string name){if(Achievements.Contains(id))return;Achievements.Add(id);Emit("toast","Thành tựu · "+name);}
         public string Objective(){if(Tutorial<5)return new[]{"Di chuyển bằng WASD hoặc cần trái.","Giữ chuột trái hoặc kéo cần phải để bắn.","Nhấn SPACE để lướt né.","Dùng Q hoặc E để thử kỹ năng.","Mở rương bên phải bằng F."}[Tutorial];if(Victory)return "Trở về Bà Năm hoặc bắt đầu Hành trình +.";Shrine nearest=null;foreach(Shrine s in Shrines)if(!s.active&&(nearest==null||V2.Distance(s.position,Player.position)<V2.Distance(nearest.position,Player.position)))nearest=s;if(nearest==null)return BossStarted?"Phá rễ bảo vệ Mộc Quỷ; né vòng đạn và rễ đỏ.":"Đến đàn tế phía bắc, nhấn F gọi Cội Đa.";if(nearest.complete)return "Đến "+nearest.name+" và nhấn F để thức tỉnh.";if(nearest.id=="truc")return "Săn Trúc Vệ ở Rừng Trúc phía tây bắc.";if(nearest.id=="sen")return nearest.started?"Giữ Đèn Sen: "+Math.Ceiling(36-nearest.time)+"s · đèn "+Math.Ceiling(nearest.hp)+"%":"Đến Đầm Sen và bảo vệ ngọn đèn.";return nearest.started?"Phá ba lõi Tro; tránh các dấu lửa.":"Thử thách lò rèn đang đợi trên Đồi Tro.";}
-        public RunSave Capture(){return new RunSave{seed=Seed,cycle=Cycle,kills=Kills,deaths=Deaths,tutorial=Tutorial,serial=Serial,pendingLevels=PendingLevels,tutorialMoved=moved,tutorialShots=shots,tutorialDashes=dashes,tutorialSkills=skills,tutorialChest=chest,time=Time,hero=Hero.id,bossStarted=BossStarted,victory=Victory,player=Player,enemies=Enemies,shrines=Shrines,loot=Drops,memories=Memories,achievements=Achievements,clones=CaptureClones(),splitTime=SplitTime,splitCooldown=SplitCooldown};}
-        public static Simulation Restore(ContentDatabase content,RunSave data){if(data==null||data.version!=2||data.player==null||data.enemies==null||data.shrines==null||data.shrines.Count!=3||data.player.weapons==null||data.player.weapons.Length!=2||Array.Find(content.PlayableHeroes,h=>h.id==data.hero)==null)throw new ArgumentException("Bản lưu Unity không hợp lệ");Simulation g=new Simulation(content,data.hero,data.seed,data.cycle);g.Player=data.player;g.Player.position=new V2(Mathx.Clamp(g.Player.position.x,1,59),Mathx.Clamp(g.Player.position.y,1,44));if(g.Collides(g.Player.position,.2f))g.Player.position=new V2(11.5f,10);g.Player.maxHp=Mathx.Clamp(g.Player.maxHp,50,10000);g.Player.hp=Mathx.Clamp(g.Player.hp,1,g.Player.maxHp);g.Player.slot=g.Player.slot==1?1:0;foreach(WeaponState w in g.Player.weapons){WeaponDef d=content.Weapon(w.id);w.id=d.id;w.level=(int)Mathx.Clamp(w.level,1,5);w.ammo=(int)Mathx.Clamp(w.ammo,0,d.clip);w.reload=Mathx.Clamp(w.reload,0,5);}g.Enemies=data.enemies;g.Shrines=data.shrines;g.Drops=data.loot??new List<Loot>();g.Memories=data.memories??new List<string>();g.Achievements=data.achievements??new List<string>();g.Kills=data.kills;g.Deaths=data.deaths;g.PendingLevels=Math.Max(0,data.pendingLevels);g.Tutorial=(int)Mathx.Clamp(data.tutorial,0,5);g.moved=data.tutorialMoved;g.shots=data.tutorialShots;g.dashes=data.tutorialDashes;g.skills=data.tutorialSkills;g.chest=data.tutorialChest;g.Serial=data.serial;g.Time=data.time;g.BossStarted=data.bossStarted;g.Victory=data.victory;g.Player.overclock=g.Player.firewall=0;g.RestoreElements(data);return g;}
+        void RestoreWorld(RunSave data){
+            if(data.props!=null)for(int i=0;i<Math.Min(Props.Count,data.props.Count);i++){
+                Prop p=Props[i],saved=data.props[i];if(saved==null||saved.type!=p.type||!Destructible(p))continue;InitProp(p);
+                p.damageStage=(int)Safe(saved.damageStage,0,3);p.beforeFreezeStage=(int)Safe(saved.beforeFreezeStage,0,2);string status=saved.status;
+                if(status=="intact"||status=="burning"||status=="heated"||status=="frozen"||status=="electrified"||status=="charred"||status=="cracked"||status=="sliced"||status=="ash_pile"||status=="rubble"||status=="crystal_shards")p.status=status;
+                p.burnTimer=Safe(saved.burnTimer,0,2.5f);p.frozenTimer=Safe(saved.frozenTimer,0,5);p.charTimer=Safe(saved.charTimer,0,3);p.spreadTimer=Safe(saved.spreadTimer,0,.9f);p.afflictTimer=Safe(saved.afflictTimer,0,1);p.fallTime=Safe(saved.fallTime,0,.6f);p.hp=Safe(saved.hp,0,110,80);
+                if(p.damageStage==3)p.radius=0;
+            }
+            if(data.decals!=null)foreach(GroundDecal d in data.decals){if(d==null||Decals.Count>=384)continue;float age=Safe(d.age,0,90);GroundTrace(d.type,new V2(Safe(d.position.x,0,Width),Safe(d.position.y,0,Height)),d.size=="large"?3:d.size=="medium"?1.5f:.5f);if(Decals.Count>0&&Decals[Decals.Count-1].type==d.type)Decals[Decals.Count-1].age=age;}
+            Decals.RemoveAll(d=>d.age>=d.life);
+        }
+        public RunSave Capture(){return new RunSave{seed=Seed,cycle=Cycle,kills=Kills,deaths=Deaths,tutorial=Tutorial,serial=Serial,pendingLevels=PendingLevels,tutorialMoved=moved,tutorialShots=shots,tutorialDashes=dashes,tutorialSkills=skills,tutorialChest=chest,time=Time,hero=Hero.id,bossStarted=BossStarted,victory=Victory,player=Player,enemies=Enemies,shrines=Shrines,loot=Drops,memories=Memories,achievements=Achievements,clones=CaptureClones(),splitTime=SplitTime,splitCooldown=SplitCooldown,props=Props,decals=Decals};}
+        public static Simulation Restore(ContentDatabase content,RunSave data){if(data==null||data.version!=2||data.player==null||data.enemies==null||data.shrines==null||data.shrines.Count!=3||data.player.weapons==null||data.player.weapons.Length!=2||Array.Find(content.PlayableHeroes,h=>h.id==data.hero)==null)throw new ArgumentException("Bản lưu Unity không hợp lệ");Simulation g=new Simulation(content,data.hero,data.seed,data.cycle);g.RestoreWorld(data);g.Player=data.player;g.Player.position=new V2(Mathx.Clamp(g.Player.position.x,1,59),Mathx.Clamp(g.Player.position.y,1,44));if(g.Collides(g.Player.position,.2f))g.Player.position=new V2(11.5f,10);g.Player.maxHp=Mathx.Clamp(g.Player.maxHp,50,10000);g.Player.hp=Mathx.Clamp(g.Player.hp,1,g.Player.maxHp);g.Player.slot=g.Player.slot==1?1:0;foreach(WeaponState w in g.Player.weapons){WeaponDef d=content.Weapon(w.id);w.id=d.id;w.level=(int)Mathx.Clamp(w.level,1,5);w.ammo=(int)Mathx.Clamp(w.ammo,0,d.clip);w.reload=Mathx.Clamp(w.reload,0,5);}g.Enemies=data.enemies;g.Shrines=data.shrines;g.Drops=data.loot??new List<Loot>();g.Memories=data.memories??new List<string>();g.Achievements=data.achievements??new List<string>();g.Kills=data.kills;g.Deaths=data.deaths;g.PendingLevels=Math.Max(0,data.pendingLevels);g.Tutorial=(int)Mathx.Clamp(data.tutorial,0,5);g.moved=data.tutorialMoved;g.shots=data.tutorialShots;g.dashes=data.tutorialDashes;g.skills=data.tutorialSkills;g.chest=data.tutorialChest;g.Serial=data.serial;g.Time=data.time;g.BossStarted=data.bossStarted;g.Victory=data.victory;g.Player.overclock=g.Player.firewall=0;g.RestoreElements(data);return g;}
     }
 }

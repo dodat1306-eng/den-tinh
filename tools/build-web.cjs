@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const output = path.resolve(root, 'dist');
 const files = [
+  'world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v08.png','assets/actors-pixel-v08.js','assets/actors-pixel-v08.json',
   'assets/thienvu-pixel-v08.png','assets/thienvu-pixel-v08.js','assets/thienvu-pixel-v08.json','assets/thienvu-vfx-pixel.png','assets/thienvu-vfx-pixel.js','assets/thienvu-vfx-pixel.json','thienvu-pixel.js',
   'index.html', 'world.js', 'engine.js', 'render.js', 'app.js',
   'style.css', 'icon.svg', 'content.js', 'expansion.js', 'visuals.js',

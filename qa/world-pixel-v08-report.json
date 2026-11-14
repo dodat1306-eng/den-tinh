@@ -1,0 +1,74 @@
+{
+  "version": "0.8.0",
+  "results": [
+    {
+      "name": "Fire keeps intact, burning, charred and ash stages with exact timers and persistent scorch",
+      "pass": true
+    },
+    {
+      "name": "Fire spreads after .9 seconds within 85 pixels without refreshing existing fire",
+      "pass": true
+    },
+    {
+      "name": "Ice melts to steam and frozen props shatter into eight shards with enemy area damage",
+      "pass": true
+    },
+    {
+      "name": "Frozen props thaw at five seconds and fire is quenched by ice",
+      "pass": true
+    },
+    {
+      "name": "Wind slices a trunk before collapse; ash footsteps create bounded two-pixel dust and scatter",
+      "pass": true
+    },
+    {
+      "name": "Physical hits crack stone first, then keep rubble in the prop array",
+      "pass": true
+    },
+    {
+      "name": "Each projectile hits each prop once and foliage rustles when an actor crosses it",
+      "pass": true
+    },
+    {
+      "name": "Scorch, seismic, lightning and frost traces expire and obey a hard memory cap",
+      "pass": true
+    },
+    {
+      "name": "Core props survive save/load with burn progress; old saves remain compatible",
+      "pass": true
+    },
+    {
+      "name": "Stream eviction and reload retain ash and collision-free remains",
+      "pass": true
+    },
+    {
+      "name": "Core barrels retain burning and ash across saves",
+      "pass": true
+    },
+    {
+      "name": "Pause freezes environmental timers; malformed saved states cannot inject fields or non-finite decals",
+      "pass": true
+    },
+    {
+      "name": "Six saga guardians have unique types and complete 96-texel action sets",
+      "pass": true
+    },
+    {
+      "name": "Atlas metadata contains nine biomes, every destructible stage and true monster flipbooks",
+      "pass": true
+    },
+    {
+      "name": "All new props, actors, NPCs and three heroes draw complete frames at unit two",
+      "pass": true
+    },
+    {
+      "name": "A failed atlas paint restores the Canvas stack",
+      "pass": true
+    },
+    {
+      "name": "Full renderer remains finite across five heroes, destruction effects and reduced motion",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

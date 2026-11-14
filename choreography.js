@@ -58,9 +58,10 @@
   }
   const sprite=A.drawSpriteHero;
   function drawHero(c,p,h,time=0,scale=1,npc=false,clone=false,identity=p){
+    if(!npc&&root.DTWorldPixel?.hero(c,p,h,time))return;
     const pixel=npc?null:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
     if(pixel&&!pixel.ready())return;
-    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,clone?1.5:2);
+    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,2);
     if(atlasReady&&(reduced()||p.hp===0)){paint(p);metrics.bodies++;metrics.atlas++;return}
     if(npc||!profiles[h.id]||reduced()||p.hp===0)return sprite(c,p,h,time,scale,npc,clone);
     let old=history.get(identity);
@@ -76,7 +77,7 @@
       for(const t of samples){c.save();try{c.globalAlpha*=.10;const ghost={...actor,x:t.x,y:t.y,shield:0,invulnerable:0,hit:0,action:null};if(atlasReady)paint(ghost,false);else sprite(c,ghost,h,time,scale,false,false)}finally{c.restore()}metrics.ghosts++}
     }
     const trans=transitions.get(identity);
-    if(h.id==='thienvu'&&trans&&time>=trans.start&&time-trans.start<.32)pixel.ghost(c,p,time,trans.from,clone?1.5:2,time-trans.start);
+    if(h.id==='thienvu'&&trans&&time>=trans.start&&time-trans.start<.32)pixel.ghost(c,p,time,trans.from,2,time-trans.start);
     if(atlasReady){paint(actor);metrics.bodies++;metrics.atlas++;return}
     const native=c.drawImage,own=Object.hasOwn(c,'drawImage');
     c.drawImage=function(...args){const src=String(args[0]?.src||args[0]?._src||'');if(args.length===9&&/(?:heroes|thien-vu-v04)\.png(?:$|[?#])/.test(src))warp(c,native,args,s);else native.apply(c,args)};

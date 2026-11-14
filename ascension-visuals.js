@@ -40,6 +40,7 @@
   // Keep the original painted sprites. Cast motion transforms the sprite as a
   // whole; it must never replace the face, outfit or elemental silhouette.
   function drawSpriteHero(c,p,h,time=0,scale=1,npc=false,clone=false){
+    if(!npc&&root.DTWorldPixel?.hero(c,p,h,time))return;
     if(h.id==='thienvu'&&!npc)return root.DTThienVuPixel?.hero(c,p,time,-Infinity,clone);
     if(npc||!['an','linh','kiet','hoavi','thienvu'].includes(h.id))return oldHero(c,p,h,time,scale,npc);
     const pose=actionPose(p,time),calm=reduced(),face=Math.cos(p.facing||0)<0?-1:1;
@@ -69,20 +70,7 @@
   function paletteAt(x,y){const z=D.zoneAt(x,y),id=z.paletteId||z.id.replace(/^endless-/,''),pal=palettes[id]||palettes.forest;return{z,id,pal}}
   class BoundlessTerrain extends terrainBase{
     // The old overview only samples the original finite region.
-    chunk(cx,cy){
-      const key=cx+','+cy;
-      if(this.chunks.has(key)){const found=this.chunks.get(key);this.chunks.delete(key);this.chunks.set(key,found);return found}
-      const size=this.size,ox=cx*size,oy=cy*size;
-      if(ox>=32&&oy>=32&&ox+size+32<=6400&&oy+size+32<=4480)return super.chunk(cx,cy);
-      const out=document.createElement('canvas');out.width=out.height=size+2;const c=out.getContext('2d',{alpha:false}),seed=this.world.seed;c.translate(1-ox,1-oy);
-      for(let y=oy-32;y<oy+size+32;y+=32)for(let x=ox-32;x<ox+size+32;x+=32){const{pal,id}=paletteAt(x+16,y+16),n=noise(x/32,y/32,seed);c.fillStyle=pal[n>.8?3:n>.4?2:1];c.fillRect(x,y,32,32);for(let i=0;i<4;i++){const px=x+noise(x+i*17,y-i*29,seed)*31,py=y+noise(x-i*11,y+i*7,seed)*31;c.fillStyle=i%2?pal[4]+'55':pal[0]+'99';c.fillRect(px,py,2,3+i);if(id==='ash'&&n>.7){c.fillStyle='#c4956d33';c.fillRect(px+3,py,5,1)}}}
-      // Paths run through chunk centers in the generated wilderness, with no loading seams.
-      const regionSize=this.world.stream?.size||this.world.stream?.chunkSize||1024;
-      const gridX=(Math.floor(ox/regionSize)+.5)*regionSize,gridY=(Math.floor(oy/regionSize)+.5)*regionSize;
-      c.lineCap='round';for(const [width,color]of[[78,'#1b343b55'],[57,'#778269'],[43,'#a19472']]){c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(gridX,oy-50);c.lineTo(gridX,oy+size+50);c.moveTo(ox-50,gridY);c.lineTo(ox+size+50,gridY);c.stroke()}
-      for(const path of this.world.paths||[]){c.beginPath();path.forEach((p,i)=>i?c.lineTo(...p):c.moveTo(...p));for(const [w,col]of[[80,'#75816a'],[58,'#ad9b76']]){c.lineWidth=w;c.strokeStyle=col;c.stroke()}}
-      this.chunks.set(key,out);while(this.chunks.size>(lightweight()?20:36))this.chunks.delete(this.chunks.keys().next().value);return out;
-    }
+    chunk(cx,cy){return super.chunk(cx,cy)}
     draw(c,camera,width,height){
       const size=this.size,minX=Math.floor(camera.x/size),maxX=Math.floor((camera.x+width)/size),minY=Math.floor(camera.y/size),maxY=Math.floor((camera.y+height)/size);
       for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++)c.drawImage(this.chunk(x,y),x*size-1,y*size-1);
@@ -90,11 +78,12 @@
     }
   }
   class AscensionRenderer extends Base{
-    constructor(canvas,game){super(canvas,game);fontContext(this.ctx);this.smoothDt=.016}
+    constructor(canvas,game){super(canvas,game);fontContext(this.ctx);this.smoothDt=.016;this.zoom=1}
     makeGround(world){return world.infinite&&terrainBase?new BoundlessTerrain(world):super.makeGround(world)}
     setGame(game){super.setGame(game);this.camera={x:game.player.x-640/this.zoom,y:game.player.y-360/this.zoom}}
     drawElementClone(clone){const f=root.DTElements?.byId(clone.element);drawSpriteHero(this.ctx,{...clone,elementForm:clone.element,action:clone.action}, {...D.HEROES.thienvu,color:f?.color,accent:f?.accent},this.game.time,.92,false,true)}
     drawProp(o){
+      if(root.DTWorldPixel?.prop(this,o))return;
       if(!o.destroyed){super.drawProp(o);return}
       const c=this.ctx;c.save();c.translate(o.x,o.y);oval(c,0,2,22,7,'#172f3955');
       if(['rock','crystal','pillar'].includes(o.type)){
@@ -217,6 +206,7 @@
       c.restore();
     }
     drawEnemy(e){
+      if(root.DTActorsPixel?.enemy(this,e))return;
       if(!e.sagaBoss&&!e.sagaAnchor&&!e.sagaBossId&&!e.bossKind){super.drawEnemy(e);return}
       const c=this.ctx,t=reduced()?0:this.game.time,col=e.color||['#a6e5d4','#d5bb94','#c1c3fa','#e4a78d','#badbc1','#ead5a2'][e.sagaIndex||0],type=e.bossKind||e.sagaBossId||e.sagaBoss;
       if(e.sagaAnchor){super.drawEnemy(e);return}
@@ -308,10 +298,10 @@
       if(!g.world.infinite){tx=clamp(tx,0,D.W-1280/z);ty=clamp(ty,0,D.H-720/z)}
       if(Math.hypot(this.camera.x-tx,this.camera.y-ty)>2000){this.camera.x=tx;this.camera.y=ty}
       const blend=1-Math.exp(-7*delta);this.camera.x+=(tx-this.camera.x)*blend;this.camera.y+=(ty-this.camera.y)*blend;
-      c.imageSmoothingEnabled=true;c.fillStyle='#142b32';c.fillRect(0,0,1280,720);c.save();
-      const shake=reduced()?0:g.shake||0;c.translate(shake?(Math.random()-.5)*shake:0,shake?(Math.random()-.5)*shake:0);c.scale(z,z);c.translate(-this.camera.x,-this.camera.y);
+      c.imageSmoothingEnabled=false;c.fillStyle='#142b32';c.fillRect(0,0,1280,720);c.save();
+      const shake=reduced()?0:g.shake||0;c.translate(shake?(Math.random()-.5)*shake:0,shake?(Math.random()-.5)*shake:0);c.scale(z,z);c.translate(-Math.round(this.camera.x),-Math.round(this.camera.y));
       const left=this.camera.x-180,top=this.camera.y-190,right=this.camera.x+1280/z+180,bottom=this.camera.y+720/z+190,inView=o=>o&&o.x>left&&o.x<right&&o.y>top&&o.y<bottom;
-      this.ground.draw(c,this.camera,1280/z,720/z);this.drawScenery?.(inView);
+      this.ground.draw(c,this.camera,1280/z,720/z);root.DTWorldPixel?.ground(this,inView);this.drawScenery?.(inView);
       for(const s of g.world.shrines||[])if(inView(s))this.drawShrine(s);if(inView(g.world.altar))this.drawAltar(g.world.altar);
       for(const a of g.activeEffects||[])if(inView(a)){c.save();c.globalAlpha=.1;oval(c,a.x,a.y,a.r,a.r,a.color);c.globalAlpha=.65;c.strokeStyle=a.color;c.lineWidth=1.5;c.setLineDash([9,9]);c.beginPath();c.arc(a.x,a.y,a.r*.95,0,TAU);c.stroke();c.restore()}
       for(const f of g.elementFields||[])if(inView(f)){const color=root.DTElements?.byId(f.element).color||'#a9e6d4';c.save();c.globalAlpha=f.owner==='player'?.16:.07;oval(c,f.x,f.y,f.r,f.r,color);c.globalAlpha=f.owner==='player'?.58:.22;c.strokeStyle=color;c.lineWidth=2;c.beginPath();c.arc(f.x,f.y,f.r,0,TAU);c.stroke();c.restore()}

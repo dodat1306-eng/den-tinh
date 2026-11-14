@@ -58,6 +58,7 @@
       const x0=this.camera.x-140,y0=this.camera.y-160,x1=x0+1280/z+280,y1=y0+720/z+320;
       if(this.ground.draw)this.ground.draw(c,this.camera,1280/z,720/z);else c.drawImage(this.ground,0,0);
       const inView=o=>o.x>x0&&o.x<x1&&o.y>y0&&o.y<y1;
+      root.DTWorldPixel?.ground(this,inView);
       if(this.drawScenery)this.drawScenery(inView);
       for(const s of g.world.shrines)if(inView(s))this.drawShrine(s);
       if(inView(g.world.altar))this.drawAltar(g.world.altar);

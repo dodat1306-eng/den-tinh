@@ -1,0 +1,30 @@
+{
+  "version": "0.8.0",
+  "checkedAt": "2026-11-14T00:15:56.765553+00:00",
+  "unityVersion": "6000.3.27f1",
+  "compiler": "Unity bundled Roslyn with UnityEngine, UnityEditor and netstandard 2.1 reference assemblies",
+  "apiCompilation": {
+    "pass": true,
+    "errors": 0,
+    "warnings": [
+      "CS0169: DenTinhGame.scroll is never used"
+    ]
+  },
+  "sources": {
+    "Unity/Assets/Scripts/Core/CatalogData.cs": "87b97b086cb75332412bd3949c760040b01ffa924cbac5ca6ecc45042f14df88",
+    "Unity/Assets/Scripts/Core/Definitions.cs": "2c77291017ee58dc932f7048cce4c514c75c1cbb4943ab29772a73651c534d76",
+    "Unity/Assets/Scripts/Core/ElementalCombat.cs": "00ed0f7a2890f83c1b4906b3041568b836c6c38226a5416b54bc925a076ae346",
+    "Unity/Assets/Scripts/Core/Simulation.cs": "7cb5a91642ab62d7b76f5b8637e8055b6e0756a0e446e60d9d1604a1bc3b0967",
+    "Unity/Assets/Scripts/Runtime/DenTinhGame.cs": "acc04ee87ba0737d7556790e3e5e949912bf694a3c40eccfde8983b91160d9c9",
+    "Unity/Assets/Scripts/Runtime/PixelArt.cs": "3befb6cfc5027ab4609ff3667d5e8d109d896dfed206ed1c5ea1a989fe65c232",
+    "Unity/Assets/Editor/BuildGame.cs": "387e815e0646abcbdb99c1aab548afae0cbd283cd82e7f436d5b037153d84baa"
+  },
+  "editorBuild": {
+    "attempted": true,
+    "exitCode": 198,
+    "pass": false,
+    "reason": "No valid Unity Editor license found. Please activate your license.",
+    "playerBuilt": false,
+    "playModeVerified": false
+  }
+}

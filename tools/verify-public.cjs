@@ -52,7 +52,7 @@ verify().catch(error => {
 }).finally(() => {
   report.assets.sort((a, b) => a.file.localeCompare(b.file));
   fs.mkdirSync(path.join(root, 'qa'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'runtime/cloudflare-v07-report.json'), JSON.stringify(report, null, 2));
+  fs.writeFileSync(path.join(root, 'runtime/cloudflare-v'+version.split('.').slice(0,2).join('')+'-report.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ url: base, version, commit: report.commit,
     matchingAssets: report.assets.filter(asset => asset.matchesLocal).length,
     privatePaths404: report.privatePaths.filter(item => item.status === 404).length,

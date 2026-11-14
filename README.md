@@ -1,6 +1,8 @@
-# Đèn Tinh: Miền Sương Lạc — 0.7
+# Đèn Tinh: Miền Sương Lạc — 0.8
 
-Game hành động 2D tiếng Việt, một người chơi. Bản 0.7 thêm **chuyển động và hiệu ứng chiêu riêng cho năm nhân vật, bảy nguyên tố và phân thân**, giữ hướng hình ảnh của concept đầu tiên cùng hệ thống gameplay 0.6. HoaVi đã làm lại theo [chibi pixel 64×64](design/blender/hoavi/README.md): 9 động tác, 4 hướng, 208 frame nhân vật và 70 frame hiệu ứng; đủ đánh thường/Q/E/R, Q có bóng lặp đồng bộ 0,35 giây. Thiên Vũ dùng [bảy bộ trang bị pixel riêng](design/blender/thienvu/README.md): 8 động tác × 4 hướng, 980 frame nhân vật và 459 frame hiệu ứng. Phân thân 3/5/7 tự di chuyển, né nguy hiểm, đánh thường và tung Q/E/R với hồi chiêu riêng; Web/Unity dùng chung atlas.
+Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
+
+HoaVi và bảy dạng Thiên Vũ giữ bộ atlas pixel riêng; An, Linh, Kiệt có flipbook bốn hướng mới. Web và Unity dùng chung atlas môi trường, quái, NPC, triệu hồi cùng logic phá hủy. Xem [thay đổi 0.8](CHANGELOG-v0.8.md) và [trạng thái Unity](Unity/README_VI.md).
 
 ## Chơi tại máy
 
@@ -10,9 +12,11 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 53 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v07-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 61 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v08-report.json`.
 
 ## Các thay đổi chính
+
+- **0.8:** 395 frame môi trường và 801 frame actors/hiệu ứng; địa hình, nước, đường ghép tile; bảy boss riêng; golem, treant và lốc lớn được bake ở độ phân giải gốc lớn hơn. Props có bốn cấp phá hủy và dấu cháy/hố nứt/sét/băng/tro. Bộ kiểm thử mới kiểm tra lưu trạng thái, cháy lan, vỡ băng, tỉ lệ pixel và chơi trên trình duyệt.
 
 - **0.7:** chuyển động thân/chân/vạt áo theo nhịp chiêu, tư thế tung chiêu AI, vệt lướt và bộ hiệu ứng Blender 56 khung. Phượng lửa, âm vang trúc, lôi thương, mã lệnh cùng bảy nguyên tố có hình ảnh riêng; giảm ánh sáng chồng lên nhân vật. Giữ hình vẽ gốc và hỗ trợ Giảm chuyển động.
 

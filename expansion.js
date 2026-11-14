@@ -115,6 +115,7 @@
         const steps=Math.max(1,Math.ceil(Math.hypot(b.vx*dt,b.vy*dt)/10));
         for(let s=0;s<steps&&b.life>0;s++){
           b.x+=b.vx*dt/steps;b.y+=b.vy*dt/steps;
+          if(root.DTDestruction?.projectile(this,b))break;
           if(this.world.collision(b.x,b.y,2)){b.life=0;break}
           if(b.friendly){
             for(const e of this.world.enemies)if(e.alive&&!b.hitIds.includes(e.id)&&dist(e,b)<e.r+b.r){this.damageEnemy(e,b.damage,b.charge!==false);this.onBulletHit(b,e);b.hitIds.push(e.id);if(b.pierce>0)b.pierce--;else{b.life=0;break}}

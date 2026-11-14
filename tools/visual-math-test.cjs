@@ -24,7 +24,7 @@ for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js',
 const results=[];
 function test(name,fn){try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(e){results.push({name,pass:false,error:e.stack});console.error('FAIL '+name+' '+e.stack)}}
 const Art=DTAscensionArt;
-test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells and 96px clones',()=>{
+test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells at unit two for heroes and clones',()=>{
   const c=context();
   for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning']){
     const before=imageCalls.length;
@@ -48,7 +48,7 @@ test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cel
     const drawn=imageCalls.slice(before).filter(call=>call.src==='assets/thienvu-pixel-v08.png');
     const cell=DTThienVuAtlas.forms[element].actions.idle.directions.W[0];
     assert.equal(drawn.length,1);assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
-    assert.deepEqual(drawn[0].args.slice(-2),[96,96]);
+    assert.deepEqual(drawn[0].args.slice(-2),[128,128]);
   }
 });
 test('Cast poses remain finite and complete at anticipation, release and recovery',()=>{

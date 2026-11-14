@@ -63,12 +63,12 @@
     screen(c,m=>{const s=point(m,p.x,p.y),f=pose.cell;for(let row=0;row<64;row+=4){if((row/4+Math.floor(elapsed*24))%3===0)continue;const shift=Math.round((row%8?1:-1)*elapsed*18);c.drawImage(character,f.x,f.y+row,64,2,Math.round(s.x-32*unit+shift),Math.round(s.y+(row-58)*unit),Math.round(64*unit),Math.round(2*unit))}});
   }
   function hero(c,p,time=0,hurt=-Infinity,clone=false,shadow=true){
-    if(!ready())return false;const pose=frame(p,time,hurt);if(!pose)return false;const unit=clone?1.5:2;
-    screen(c,m=>{const s=point(m,p.x,p.y);if(shadow)flip(c,'pixel_shadow',0,s.x,s.y+2,clone?1.5:2);
+    if(!ready())return false;const pose=frame(p,time,hurt);if(!pose)return false;const unit=2;
+    screen(c,m=>{const s=point(m,p.x,p.y);if(shadow)flip(c,'pixel_shadow',0,s.x,s.y+2,2);
       if(p.hoverboard>0)flip(c,'hoverboard',calm()?0:Math.floor(time*12)%6,s.x,s.y-4,unit);
       if(!(p.invulnerable>0&&!calm()&&Math.floor(time*12)%2===0))cell(c,character,pose.cell,s.x,s.y,32,58,unit);
       if(pose.form==='light'&&p.moving&&!calm()){c.fillStyle='#fffbe0';for(let i=1;i<=3;i++)c.fillRect(s.x-Math.round(Math.cos(p.moveFacing||0)*i*8)-2,s.y-74-Math.round(Math.sin(p.moveFacing||0)*i*8),4,2)}
-      if(p.shield>0)flip(c,'shield_'+pose.form,calm()?0:Math.floor(time*6)%2,s.x,s.y-48,clone?1.5:2);
+      if(p.shield>0)flip(c,'shield_'+pose.form,calm()?0:Math.floor(time*6)%2,s.x,s.y-48,2);
       if(clone&&p.hp<p.maxHp){c.fillStyle='#100b18';c.fillRect(s.x-18,s.y+8,36,4);c.fillStyle=root.DTThienVuAtlas.forms[pose.form].palette[13];c.fillRect(s.x-17,s.y+9,Math.round(34*clamp(p.hp/p.maxHp,0,1)),2)}
     });return true;
   }
@@ -86,11 +86,11 @@
         const draw=(key,x=s.x,y=s.y,unit=2,angle=0)=>flip(c,key,index%root.DTThienVuVFX.clips[key].frames,x,y,unit,angle);
         if(f.behavior==='fire_breath'){const a=f.angle||0;draw('fire_breath',s.x+Math.cos(a)*105,s.y-46+Math.sin(a)*105,2,a)}
         else if(f.behavior==='blizzard'){draw('freeze_cage',s.x,s.y-32);for(let i=0;i<8;i++){const a=i/8*TAU;draw('ice_nova_strip',s.x+Math.cos(a)*r*.8,s.y+Math.sin(a)*r*.8)}}
-        else if(['tornado','hurricane'].includes(f.behavior))draw('tornado_mesh',s.x,s.y-68,f.behavior==='hurricane'?4:2);
-        else if(f.behavior==='meteor'){draw(f.meteorDelay>0?'giant_fireball':'meteor_burst',s.x,s.y-(f.meteorDelay>0?90+f.meteorDelay*150:20),3)}
-        else if(f.behavior==='tremor')draw('earth_tremor',s.x,s.y,3);
-        else if(f.behavior==='sword_array')for(let i=0;i<8;i++){const a=i/8*TAU;draw('lightning_swords',s.x+Math.cos(a)*r,s.y+Math.sin(a)*r-40,1.5)}
-        else if(f.behavior==='lightning_prison')draw('lightning_sigil',s.x,s.y,3);
+        else if(['tornado','hurricane'].includes(f.behavior))draw(f.behavior==='hurricane'?'tornado_hurricane':'tornado_mesh',s.x,s.y-112,2);
+        else if(f.behavior==='meteor'){draw(f.meteorDelay>0?'giant_fireball':'meteor_burst',s.x,s.y-(f.meteorDelay>0?90+f.meteorDelay*150:20),2)}
+        else if(f.behavior==='tremor')draw('earth_tremor',s.x,s.y,2);
+        else if(f.behavior==='sword_array')for(let i=0;i<8;i++){const a=i/8*TAU;draw('lightning_swords',s.x+Math.cos(a)*r,s.y+Math.sin(a)*r-40,2)}
+        else if(f.behavior==='lightning_prison')draw('lightning_sigil',s.x,s.y,2);
         else if(f.behavior==='root'){draw('nature_garden');for(let i=0;i<6;i++){const a=i/6*TAU;draw('vine_root',s.x+Math.cos(a)*r*.7,s.y+Math.sin(a)*r*.7)}}
         return;
       }
@@ -104,8 +104,8 @@
       if(kind==='orbs')for(let i=0;i<5;i++){const a=i/5*TAU+time*1.7;flip(c,'fire_orb',index%4,s.x+Math.cos(a)*r*.78,s.y+Math.sin(a)*r*.78-20)}
       else if(kind==='garden'||kind==='vine'){
         flip(c,kind==='vine'?'vine_root':'nature_garden',index%(kind==='vine'?5:6),s.x,s.y-16);
-        if(kind==='garden')for(let i=0;i<(low()?4:7);i++){const a=i/7*TAU;flip(c,'vine_root',index%5,s.x+Math.cos(a)*r*.70,s.y+Math.sin(a)*r*.70-16,1)}
-      }else if(kind==='vortex'||kind==='tornado')flip(c,'wind_'+kind,index%6,s.x,s.y-(kind==='tornado'?48:12),kind==='tornado'?3:2);
+        if(kind==='garden')for(let i=0;i<(low()?4:7);i++){const a=i/7*TAU;flip(c,'vine_root',index%5,s.x+Math.cos(a)*r*.70,s.y+Math.sin(a)*r*.70-16,2)}
+      }else if(kind==='vortex'||kind==='tornado')flip(c,'wind_'+kind,index%6,s.x,s.y-(kind==='tornado'?48:12),2);
       else if(kind==='nova')for(let i=0;i<8;i++){const a=i/8*TAU;flip(c,'ice_nova_strip',index%4,s.x+Math.cos(a)*r*.85,s.y+Math.sin(a)*r*.85,2)}
       else flip(c,'lightning_sigil',index%5,s.x,s.y);
     });return true;
@@ -131,7 +131,7 @@
         if(!calm())for(const p of e.points||[]){const end=point(m,p.x,p.y);segment(c,'split_beam_'+p.element,step(6),{x:s.x,y:s.y-40},{x:end.x,y:end.y-32})}
       }else if(e.type==='element-convergence'){
         for(const p of e.points||[]){const a=point(m,p.x,p.y);segment(c,'split_beam_'+p.element,step(6),{x:a.x,y:a.y-42},s)}
-        flip(c,'convergence_star',step(6),s.x,s.y);flip(c,'convergence_hub',step(6),s.x,s.y,age>.45?3:2);
+        flip(c,'convergence_star',step(6),s.x,s.y);flip(c,'convergence_hub',step(6),s.x,s.y,2);
       }else if(e.type==='element-beam'||e.type==='mythic-tether'||e.type==='lightning'){
         const key=e.type==='lightning'?'chain_bolt':form==='light'?'solar_beam':qKeys[form];
         segment(c,key,step(key==='solar_beam'?6:4),{x:s.x,y:s.y-36},{x:dest.x,y:dest.y-36});

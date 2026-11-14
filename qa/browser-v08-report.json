@@ -1,0 +1,50 @@
+{
+  "version": "0.8.0",
+  "results": [
+    {
+      "name": "Real keyboard movement and remastered village render",
+      "pass": true
+    },
+    {
+      "name": "Monsters, NPCs and all hero directions paint exact two-pixel texels",
+      "pass": true,
+      "sprites": 27,
+      "unit": 2,
+      "smoothing": false
+    },
+    {
+      "name": "Burning, charred, ash, frozen and sliced states coexist with battlefield traces",
+      "pass": true
+    },
+    {
+      "name": "Seven distinct bosses render in actual game",
+      "pass": true
+    },
+    {
+      "name": "Seven-body team survives 120 update/render frames",
+      "pass": true,
+      "medianMs": 2.0999999940395355,
+      "p95Ms": 3.699999988079071,
+      "props": 2301,
+      "clones": 6
+    },
+    {
+      "name": "Faceted golem and treant render at native scale",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion renders complete scene",
+      "pass": true
+    },
+    {
+      "name": "Mobile layout fits 390-pixel viewport with visible touch controls",
+      "pass": true
+    },
+    {
+      "name": "No browser JavaScript errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

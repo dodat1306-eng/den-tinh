@@ -42,6 +42,12 @@
 !/qa/browser-v06-report.json
 !/qa/choreography-report.json
 !/qa/browser-v07-motion-report.json
+!/qa/world-pixel-v08-report.json
+!/qa/browser-v08-report.json
+!/qa/pixel-v08-report.json
+!/qa/unity-v08-compile.json
+!/qa/unity-world-tests.txt
+!/qa/v08-*.png
 
 # Build output and dependencies
 /node_modules/
@@ -67,11 +73,12 @@ Thumbs.db
 
 # Rejected style drafts and Blender automatic backups
 /design/archive/
-/design/blender/*.blend1
-/design/blender/hoavi/*.blend1
+/design/blender/**/*.blend1
 
 # Generated Python caches
 __pycache__/
 *.pyc
 
-/design/blender/thienvu/*.blend1
+# Intermediate Blender render sheets
+/design/blender/actors/raw.png
+/design/blender/world/raw.png
