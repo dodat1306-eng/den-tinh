@@ -9,34 +9,57 @@ PASS Six tree families produce one soul each
 PASS E accepts cast
 PASS E consumes nearby tree soul at corpse location
 PASS E cap six refreshes and empowers oldest body
+PASS Legion waits for intro
 PASS R consumes souls and creates bounded 24 second legion
-PASS Legion fights autonomously without ultimate feedback
+PASS Legion fights autonomously without cooldown feedback
 PASS Legion expires
 PASS Idle legion keeps space around hero
+PASS shadow_wolf waits for anticipation
 PASS shadow_wolf attacks
+PASS shadow_bear waits for anticipation
 PASS shadow_bear attacks
+PASS shadow_eagle waits for anticipation
 PASS shadow_eagle attacks
+PASS shadow_tiger waits for anticipation
 PASS shadow_tiger attacks
+PASS shadow_panther waits for anticipation
 PASS shadow_panther attacks
+PASS shadow_lion waits for anticipation
 PASS shadow_lion attacks
+PASS shadow_gorilla waits for anticipation
 PASS shadow_gorilla attacks
+PASS shadow_rhino waits for anticipation
 PASS shadow_rhino attacks
+PASS shadow_elephant waits for anticipation
 PASS shadow_elephant attacks
+PASS shadow_stag waits for anticipation
 PASS shadow_stag attacks
+PASS shadow_boar waits for anticipation
 PASS shadow_boar attacks
+PASS shadow_cobra waits for anticipation
 PASS shadow_cobra attacks
 PASS Cobra poison corrodes armor
+PASS shadow_scorpion waits for anticipation
 PASS shadow_scorpion attacks
+PASS shadow_spider waits for anticipation
 PASS shadow_spider attacks
 PASS Spider web roots cluster
+PASS shadow_croc waits for anticipation
 PASS shadow_croc attacks
+PASS shadow_shark waits for anticipation
 PASS shadow_shark attacks
+PASS shadow_bat waits for anticipation
 PASS shadow_bat attacks
 PASS Bat siphon heals owner
+PASS shadow_falcon waits for anticipation
 PASS shadow_falcon attacks
+PASS shadow_mantis waits for anticipation
 PASS shadow_mantis attacks
+PASS shadow_crab waits for anticipation
 PASS shadow_crab attacks
+PASS shadow_treant waits for anticipation
 PASS shadow_treant attacks
+PASS shadow_dragon waits for anticipation
 PASS shadow_dragon attacks
 PASS Save restores alias, armor and valid army only
 PASS Respawn clears shadow state
@@ -56,4 +79,4 @@ PASS Golem AI selects throw
 PASS Golem grabs elite enemy
 PASS Throw lands, releases enemy and damages boss
 PASS Golem throw breaks ground
-58 remaster checks passed
+81 remaster checks passed

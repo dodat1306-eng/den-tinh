@@ -29,7 +29,7 @@
       if(moving&&!calm){const wave=Math.sin(phase*.7)*4;c.globalAlpha*=.78;poly(c,[[-8,-31],[-27-wave,-23+lift],[-41-wave,-28],[-25,-30],[-12,-35]],h.accent);c.globalAlpha/= .78}
       c.save();c.translate(0,lift-cast*2);c.rotate(lean*face);c.scale(dashing&&!calm?1.13:1,dashing&&!calm?.91:1+cast*.025);c.drawImage(atlas,frame*cw,row*ch,cw,ch,-34,-64,68,68);c.restore();
       const id=heroWeapon(h);const a=face===1?(p.facing||0):Math.PI-(p.facing||0),recoil=Math.min(1,(p.recoil||0)/.1)*5;weapon(c,id,16-recoil,-25+lift,a,.7);c.fillStyle='#eac49e';c.fillRect(10-recoil,-27+lift,5,5);
-      if(p.shield>0){c.strokeStyle='#b4dbffc0';c.lineWidth=1.5;c.beginPath();c.ellipse(0,-26,30,39,0,0,TAU);c.stroke();halo(c,0,-25,42,'#b6baff',.08)}c.restore();return;
+      if(p.shield>0&&h.id!=='quanle'&&!(p.shadowArmor>0)){c.strokeStyle='#b4dbffc0';c.lineWidth=1.5;c.beginPath();c.ellipse(0,-26,30,39,0,0,TAU);c.stroke();halo(c,0,-25,42,'#b6baff',.08)}c.restore();return;
     }
     c.save();c.translate(Math.round(p.x),Math.round(p.y));c.scale(scale,scale);
     oval(c,0,2,17,6,'#071c2566');const phase=p.moving?Math.sin(time*14):Math.sin(time*2)*.15,face=Math.cos(root.DTBodyAngle(p))<0?-1:1;
@@ -52,7 +52,7 @@
       for(let i=0;i<3;i++){const a=time*1.8+i*TAU/3;c.fillStyle=i%2?'#f6a6e7':'#77f5e4';c.globalAlpha=.6;c.font='bold 8px monospace';c.fillText(i%2?'01':'<>',Math.cos(a)*27,Math.sin(a)*13-22)}c.globalAlpha=1;
     }
     if(!npc){const id=heroWeapon(h);const a=face===1?(p.facing||0):Math.PI-(p.facing||0);weapon(c,id,16-(p.recoil>0?3:0),-20,a,.75);c.fillStyle='#efc69e';c.fillRect(11,-23,6,6)}
-    if(p.shield>0){c.strokeStyle='#c6abffbb';c.lineWidth=2;c.beginPath();c.ellipse(0,-22,26,35,0,0,TAU);c.stroke()}
+    if(p.shield>0&&h.id!=='quanle'&&!(p.shadowArmor>0)){c.strokeStyle='#c6abffbb';c.lineWidth=2;c.beginPath();c.ellipse(0,-22,26,35,0,0,TAU);c.stroke()}
     c.restore();
   };
   const R=root.DTRenderer.prototype,oldGround=R.makeGround,oldProp=R.drawProp,oldEnemy=R.drawEnemy,oldEffect=R.drawEffect,oldDraw=R.draw,oldCompanion=R.drawCompanion;

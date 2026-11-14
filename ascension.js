@@ -18,11 +18,30 @@
       }
       delete this.player.weapons;delete this.player.weaponSlot;this.weaponDrops=[];this.player.action=null;
       this.player.velocityX=0;this.player.velocityY=0;
+      this.player.ultIntro=null;this.syncUltimate();
+      const ritual=saved?.ultimate;
+      if(ritual&&Number.isFinite(ritual.elapsed)&&ritual.elapsed>=0&&ritual.elapsed<4.5&&Number.isFinite(ritual.angle)){
+        const p=this.player,angle=ritual.angle,target=ritual.target;
+        p.ultIntro={elapsed:ritual.elapsed,duration:4.5,pulse:Math.floor(ritual.elapsed/.8),cast:{key:'r',angle,target:{x:clamp(Number.isFinite(target?.x)?target.x:p.x+Math.cos(angle)*600,40,D.W-40),y:clamp(Number.isFinite(target?.y)?target.y:p.y+Math.sin(angle)*600,40,D.H-40)},element:this.isElemental?this.element.id:undefined,power:1+.18*this.skillRanks.r}};
+        this.beginAction('r',angle);p.action.elapsed=ritual.elapsed;p.invulnerable=Math.max(p.invulnerable,4.8-ritual.elapsed);
+      }
       for(const chest of this.world.chests)delete chest.weaponId;
     }
     get weapon(){return {...(this.signature||M.signature[this.hero.id]),power:1,interval:this.hero.fireRate,clip:0,reload:0,speed:this.hero.shotSpeed,pierce:0,effect:'signature'}}
+    effectiveRCd(){const p=this.player;return (this.hero.rCd||18)*(1-.06*(this.skillRanks?.r||0))*(p.relics?.cooling?.8:1)*(this.charmTime>0?.9:1)}
+    syncUltimate(){const p=this.player;p.cd.r=Math.max(0,Number.isFinite(p.cd.r)?p.cd.r:0);p.ult=p.cd.r<=0?100:clamp(Math.floor(100*(1-p.cd.r/Math.max(1,this.effectiveRCd()))),0,100)}
+    updateUltIntro(dt){
+      const p=this.player,i=p.ultIntro;if(!i)return;
+      i.elapsed=Math.min(i.duration,i.elapsed+dt);
+      const pulse=Math.floor((i.elapsed+1e-9)/.8);
+      if(pulse>i.pulse){i.pulse=pulse;for(const e of this.world.enemies)if(e.alive&&dist(e,p)<=520){const a=Math.atan2(e.y-p.y,e.x-p.x);this.moveEntity(e,Math.cos(a)*12,Math.sin(a)*12)}}
+      if(i.elapsed+1e-9<i.duration)return;
+      p.ultIntro=null;p.action=null;p.cast=0;
+      if(this.isElemental){this.elementSplitTime=14;this.syncElementClones(7)}
+      this.onRelicCast('r',0,i.cast.target);this.releaseCast(i.cast);
+    }
     get weaponStateActive(){return {id:this.weapon.id,level:1,ammo:0,reload:0}}
-    get skillTree(){const names=M.nodeNames[this.hero.id];return ['q','e','r','passive'].map((id,i)=>({id,name:names[i],maxRank:3,desc:id==='passive'?this.passiveNodeText():this.skillDescriptions[id].desc+' Mỗi bậc tăng 18% sát thương; Q/E hồi nhanh hơn 6% mỗi bậc, R tăng sức mạnh tuyệt kỹ.'}))}
+    get skillTree(){const names=M.nodeNames[this.hero.id];return ['q','e','r','passive'].map((id,i)=>({id,name:names[i],maxRank:3,desc:id==='passive'?this.passiveNodeText():this.skillDescriptions[id].desc+' Mỗi bậc tăng 18% sát thương; Q/E/R hồi nhanh hơn 6% mỗi bậc.'}))}
     passiveNodeText(){return {an:'Mỗi bậc: tích Tàn Lửa nhanh hơn; đèn hồi thêm 0,5 máu/giây.',linh:'Mỗi bậc: cần ít hơn 5 bước cho một Nhịp Trúc; dấu ghim tồn tại lâu hơn.',kiet:'Mỗi bậc: đòn cường hóa thêm 10 khiên; chiến tuyến chặn đạn hiệu quả hơn.',hoavi:'Mỗi bậc: biên dịch lại Q mạnh thêm 15%; hồi quy hồi thêm 4% máu tối đa.',thienvu:'Mỗi bậc: Hòa Âm hồi thêm 5 linh lực và 5 khiên; phản ứng tăng 12% sát thương.'}[this.hero.id]}
     get skillDescriptions(){
       if(!this.isElemental)return M.kits[this.hero.id];const f=this.element;
@@ -45,10 +64,10 @@
     }
     readyRelic(id,cooldown){if(this.relicCooldowns[id]>0)return false;this.relicCooldowns[id]=cooldown;return true}
     addField(kind,x,y,extra={}){const f={id:'mythic-'+(++this.fieldSerial),kind,x,y,r:100,life:4,tick:0,angle:this.player.facing,...extra};this.mythicFields.push(f);if(this.mythicFields.length>28)this.mythicFields.shift();return f}
-    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?.32:this.hero.id==='linh'&&key==='q'?.25:key==='e'?.14:.16,duration=key==='attack'?.32:key==='r'?1.05:key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
+    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?4.5:this.hero.id==='linh'&&key==='q'?.25:key==='e'?.14:.16,duration=key==='attack'?.32:key==='r'?4.5:key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
     shoot(x,y,a,speed,damage,color,opts={}){super.shoot(x,y,a,speed,damage,color,opts);const b=this.projectiles[this.projectiles.length-1];if(b)Object.assign(b,{signature:!!opts.signature,returning:!!opts.returning,age:0,sourceSkill:opts.sourceSkill||'',echo:!!opts.echo})}
     fire(){
-      const p=this.player;if(this.paused||this.dead||p.cd.fire>0||p.dashTime>0||p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.release+.12)return false;
+      const p=this.player;if(this.paused||this.dead||p.ultIntro||p.cd.fire>0||p.dashTime>0||p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.release+.12)return false;
       const id=this.hero.id,s=this.passiveState,scale=1+(this.skillRanks.passive||0)*.035;
       p.cd.fire=p.fireRate*(p.overclock>0?.72:1);this.tutorial.shots++;p.recoil=.12;s.attackCount++;
       if(!p.action||p.action.key==='attack')this.beginAction('attack',p.facing,this.isElemental?this.element.id:undefined);
@@ -67,21 +86,23 @@
       this.emit('sound',{name:id==='hoavi'?'codeShot':'shoot'});return true;
     }
     skill(key){
-      if(!['q','e','r'].includes(key)||this.paused||this.dead)return false;const p=this.player;
+      if(!['q','e','r'].includes(key)||this.paused||this.dead||this.player.ultIntro)return false;const p=this.player;
       if(p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.duration)return false;
       if(this.hero.id==='hoavi'&&key==='e'&&this.checkpoint){
         const c=this.checkpoint;this.checkpoint=null;const spot=this.elementSafeSpot(c.x,c.y);if(!spot)return false;
         this.effect('choreo-pixel-blink',p.x,p.y,'#1fc8db',20,.5,{hero:'hoavi',tx:spot.x,ty:spot.y,angle:p.facing});this.lineHit(p,spot,46,p.damage*2,'light',true,{hero:'hoavi',key:'blink'});
         this.projectiles=this.projectiles.filter(b=>b.friendly||segment(b,p,spot)>70);p.x=spot.x;p.y=spot.y;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*(.08+.04*this.skillRanks.passive));p.invulnerable=Math.max(.45,p.invulnerable);this.beginAction('e',p.facing);p.action.blink=true;return true;
       }
-      const def=this.skillDescriptions[key],cost=def.cost||0;if(key==='r'&&p.ult<100){this.emit('toast',{text:'Tuyệt kỹ cần 100% lực từ chiến đấu.'});return false}if(key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
-      if(key==='r')p.ult=0;else{p.mp-=cost;p.cd[key]=def.cooldown*(1-.06*this.skillRanks[key])*(p.relics.cooling?.8:1)}
+      const def=this.skillDescriptions[key],cost=def.cost||0;if(key==='r'&&p.cd.r>0)return false;if(key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
+      if(key==='r'){p.cd.r=this.effectiveRCd();this.syncUltimate()}else{p.mp-=cost;p.cd[key]=def.cooldown*(1-.06*this.skillRanks[key])*(p.relics.cooling?.8:1)}
       p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.aimAngle,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
       const empowered=key==='q'&&p.relics.cinderella&&(this.relicCounters.cinderella||0)>=3;if(empowered){this.relicCounters.cinderella=0;p.mp=Math.min(p.maxMp,p.mp+10)}
       const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
-      const cast={type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)};if(windup===0)this.releaseCast(cast);else this.castQueue.push(cast);
+      const cast={type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)};
+      if(key==='r'){p.ultIntro={elapsed:0,duration:4.5,pulse:0,cast};Object.assign(p.action,{duration:4.5,release:4.5,windup:4.5});p.cast=4.5;p.invulnerable=Math.max(p.invulnerable,4.8);p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
+      else if(windup===0)this.releaseCast(cast);else this.castQueue.push(cast);
       if(pixelOrigin&&p.code>=4)this.effect('choreo-code-wait',p.x,p.y,'#1fc8db',64,windup+.35,{hero:'hoavi',angle:a});
-      this.tutorial.skills++;this.onRelicCast(key,cost,target);this.emit('sound',{name:key==='r'?'ultimate':'skill'});this.effect('mythic-rune',p.x,p.y,this.hero.color,key==='r'?115:48,windup+.1,{key,angle:a});return true;
+      this.tutorial.skills++;if(key!=='r')this.onRelicCast(key,cost,target);this.emit('sound',{name:key==='r'?'ultimate':'skill'});if(key!=='r')this.effect('mythic-rune',p.x,p.y,this.hero.color,48,windup+.1,{key,angle:a});return true;
     }
     onRelicCast(key,cost,target){
       const p=this.player;
@@ -234,7 +255,7 @@
     update(dt){
       if(this.paused||this.dead||!this.started)return;dt=clamp(dt,0,.04);if(!dt)return;const touch=root.DTTouch,p=this.player,x=p.x,y=p.y,t=this.time,dx=touch?.active?touch.move.x:this.input.dx,dy=touch?.active?touch.move.y:this.input.dy,speed=p.speed;
       const blend=1-Math.exp(-dt*42);this.motion.vx=dx*this.motion.vx<=0||!dx?dx:this.motion.vx+(dx-this.motion.vx)*blend;this.motion.vy=dy*this.motion.vy<=0||!dy?dy:this.motion.vy+(dy-this.motion.vy)*blend;if(Math.abs(this.motion.vx)<.002)this.motion.vx=0;if(Math.abs(this.motion.vy)<.002)this.motion.vy=0;this.input.dx=this.motion.vx;this.input.dy=this.motion.vy;
-      if(p.swiftTime>0)p.speed*=p.relics.tam?1.2:1.12;
+      if(p.swiftTime>0)p.speed*=p.relics.tam?1.2:1.12;if(p.ultIntro){p.speed*=.35;p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       try{super.update(dt)}finally{this.input.dx=dx;this.input.dy=dy;p.speed=speed}if(t===this.time)return;
       if(p.action){p.action.elapsed+=dt;if(p.action.elapsed>=p.action.duration)p.action=null}
       for(const id in this.relicCooldowns)this.relicCooldowns[id]=Math.max(0,this.relicCooldowns[id]-dt);
@@ -244,15 +265,15 @@
       if(s.formTime>0){s.formTime-=dt;if(s.formTime<=0)s.forms=[]}
       if(p.relics.sontinh){p.stillTime=moved<.15?(p.stillTime||0)+dt:0;if(p.stillTime>.8&&!(this.relicCooldowns.sontinh>0))p.stoneGuard=true}
       if(this.checkpoint){this.checkpoint.life-=dt;if(this.checkpoint.life<=0)this.checkpoint=null}
-      this.updateCastQueue(dt);this.updateFields(dt);this.weaponDrops=[];
+      this.updateCastQueue(dt);this.updateFields(dt);this.updateUltIntro(dt);this.syncUltimate();this.weaponDrops=[];
     }
     transformElement(id){const ok=super.transformElement(id);if(ok&&this.signature){this.signature.color=this.element.color}return ok}
     updateTutorial(){const before=this.tutorial.step;super.updateTutorial();if(before<5&&this.tutorialDone){this.events=this.events.filter(e=>!(e.type==='toast'&&/TAB/.test(e.text)));this.emit('toast',{text:'Đã sẵn sàng! K học kỹ năng, I xem nội tại và cổ vật.'})}}
     grantRelic(id){if(C.relic(id)?.mythic&&this.player.relics[id]){this.player.gold+=35;this.emit('toast',{text:'Cổ vật đã sở hữu · nhận 35 xu thay thế',reward:true});return true}return super.grantRelic(id)}
-    cancelActions(){this.elementSummons=[];this.elementActions=[];this.elementFields=[];this.player.hoverboard=0;for(const c of this.elementClones||[])c.action=null;this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
+    cancelActions(){this.elementSummons=[];this.elementActions=[];this.elementFields=[];this.player.ultIntro=null;this.player.hoverboard=0;for(const c of this.elementClones||[])c.action=null;this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
     travelTo(id){const ok=super.travelTo(id);if(ok)this.cancelActions();return ok}
     respawn(){super.respawn();this.cancelActions();this.passiveState.embers=0;this.passiveState.thunder=0}
-    serialize(){const data=super.serialize();data.ascensionVersion=5;data.ascension={points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;data.expansion.weaponDrops=[];return data}
+    serialize(){const data=super.serialize();data.ascensionVersion=5;data.ascension={ultimate:this.player.ultIntro?{elapsed:this.player.ultIntro.elapsed,angle:this.player.ultIntro.cast.angle,target:{...this.player.ultIntro.cast.target}}:null,points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;delete data.player.ultIntro;data.expansion.weaponDrops=[];return data}
     static restore(data){const g=Base.restore(data);Object.setPrototypeOf(g,AscensionGame.prototype);g.initAscension(data.ascensionVersion===5?data.ascension:null);if(data.ascensionVersion!==5){g.skillPoints=3+Math.max(0,g.player.level-1)+(data.player?.weapons||[]).reduce((n,w)=>n+Math.max(0,(Number(w.level)||1)-1),0);g.emit('toast',{text:'Bản lưu 0.5: trang bị cũ đổi thành '+g.skillPoints+' điểm kỹ năng. K để phát triển bảo khí riêng.',reward:true})}return g}
   }
   root.DTAscension={segment,Game:AscensionGame};root.DTGame=AscensionGame;

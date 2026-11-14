@@ -6,7 +6,7 @@
   class Game{
     constructor(hero='an',seed=71426){
       this.world=D.makeWorld(seed);this.rng=D.rand(seed+123);this.hero=D.HEROES[hero]||D.HEROES.an;
-      this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:65,gold:0,potions:3,ult:0,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
+      this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:65,gold:0,potions:3,ult:100,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0,r:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
       this.projectiles=[];this.effects=[];this.particles=[];this.loot=[];this.floaters=[];this.telegraphs=[];this.events=[];
       this.time=0;this.paused=true;this.started=false;this.dead=false;this.victory=false;this.storyStarted=false;this.bossStarted=false;this.kills=0;this.deaths=0;this.upgrades=0;this.pendingLevels=0;this.visited=new Set(['village']);this.zone='village';this.shake=0;this.hitFlash=0;this.activeEffects=[];this.respawnPoint={x:740,y:2200};
       this.input={dx:0,dy:0,fire:false,aimX:1000,aimY:2200};
@@ -29,7 +29,7 @@
     update(dt){
       if(this.paused||this.dead||!this.started)return;
       dt=clamp(dt,0,.04);this.time+=dt;const p=this.player;
-      for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);
+      for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);this.syncUltimate();
       p.invulnerable=Math.max(0,p.invulnerable-dt);p.mp=Math.min(p.maxMp,p.mp+13*dt);p.hp=Math.min(p.maxHp,p.hp+p.regen*dt);
       this.shake=Math.max(0,this.shake-dt*22);this.hitFlash=Math.max(0,this.hitFlash-dt*3);
       let dx=this.input.dx,dy=this.input.dy;const len=Math.hypot(dx,dy);if(len>1){dx/=len;dy/=len}
@@ -55,18 +55,20 @@
       this.projectiles.push({x:x+Math.cos(angle)*20,y:y+Math.sin(angle)*20,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,angle,damage,color,friendly,r:opts.r||5,life:opts.life||2,pierce:opts.pierce||0,kind:opts.kind||'orb',charge:opts.charge!==false,hitIds:[],trail:0});
     }
     dash(){
-      const p=this.player;if(this.paused||this.dead||p.cd.dash>0)return false;
+      const p=this.player;if(this.paused||this.dead||p.ultIntro||p.cd.dash>0)return false;
       let dx=this.input.dx,dy=this.input.dy,l=Math.hypot(dx,dy);
       if(!l){dx=Math.cos(p.facing);dy=Math.sin(p.facing);l=1}
       p.dashX=dx/l;p.dashY=dy/l;p.dashTime=.19;p.invulnerable=Math.max(p.invulnerable,.27);p.cd.dash=1.2;
       this.effect('dash',p.x,p.y,this.hero.color,30,.25,{angle:Math.atan2(dy,dx)});this.emit('sound',{name:'dash'});return true;
     }
+    effectiveRCd(){return (this.hero.rCd||18)*(this.player.relics?.cooling?.8:1)}
+    syncUltimate(){const p=this.player;p.cd.r=Math.max(0,Number.isFinite(p.cd.r)?p.cd.r:0);p.ult=p.cd.r<=0?100:clamp(Math.floor(100*(1-p.cd.r/Math.max(1,this.effectiveRCd()))),0,100)}
     skill(key){
       if(this.paused||this.dead||!['q','e','r'].includes(key))return false;
       const p=this.player,cost=key==='q'?24:key==='e'?38:0;
-      if(key==='r'&&p.ult<100){this.emit('toast',{text:'Tuyệt kỹ tích lực khi đánh trúng quái.'});return false}
+      if(key==='r'&&p.cd.r>0){this.emit('toast',{text:'Tuyệt kỹ đang hồi chiêu.'});return false}
       if(key!=='r'&&(p.cd[key]>0||p.mp<cost)){if(p.mp<cost)this.emit('toast',{text:'Chưa đủ linh lực.'});return false}
-      if(key==='r')p.ult=0;else{p.mp-=cost;p.cd[key]=key==='q'?this.hero.qCd:this.hero.eCd}
+      if(key==='r'){p.cd.r=this.effectiveRCd();p.ult=0;}else{p.mp-=cost;p.cd[key]=key==='q'?this.hero.qCd:this.hero.eCd}
       const a=p.facing,id=this.hero.id,d=p.damage;
       this.emit('sound',{name:key==='r'?'ultimate':'skill'});this.shake=key==='r'?8:3;
       if(key==='q'){
@@ -126,11 +128,11 @@
     }
     damageEnemy(e,amount,charge=true){
       if(!e.alive)return;const crit=this.rng()<this.player.crit,dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));e.hp-=dmg;e.hit=.12;
-      if(charge)this.player.ult=Math.min(100,this.player.ult+Math.min(2.5,dmg*.04));
+
       if(this.floaters.length<70)this.floaters.push({x:e.x+(this.rng()-.5)*15,y:e.y-e.r-15,text:String(dmg)+(crit?'!':''),color:crit?'#ffda83':'#e9ecce',life:.65,vy:-42});
       this.spark(e.x,e.y,5,e.type==='boss'?'#edb482':'#cce5c1',100,.23);
       if(e.hp<=0){
-        e.alive=false;this.kills++;if(charge)this.player.ult=Math.min(100,this.player.ult+2);this.addXp(Math.round(e.xp));
+        e.alive=false;this.kills++;this.addXp(Math.round(e.xp));
         this.loot.push({x:e.x,y:e.y,type:'gold',value:Math.round(e.gold),life:120});
         if(this.rng()<.14)this.loot.push({x:e.x+12,y:e.y-4,type:'potion',value:1,life:120});
         this.spark(e.x,e.y,22,e.type==='boss'?'#f3cc85':'#6bb29a',130,.55);this.emit('sound',{name:'kill'});
@@ -154,17 +156,18 @@
     updateEnemies(dt){
       const p=this.player;
       for(const e of this.world.enemies){
-        if(!e.alive)continue;e.hit=Math.max(0,e.hit-dt);e.slow=Math.max(0,e.slow-dt);e.cool-=dt;
-        if(Math.hypot(e.knockX,e.knockY)>4){this.moveEntity(e,e.knockX*dt,e.knockY*dt);e.knockX*=Math.exp(-8*dt);e.knockY*=Math.exp(-8*dt)}
+        const stepDt=dt*(p.ultIntro&&distance(e,p)<=520?.25:1);
+        if(!e.alive)continue;e.hit=Math.max(0,e.hit-stepDt);e.slow=Math.max(0,e.slow-stepDt);e.cool-=stepDt;
+        if(Math.hypot(e.knockX,e.knockY)>4){this.moveEntity(e,e.knockX*stepDt,e.knockY*stepDt);e.knockX*=Math.exp(-8*stepDt);e.knockY*=Math.exp(-8*stepDt)}
         const dist=distance(e,p);if(dist>900)continue;
-        if(e.type==='boss'){this.updateBoss(e,dt);continue}
+        if(e.type==='boss'){this.updateBoss(e,stepDt);continue}
         if(this.victory&&!e.frontier)continue;
         const homeDist=Math.hypot(e.x-e.homeX,e.y-e.homeY),a=Math.atan2(p.y-e.y,p.x-e.x),slow=e.slow>0?.48:1;
         let mx=0,my=0;
         if(dist>530||homeDist>600){const back=Math.atan2(e.homeY-e.y,e.homeX-e.x);if(homeDist>20){mx=Math.cos(back)*e.speed*.55;my=Math.sin(back)*e.speed*.55}}
         else{
           if(e.type==='boar'&&e.phase){
-            e.timer-=dt;
+            e.timer-=stepDt;
             if(e.phase===1&&e.timer<=0){e.phase=2;e.timer=.48;e.chargeA=a;this.emit('sound',{name:'charge'})}
             if(e.phase===2){mx=Math.cos(e.chargeA)*350;my=Math.sin(e.chargeA)*350;if(e.timer<=0){e.phase=0;e.cool=2.4}}
           }else if(e.type==='boar'&&e.cool<=0&&dist<340&&dist>70){e.phase=1;e.timer=.65;this.effect('warning',e.x,e.y,'#ff9c72',24,.65)}
@@ -180,7 +183,7 @@
           }
           if(dist<e.r+p.r+5)this.damagePlayer(e.type==='boar'&&e.phase===2?e.damage*1.4:e.damage);
         }
-        this.moveEntity(e,mx*dt*slow,my*dt*slow);
+        this.moveEntity(e,mx*stepDt*slow,my*stepDt*slow);
       }
     }
     updateBoss(e,dt){
@@ -244,7 +247,7 @@
         const s=this.world.shrines.find(s=>s.id===o.id);
         if(s.active){p.x=740;p.y=2200;p.hp=p.maxHp;p.mp=p.maxMp;this.projectiles=[];this.telegraphs=[];this.emit('toast',{text:'Ánh đèn đưa ngươi trở về Làng Đèn.'});return true}
         if(s.guardians.some(id=>this.world.enemies.some(e=>e.id===id&&e.alive))){this.emit('toast',{text:'Đánh bại hộ vệ quanh ấn trước.'});return false}
-        s.active=true;p.gold+=45;p.hp=p.maxHp;p.mp=p.maxMp;p.potions=Math.min(12,p.potions+1);this.player.ult=Math.min(100,this.player.ult+30);this.addXp(65);
+        s.active=true;p.gold+=45;p.hp=p.maxHp;p.mp=p.maxMp;p.potions=Math.min(12,p.potions+1);this.addXp(65);
         this.effect('ultimate',s.x,s.y,s.color,220,1.2);this.spark(s.x,s.y,70,s.color,240,1);this.emit('shrine',{id:s.id});this.emit('sound',{name:'ultimate'});return true;
       }
       if(o.id==='altar'){
@@ -259,7 +262,7 @@
     startBoss(){
       this.bossStarted=true;const hp=2100+this.player.level*180;
       this.world.enemies.push({id:'boss',type:'boss',name:'Mộc Quỷ · Cội Đa Lạc Hồn',x:1830,y:610,homeX:1830,homeY:610,r:45,hp,maxHp:hp,speed:32,damage:23,xp:250,gold:160,alive:true,cool:2,phase:1,timer:0,pattern:-1,hit:0,slow:0,knockX:0,knockY:0});
-      this.player.hp=this.player.maxHp;this.player.mp=this.player.maxMp;this.player.ult=100;this.emit('boss');this.effect('ultimate',1830,610,'#dcaa8a',260,1.5);this.shake=8;
+      this.player.hp=this.player.maxHp;this.player.mp=this.player.maxMp;this.player.cd.r=0;this.player.ult=100;this.emit('boss');this.effect('ultimate',1830,610,'#dcaa8a',260,1.5);this.shake=8;
     }
     respawn(){
       this.dead=false;this.deaths++;const p=this.player;p.x=this.respawnPoint.x;p.y=this.respawnPoint.y;p.hp=p.maxHp;p.mp=p.maxMp;p.gold=Math.floor(p.gold*.9);p.potions=Math.max(3,p.potions);p.invulnerable=2;p.dashTime=0;this.projectiles=[];this.telegraphs=[];this.activeEffects=[];
@@ -289,14 +292,14 @@
       const g=new Game(data.hero,data.seed),p=data.player;
       const numerics=['x','y','maxHp','hp','mp','maxMp','speed','damage','fireRate','level','xp','nextXp','gold','potions','ult','armor','bonusShots','crit','regen'];
       for(const k of numerics)if(Number.isFinite(p[k]))g.player[k]=p[k];
-      g.player.maxHp=clamp(g.player.maxHp,50,10000);g.player.maxMp=clamp(g.player.maxMp,100,2000);g.player.x=clamp(g.player.x,40,D.W-40);g.player.y=clamp(g.player.y,40,D.H-40);g.player.hp=clamp(g.player.hp,1,g.player.maxHp);g.player.mp=clamp(g.player.mp,0,g.player.maxMp);g.player.potions=clamp(g.player.potions,0,12);g.player.invulnerable=1;
+      g.player.maxHp=clamp(g.player.maxHp,50,10000);g.player.maxMp=clamp(g.player.maxMp,100,2000);g.player.x=clamp(g.player.x,40,D.W-40);g.player.y=clamp(g.player.y,40,D.H-40);g.player.hp=clamp(g.player.hp,1,g.player.maxHp);g.player.mp=clamp(g.player.mp,0,g.player.maxMp);g.player.potions=clamp(g.player.potions,0,12);g.player.invulnerable=1;g.player.cd.r=Number.isFinite(p.cd?.r)?clamp(p.cd.r,0,20):0;g.player.ult=g.player.cd.r<=0?100:Math.floor(100*(1-g.player.cd.r/(g.hero.rCd||18)));
       if(g.world.collision(g.player.x,g.player.y,g.player.r)){g.player.x=740;g.player.y=2200}
       for(const s of g.world.shrines)s.active=data.shrines.includes(s.id);
       for(const c of g.world.chests)c.open=data.chests.includes(c.id);
       for(const e of g.world.enemies){const saved=data.enemies.find(s=>s.id===e.id);if(saved){e.alive=saved.alive===true;e.hp=clamp(saved.hp||0,0,e.maxHp)}}
       g.time=data.time||0;g.kills=data.kills||0;g.deaths=data.deaths||0;g.upgrades=data.upgrades||0;g.pendingLevels=clamp(data.pendingLevels||0,0,50);g.visited=new Set(data.visited||['village']);g.storyStarted=true;
       if(Array.isArray(data.loot))g.loot=data.loot.filter(l=>Number.isFinite(l.x)&&Number.isFinite(l.y)&&Number.isFinite(l.value)&&['gold','potion'].includes(l.type)).slice(0,200);
-      if(data.bossStarted&&!data.victory){g.startBoss();const b=g.world.enemies.find(e=>e.id==='boss'),s=data.enemies.find(e=>e.id==='boss');if(s)b.hp=Math.max(1,Math.min(b.maxHp,s.hp));g.player.hp=clamp(p.hp,1,g.player.maxHp);g.player.mp=clamp(p.mp,0,g.player.maxMp);g.player.ult=clamp(p.ult,0,100);g.events=[]}
+      if(data.bossStarted&&!data.victory){g.startBoss();const b=g.world.enemies.find(e=>e.id==='boss'),s=data.enemies.find(e=>e.id==='boss');if(s)b.hp=Math.max(1,Math.min(b.maxHp,s.hp));g.player.hp=clamp(p.hp,1,g.player.maxHp);g.player.mp=clamp(p.mp,0,g.player.maxMp);g.player.cd.r=Number.isFinite(p.cd?.r)?clamp(p.cd.r,0,20):0;g.syncUltimate();g.events=[]}
       g.victory=!!data.victory;g.bossStarted=!!data.bossStarted;g.started=true;g.paused=false;g.zone=D.zoneAt(g.player.x,g.player.y).id;return g;
     }
   }

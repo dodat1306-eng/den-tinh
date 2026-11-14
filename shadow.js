@@ -32,7 +32,7 @@
   function spawn(g,id,at,life=22,variant){
     const spec=byId.get(id);if(!spec||g.shadowArmy.length>=14)return null;
     const spot=spec.flying?at:g.elementSafeSpot(at.x,at.y)||g.player;
-    const s={id:'shadow-'+(++g.shadowSerial),kind:id,variant:variants.has(variant)?variant:null,x:spot.x,y:spot.y,r:spec.r,hp:spec.hp,maxHp:spec.hp,power:g.player.damage*(1+.08*(g.skillRanks.e||0)),life,maxLife:life,attackCd:0,hurtCd:0,aimAngle:0,moving:false,action:null};
+    const s={id:'shadow-'+(++g.shadowSerial),kind:id,variant:variants.has(variant)?variant:null,x:spot.x,y:spot.y,r:spec.r,hp:spec.hp,maxHp:spec.hp,power:g.player.damage*(1+.08*(g.skillRanks.e||0)),life,maxLife:life,attackCd:0,hurtCd:0,aimAngle:0,moving:false,spawnAge:0,action:null};
     g.shadowArmy.push(s);fx(g,'portal',s.x,s.y,70,.65);return s;
   }
   function primary(g,power){
@@ -66,7 +66,10 @@
   }
   function shoot(g,s,angle,opts={}){g.shoot(s.x,s.y,angle,560,s.power*.85,'#b84dff',{owner:s.id,kind:'shadow-crescent',shadow:true,charge:false,life:1.1,pierce:1,r:9,...opts})}
   function attack(g,s,e,spec){
-    const a=Math.atan2(e.y-s.y,e.x-s.x);s.aimAngle=a;s.action={key:'attack',elapsed:0,duration:.6,angle:a};s.attackCd=(['stomp','darkfire','quake','web'].includes(spec.behavior)?2.5:1.05)/(g.shadowFrenzy>0?1.4:1);
+    const a=Math.atan2(e.y-s.y,e.x-s.x);s.aimAngle=a;s.action={key:'attack',elapsed:0,duration:.6,release:.22,released:false,targetId:e.id,angle:a};s.attackCd=(['stomp','darkfire','quake','web'].includes(spec.behavior)?2.5:1.05)/(g.shadowFrenzy>0?1.4:1);
+  }
+  function releaseAttack(g,s,e,spec){
+    const a=s.action.angle;
     const aoe=(r,m,status,terrain)=>area(g,s,e.x,e.y,r,m,status,terrain);
     switch(spec.behavior){
       case 'bite':aoe(35,1.45,{shadowBleed:3,shadowBleedTick:0,shadowBleedPower:s.power*.22});break;
@@ -117,7 +120,7 @@
       if(p.shadowArmor>0){p.shadowArmor=Math.max(0,p.shadowArmor-dt);this.shadowTendril+=dt;if(this.shadowTendril>=.4){this.shadowTendril-=.4;const hits=area(this,{power:p.damage*(1+.05*this.skillRanks.passive)},p.x,p.y,125,.55);p.hp=Math.min(p.maxHp,p.hp+hits*1.5);fx(this,'tendrils',p.x,p.y,125,.3)}}
       for(const e of this.world.enemies)if(e.alive){e.shadowCorrosion=Math.max(0,(e.shadowCorrosion||0)-dt);if(e.shadowBleed>0){e.shadowBleed-=dt;e.shadowBleedTick=(e.shadowBleedTick||0)-dt;if(e.shadowBleedTick<=0){e.shadowBleedTick=.5;this.damageEnemy(e,e.shadowBleedPower||2,false)}}if(e.shadowFear>0){e.shadowFear-=dt;e.stunned=Math.max(e.stunned||0,.05);const a=Math.atan2(e.y-e.shadowFearY,e.x-e.shadowFearX);this.moveEntity(e,Math.cos(a)*100*dt,Math.sin(a)*100*dt)}}
       for(const [i,s] of this.shadowArmy.entries()){
-        s.life-=dt;s.attackCd-=dt;s.hurtCd-=dt;if(s.action){s.action.elapsed+=dt;if(s.action.elapsed>=s.action.duration)s.action=null}if(s.life<=0||s.hp<=0)continue;
+        s.life-=dt;s.spawnAge=Math.min(.45,(s.spawnAge||0)+dt);if(s.spawnAge<.45){s.moving=false;continue}s.attackCd-=dt;s.hurtCd-=dt;if(s.action){s.action.elapsed+=dt;if(!s.action.released&&s.action.elapsed>=s.action.release){s.action.released=true;const target=this.world.enemies.find(e=>e.id===s.action.targetId&&e.alive);if(target&&distance(target,s)<340)releaseAttack(this,s,target,byId.get(s.kind))}if(s.action.elapsed>=s.action.duration)s.action=null}if(s.life<=0||s.hp<=0)continue;
         const spec=byId.get(s.kind),enemies=this.world.enemies.filter(e=>e.alive&&distance(e,s)<600),target=enemies.sort((a,b)=>distance(a,s)-distance(b,s))[0];s.moving=false;
         let destination=target||(this.shadowArmy.length>6?formation(this,i):p);const hazard=[...(this.telegraphs||[]),...(this.eliteHazards||[])].find(h=>(h.timer??h.time)>0&&distance(s,h)<(h.r||60)+s.r+25);
         if(hazard){const a=Math.atan2(s.y-hazard.y,s.x-hazard.x);destination={x:s.x+Math.cos(a)*130,y:s.y+Math.sin(a)*130}}

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T03:02:16.836Z",
+  "checkedAt": "2026-11-14T08:40:58.410Z",
   "results": [
     {
       "name": "Blender flipbook contains the seven declared rows and eight transparent PNG frames",
@@ -71,6 +71,26 @@
     },
     {
       "name": "Pausing freezes motion progress and does not advance a committed skill",
+      "pass": true
+    },
+    {
+      "name": "All five heroes cast R without rage, wait exactly 4.5 seconds and release once",
+      "pass": true
+    },
+    {
+      "name": "Saving an intro preserves elapsed time and aim, validates malformed data and avoids duplicate release",
+      "pass": true
+    },
+    {
+      "name": "Intro movement is 35 percent, control immune, and nearby enemy movement and attacks run at 25 percent",
+      "pass": true
+    },
+    {
+      "name": "R cooldown supports ranks and relics; all summon states have ordered nonlooping spawn and attack",
+      "pass": true
+    },
+    {
+      "name": "Five distinct intro scenes and seven crests render with finite coordinates and balanced Canvas state",
       "pass": true
     }
   ],

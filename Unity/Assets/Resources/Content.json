@@ -17,7 +17,8 @@
       "e": "Tam Đăng Kết Giới",
       "r": "Phượng Hỏa Quy Đăng",
       "qCd": 5,
-      "eCd": 9
+      "eCd": 9,
+      "rCd": 18
     },
     {
       "id": "linh",
@@ -36,7 +37,8 @@
       "e": "Thoái Bộ Mộc Phục",
       "r": "Thiên Tiễn Truy Danh",
       "qCd": 4,
-      "eCd": 8
+      "eCd": 8,
+      "rCd": 18
     },
     {
       "id": "quanle",
@@ -55,7 +57,8 @@
       "e": "Hắc Ảnh Triệu Hồi",
       "r": "Bách Quỷ Dạ Hành",
       "qCd": 9,
-      "eCd": 7
+      "eCd": 7,
+      "rCd": 20
     },
     {
       "id": "hoavi",
@@ -74,7 +77,8 @@
       "e": "Checkpoint · Hồi Quy",
       "r": "Overclock · Song Tinh",
       "qCd": 5,
-      "eCd": 10
+      "eCd": 10,
+      "rCd": 18
     }
   ],
   "weapons": [
@@ -378,7 +382,8 @@
     "e": "Lôi Ngục Giật Điện",
     "r": "Thiên Lôi Kiếm Trận",
     "qCd": 6,
-    "eCd": 10
+    "eCd": 10,
+    "rCd": 20
   },
   "elements": [
     {

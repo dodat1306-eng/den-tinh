@@ -14,6 +14,9 @@ def worker(args):
     from bpy_extras.object_utils import world_to_camera_view
     bpy.ops.wm.open_mainfile(filepath=str(HERE/'hoavi-pixel-v08.blend'))
     scene=bpy.context.scene;rig=bpy.data.objects['HOAVI_Armature'];scene.render.engine=args.engine
+    camera=scene.camera;ratio=45/41;local=camera.matrix_world.inverted()@Vector((0,0,0))
+    camera.location+=camera.rotation_euler.to_matrix()@Vector(((1-ratio)*local.x,(1-ratio)*local.y,0))
+    camera.data.ortho_scale*=ratio
     if args.engine=='CYCLES':scene.cycles.device='CPU';scene.cycles.samples=32;scene.cycles.use_denoising=False
     else:scene.eevee.taa_render_samples=1
     folder=WORK/args.engine;folder.mkdir(parents=True,exist_ok=True);landmarks={}

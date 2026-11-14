@@ -3,7 +3,7 @@ import bpy,json,sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from pixel_pipeline import ROOT,audit_meshes
-for folder,blend in [('quanle','quanle-pixel-v08.blend'),('quanle/beasts','quanle-vfx-pixel.blend'),('actors','actors-pixel-v08.blend'),('thienvu/held-weapons','thienvu-held-weapons.blend')]:
+for folder,blend in [('quanle','quanle-pixel-v1.blend'),('quanle/beasts','quanle-vfx-pixel.blend'),('actors','actors-pixel-v1.blend'),('thienvu/held-weapons','thienvu-held-weapons.blend')]:
  directory=ROOT/'design/blender'/folder
  bpy.ops.wm.open_mainfile(filepath=str(directory/blend))
  names=[o.name for o in bpy.context.scene.objects if o.type=='MESH' and 'cell' in o]

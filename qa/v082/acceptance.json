@@ -1,0 +1,146 @@
+{
+  "version": "0.8.2",
+  "checkedAt": "2026-11-14T08:49:53.534483+00:00",
+  "pass": true,
+  "webChecks": [
+    {
+      "command": [
+        "npm.cmd",
+        "test"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "tools/http-test.cjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "tools/thienvu-pixel-test.cjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "tools/ultimate-browser-test.cjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "npm.cmd",
+        "run",
+        "build:web"
+      ],
+      "exit": 0
+    }
+  ],
+  "webBrowser": {
+    "report": "qa/v082/browser-report.json",
+    "checks": 23,
+    "uncaughtErrors": [],
+    "physicalDevice": false
+  },
+  "nativeCore": {
+    "pass": true,
+    "checks": 209,
+    "groups": {
+      "basic": 17,
+      "campaign": 4,
+      "elemental": 43,
+      "world": 18,
+      "remaster": 81,
+      "ultimate": 46
+    }
+  },
+  "unityPlayMode": {
+    "report": "qa/v082/unity-playmode-report.json",
+    "pass": true,
+    "liveTimeAndRelease": true,
+    "consoleErrors": 0,
+    "consoleWarnings": 0
+  },
+  "windows": {
+    "version": "0.8.2",
+    "buildResult": "Succeeded\nErrors: 0\nSize: 189700033",
+    "startupHeadless": true,
+    "aliveAfterSeconds": 10,
+    "startupErrors": [],
+    "log": "runtime\\v082\\windows-player.log",
+    "zip": "DenTinh-Windows-v0.8.2.zip",
+    "zipBytes": 41011378,
+    "files": 143,
+    "sha256": "bab83e8f4374c8b38bf88b0bdd9d7e7118a218ed93b8ab7f6d35a68867c516e5",
+    "pass": true
+  },
+  "meshAudits": [
+    {
+      "report": "design/blender/quanle/bake-report.json",
+      "frames": 156,
+      "triangles": 316368,
+      "pass": true,
+      "allFramesChecked": true
+    },
+    {
+      "report": "design/blender/quanle/beasts/bake-report.json",
+      "frames": 600,
+      "triangles": 515761,
+      "pass": true,
+      "allFramesChecked": true
+    },
+    {
+      "report": "design/blender/actors/bake-report.json",
+      "frames": 751,
+      "triangles": 1036601,
+      "pass": true,
+      "allFramesChecked": true
+    },
+    {
+      "report": "design/blender/thienvu/held-weapons/bake-report.json",
+      "frames": 28,
+      "triangles": 11968,
+      "pass": true,
+      "allFramesChecked": true
+    }
+  ],
+  "meshReviewViews": 8,
+  "scaleAndArmor": {
+    "pass": true,
+    "nativeHeight": {
+      "HoaVi": 43,
+      "Thiên Vũ": 42,
+      "Quân Lê · Q S": 43,
+      "Quân Lê · Q E": 43,
+      "Quân Lê · Q N": 40,
+      "Quân Lê · Q W": 43,
+      "An": 43,
+      "Linh": 43,
+      "NPC": 43
+    },
+    "displayScale": 2,
+    "anchor": [
+      32,
+      58
+    ],
+    "armorFramesPerView": 6,
+    "sharedTransform": true
+  },
+  "evidence": [
+    "design/blender/quanle/scale-and-q-verification.png",
+    "qa/v082/web-intro-contact.png",
+    "qa/v082/unity-intro-contact.png",
+    "qa/v082/mesh-review-contact.png",
+    "qa/v082/touch-390.png",
+    "qa/v082/touch-844.png"
+  ],
+  "limits": [
+    "Touch tested with browser emulation; no physical phone test.",
+    "Windows package startup tested headless; gameplay and visuals verified in Editor Play Mode.",
+    "Unity WebGL not tested; six continuation chapters remain Web-only."
+  ]
+}

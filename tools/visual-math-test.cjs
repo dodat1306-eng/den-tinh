@@ -20,7 +20,7 @@ function canvas(w=1280,h=720){const c=context();return{width:w,height:h,getConte
 global.document={createElement:()=>canvas(),querySelectorAll:()=>[]};
 global.Image=class{constructor(){this.complete=false;this.naturalWidth=0;this.decoding='async'}set src(v){this._src=v;this.complete=true;this.naturalWidth=this.naturalHeight=1254}};
 global.DTSettings={graphics:'high',reducedMotion:false};
-for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','shadow.js','render.js','visuals.js','scenery.js','assets/thienvu-pixel-v08.js','assets/thienvu-vfx-pixel.js','thienvu-pixel.js','elemental-visuals.js','ascension-visuals.js','assets/quanle-pixel-v08.js','assets/quanle-vfx-pixel.js','quanle-pixel.js'])if(fs.existsSync(path.join(project,f)))vm.runInThisContext(fs.readFileSync(path.join(project,f),'utf8'),{filename:f});
+for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','shadow.js','render.js','visuals.js','scenery.js','assets/thienvu-pixel-v08.js','assets/thienvu-vfx-pixel.js','thienvu-pixel.js','elemental-visuals.js','ascension-visuals.js','assets/quanle-pixel-v1.js','assets/quanle-vfx-pixel.js','quanle-pixel.js'])if(fs.existsSync(path.join(project,f)))vm.runInThisContext(fs.readFileSync(path.join(project,f),'utf8'),{filename:f});
 const results=[];
 function test(name,fn){try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(e){results.push({name,pass:false,error:e.stack});console.error('FAIL '+name+' '+e.stack)}}
 const Art=DTAscensionArt;
@@ -29,14 +29,14 @@ test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cel
   for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning']){
     const before=imageCalls.length;
     Art.drawSpriteHero(c,{x:100,y:100,facing:0,elementForm:element},hero,0);
-    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thienvu-pixel-v08.png','assets/quanle-pixel-v08.png'].includes(call.src));
+    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thienvu-pixel-v08.png','assets/quanle-pixel-v1.png'].includes(call.src));
     assert.equal(drawn.length,1,hero.id+' needs one body sprite');
     if(hero.id==='thienvu'){
       const cell=DTThienVuAtlas.forms[element].actions.idle.directions.E[0];
       assert.equal(drawn[0].src,'assets/thienvu-pixel-v08.png');
       assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
       assert.deepEqual(drawn[0].args.slice(-2),[128,128]);
-    }else if(hero.id==='quanle'){assert.equal(drawn[0].src,'assets/quanle-pixel-v08.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else{
+    }else if(hero.id==='quanle'){assert.equal(drawn[0].src,'assets/quanle-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else{
       assert.equal(drawn[0].src,'assets/heroes.png');
       assert.equal(drawn[0].args[0],0);
       assert.equal(drawn[0].args[1],['an','linh','kiet','hoavi'].indexOf(hero.id)*313.5);

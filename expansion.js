@@ -59,7 +59,7 @@
         const ok=super.skill(key);if(ok){this.tutorial.skills++;if(p.relics.cooling&&key!=='r')p.cd[key]*=.8}return ok;
       }
       if(this.paused||this.dead||!['q','e','r'].includes(key))return false;
-      if(key==='r'&&p.ult<100){this.emit('toast',{text:'Overclock cần đủ 100% năng lượng.'});return false}
+      if(key==='r'&&p.cd.r>0){this.emit('toast',{text:'Overclock cần đủ 100% năng lượng.'});return false}
       const cost=key==='q'?24:key==='e'?38:0;
       if(key!=='r'&&(p.mp<cost||p.cd[key]>0))return false;
       this.tutorial.skills++;p.mp-=cost;this.emit('sound',{name:key==='r'?'overclock':'skill'});
@@ -72,7 +72,7 @@
         this.activeEffects.push({type:'firewall',x:p.x,y:p.y,r:152,life:4,tick:0,damage:p.damage*.65,color:'#f4a0e8',follow:true});
         this.effect('circuit',p.x,p.y,'#f6a4ed',165,.8);
       }else{
-        p.ult=0;p.overclock=7;p.invulnerable=Math.max(1.2,p.invulnerable);p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.14);p.code=8;p.droneCd=0;
+        p.cd.r=this.effectiveRCd();p.ult=0;p.overclock=7;p.invulnerable=Math.max(1.2,p.invulnerable);p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.14);p.code=8;p.droneCd=0;
         this.clearBullets(p.x,p.y,620);this.effect('overclock',p.x,p.y,'#77ffed',360,1.4);this.shake=7;
       }
       return true;
@@ -155,7 +155,7 @@
         for(const e of this.world.enemies)if(e.alive&&dist(e,this.player)<650){const a=Math.atan2(e.homeY-e.y,e.homeX-e.x);if(dist(e,{x:e.homeX,y:e.homeY})>20)this.moveEntity(e,Math.cos(a)*e.speed*dt,Math.sin(a)*e.speed*dt)}return;
       }
       super.updateEnemies(dt);
-      for(const e of this.world.enemies)if(e.alive&&e.miniBoss&&dist(e,this.player)<600){e.extraCd=(e.extraCd||2)-dt;if(e.extraCd<=0){e.extraCd=e.hp<e.maxHp*.5?2.3:3.3;const a=Math.atan2(this.player.y-e.y,this.player.x-e.x);for(let i=-2;i<=2;i++)this.shoot(e.x,e.y,a+i*.23,250,13,'#ffc18e',{friendly:false,life:2.1});this.effect('warning',e.x,e.y,'#ffb575',45,.65)}}
+      for(const e of this.world.enemies)if(e.alive&&e.miniBoss&&dist(e,this.player)<600){e.extraCd=(e.extraCd||2)-dt*(this.player.ultIntro&&dist(e,this.player)<=520?.25:1);if(e.extraCd<=0){e.extraCd=e.hp<e.maxHp*.5?2.3:3.3;const a=Math.atan2(this.player.y-e.y,this.player.x-e.x);for(let i=-2;i<=2;i++)this.shoot(e.x,e.y,a+i*.23,250,13,'#ffc18e',{friendly:false,life:2.1});this.effect('warning',e.x,e.y,'#ffb575',45,.65)}}
     }
     updateBoss(e,dt){
       super.updateBoss(e,dt);

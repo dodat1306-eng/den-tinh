@@ -140,21 +140,29 @@ class Atlas:
     def pixels(self, key, images, fps=8, anchor=None):
         cells=self.cells(key,*images[0].size,len(images),fps,anchor)
         self.direct.extend(zip(cells,images)); return cells
-    def bake(self, directory, global_name, detached_parts=None):
+    def bake(self, directory, global_name, detached_parts=None, target_h=None, transforms=None):
         directory=Path(directory); directory.mkdir(parents=True,exist_ok=True)
         height=math.ceil((self.y+self.row)/16)*16; scene=self.scene; objects=[]
-        fit={}; lifts={}
+        fit={}; lifts={}; heights={}; idle_heights={}; transforms=transforms or {}
+        idle_cells={id(clip['cells'][0]) for name,clip in self.clips.items() if name.endswith('/idle') and name.split('/')[0].split('_')[-1] not in ('E','N','W')}
         for cell,model,key in self.items:
             low=(np.array(model.verts) @ np.array(UP)).min()
             lifts[key]=max(lifts.get(key,0),-2*PITCH-low)
+            heights[key]=max(heights.get(key,0),(np.array(model.verts) @ np.array(UP)).max()-low)
+            if id(cell) in idle_cells:idle_heights[key]=max(idle_heights.get(key,0),(np.array(model.verts) @ np.array(UP)).max()-low)
+        targets=target_h if isinstance(target_h,dict) else {key:target_h for key in heights}
         for cell,model,key in self.items:
             lift=UP*lifts[key]
             model.verts=[tuple(Vector(v)+lift) for v in model.verts]
             verts=np.array(model.verts); projected=verts @ np.array(UP)
-            scale=min(1,(cell['w']/2-3)*PITCH/max(.001,abs(verts[:,0]).max()),(cell['anchorY']-3)*PITCH/max(.001,projected.max()),(cell['h']-cell['anchorY']-3)*PITCH/max(.001,-projected.min()))
-            fit[key]=min(fit.get(key,1),scale)
+            scale=min((cell['w']/2-3)*PITCH/max(.001,abs(verts[:,0]).max()),(cell['anchorY']-3)*PITCH/max(.001,projected.max()),(cell['h']-cell['anchorY']-3)*PITCH/max(.001,-projected.min()))
+            desired=(targets[key]-2)*PITCH/idle_heights.get(key,heights[key]) if targets.get(key) else 1
+            fit[key]=min(fit.get(key,desired),scale,desired)
+        self.transforms={key:transforms.get(key,{'scale':fit[key],'lift':lifts[key]}) for key in fit}
         for cell,model,key in self.items:
-            if fit[key]<1:model.verts=[tuple(v*fit[key] for v in point) for point in model.verts]
+            metric=self.transforms[key]
+            model.verts=[tuple((Vector(point)+UP*(metric['lift']-lifts[key]))*metric['scale']) for point in model.verts]
+            cell['worldScale']=metric['scale']; cell['worldLift']=metric['lift']
         palettes=sorted({c for _,m,_ in self.items for c in m.colors}); mats=[material(c) for c in palettes]
         material_index={c:i for i,c in enumerate(palettes)}
         for i,(cell,model,key) in enumerate(self.items):
