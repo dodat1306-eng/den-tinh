@@ -11,7 +11,7 @@
 
 - `npm test` đạt, gồm 14/14 tình huống Quân Lê/Thiên Vũ mới. Các bộ HTTP, world pixel, chuyển động trình duyệt, Quân Lê và Thiên Vũ đạt. Build Web đóng gói 69 tệp theo allowlist.
 - C# đạt 17 bài cơ bản, 4 chiến dịch, 43 nguyên tố, 18 phá hủy, 58 remaster. Tám tệp Core/Runtime/Editor biên dịch với assembly Unity 6000.3.27f1, không lỗi/cảnh báo.
-- **Unity Windows chưa build/chạy được:** Editor trả mã 198 do không thấy giấy phép hợp lệ; Hub chờ người dùng chấp nhận Software License Terms và đăng nhập. Không có bản native trong release này. Touch/FPS trình duyệt dùng giả lập desktop, chưa đo điện thoại thật.
+- **Unity Windows đã build và chạy:** Editor nhận Unity Personal, xuất Windows x64 với 0 lỗi. Kiểm tra bản chạy thật: Q/E/R Quân Lê, 14 bóng thú tự chiến đấu, menu nguyên tố, golem và Quang Q. Script build xử lý môi trường thiếu `ALLUSERSPROFILE`. Gói Windows có trong Assets của release 0.8.1. WebGL/Editor Play Mode chưa kiểm tra; touch/FPS trình duyệt dùng giả lập desktop, chưa đo điện thoại thật.
 - Đã xem mesh bằng màu ngẫu nhiên và wireframe từ bốn góc. Sửa normals, mặt suy biến, mặt trùng và lỗi góc nhọn trong ảnh wire review. Audit chia lô kiểm tra từng frame, coi kiểm tra bị bỏ qua là lỗi. Giữ seam đỉnh độc lập, mặt khuất bên trong và chi tiết sáng tách rời vì runtime dùng PNG bake 2D; số tam giác từng object và từng cảnh báo được lưu trong các `bake-report.json`. Xem [báo cáo nghiệm thu hình](qa/v081-art-acceptance.json).
 
 ## Ảnh nghiệm thu
@@ -20,3 +20,5 @@
 - [Bảy vũ khí, mắt Quang và bốn đòn golem](design/blender/thienvu/thienvu-weapons-golem-preview.png).
 - [Bảy NPC và năm quái](design/blender/actors/npcs-vs-monsters-preview.png).
 - [Binh đoàn trong cảnh Web thật](qa/v081-legion.png).
+- [Binh đoàn trong bản Unity Windows](qa/v081-unity-legion.png).
+- [Thiên Vũ Hệ Quang trong Unity Windows](qa/v081-unity-light.png).

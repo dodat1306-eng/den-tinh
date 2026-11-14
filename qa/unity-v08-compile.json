@@ -1,6 +1,6 @@
 {
   "version": "0.8.1",
-  "checkedAt": "2026-11-14T03:21:30.941587+00:00",
+  "checkedAt": "2026-11-14T03:59:47.136157+00:00",
   "unityVersion": "6000.3.27f1",
   "compiler": "Unity bundled Roslyn with UnityEngine/UnityEditor modules and netstandard 2.1 reference assemblies",
   "apiCompilation": {
@@ -21,11 +21,35 @@
   },
   "editorBuild": {
     "attempted": true,
-    "exitCode": 198,
-    "pass": false,
-    "playerBuilt": false,
+    "exitCode": 0,
+    "pass": true,
+    "playerBuilt": true,
+    "playerRunVerified": true,
     "playModeVerified": false,
-    "reason": "No valid Unity Editor license found. Please activate your license. Unity Hub is waiting for user acceptance of Software License Terms.",
-    "log": "Unity/Logs/build-windows.log"
+    "errors": 0,
+    "bytes": 177506709,
+    "log": "Unity/Logs/build-windows.log",
+    "environmentFix": "Build-Unity.ps1 fills missing ALLUSERSPROFILE using CommonApplicationData; clean-missing-variable build passed."
+  },
+  "playerAcceptance": {
+    "pass": true,
+    "platform": "Windows x64",
+    "graphics": "Direct3D 12 / NVIDIA GeForce RTX 3050 Laptop GPU",
+    "method": "Built executable controlled through native UI; ultimate charge seeded in isolated runtime test copy. No shipped saves modified.",
+    "runtimeExceptionCount": 0,
+    "editorPlayModeTested": false,
+    "checks": [
+      "Vietnamese menu and new hero selection",
+      "Quan Le Q shadow armor",
+      "Quan Le E beast summon",
+      "Quan Le R fourteen autonomous beasts, observed four kills",
+      "Seven-element menu; Earth and Light body and held weapon rendering",
+      "Earth ultimate golem spawn",
+      "Light Q blink without a target"
+    ],
+    "screenshots": [
+      "qa/v081-unity-legion.png",
+      "qa/v081-unity-light.png"
+    ]
   }
 }

@@ -13,7 +13,8 @@ Runtime C# dùng camera trực giao và SpriteRenderer, không nhúng Web. Lõi 
 
 - Lõi C#: 17 bài cơ bản, 4 tình huống chiến dịch, 43 kiểm tra nguyên tố, 18 tình huống phá hủy và 58 kiểm tra remaster đều đạt.
 - Toàn bộ tám file Runtime/Core/Editor được biên dịch bằng Roslyn với assembly thật của Unity **6000.3.27f1**: không có lỗi hay cảnh báo. SHA-256 nguồn nằm trong `qa/unity-v08-compile.json`.
-- Editor batch build dừng mã **198**: `No valid Unity Editor license found. Please activate your license.` Unity Hub mới đang chờ người dùng chấp nhận **Software License Terms** rồi đăng nhập tài khoản có giấy phép. Chưa có bản Windows/WebGL hoặc kiểm tra Play Mode; biên dịch API không thay thế build và chạy game thật.
+- Unity Personal đã được Editor nhận. Build Windows x64 thành công, **0 lỗi**; bản chạy thật đã kiểm tra menu, Q/E/R Quân Lê với 14 bóng thú tự chiến đấu, menu nguyên tố, golem và Quang Q. Báo cáo và ảnh nằm trong `qa/unity-v08-compile.json`. WebGL và Editor Play Mode chưa kiểm tra.
+- Script build tự bổ sung `ALLUSERSPROFILE` khi môi trường thiếu biến này, tránh lỗi Package Manager `The "path" argument must be of type string. Received undefined`. Đã build lại thành công với biến này bị bỏ khỏi môi trường đầu vào.
 - Kết quả Chrome và cảm ứng giả lập chỉ xác nhận bản Web, không xác nhận giao diện/cảm ứng Unity.
 
 ## Mở và build
@@ -21,6 +22,8 @@ Runtime C# dùng camera trực giao và SpriteRenderer, không nhúng Web. Lõi 
 1. Dùng Unity **6.3 LTS 6000.3.27f1**. Editor được cài tại `E:\Tools\Unity\6000.3.27f1`. Kích hoạt giấy phép hợp lệ qua Unity Hub trước khi chạy Editor.
 2. Thêm thư mục `E:\Games\DenTinh\Unity` vào Hub rồi mở. Menu **Đèn Tinh → Chuẩn bị scene và cấu hình** tạo scene nếu chưa có; bấm Play.
 3. Chọn **Đèn Tinh → Build Windows 64-bit** hoặc chạy `BUILD_UNITY.bat`. Kết quả tại `Unity/Builds/Windows/DenTinh.exe`. Windows dùng Mono, không cần Visual Studio/IL2CPP. WebGL cần cài thêm Web Build Support đúng phiên bản.
+
+Bản Windows 0.8.1 có tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.8.1). Giải nén toàn bộ rồi mở `DenTinh.exe`; giữ các thư mục và DLL đi kèm.
 
 Kiểm tra lõi độc lập Editor:
 
