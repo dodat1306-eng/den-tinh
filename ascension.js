@@ -26,7 +26,7 @@
     passiveNodeText(){return {an:'Mỗi bậc: tích Tàn Lửa nhanh hơn; đèn hồi thêm 0,5 máu/giây.',linh:'Mỗi bậc: cần ít hơn 5 bước cho một Nhịp Trúc; dấu ghim tồn tại lâu hơn.',kiet:'Mỗi bậc: đòn cường hóa thêm 10 khiên; chiến tuyến chặn đạn hiệu quả hơn.',hoavi:'Mỗi bậc: biên dịch lại Q mạnh thêm 15%; hồi quy hồi thêm 4% máu tối đa.',thienvu:'Mỗi bậc: Hòa Âm hồi thêm 5 linh lực và 5 khiên; phản ứng tăng 12% sát thương.'}[this.hero.id]}
     get skillDescriptions(){
       if(!this.isElemental)return M.kits[this.hero.id];const f=this.element;
-      const desc={lightning:['Lao theo đường ngắm rồi nối sét qua ba mục tiêu.','Dịch chuyển ngắn, để lại ấn sét đón các đòn sau.','Bảy sét đánh lần lượt theo mục tiêu, có báo trước.'],wind:['Ba phong liêm quay về, cắt cả lượt đi lẫn lượt về.','Phong nhãn xóa đạn và gom kẻ gần đó.','Lốc di động cuốn theo hướng ngắm và kéo địch.'],earth:['Dựng năm địa trụ lần lượt dọc một đường.','Dựng tuyến đá chắn đạn và nhận giáp.','Hai vách núi khép vào đường ngắm.'],fire:['Hỏa xà đuổi mục tiêu gần đường ngắm.','Tạo ba hạt lửa quanh thân để kích nổ bằng đòn đánh.','Một đường hỏa long thiêu đốt theo từng nhịp.'],ice:['Tia băng xuyên, vỡ vụn khi gặp địch đang đóng băng.','Đặt gương băng phản đạn tại điểm ngắm.','Băng vực nở từ tâm ra ngoài, đông cứng từng đợt.'],nature:['Dây leo bám mục tiêu, trói và hút máu nhẹ.','Gieo vườn hồi phục; địch bước vào bị rễ giữ lại.','Gọi rễ từ vị trí các địch bị độc, tạo mạng dây leo.'],light:['Ngắm chuẩn rồi phóng một tia sáng dài xuyên hàng.','Dựng quang kính phản các đạn chạm vào.','Tích quang rồi quét tia theo hướng ngắm.']}[f.id];
+      const desc={lightning:['Lao theo đường ngắm rồi nối sét qua ba mục tiêu.','Dịch chuyển ngắn, để lại ấn sét đón các đòn sau.','Bảy sét đánh lần lượt theo mục tiêu, có báo trước.'],wind:['Ba phong liêm quay về, cắt cả lượt đi lẫn lượt về.','Phong nhãn xóa đạn và gom kẻ gần đó.','Lốc di động cuốn theo hướng ngắm và kéo địch.'],earth:['Dựng năm địa trụ lần lượt dọc một đường.','Dựng tuyến đá chắn đạn và nhận giáp.','Hai vách núi khép vào đường ngắm.'],fire:['Hỏa xà đuổi mục tiêu gần đường ngắm.','Tạo ba hạt lửa quanh thân để kích nổ bằng đòn đánh.','Một đường hỏa long thiêu đốt theo từng nhịp.'],ice:['Tia băng xuyên, vỡ vụn khi gặp địch đang đóng băng.','Đặt gương băng phản đạn tại điểm ngắm.','Băng vực nở từ tâm ra ngoài, đông cứng từng đợt.'],nature:['Dây leo bám mục tiêu, trói và hút máu nhẹ.','Gieo vườn hồi phục; địch bước vào bị rễ giữ lại.','Gọi rễ từ vị trí các địch bị độc, tạo mạng dây leo.'],light:['Dịch chuyển tức thời ra sau lưng địch trong 520 bước và chém chí mạng; không có địch thì nhảy 280 bước theo hướng ngắm.','Dựng quang kính phản các đạn chạm vào.','Tích quang rồi quét tia theo hướng ngắm.']}[f.id];
       return Object.fromEntries(['q','e','r'].map((k,i)=>[k,{name:f[k],desc:desc[i],cost:i===0?24:i===1?34:0,cooldown:i===0?6:i===1?10:0}]));
     }
     learnSkill(id){if(!Object.hasOwn(this.skillRanks,id)||this.skillPoints<1||this.skillRanks[id]>=3)return false;this.skillPoints--;this.skillRanks[id]++;this.emit('sound',{name:'level'});this.emit('toast',{text:'Đã học '+this.skillTree.find(n=>n.id===id).name+' · bậc '+this.skillRanks[id]+'/3',reward:true});return true}
@@ -45,7 +45,7 @@
     }
     readyRelic(id,cooldown){if(this.relicCooldowns[id]>0)return false;this.relicCooldowns[id]=cooldown;return true}
     addField(kind,x,y,extra={}){const f={id:'mythic-'+(++this.fieldSerial),kind,x,y,r:100,life:4,tick:0,angle:this.player.facing,...extra};this.mythicFields.push(f);if(this.mythicFields.length>28)this.mythicFields.shift();return f}
-    beginAction(key,angle,element){const windup=key==='attack'?.03:key==='r'?.32:this.hero.id==='linh'&&key==='q'?.25:key==='e'?.14:.16,duration=key==='attack'?.32:key==='r'?1.05:key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
+    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?.32:this.hero.id==='linh'&&key==='q'?.25:key==='e'?.14:.16,duration=key==='attack'?.32:key==='r'?1.05:key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
     shoot(x,y,a,speed,damage,color,opts={}){super.shoot(x,y,a,speed,damage,color,opts);const b=this.projectiles[this.projectiles.length-1];if(b)Object.assign(b,{signature:!!opts.signature,returning:!!opts.returning,age:0,sourceSkill:opts.sourceSkill||'',echo:!!opts.echo})}
     fire(){
       const p=this.player;if(this.paused||this.dead||p.cd.fire>0||p.dashTime>0||p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.release+.12)return false;
@@ -53,6 +53,7 @@
       p.cd.fire=p.fireRate*(p.overclock>0?.72:1);this.tutorial.shots++;p.recoil=.12;s.attackCount++;
       if(!p.action||p.action.key==='attack')this.beginAction('attack',p.facing,this.isElemental?this.element.id:undefined);
       if(id==='thienvu'){const start=this.projectiles.length;this.elementPrimary(p,this.element.id,p.damage*scale,true);for(const b of this.projectiles.slice(start))b.signature=true}
+      else if(id==='quanle'){root.DTShadow.primary(this,p.damage*scale)}
       else if(id==='kiet'){
         this.lineHit(p,{x:p.x+Math.cos(p.facing)*135,y:p.y+Math.sin(p.facing)*135},24,p.damage*1.3*scale,'lightning',true);
         this.effect('mythic-spear',p.x,p.y,this.signature.color,135,.21,{angle:p.facing});s.thunder=Math.min(5,s.thunder+1);
@@ -78,7 +79,7 @@
       p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.aimAngle,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
       const empowered=key==='q'&&p.relics.cinderella&&(this.relicCounters.cinderella||0)>=3;if(empowered){this.relicCounters.cinderella=0;p.mp=Math.min(p.maxMp,p.mp+10)}
       const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
-      this.castQueue.push({type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)});
+      const cast={type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)};if(windup===0)this.releaseCast(cast);else this.castQueue.push(cast);
       if(pixelOrigin&&p.code>=4)this.effect('choreo-code-wait',p.x,p.y,'#1fc8db',64,windup+.35,{hero:'hoavi',angle:a});
       this.tutorial.skills++;this.onRelicCast(key,cost,target);this.emit('sound',{name:key==='r'?'ultimate':'skill'});this.effect('mythic-rune',p.x,p.y,this.hero.color,key==='r'?115:48,windup+.1,{key,angle:a});return true;
     }
@@ -106,7 +107,7 @@
       if(element==='fire'){e.burn=3;e.burnTick=0}if(element==='ice'){e.slow=2;e.frozen=Math.max(e.frozen||0,.65)}if(element==='nature'){e.rooted=e.type==='boss'||e.sagaBoss?.3:1.25;e.poison=3;e.poisonPower=p.damage*.17}if(element==='lightning')e.slow=Math.max(e.slow||0,1);
       if(charge&&p.relics.hermes&&this.readyRelic('hermes',.8)){p.cd.dash=Math.max(0,p.cd.dash-.35);p.swiftTime=1}
     }
-    releaseCast(c){
+    releaseCast(c){if(this.hero.id==='quanle')return root.DTShadow.release(this,c);
       const p=this.player,id=this.hero.id,key=c.key,a=c.angle,power=p.damage*c.power,s=this.passiveState,t=c.target,charge=key!=='r',origin={x:p.x,y:p.y};
       if(id==='thienvu'){
         this.castElement(c.element,key,p,c.power,charge,t);

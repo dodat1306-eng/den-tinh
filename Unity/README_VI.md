@@ -1,19 +1,19 @@
-# Đèn Tinh 0.8 — dự án Unity 2D
+# Đèn Tinh 0.8.1 — dự án Unity 2D
 
 Runtime C# dùng camera trực giao và SpriteRenderer, không nhúng Web. Lõi mô phỏng nằm trong `Assets/Scripts/Core`; dữ liệu nhân vật và di vật xuất từ catalog chung bằng `tools/export-unity-content.cjs`.
 
 ## Nội dung 0.8
 
-- Năm nhân vật, pháp khí riêng và cây kỹ năng. Thiên Vũ có bảy dạng, phân thân 3/5/7 và triệu hồi golem/treant; không có co-op.
+- Quân Lê thay Kiệt, giữ tương thích bản lưu cũ: Q Hắc Giáp, E từ xác quái/cây, 22 bóng thú, R 14 đồng đội trong 24 giây. Thiên Vũ có bảy vũ khí riêng, bốn dạng cận chiến, Quang Q dịch chuyển sau lưng địch; golem tự dùng Đấm/Đập/Giậm/Quăng. Bảy NPC có hình và hội thoại riêng.
 - Atlas môi trường/actors giống hệt bản Web: terrain ghép tile, cây/đá/kiến trúc, quái hoạt ảnh, NPC và cáo. Texture dùng Point filtering, alpha nhị phân, anchor riêng; camera căn lưới để mỗi texel hiện 2 × 2 pixel.
 - Vật thể có bốn cấp phá hủy, cháy lan, đóng băng/vỡ băng, chém đổ, tro tung bụi và vết tích mặt đất. Bản lưu giữ trạng thái và timer; đọc được bản lưu cũ.
 - Bộ hình bảy boss có trong atlas chung; chiến dịch sáu chương tiếp nối hiện chỉ có ở Web.
 
 ## Trạng thái kiểm tra
 
-- Lõi C#: 17 bài cơ bản, 4 tình huống chiến dịch, 43 kiểm tra nguyên tố và 18 tình huống phá hủy đều đạt.
-- Toàn bộ bảy file Runtime/Core/Editor được biên dịch bằng Roslyn với assembly thật của Unity **6000.3.27f1**: không có lỗi. Có một cảnh báo trường `scroll` cũ không dùng.
-- Editor đã khởi chạy ở batch mode nhưng build dừng với mã **198**: `No valid Unity Editor license found. Please activate your license.` Chưa có bản Windows/WebGL hay kiểm tra Play Mode; cần người sở hữu đăng nhập và kích hoạt giấy phép trong Hub.
+- Lõi C#: 17 bài cơ bản, 4 tình huống chiến dịch, 43 kiểm tra nguyên tố, 18 tình huống phá hủy và 58 kiểm tra remaster đều đạt.
+- Toàn bộ tám file Runtime/Core/Editor được biên dịch bằng Roslyn với assembly thật của Unity **6000.3.27f1**: không có lỗi hay cảnh báo. SHA-256 nguồn nằm trong `qa/unity-v08-compile.json`.
+- Editor batch build dừng mã **198**: `No valid Unity Editor license found. Please activate your license.` Unity Hub mới đang chờ người dùng chấp nhận **Software License Terms** rồi đăng nhập tài khoản có giấy phép. Chưa có bản Windows/WebGL hoặc kiểm tra Play Mode; biên dịch API không thay thế build và chạy game thật.
 - Kết quả Chrome và cảm ứng giả lập chỉ xác nhận bản Web, không xác nhận giao diện/cảm ứng Unity.
 
 ## Mở và build

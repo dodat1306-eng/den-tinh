@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-11-14T03:02:19.805Z",
+  "passed": 14,
+  "total": 14,
+  "tests": [
+    {
+      "name": "Canonical Quân Lê keeps old saves and exposes exactly 22 distinct species",
+      "pass": true
+    },
+    {
+      "name": "Q grants instant bounded shield, 35% damage reduction, counter and healing tendrils",
+      "pass": true
+    },
+    {
+      "name": "Q speed boosts only active duration and pause freezes armor",
+      "pass": true
+    },
+    {
+      "name": "Enemy death and six destroyed tree types create one 20 second soul each",
+      "pass": true
+    },
+    {
+      "name": "E chooses nearest corpse, consumes it, and tree souls yield wood variants",
+      "pass": true
+    },
+    {
+      "name": "E seeded random reaches every species and refreshes oldest unit at six",
+      "pass": true
+    },
+    {
+      "name": "R consumes all nearby souls, creates 14 diverse autonomous bodies and lasts 24 seconds",
+      "pass": true
+    },
+    {
+      "name": "Idle legion holds formation with open space around hero",
+      "pass": true
+    },
+    {
+      "name": "All species attack; venom, webs, fear, drain and terrain have real effects",
+      "pass": true
+    },
+    {
+      "name": "Army saves validate IDs, finite values, caps and preserve old alias",
+      "pass": true
+    },
+    {
+      "name": "Four melee forms never create gun bullets and third hits retain special control",
+      "pass": true
+    },
+    {
+      "name": "Light Q teleports immediately behind target within 520, crits and never beams",
+      "pass": true
+    },
+    {
+      "name": "Golem chooses all four attacks and throws elites with landing damage and craters",
+      "pass": true
+    },
+    {
+      "name": "Mandatory atlas contract contains 24 colors, one left earring, 22 animals, seven weapons and seven people",
+      "pass": true
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   'use strict';
   const Base=root.DTGame,D=root.DTWorld,C=root.DTContent,TAU=Math.PI*2;
   const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const initial={an:'lantern',linh:'bamboo',kiet:'thunder',hoavi:'terminal'};
+  const initial={an:'lantern',linh:'bamboo',quanle:'shadow-crescent',hoavi:'terminal'};
   const tutorial=[['Bước chân đầu tiên','Di chuyển bằng WASD hoặc cần điều khiển bên trái.'],['Thắp một tia lửa','Giữ chuột trái hoặc cần ngắm bên phải để bắn.'],['Lướt qua màn sương','Nhấn SPACE hoặc nút Lướt để né.'],['Thử sức mạnh riêng','Dùng Q hoặc E. HoaVi có thể dựng Firewall.'],['Món quà lên đường','Đến chiếc rương bên phải và nhấn F để mở.']];
   class ExpandedGame extends Base {
     constructor(hero='an',seed){

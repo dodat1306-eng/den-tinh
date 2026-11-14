@@ -1,5 +1,5 @@
-PASS hero=an seals=3 victory=true deaths=0 level=6 combatSeconds=63 kills=83
-PASS hero=linh seals=3 victory=true deaths=0 level=5 combatSeconds=57 kills=77
-PASS hero=kiet seals=3 victory=true deaths=0 level=6 combatSeconds=62 kills=87
-PASS hero=hoavi seals=3 victory=true deaths=0 level=5 combatSeconds=66 kills=76
+﻿PASS hero=an seals=3 victory=true deaths=0 level=6 combatSeconds=58 kills=88
+PASS hero=linh seals=3 victory=true deaths=0 level=5 combatSeconds=51 kills=73
+PASS hero=quanle seals=3 victory=true deaths=0 level=5 combatSeconds=46 kills=65
+PASS hero=hoavi seals=3 victory=true deaths=0 level=5 combatSeconds=50 kills=73
 4/4 C# combat campaigns passed. Combat only: relocation between arenas excludes travel time; normal attacks, skills, healing and respawn only.

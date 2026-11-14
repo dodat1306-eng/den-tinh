@@ -1,0 +1,304 @@
+[
+  {
+    "group": "quanle",
+    "mode": "random",
+    "keys": [
+      "S/idle",
+      "E/idle",
+      "N/idle",
+      "W/idle"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-random-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-random-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-random-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-random-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-random-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "quanle",
+    "mode": "wire",
+    "keys": [
+      "S/idle",
+      "E/idle",
+      "N/idle",
+      "W/idle"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-wire-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-wire-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-wire-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-wire-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\quanle-wire-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "beasts",
+    "mode": "random",
+    "keys": [
+      "shadow_wolf/walk",
+      "shadow_bear/walk",
+      "shadow_eagle/walk",
+      "shadow_tiger/walk",
+      "shadow_panther/walk",
+      "shadow_lion/walk",
+      "shadow_gorilla/walk",
+      "shadow_rhino/walk",
+      "shadow_elephant/walk",
+      "shadow_stag/walk",
+      "shadow_boar/walk",
+      "shadow_cobra/walk",
+      "shadow_scorpion/walk",
+      "shadow_spider/walk",
+      "shadow_croc/walk",
+      "shadow_shark/walk",
+      "shadow_bat/walk",
+      "shadow_falcon/walk",
+      "shadow_mantis/walk",
+      "shadow_crab/walk",
+      "shadow_treant/walk",
+      "shadow_dragon/walk",
+      "shadow_vine_hydra/walk",
+      "shadow_thorn_stalker/walk",
+      "shadow_armor",
+      "shadow_tendrils",
+      "shadow_portal",
+      "shadow_legion",
+      "shadow_crescent",
+      "shadow_slash",
+      "shadow_soul",
+      "shadow_counter",
+      "shadow_web",
+      "shadow_roar",
+      "shadow_roots",
+      "shadow_darkfire",
+      "shadow_impact"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-random-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-random-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-random-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-random-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-random-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "beasts",
+    "mode": "wire",
+    "keys": [
+      "shadow_wolf/walk",
+      "shadow_bear/walk",
+      "shadow_eagle/walk",
+      "shadow_tiger/walk",
+      "shadow_panther/walk",
+      "shadow_lion/walk",
+      "shadow_gorilla/walk",
+      "shadow_rhino/walk",
+      "shadow_elephant/walk",
+      "shadow_stag/walk",
+      "shadow_boar/walk",
+      "shadow_cobra/walk",
+      "shadow_scorpion/walk",
+      "shadow_spider/walk",
+      "shadow_croc/walk",
+      "shadow_shark/walk",
+      "shadow_bat/walk",
+      "shadow_falcon/walk",
+      "shadow_mantis/walk",
+      "shadow_crab/walk",
+      "shadow_treant/walk",
+      "shadow_dragon/walk",
+      "shadow_vine_hydra/walk",
+      "shadow_thorn_stalker/walk",
+      "shadow_armor",
+      "shadow_tendrils",
+      "shadow_portal",
+      "shadow_legion",
+      "shadow_crescent",
+      "shadow_slash",
+      "shadow_soul",
+      "shadow_counter",
+      "shadow_web",
+      "shadow_roar",
+      "shadow_roots",
+      "shadow_darkfire",
+      "shadow_impact"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-wire-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-wire-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-wire-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-wire-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\quanle\\beasts\\beasts-wire-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "actors",
+    "mode": "random",
+    "keys": [
+      "elder/idle",
+      "smith/idle",
+      "ferryman/idle",
+      "mirror_maiden/idle",
+      "bell_keeper/idle",
+      "sun_child/idle",
+      "bronze_pilot/idle",
+      "slime/idle",
+      "boar/idle",
+      "wisp/idle",
+      "archer/idle",
+      "shade/idle",
+      "boss/idle",
+      "boss_hotinh/idle",
+      "boss_thietdieu/idle",
+      "golem/punch",
+      "golem/smash",
+      "golem/stomp",
+      "golem/throw"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-random-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-random-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-random-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-random-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-random-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "actors",
+    "mode": "wire",
+    "keys": [
+      "elder/idle",
+      "smith/idle",
+      "ferryman/idle",
+      "mirror_maiden/idle",
+      "bell_keeper/idle",
+      "sun_child/idle",
+      "bronze_pilot/idle",
+      "slime/idle",
+      "boar/idle",
+      "wisp/idle",
+      "archer/idle",
+      "shade/idle",
+      "boss/idle",
+      "boss_hotinh/idle",
+      "boss_thietdieu/idle",
+      "golem/punch",
+      "golem/smash",
+      "golem/stomp",
+      "golem/throw"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-wire-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-wire-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-wire-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-wire-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\actors\\actors-wire-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "weapons",
+    "mode": "random",
+    "keys": [
+      "held_lightning_sword",
+      "held_wind_fan",
+      "held_earth_gauntlets",
+      "held_ice_hammer",
+      "held_fire_chakrams",
+      "held_nature_whip",
+      "held_light_halo"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-random-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-random-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-random-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-random-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-random-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  },
+  {
+    "group": "weapons",
+    "mode": "wire",
+    "keys": [
+      "held_lightning_sword",
+      "held_wind_fan",
+      "held_earth_gauntlets",
+      "held_ice_hammer",
+      "held_fire_chakrams",
+      "held_nature_whip",
+      "held_light_halo"
+    ],
+    "ok": true,
+    "sheet": "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-wire-review.png",
+    "views": [
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-wire-review_front.png",
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-wire-review_right.png",
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-wire-review_back.png",
+      "E:\\Games\\DenTinh\\design\\blender\\thienvu\\held-weapons\\weapons-wire-review_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ]
+  }
+]

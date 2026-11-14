@@ -6,7 +6,7 @@ if(-not(Test-Path -LiteralPath $coreCompiler)){throw 'Can .NET Framework C# comp
 Push-Location -LiteralPath $gameRoot
 try {
   New-Item -ItemType Directory -Path 'qa' -Force | Out-Null
-  $coreSources=@('Unity\Assets\Scripts\Core\Definitions.cs','Unity\Assets\Scripts\Core\Simulation.cs','Unity\Assets\Scripts\Core\CatalogData.cs','Unity\Assets\Scripts\Core\ElementalCombat.cs')
+  $coreSources=@('Unity\Assets\Scripts\Core\Definitions.cs','Unity\Assets\Scripts\Core\Simulation.cs','Unity\Assets\Scripts\Core\CatalogData.cs','Unity\Assets\Scripts\Core\ElementalCombat.cs','Unity\Assets\Scripts\Core\ShadowCombat.cs')
   & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityCoreTests.exe $coreSources 'Unity\Tests\SimulationTests.cs'
   if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
   $coreOutput=& '.\qa\UnityCoreTests.exe';$coreOutput | Out-File -LiteralPath 'qa\unity-core-tests.txt' -Encoding utf8;$coreOutput
@@ -22,5 +22,9 @@ try {
   & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityWorldTests.exe $coreSources 'Unity\Tests\WorldDestructionTests.cs'
   if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
   $worldOutput=& '.\qa\UnityWorldTests.exe';$worldOutput | Out-File -LiteralPath 'qa\unity-world-tests.txt' -Encoding utf8;$worldOutput
+  if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+  & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityShadowTests.exe $coreSources 'Unity\Tests\ShadowTests.cs'
+  if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+  $shadowOutput=& '.\qa\UnityShadowTests.exe';$shadowOutput | Out-File -LiteralPath 'qa\unity-shadow-tests.txt' -Encoding utf8;$shadowOutput
   exit $LASTEXITCODE
 } finally { Pop-Location }

@@ -1,0 +1,44 @@
+﻿PASS Original catalog preserved; Thiên Vũ and seven elements exported
+PASS Diagonal movement keeps both axes; horizontal body and aim independent
+PASS Idle retains last body direction
+PASS Reversal responds within one tick
+PASS Freeze blocks movement and attacks for full two seconds
+PASS Freeze releases after two seconds
+PASS Root blocks walking and shade teleport for 2.5 seconds
+PASS Root releases movement
+PASS Boss freeze has same two second hard stop
+PASS lightning q performs combat behavior
+PASS lightning e performs combat behavior
+PASS lightning r performs combat behavior
+PASS wind q performs combat behavior
+PASS wind e performs combat behavior
+PASS wind r performs combat behavior
+PASS earth q performs combat behavior
+PASS earth e performs combat behavior
+PASS earth r performs combat behavior
+PASS fire q performs combat behavior
+PASS fire e performs combat behavior
+PASS fire r performs combat behavior
+PASS ice q performs combat behavior
+PASS ice e performs combat behavior
+PASS ice r performs combat behavior
+PASS nature q performs combat behavior
+PASS nature e performs combat behavior
+PASS nature r performs combat behavior
+PASS light q performs combat behavior
+PASS light e performs combat behavior
+PASS light r performs combat behavior
+PASS Golem 18s and treants 30s lifetimes
+PASS Golem expires before treants
+PASS Treants expire at 30s
+PASS Seven forms include player and six independent NPCs
+PASS NPCs spread targets
+PASS NPC escapes exact danger center without zero vector
+PASS NPC Q E R do not consume player mana or recharge ultimate
+PASS Save keeps NPC cooldowns, drops pending casts
+PASS Teleport cancels delayed owned strikes
+PASS Respawn clears combat entities
+PASS Light backstab guarantees one critical and restores crit 0
+PASS Light backstab guarantees one critical and restores crit 1
+PASS Shrine travel clears owned combat entities
+43 elemental checks passed

@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-for(const f of ['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+for(const f of ['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js','shadow.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
 function game(id='thienvu'){const g=new DTGame(id,76119);g.start();g.skipTutorial();g.world.enemies=[];g.world.props=[];g.world.collision=()=>false;g.player.x=1400;g.player.y=1400;g.player.crit=0;g.input={dx:0,dy:0,aimX:1700,aimY:1400,fire:false};return g}
 function enemy(g,x=1600,y=1400,type='slime'){const e={id:'npc-test-'+g.world.enemies.length,type,x,y,homeX:x,homeY:y,r:15,hp:1e8,maxHp:1e8,damage:0,speed:0,xp:0,gold:0,alive:true,cool:0,hit:0,phase:0,timer:0,knockX:0,knockY:0};g.world.enemies.push(e);return e}
 let checks=0;function check(name,fn){fn();checks++;console.log('PASS '+name)}

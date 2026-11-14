@@ -63,15 +63,20 @@
       p.cd.fire=.28*(p.fireRate/hero.fireRate);s.ammo--;p.recoil=.12;this.tutorial.shots++;
       this.elementPrimary(p,this.element.id,p.damage*(1+(s.level-1)*.18),true);this.emit('sound',{name:'element-'+this.element.id});return true;
     }
-    elementPrimary(origin,id,power,charge=false,aim){
-      id=byId(id).id;const f=byId(id),a=aim?Math.atan2(aim.y-origin.y,aim.x-origin.x):origin.aimAngle??origin.facing??0,opts={element:id,ally:origin!==this.player,owner:origin===this.player?'player':origin.id,charge,life:1.1,pierce:id==='light'?3:id==='wind'?1:0,kind:'element-'+id,r:id==='earth'?8:5,returning:id==='fire'};
+    elementPrimary(origin,id,power,charge=true,aim){
+      const f=byId(id),a=aim?Math.atan2(aim.y-origin.y,aim.x-origin.x):origin.aimAngle??origin.facing??0;
       if(['lightning','earth','ice','nature'].includes(id)){
-        const reach=id==='nature'?165:id==='earth'?95:110;origin.comboIndex=((origin.comboIndex||0)+1)%3;
-        for(const e of this.world.enemies)if(e.alive&&dist(e,origin)<reach+e.r&&Math.cos(Math.atan2(e.y-origin.y,e.x-origin.x)-a)>.25){this.damageEnemy(e,power*(id==='earth'?1.4:id==='lightning'?1.05:1.15),charge);this.applyElementStatus(e,id,power);if(id==='earth'){e.knockX=Math.cos(a)*95;e.knockY=Math.sin(a)*95}}
-        this.effect('element-weapon',origin.x,origin.y,f.color,reach,.22,{element:id,angle:a,combo:origin.comboIndex});
+        origin.comboIndex=((origin.comboIndex??-1)+1)%3;const combo=origin.comboIndex,reach={lightning:115,earth:95,ice:130,nature:175}[id],half={lightning:135,earth:120,ice:155,nature:85}[id]*Math.PI/360;
+        if(!origin.moving)this.moveEntity(origin,Math.cos(a)*18,Math.sin(a)*18);
+        const inside=e=>{const d=dist(e,origin),delta=Math.atan2(Math.sin(Math.atan2(e.y-origin.y,e.x-origin.x)-a),Math.cos(Math.atan2(e.y-origin.y,e.x-origin.x)-a));return d<=reach+(e.r||0)&&Math.abs(delta)<=half};
+        const hits=[];for(const e of this.world.enemies)if(e.alive&&inside(e)){hits.push(e);this.damageEnemy(e,power*(id==='earth'?1.6:id==='ice'?1.45:1.2),charge);this.applyElementStatus(e,id,power,id==='ice'&&combo===2);if(id==='earth'){e.knockX=Math.cos(a)*170;e.knockY=Math.sin(a)*170}if(id==='nature'){e.knockX=-Math.cos(a)*65;e.knockY=-Math.sin(a)*65}}
+        if(id==='lightning'&&hits.length){let from=hits[0];for(const e of this.world.enemies.filter(e=>e.alive&&!hits.includes(e)&&dist(e,from)<175).sort((x,y)=>dist(x,from)-dist(y,from)).slice(0,2)){this.damageEnemy(e,power*.65,charge);this.effect('lightning',from.x,from.y,f.color,0,.22,{tx:e.x,ty:e.y});from=e}}
+        const destruction=root.DTDestruction;if(destruction){for(const prop of destruction.near(this.world,origin.x,origin.y,reach))if(inside(prop))destruction.hit(this,prop,id==='lightning'||id==='nature'?'wind':id,Math.max(45,power));if(id==='earth'&&combo===2)destruction.react(this,'earth',origin.x+Math.cos(a)*65,origin.y+Math.sin(a)*65,125,110);if(id==='ice'&&combo===2)destruction.react(this,'ice',origin.x+Math.cos(a)*65,origin.y+Math.sin(a)*65,145,power)}
+        if(combo===2&&id==='earth')this.elementArea(origin.x,origin.y,125,power*1.25,'earth',charge,true,150);
+        this.effect('element-weapon',origin.x,origin.y,f.color,reach,.28,{element:id,angle:a,combo,clip:'weapon_swing_'+id});return;
       }
-      const count=(id==='wind'?3:id==='ice'||id==='fire'?2:1)+(charge&&this.player.relics.split?1:0);
-      for(let i=0;i<count;i++)this.shoot(origin.x,origin.y,a+(i-(count-1)/2)*.12,id==='light'?1150:id==='earth'?560:810,power*(count>1?.58:1.05),f.color,{...opts,pierce:opts.pierce+(charge&&this.player.relics.pierce?2:0)});
+      const count=(id==='wind'?3:id==='fire'?2:1)+(charge&&this.player.relics.split?1:0),opts={element:id,kind:'element-'+id,owner:origin.id||'player',charge,pierce:id==='light'?2:0,life:1.25,r:id==='light'?4:6};
+      for(let i=0;i<count;i++)this.shoot(origin.x,origin.y,a+(i-(count-1)/2)*.12,id==='light'?1150:810,power*(count>1?.58:1.05),f.color,opts);
       this.effect('element-muzzle',origin.x,origin.y-22,f.color,28,.16,{element:id,angle:a});
       if(id==='fire')this.shoot(origin.x,origin.y,a,650,power*.65,f.color,{...opts,returning:false,sourceSkill:'fireball',r:7});
     }
@@ -140,10 +145,14 @@
           area(t,165,2.7,true);field('vine',{x:t.x,y:t.y,r:165,life:2.5,power:power*.35,behavior:'root'});
         }else if(id==='fire')field('breath',{life:1.1,r:210,follow:true,power:power*.75,tick:0,behavior:'fire_breath'});
         else{
-          const enemy=this.world.enemies.filter(e=>e.alive&&dist(e,origin)<=340).sort((x,y)=>dist(x,t)-dist(y,t))[0];
-          if(enemy){const old={x:origin.x,y:origin.y},ea=Number.isFinite(enemy.facing)?enemy.facing:Math.atan2(p.y-enemy.y,p.x-enemy.x),spot=this.elementSafeSpot(enemy.x-Math.cos(ea)*65,enemy.y-Math.sin(ea)*65);
-            if(spot){origin.x=spot.x;origin.y=spot.y;origin.invulnerable=Math.max(origin.invulnerable||0,.25);origin.motionEpoch=(origin.motionEpoch||0)+1;this.effect('element-afterimage',old.x,old.y,f.color,0,.26,{element:id,angle:a});this.effect('element-mesh',old.x,old.y,f.color,0,.08,{element:id,clip:'solar_beam',tx:origin.x,ty:origin.y});const crit=p.crit;try{p.crit=1;this.damageEnemy(enemy,power*3,charge&&leader)}finally{p.crit=crit}if(charge&&leader)this.registerHarmony?.(id);this.applyElementStatus(enemy,id,power,true)}}
-          else beam(origin,t,28,4.5);
+          const enemy=this.world.enemies.filter(e=>e.alive&&dist(e,origin)<=520).sort((x,y)=>dist(x,t)-dist(y,t))[0],old={x:origin.x,y:origin.y};let spot=null;
+          if(enemy){const ea=Number.isFinite(enemy.facing)?enemy.facing:Math.atan2(origin.y-enemy.y,origin.x-enemy.x);for(const offset of [0,-.3,.3,-.6,.6])for(const extra of [34,64,94]){const x=enemy.x-Math.cos(ea+offset)*(enemy.r+extra),y=enemy.y-Math.sin(ea+offset)*(enemy.r+extra);if(!spot&&!this.world.collision(x,y,origin.r||13))spot={x,y}}}
+          else{const d=Math.min(280,dist(origin,t)),angle=Math.atan2(t.y-origin.y,t.x-origin.x);for(let r=d;r>=0&&!spot;r-=14){const x=origin.x+Math.cos(angle)*r,y=origin.y+Math.sin(angle)*r;if(!this.world.collision(x,y,origin.r||13))spot={x,y}}}
+          if(spot){origin.x=spot.x;origin.y=spot.y;origin.invulnerable=Math.max(origin.invulnerable||0,.25);origin.motionEpoch=(origin.motionEpoch||0)+1;origin.aimAngle=origin.facing=enemy?Math.atan2(enemy.y-origin.y,enemy.x-origin.x):a;
+            this.effect('element-afterimage',old.x,old.y,f.color,0,.25,{element:id,angle:a});this.effect('element-mesh',old.x,old.y,f.color,0,.12,{element:id,clip:'light_flash_step',tx:origin.x,ty:origin.y});
+            if(enemy){const crit=p.crit;try{p.crit=1;this.damageEnemy(enemy,power*3,charge&&leader)}finally{p.crit=crit}enemy.stunned=Math.max(enemy.stunned||0,.8);enemy.blind=.8;this.effect('element-mesh',enemy.x,enemy.y,f.color,80,.32,{element:id,clip:'light_backstab_slash'});if(charge&&leader)this.registerHarmony?.(id)}
+            else{area(spot,95,2.2,true);this.effect('element-mesh',spot.x,spot.y,f.color,95,.35,{element:id,clip:'light_backstab_slash'})}
+          }
         }
       }else if(key==='e'){
         if(id==='lightning')field('sigil',{r:155,life:4,power:power*.9,behavior:'lightning_prison'});
@@ -201,9 +210,44 @@
       if(['hurricane','tornado'].includes(f.behavior))this.clearBullets(f.x,f.y,f.r);
       if(f.behavior==='sword_array')for(let i=0;i<4;i++){const a=i*TAU/8;this.elementBeam({x:f.x+Math.cos(a)*f.r,y:f.y+Math.sin(a)*f.r},{x:f.x-Math.cos(a)*f.r,y:f.y-Math.sin(a)*f.r},12,f.power,f.element,false)}
     }
+    finishGolemThrow(s,dt,abort=false){
+      const b=s.thrown;if(!b)return;b.elapsed+=dt;const enemy=b.enemy;
+      if(abort){if(enemy){enemy.throwLift=0;enemy.shadowHeld=false}delete s.thrown;return}
+      if(b.elapsed<.25){if(enemy?.alive){enemy.x=s.x;enemy.y=s.y-18;enemy.throwLift=75;enemy.stunned=Math.max(enemy.stunned||0,.2)}return}
+      const u=clamp((b.elapsed-.25)/.55,0,1),x=b.x+(b.tx-b.x)*u,y=b.y+(b.ty-b.y)*u;
+      b.currentX=x;b.currentY=y;b.height=(1-u)*75+Math.sin(u*Math.PI)*95;
+      if(enemy?.alive){enemy.x=x;enemy.y=y;enemy.throwLift=b.height;enemy.stunned=Math.max(enemy.stunned||0,.2)}
+      if(u>=1){if(enemy){enemy.throwLift=0;enemy.shadowHeld=false;enemy.stunned=Math.max(enemy.stunned||0,1)}this.elementArea(b.tx,b.ty,120,s.power*3.8,'earth',false,true,150);root.DTDestruction?.react(this,'earth',b.tx,b.ty,120,250);this.effect('element-mesh',b.tx,b.ty,byId('earth').color,120,.65,{element:'earth',clip:'meteor_burst'});delete s.thrown}
+    }
+    releaseGolem(s,key,enemy){
+      const d=root.DTDestruction,angle=s.aimAngle||0,forward={x:s.x+Math.cos(angle)*60,y:s.y+Math.sin(angle)*60};
+      if(key==='punch'){this.elementArea(forward.x,forward.y,95,s.power*2.2,'earth',false,true,140);d?.react(this,'earth',forward.x,forward.y,95,125)}
+      if(key==='smash'){this.elementArea(forward.x,forward.y,135,s.power*3.4,'earth',false,true,170);d?.react(this,'earth',forward.x,forward.y,135,250);this.effect('element-mesh',forward.x,forward.y,byId('earth').color,135,.65,{element:'earth',clip:'meteor_burst'})}
+      if(key==='stomp'){this.elementArea(s.x,s.y,195,s.power*1.8,'earth',false,true,120);for(const e of this.world.enemies)if(e.alive&&dist(s,e)<=195+e.r)e.stunned=Math.max(e.stunned||0,1.5);d?.react(this,'earth',s.x,s.y,220,110);for(let i=1;i<=3;i++)this.effect('element-mesh',s.x,s.y,byId('earth').color,65*i,.25+i*.12,{element:'earth',clip:'earth_tremor'});this.shake=root.DTSettings?.reducedMotion?0:4}
+      if(key==='throw'){
+        const grabbed=this.world.enemies.filter(e=>e.alive&&!e.sagaBoss&&!e.type.startsWith('boss')&&dist(e,s)<95).sort((a,b)=>dist(a,s)-dist(b,s))[0];
+        const targets=this.world.enemies.filter(e=>e.alive&&e!==grabbed&&dist(e,s)>=160&&dist(e,s)<=340).sort((a,b)=>(b.sagaBoss||b.type.startsWith('boss')?100:0)+this.world.enemies.filter(e=>e.alive&&dist(e,b)<120).length-(a.sagaBoss||a.type.startsWith('boss')?100:0)-this.world.enemies.filter(e=>e.alive&&dist(e,a)<120).length);
+        const target=targets[0]||enemy,desired=grabbed&&!targets.length?{x:s.x+Math.cos(angle)*240,y:s.y+Math.sin(angle)*240}:target||forward,spot=this.elementSafeSpot(desired.x,desired.y)||desired;
+        s.thrown={elapsed:0,x:s.x,y:s.y-18,tx:spot.x,ty:spot.y,currentX:s.x,currentY:s.y-18,height:0,enemy:grabbed||null};if(grabbed){grabbed.shadowHeld=true;grabbed.stunned=Math.max(grabbed.stunned||0,.8)}else d?.decal(this,'crater_mark',s.x,s.y,80);
+      }
+    }
+    updateGolem(s,dt){
+      this.finishGolemThrow(s,dt);s.golemCooldowns||={punch:0,smash:0,stomp:0,throw:0};for(const k in s.golemCooldowns)s.golemCooldowns[k]=Math.max(0,s.golemCooldowns[k]-dt);
+      const enemies=this.world.enemies.filter(e=>e.alive&&dist(e,s)<650),enemy=enemies.sort((a,b)=>dist(a,s)-dist(b,s))[0];s.moving=false;
+      if(s.action?.golem&&!s.action.released&&s.action.elapsed>=s.action.release){s.action.released=true;this.releaseGolem(s,s.action.golem,enemy)}
+      if(!s.action&&!s.thrown&&enemy){
+        const d=dist(enemy,s),close=enemies.filter(e=>dist(e,s)<160),cd=s.golemCooldowns;let key=null;
+        if(cd.stomp<=0&&(close.length>=2||close.some(e=>e.sagaBoss||e.type.startsWith('boss'))))key='stomp';
+        else if(cd.throw<=0&&(d<95||d>130&&d<420))key='throw';else if(cd.smash<=0&&d<120)key='smash';else if(cd.punch<=0&&d<95)key='punch';
+        if(key){cd[key]={punch:1.1,smash:3.2,stomp:4.8,throw:5.5}[key];s.aimAngle=Math.atan2(enemy.y-s.y,enemy.x-s.x);s.action={key:'attack',golem:key,clip:'golem_'+key,elapsed:0,release:key==='punch'?.14:.22,duration:key==='throw'?.85:.62,angle:s.aimAngle};s.skillUses||={};s.skillUses[key]=(s.skillUses[key]||0)+1}
+      }
+      const destination=enemy||this.player;if(!s.action&&!s.thrown&&dist(destination,s)>(enemy?75:165)){const a=Math.atan2(destination.y-s.y,destination.x-s.x);s.aimAngle=a;this.faceMovement(s,Math.cos(a),Math.sin(a));this.moveEntity(s,Math.cos(a)*135*dt,Math.sin(a)*135*dt);s.stride+=dt*10}
+      for(const b of this.projectiles)if(!b.friendly&&b.life>0&&dist(b,s)<s.r+(b.r||0)){s.hp-=b.damage;b.life=0}
+    }
     updateElementSummons(dt){
-      for(const s of this.elementSummons){s.life-=dt;if(s.life<=0||s.hp<=0)continue;s.shotCd=Math.max(0,(s.shotCd||0)-dt);s.attackCd=Math.max(0,s.attackCd-dt);if(s.action){s.action.elapsed+=dt;if(s.action.elapsed>=s.action.duration)s.action=null}
-        if(s.owner!=='player'&&s.owner&&!this.elementClones.some(c=>c.id===s.owner&&c.alive)){s.life=0;continue}
+      for(const s of this.elementSummons){s.life-=dt;if(s.life<=0||s.hp<=0){this.finishGolemThrow(s,0,true);continue;}s.shotCd=Math.max(0,(s.shotCd||0)-dt);s.attackCd=Math.max(0,s.attackCd-dt);if(s.action){s.action.elapsed+=dt;if(s.action.elapsed>=s.action.duration)s.action=null}
+        if(s.owner!=='player'&&s.owner&&!this.elementClones.some(c=>c.id===s.owner&&c.alive)){s.life=0;this.finishGolemThrow(s,0,true);continue}
+        if(s.kind==='golem'){this.updateGolem(s,dt);continue;}
         const enemy=this.world.enemies.filter(e=>e.alive&&dist(e,s)<600).sort((a,b)=>dist(a,s)-dist(b,s))[0];s.moving=false;
         if(enemy){const d=dist(enemy,s),dx=(enemy.x-s.x)/Math.max(1,d),dy=(enemy.y-s.y)/Math.max(1,d);s.aimAngle=Math.atan2(dy,dx);
           if(d>75){this.faceMovement(s,dx,dy);this.moveEntity(s,dx*(s.kind==='golem'?135:190)*dt,dy*(s.kind==='golem'?135:190)*dt);s.stride+=dt*10}

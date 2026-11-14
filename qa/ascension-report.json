@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-07T07:17:48.966Z",
+  "checkedAt": "2026-11-14T03:02:14.287Z",
   "scope": "Simulation behavior for v0.5 with all gameplay modules loaded; test arena removes scenery collision except environment compatibility test. Does not establish native browser rendering or live deployment.",
   "passed": 43,
   "total": 43,
@@ -25,7 +25,7 @@
       "pass": true
     },
     {
-      "name": "Kiet wall blocks hostile projectiles, earns thunder and empowers a forward thrust",
+      "name": "Quân Lê replaces lightning wall with instant armor and autonomous summon",
       "pass": true
     },
     {

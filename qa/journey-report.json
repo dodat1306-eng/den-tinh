@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-07T07:17:49.870Z",
+  "checkedAt": "2026-11-14T03:02:15.869Z",
   "tests": [
     {
       "name": "Smith interaction opens the actual shop rather than intercepting it with skills",
@@ -54,7 +54,7 @@
       "pass": true
     },
     {
-      "name": "Kiet Q has bounded protection and dash retains its existing iframe window",
+      "name": "Legacy Kiet Q selects Quan Le armor and dash retains its iframe window",
       "pass": true
     },
     {

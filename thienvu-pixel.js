@@ -22,18 +22,18 @@
     if(calm())f=({attack:1,q_cast:2,e_cast:3,r_ult:3})[key]??0;
     f=clamp(f,0,clip.frames-1);return{key,form,direction:view,frame:f,cell:clip.directions[view][f]};
   }
-  function pixels(f){
-    const key=[f.x,f.y,f.w,f.h].join(':');if(sourceCache.has(key))return sourceCache.get(key);
-    const cv=document.createElement('canvas');cv.width=f.w;cv.height=f.h;const c=cv.getContext('2d',{willReadFrequently:true});c.imageSmoothingEnabled=false;c.drawImage(vfx,f.x,f.y,f.w,f.h,0,0,f.w,f.h);
+  function pixels(f,img=vfx){
+    const key=[img.src,f.x,f.y,f.w,f.h].join(':');if(sourceCache.has(key))return sourceCache.get(key);
+    const cv=document.createElement('canvas');cv.width=f.w;cv.height=f.h;const c=cv.getContext('2d',{willReadFrequently:true});c.imageSmoothingEnabled=false;c.drawImage(img,f.x,f.y,f.w,f.h,0,0,f.w,f.h);
     const data=c.getImageData(0,0,f.w,f.h).data;sourceCache.set(key,data);return data;
   }
-  function flip(c,key,f,x,y,unit=2,angle=0){
-    const clip=root.DTThienVuVFX?.clips[key];if(!clip)return;
+  function flip(c,key,f,x,y,unit=2,angle=0,meta=root.DTThienVuVFX,img=vfx){
+    const clip=meta?.clips[key];if(!clip)return;
     f=clamp(Math.floor(f),0,clip.frames-1);const src=clip.cells[f];
-    if(!angle){cell(c,vfx,src,x,y,src.w/2,src.h/2,unit);return}
-    const size=Math.ceil(Math.hypot(src.w,src.h))+2,a=Math.round(angle*1000)/1000,cacheKey=key+':'+f+':'+a;
+    if(!angle){cell(c,img,src,x,y,src.w/2,src.h/2,unit);return}
+    const size=Math.ceil(Math.hypot(src.w,src.h)/2)*2+2,a=Math.round(angle*1000)/1000,cacheKey=img.src+':'+key+':'+f+':'+a;
     let cv=rasters.get(cacheKey);
-    if(!cv){cv=document.createElement('canvas');cv.width=cv.height=size;const oc=cv.getContext('2d'),data=oc.createImageData(size,size),source=pixels(src),co=Math.cos(a),si=Math.sin(a);
+    if(!cv){cv=document.createElement('canvas');cv.width=cv.height=size;const oc=cv.getContext('2d'),data=oc.createImageData(size,size),source=pixels(src,img),co=Math.cos(a),si=Math.sin(a);
       for(let y=0;y<size;y++)for(let x=0;x<size;x++){const dx=x-size/2+.5,dy=y-size/2+.5,sx=Math.floor(dx*co+dy*si+src.w/2),sy=Math.floor(-dx*si+dy*co+src.h/2);if(sx>=0&&sx<src.w&&sy>=0&&sy<src.h){const i=(sy*src.w+sx)*4;if(source[i+3]===255)data.data.set(source.subarray(i,i+4),(y*size+x)*4)}}
       oc.putImageData(data,0,0);cache(cacheKey,cv);
     }
@@ -47,7 +47,7 @@
     // ponytail: current skills fit 2048 world units; tile longer beams in chunks if new skills exceed that range.
     if(w*h>1024*1024)return;
     const cacheKey=['beam',key,f,dx,dy].join(':');let cv=rasters.get(cacheKey);
-    if(!cv){cv=document.createElement('canvas');cv.width=w;cv.height=h;const oc=cv.getContext('2d'),data=oc.createImageData(w,h),sources=fs.map(pixels),ux=dx/len,uy=dy/len;
+    if(!cv){cv=document.createElement('canvas');cv.width=w;cv.height=h;const oc=cv.getContext('2d'),data=oc.createImageData(w,h),sources=fs.map(f=>pixels(f)),ux=dx/len,uy=dy/len;
       for(let y=0;y<h;y++)for(let x=0;x<w;x++){
         const rx=(x+minX)*2+1,ry=(y+minY)*2+1,along=rx*ux+ry*uy,across=-rx*uy+ry*ux;if(along<0||along>len)continue;
         const part=light?(along<48?0:along>len-48?2:1):0,src=fs[part],sy=Math.floor(across/(key==='solar_beam'?56/src.h:2)+src.h/2);if(sy<0||sy>=src.h)continue;
@@ -65,8 +65,13 @@
   function hero(c,p,time=0,hurt=-Infinity,clone=false,shadow=true){
     if(!ready())return false;const pose=frame(p,time,hurt);if(!pose)return false;const unit=2;
     screen(c,m=>{const s=point(m,p.x,p.y);if(shadow)flip(c,'pixel_shadow',0,s.x,s.y+2,2);
+      const aim=p.action?.angle??p.aimAngle??p.facing??0,swing=p.action?.key==='attack'&&!calm()?Math.sin(clamp(p.action.elapsed/p.action.duration,0,1)*Math.PI)*1.2-.6:0;
+      const held='held_'+{lightning:'lightning_sword',wind:'wind_fan',earth:'earth_gauntlets',ice:'ice_hammer',fire:'fire_chakrams',nature:'nature_whip',light:'light_halo'}[pose.form],hf=calm()?0:Math.floor(time*8)%4;
+      if(pose.form==='light')flip(c,held,hf,s.x,s.y-62,2);
       if(p.hoverboard>0)flip(c,'hoverboard',calm()?0:Math.floor(time*12)%6,s.x,s.y-4,unit);
       if(!(p.invulnerable>0&&!calm()&&Math.floor(time*12)%2===0))cell(c,character,pose.cell,s.x,s.y,32,58,unit);
+      if(['earth','fire'].includes(pose.form))for(const side of [-1,1])flip(c,held,hf,s.x+Math.round((side*37+Math.cos(aim+swing)*12)/2)*2,s.y+Math.round((-44+Math.sin(aim+swing)*12)/2)*2,2,side*swing);
+      else if(pose.form!=='light')flip(c,held,hf,s.x+Math.round(Math.cos(aim+swing)*51/2)*2,s.y+Math.round((-47+Math.sin(aim+swing)*34)/2)*2,2,aim+swing);
       if(pose.form==='light'&&p.moving&&!calm()){c.fillStyle='#fffbe0';for(let i=1;i<=3;i++)c.fillRect(s.x-Math.round(Math.cos(p.moveFacing||0)*i*8)-2,s.y-74-Math.round(Math.sin(p.moveFacing||0)*i*8),4,2)}
       if(p.shield>0)flip(c,'shield_'+pose.form,calm()?0:Math.floor(time*6)%2,s.x,s.y-48,2);
       if(clone&&p.hp<p.maxHp){c.fillStyle='#100b18';c.fillRect(s.x-18,s.y+8,36,4);c.fillStyle=root.DTThienVuAtlas.forms[pose.form].palette[13];c.fillRect(s.x-17,s.y+9,Math.round(34*clamp(p.hp/p.maxHp,0,1)),2)}
@@ -152,7 +157,7 @@
     });return true;
   }
   function status(renderer,e){if(!ready())return;screen(renderer.ctx,m=>{const s=point(m,e.x,e.y);if(e.frozen>0)flip(renderer.ctx,'freeze_cage',calm()?1:Math.floor(renderer.game.time*6)%4,s.x,s.y-25);if(e.poison>0||e.rooted>0)flip(renderer.ctx,'vine_root',calm()?2:Math.floor(renderer.game.time*5)%5,s.x,s.y)})}
-  function summon(renderer,s){if(!ready())return;screen(renderer.ctx,m=>{const c=renderer.ctx,p=point(m,s.x,s.y),key=s.kind==='golem'?(s.action?'golem_smash':'golem_walk'):(s.action?'treant_whip':'treant_walk'),index=calm()?0:Math.floor((s.action?s.action.elapsed:renderer.game.time)*12)%6;flip(c,key,index,p.x,p.y-(s.kind==='golem'?66:44),2);c.fillStyle='#12091a';c.fillRect(p.x-28,p.y+6,56,5);c.fillStyle=s.kind==='golem'?'#ffcf82':'#78d663';c.fillRect(p.x-27,p.y+7,Math.round(54*clamp(s.life/s.maxLife,0,1)),3)})}
+  function summon(renderer,s){if(!ready())return;screen(renderer.ctx,m=>{const c=renderer.ctx,p=point(m,s.x,s.y),key=s.kind==='golem'?(s.action?.clip||'golem_walk'):(s.action?'treant_whip':'treant_walk'),clip=root.DTThienVuVFX.clips[key],index=calm()?0:Math.floor((s.action?s.action.elapsed:renderer.game.time)*12)%clip.frames;flip(c,key,index,p.x,p.y-(clip.cells[index].h-12),2);if(s.thrown&&!s.thrown.enemy){const b=point(m,s.thrown.currentX,s.thrown.currentY);flip(c,'golem_rock',Math.floor(renderer.game.time*12)%6,b.x,b.y-s.thrown.height-34,2)}c.fillStyle='#12091a';c.fillRect(p.x-28,p.y+6,56,5);c.fillStyle=s.kind==='golem'?'#ffcf82':'#78d663';c.fillRect(p.x-27,p.y+7,Math.round(54*clamp(s.life/s.maxLife,0,1)),3)})}
   root.DTThienVuPixel={character,vfx,ready,frame,hero,ghost,effect,projectile,field,status,summon,screen,point,flip,segment,cacheStats:()=>({rasters:rasters.size,bytes:rasterBytes,sources:sourceCache.size})};
   character.onload=vfx.onload=()=>{if(ready())for(const cv of document.querySelectorAll('canvas[data-thienvu]')){const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);hero(c,{x:64,y:116,facing:Math.PI/2})}};
 })(globalThis);

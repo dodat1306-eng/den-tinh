@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const root=path.resolve(__dirname,'..');
 for(const name of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js'])vm.runInThisContext(fs.readFileSync(path.join(root,name),'utf8'),{filename:name});
 const LegacyGame=globalThis.DTGame,legacy=new LegacyGame('an',71426);legacy.start();legacy.skipTutorial();legacy.player.gold=123;legacy.player.hp=61;const legacySave=JSON.parse(JSON.stringify(legacy.serialize()));
-for(const name of['mythic-content.js','ascension.js','endless.js'])if(fs.existsSync(path.join(root,name)))vm.runInThisContext(fs.readFileSync(path.join(root,name),'utf8'),{filename:name});
+for(const name of['mythic-content.js','ascension.js','endless.js','shadow.js'])if(fs.existsSync(path.join(root,name)))vm.runInThisContext(fs.readFileSync(path.join(root,name),'utf8'),{filename:name});
 const results=[];
 function test(name,fn){try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(error){results.push({name,pass:false,error:error.stack});console.error('FAIL '+name+'\n'+error.stack)}}
 function game(hero='an'){const g=new DTGame(hero,71426);g.start();g.skipTutorial();g.consumeEvents();return g}

@@ -1,6 +1,6 @@
 {
   "pass": true,
-  "source": "http://127.0.0.1:58720/",
+  "source": "http://127.0.0.1:61509/",
   "physicalDevice": false,
   "stagedCombatFixtures": true,
   "results": [
@@ -11,7 +11,7 @@
       "cache": {
         "rasters": 64,
         "bytes": 1904320,
-        "sources": 26
+        "sources": 32
       }
     },
     {
@@ -50,7 +50,7 @@
         "y": 1060
       },
       "synthetic": 0,
-      "effects": 14
+      "effects": 17
     },
     {
       "name": "Real browser combat fixture five-cast",
@@ -65,7 +65,7 @@
         "y": 1060
       },
       "synthetic": 4,
-      "effects": 37
+      "effects": 40
     },
     {
       "name": "Real browser combat fixture seven-r",
@@ -120,7 +120,7 @@
         "y": 1060
       },
       "synthetic": 6,
-      "effects": 33
+      "effects": 38
     },
     {
       "name": "Transform scanline ghost ends after 0.32 game seconds",
@@ -141,7 +141,7 @@
       "cache": {
         "rasters": 64,
         "bytes": 1904320,
-        "sources": 26
+        "sources": 32
       }
     },
     {

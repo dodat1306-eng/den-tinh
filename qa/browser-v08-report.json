@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "results": [
     {
       "name": "Real keyboard movement and remastered village render",
@@ -8,7 +8,7 @@
     {
       "name": "Monsters, NPCs and all hero directions paint exact two-pixel texels",
       "pass": true,
-      "sprites": 27,
+      "sprites": 28,
       "unit": 2,
       "smoothing": false
     },
@@ -24,8 +24,8 @@
       "name": "Seven-body team survives 120 update/render frames",
       "pass": true,
       "medianMs": 2.0999999940395355,
-      "p95Ms": 3.699999988079071,
-      "props": 2301,
+      "p95Ms": 4.0999999940395355,
+      "props": 2264,
       "clones": 6
     },
     {

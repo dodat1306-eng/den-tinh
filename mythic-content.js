@@ -27,7 +27,7 @@
   const passives={
     an:{name:'Đèn Nuôi Hồn',desc:'Đánh thường lên địch đang cháy tích một Tàn Lửa, tối đa sáu. Đủ sáu, Q kế tiếp tiêu thụ toàn bộ, nổ lan các mục tiêu bị đốt và kéo dài các đèn đã đặt. E đặt tối đa ba đèn, nối nhau bằng dây lửa gây sát thương; ở gần đèn hồi máu nhẹ. R giải phóng tất cả đèn thành phượng hỏa dọc đường ngắm. Tàn Lửa mất dần sau sáu giây không đánh trúng.'},
     linh:{name:'Tám Nhịp Trúc',desc:'Chạy đủ 36 bước tích một Nhịp Trúc, tối đa tám; đi càng xa cung càng mạnh. Ở tám nhịp, đòn thường kế tiếp xuyên thêm bốn mục tiêu, ghim chân và đánh dấu địch. Q ưu tiên phá dấu để bắn nối tới địch khác. E lùi người đặt bẫy, R săn các mục tiêu được đánh dấu bằng những mũi tên lần lượt từ trên cao. Bị trúng đòn mất hai nhịp.'},
-    kiet:{name:'Lôi Tức Phản Kích',desc:'Đánh thường, lướt xuyên nguy hiểm và chặn đạn bằng E tích Lôi Tức, tối đa năm. E dựng chiến tuyến trước mặt để chặn đạn và tích khiên. Đủ năm, Q kế tiếp thành cú lao thương xuyên hàng địch, giáng sét tại điểm dừng và hoàn một phần linh lực. R đóng bốn cọc lôi: kẻ bước qua đường nối bị giật, thay vì một vụ nổ tròn.'},
+    quanle:{name:'Chúa Tể Bóng Tối',desc:'Xác quái và cây gãy giữ linh hồn 20 giây. E hồi sinh bóng thú; Q tạo giáp, hút máu và phản đòn; R triệu tập binh đoàn tự tìm địch.'},
     hoavi:{name:'Trình Biên Dịch Sống',desc:'Đánh thường trúng địch tạo Mã Lệnh, tối đa tám. Q đặt lỗi lên mục tiêu rồi truyền dọc đường ngắm; đủ bốn mã sẽ tiêu thụ bốn để biên dịch lại đòn này sau 0,35 giây. E đặt điểm khôi phục trong năm giây; nhấn E lần nữa để trở về, hồi nhẹ và xóa đạn trên đường. R triển khai hai vệ tinh nối tia, tự tìm mục tiêu bị lỗi. Phản ảnh và vệ tinh không tự nạp mã hay tuyệt kỹ.'},
     thienvu:{name:'Thất Linh Giao Thức',desc:'Kỹ năng trúng địch lưu ấn nguyên tố hiện tại. Đổi dạng rồi dùng kỹ năng thuộc một nguyên tố khác tạo phản ứng: Hỏa–Băng hóa hơi, Lôi–Mộc dẫn truyền, Phong gom địch, Thổ nứt giáp, Quang phá ấn. Ba nguyên tố khác nhau trong vòng 12 giây ban Hòa Âm: hoàn 12 linh lực và thêm 10 khiên cơ sở, tăng 3 mỗi bậc nội tại; nghỉ 6 giây giữa hai lần và chỉ cộng khiên đến mốc 60. Cùng một dạng không tự tích Hòa Âm; phân thân hỗ trợ phản ứng với sát thương thấp và không tự nạp R.'}
   };
@@ -35,19 +35,19 @@
   const signature={
     an:{id:'lantern',name:'Tâm Đăng · Đèn Nuôi Hồn',kind:'staff',color:'#ffc777',desc:'Ngọn đèn riêng của An; dẫn lửa và nối đèn trấn.'},
     linh:{id:'bamboo',name:'Cung Trúc Hồi Âm',kind:'bow',color:'#b5f1a1',desc:'Cung riêng của Linh; tích nhịp theo quãng đường chạy.'},
-    kiet:{id:'thunder',name:'Lôi Thương Trấn Vệ',kind:'spear',color:'#b6c7ff',desc:'Thương riêng của Kiệt; đâm cận chiến và đóng cọc dẫn lôi.'},
+    quanle:{id:'shadow-crescent',name:'Hắc Ảnh Đoản Kiếm',kind:'shadow',color:'#b86bff',desc:'Vung lưỡi trăng khuyết bóng tối xuyên địch, mang cánh hoa hồng đen.'},
     hoavi:{id:'terminal',name:'Ấn Biên Dịch HoaVi',kind:'code',color:'#72f4de',desc:'Bảng mã riêng của HoaVi; biên dịch đòn đánh và lưu điểm trở về.'},
     thienvu:{id:'prism',name:'Thất Linh Tâm Ấn',kind:'elemental',color:'#b4b2ff',desc:'Ấn riêng của Thiên Vũ; biến hình, phản ứng và hợp kích.'}
   };
   const kits={
     an:{q:{name:'Hỏa Liêm Gọi Hồn',desc:'Quét lửa theo hướng ngắm; sáu Tàn Lửa làm địch đang cháy nổ lan.',cost:22,cooldown:4.5},e:{name:'Tam Đăng Kết Giới',desc:'Đặt đèn tại điểm ngắm (tối đa ba), nối dây lửa và hồi máu gần đèn. Nhấn E lần nữa trong 3 giây để giật nổ đèn, kéo nhẹ địch thường.',cost:30,cooldown:6},r:{name:'Phượng Hỏa Quy Đăng',desc:'Phượng hỏa bay dọc hướng ngắm, các đèn đáp lại bằng đường lửa.',cost:0,cooldown:0}},
     linh:{q:{name:'Xuyên Ảnh Truy Phong',desc:'Giương cung rồi xuyên một đường dài; trúng dấu Trúc sẽ bắn nối.',cost:24,cooldown:5},e:{name:'Thoái Bộ Mộc Phục',desc:'Lộn lùi 120 bước và đặt bẫy trúc; bẫy trói và đánh dấu địch.',cost:28,cooldown:7},r:{name:'Thiên Tiễn Truy Danh',desc:'Tung người, sáu mũi thiên tiễn lần lượt săn địch được đánh dấu.',cost:0,cooldown:0}},
-    kiet:{q:{name:'Lôi Thương Phá Trận',desc:'Miễn sát thương 0,28 giây khi khởi chiêu; đâm xuyên hàng địch. Đủ năm Lôi Tức biến thành lao thương và giáng sét.',cost:22,cooldown:4},e:{name:'Chiến Tuyến Lôi Thuẫn',desc:'Dựng bức tuyến chặn đạn năm giây; đạn chặn được tích Lôi Tức và khiên.',cost:32,cooldown:9},r:{name:'Tứ Trụ Thiên Lao',desc:'Đóng bốn cọc lôi, gây sát thương trên các cạnh và ghim kẻ vượt tuyến.',cost:0,cooldown:0}},
+    quanle:{q:{name:'Hắc Ảnh Chiến Giáp',desc:'Hắc Giáp 6,5 giây: giảm 35% sát thương, tăng 25% tốc chạy; bốn gai hút máu mỗi 0,4 giây và phản đòn khi bị đánh.',cost:28,cooldown:9},e:{name:'Hắc Ảnh Triệu Hồi',desc:'Hồi sinh linh hồn gần trong 260 bước hoặc mở cổng gọi ngẫu nhiên một trong 22 bóng thú. Tối đa sáu con trong 22 giây.',cost:32,cooldown:7},r:{name:'Bách Quỷ Dạ Hành',desc:'Thu toàn bộ linh hồn trong 420 bước, gọi 10–14 bóng thú và cường hóa đội quân 24 giây. Linh hồn vượt sức chứa tăng sức mạnh binh đoàn.',cost:0,cooldown:0}},
     hoavi:{q:{name:'Debug · Điểm Gãy',desc:'Tia mã đặt lỗi lên địch; bốn Mã Lệnh cho phép lặp lại sau 0,35 giây.',cost:24,cooldown:5},e:{name:'Checkpoint · Hồi Quy',desc:'Đặt neo năm giây. Nhấn E lần nữa để quay về và xóa đạn dọc đường.',cost:32,cooldown:10},r:{name:'Overclock · Song Tinh',desc:'Hai vệ tinh tìm địch bị lỗi, nối thành tia quét trong tám giây.',cost:0,cooldown:0}},
     thienvu:{}
   };
   for(const id of Object.keys(kits))if(id!=='thienvu')Object.assign(D.HEROES[id],{q:kits[id].q.name,e:kits[id].e.name,r:kits[id].r.name,desc:passives[id].name+' · '+signature[id].desc});
-  const nodeNames={an:['Dẫn Hồn','Đăng Mạch','Phượng Vũ','Nuôi Tàn Lửa'],linh:['Truy Phong','Mộc Phục','Thiên Tiễn','Nhịp Trúc'],kiet:['Phá Trận','Lôi Thuẫn','Thiên Lao','Lôi Tức'],hoavi:['Biên Dịch','Checkpoint','Song Tinh','Tối Ưu Mã'],thienvu:['Linh Thuật','Hộ Linh','Thiên Tượng','Hòa Âm']};
+  const nodeNames={an:['Dẫn Hồn','Đăng Mạch','Phượng Vũ','Nuôi Tàn Lửa'],linh:['Truy Phong','Mộc Phục','Thiên Tiễn','Nhịp Trúc'],quanle:['Hắc Giáp','Arise · Bóng Thú','Bách Quỷ','Linh Hồn Bóng Tối'],hoavi:['Biên Dịch','Checkpoint','Song Tinh','Tối Ưu Mã'],thienvu:['Linh Thuật','Hộ Linh','Thiên Tượng','Hòa Âm']};
   C.version='0.5.0';C.kits=kits;C.signatures=signature;C.mythicRelics=relics;
   root.DTMythic={relics,signature,kits,passives,nodeNames};
 })(globalThis);

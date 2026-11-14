@@ -181,5 +181,84 @@ def pack():
     preview.save(HERE/'thienvu-combat-mesh-preview.png')
     print(json.dumps({'pass':True,'meshClips':len(SPECS),'meshFrames':len(tiles),'totalFrames':sum(c['frames'] for c in meta['clips'].values()),'atlas':[atlas.width,atlas.height]}))
 
+def weapons():
+    sys.path.insert(0,str(HERE.parent))
+    from pixel_pipeline import Atlas,Mesh,UP,PITCH
+    from PIL import Image,ImageDraw
+    atlas=Atlas('thienvu-held-weapons',1024)
+    specs={'lightning_sword':(48,48),'wind_fan':(48,48),'earth_gauntlets':(26,26),'ice_hammer':(48,48),'fire_chakrams':(30,30),'nature_whip':(48,48),'light_halo':(56,56)}
+    for name,(w,h) in specs.items():
+        for f,c in enumerate(atlas.cells('held_'+name,w,h,4,8)):
+            m=Mesh()
+            def poly(pts,color):m.prism([((x-w/2)*PITCH,(h-6-y)*PITCH/UP.z) for x,y in pts],color,-m.serial*.0053,.04)
+            def line(pts,color,r=1):
+                for j,((x,y),(xx,yy)) in enumerate(zip(pts,pts[1:])):m.rod(((x-w/2)*PITCH,-.03-m.serial*.0053,(h-6-y)*PITCH/UP.z),((xx-w/2)*PITCH,-.04-m.serial*.0053,(h-6-yy)*PITCH/UP.z),r*PITCH/2,color,sides=6,part=False)
+            def ring(cx,cy,r,width,color,n=24):
+                for i in range(n):
+                    a=i*math.tau/n;b=(i+1)*math.tau/n
+                    poly([(cx+math.cos(a)*r,cy+math.sin(a)*r),(cx+math.cos(b)*r,cy+math.sin(b)*r),(cx+math.cos(b)*(r-width),cy+math.sin(b)*(r-width)),(cx+math.cos(a)*(r-width),cy+math.sin(a)*(r-width))],color)
+            if name=='lightning_sword':
+                poly([(3,22),(11,22),(11,26),(3,26)],'#593318');poly([(10,17),(14,17),(14,31),(10,31)],'#e68a00')
+                blade=[(14,21),(18,19),(19,17),(21,20),(24,17),(25,15),(27,19),(30,15),(31,13),(33,17),(36,13),(37,11),(39,15),(45,22),(36,27),(14,27)]
+                poly(blade,'#ffee55');poly([(15,23),(38,18),(43,22),(35,24),(15,25)],'#ffffff');line([(18,28),(22,30),(26,26),(30,28),(34,24),(40,25)],'#5ce1e6')
+            elif name=='wind_fan':
+                center=(24,40);pts=[(24+math.cos(math.pi+i*math.pi/12)*19,34+math.sin(math.pi+i*math.pi/12)*28) for i in range(13)]
+                poly([center]+pts,'#4ce8e0');line(pts,'#ffe4a0',2)
+                for i in range(7):
+                    a=math.pi+i*math.pi/6;line([center,(24+math.cos(a)*19,34+math.sin(a)*28)],'#4f321d',1.2)
+                line([(18,27),(18,21),(24,17),(30,20),(30,26),(25,29),(22,26),(24,23)],'#d8ffff',1.8)
+                poly([(22,37),(26,37),(26,44),(22,44)],'#996032')
+            elif name=='earth_gauntlets':
+                poly([(4,19),(3,10),(7,6),(19,6),(23,11),(22,20),(17,23),(7,23)],'#b87333')
+                poly([(5,9),(8,3),(11,9),(12,3),(15,9),(18,3),(21,10)],'#ffcf52')
+                for x in (7,12,17):poly([(x,10),(x+3,10),(x+3,16),(x,16)],'#ffcf52')
+                line([(5,20),(10,18),(9,15),(15,17),(18,22)],'#ff5a1f',2)
+            elif name=='ice_hammer':
+                poly([(3,31),(32,16),(35,20),(5,35)],'#1d64b8');line([(5,32),(31,18)],'#8ceeff',2)
+                poly([(26,9),(36,5),(44,11),(44,23),(36,29),(26,23)],'#8ceeff')
+                poly([(27,10),(35,7),(41,12),(35,15),(28,14)],'#ffffff');poly([(35,15),(42,12),(42,22),(36,26)],'#1d64b8')
+                poly([(29,8),(30,2),(34,7)],'#ffffff');poly([(38,28),(43,34),(42,25)],'#8ceeff')
+            elif name=='fire_chakrams':
+                ring(15,15,9,3,'#ff5a1f');ring(15,15,6,1,'#b81414')
+                for i in range(12):
+                    a=i*math.tau/12;poly([(15+math.cos(a)*8,15+math.sin(a)*8),(15+math.cos(a+.08)*12,15+math.sin(a+.08)*12),(15+math.cos(a+.3)*9,15+math.sin(a+.3)*9)],'#fff6a1')
+                line([(8,17),(8,12),(12,8),(18,8),(21,12)],'#ffee55',1.5)
+            elif name=='nature_whip':
+                poly([(3,28),(13,25),(14,29),(4,32)],'#825634');line([(13,27),(21,33),(32,31),(43,23),(40,13),(30,9),(23,14),(28,21),(36,20)],'#2eb844',3)
+                for x,y in [(21,33),(30,32),(39,27),(42,19),(37,12),(28,10),(24,17),(32,21)]:poly([(x-1,y+1),(x+3,y-5),(x+2,y+2)],'#a8ff78')
+                for i in range(5):
+                    a=i*math.tau/5;poly([(12,27),(12+math.cos(a)*5,27+math.sin(a)*5),(12+math.cos(a+.6)*4,27+math.sin(a+.6)*4)],'#d9384a')
+            else:
+                ring(28,28,17,2,'#ffee55');ring(28,28,14,1,'#e68a00')
+                for i in range(8):
+                    a=i*math.tau/8;poly([(28+math.cos(a-.10)*17,28+math.sin(a-.10)*17),(28+math.cos(a)*25,28+math.sin(a)*25),(28+math.cos(a+.10)*17,28+math.sin(a+.10)*17)],'#ffffff')
+            # Mesh shimmer changes pose frames without filtering native texels.
+            x,y={'lightning_sword':(25+f,23),'wind_fan':(20+f,22),'earth_gauntlets':(8+f,12),'ice_hammer':(20+f,5),'fire_chakrams':(13+f,6),'nature_whip':(30+f,31),'light_halo':(26+f,11)}[name]
+            poly([(x,y-1),(x+1,y),(x,y+1),(x-1,y)],'#ffffff')
+            atlas.add(c,m,'held_'+name)
+    image,meta=atlas.bake(HERE/'held-weapons','DTThienVuHeld',detached_parts='Raised luminous inlays and magic sparks are separate sprite layers; silhouettes and all material surfaces still receive geometry QA.')
+    path=ROOT/'assets/thienvu-vfx-pixel.json';v=json.loads(path.read_text(encoding='utf-8'));old=Image.open(ROOT/v['image']).convert('RGBA');base=v.get('heldBaseHeight',old.height);v['heldBaseHeight']=base
+    out=Image.new('RGBA',(v['width'],base+image.height));out.paste(old.crop((0,0,old.width,base)))
+    for key,clip in meta['clips'].items():
+        for c in clip['cells']:
+            out.paste(image.crop((c['x'],c['y'],c['x']+c['w'],c['y']+c['h'])),(c['x'],base+c['y']));c['y']+=base
+        v['clips'][key]=clip
+    v['height']=out.height;v['palette']=sorted(set(v['palette']+meta['palette']));v['version']='0.8.1';out.save(ROOT/v['image'],optimize=True);raw=json.dumps(v,separators=(',',':'));path.write_text(raw,encoding='utf-8');(ROOT/'assets/thienvu-vfx-pixel.js').write_text('globalThis.DTThienVuVFX='+raw+';\n',encoding='utf-8')
+    # Light eyes are white cores in gold halos, using existing face landmarks.
+    hp=ROOT/'assets/thienvu-pixel-v08.json';hero=json.loads(hp.read_text(encoding='utf-8'));sheet=Image.open(ROOT/hero['image']).convert('RGBA');pen=ImageDraw.Draw(sheet)
+    for clip in hero['forms']['light']['actions'].values():
+        for view,cells in clip['directions'].items():
+            if view=='N':continue
+            for c in cells:
+                for x,y in (c['landmarks']['eyes'] if view=='S' else [c['landmarks']['face']]):
+                    x+=c['x'];y+=c['y'];pen.rectangle((x-1,y-1,x+1,y+1),fill='#ffee55');pen.point((x,y),fill='#ffffff')
+    sheet.save(ROOT/hero['image'],optimize=True)
+    proof=Image.new('RGB',(4*140,3*150),'#1b182a');draw=ImageDraw.Draw(proof)
+    keys=list(meta['clips'])+['golem_punch','golem_smash','golem_stomp','golem_throw']
+    for i,key in enumerate(keys):
+        c=v['clips'][key]['cells'][2];tile=out.crop((c['x'],c['y'],c['x']+c['w'],c['y']+c['h']));x=i%4*140+(140-c['w'])//2;y=i//4*150+120-c['h'];proof.paste(tile,(x,y),tile);draw.text((i%4*140+3,i//4*150+127),key.replace('held_',''),fill='#e9d3ff')
+    c=hero['forms']['light']['actions']['idle']['directions']['S'][0];tile=sheet.crop((c['x'],c['y'],c['x']+64,c['y']+64));proof.paste(tile,(3*140+38,2*150+50),tile);draw.text((3*140+8,2*150+127),'light / glowing eyes',fill='#ffee55')
+    proof.resize((proof.width*4,proof.height*4),Image.Resampling.NEAREST).save(HERE/'thienvu-weapons-golem-preview.png')
+
 if __name__=='__main__':
-    build() if '--build' in sys.argv else pack()
+    weapons() if '--weapons' in sys.argv else build() if '--build' in sys.argv else pack()
