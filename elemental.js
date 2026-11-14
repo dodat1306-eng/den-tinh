@@ -12,7 +12,7 @@
     {id:'light',name:'Quang',title:'Thái Dương',color:'#ffe5a5',accent:'#ffffff',icon:'☀',q:'Tốc Độ Ánh Sáng',e:'Tia Năng Lượng Mặt Trời',r:'Thái Dương Diệt Ảnh',desc:'Tia sáng xuyên, phản đạn và pháo thái dương.',passive:'Đạn thường xuyên ba mục tiêu.'}
   ];
   const byId=id=>forms.find(f=>f.id===(id==='wood'?'nature':id))||forms[0];
-  const hero={id:'thienvu',name:'Thiên Vũ',role:'THẤT LINH SỨ',desc:'Biến đổi bảy nguyên tố; phân thân 3 / 5 / 7 và hợp kích.',color:'#b2b1ff',cloth:'#334b71',accent:'#ffe3a2',hp:125,speed:236,damage:15,fireRate:.28,shotSpeed:780,q:forms[0].q,e:forms[0].e,r:forms[0].r,qCd:6,eCd:10};
+  const hero={id:'thienvu',name:'Thiên Vũ',role:'THẤT LINH SỨ',desc:'Biến đổi bảy nguyên tố; phân thân 3 / 5 / 7 và hợp kích.',color:'#b2b1ff',cloth:'#334b71',accent:'#ffe3a2',hp:125,speed:236,damage:15,fireRate:.28,shotSpeed:780,q:forms[0].q,e:forms[0].e,r:forms[0].r,qCd:6,eCd:10,rCd:20};
   D.HEROES.thienvu=hero;
   C.weapons.push({id:'prism',name:'Thất Linh Ấn',kind:'elemental',rarity:'epic',power:1,interval:.28,shots:1,pierce:0,speed:780,clip:21,reload:1.25,color:'#b4b2ff',effect:'elemental',desc:'Ấn chuyển đạn thường theo dạng nguyên tố của Thiên Vũ.'});
   C.passives.thienvu={name:'Thất Linh Cộng Hưởng',desc:'Bảy dạng có đặc tính riêng. Đổi dạng giữ nguyên hồi chiêu Q/E và lực R. C chọn dạng, 1–7 đổi nhanh, G chọn 3/5/7 dạng, X phân thân hoặc hợp thể. Các bản thể hỗ trợ tấn công thật và có máu riêng.'};
@@ -30,13 +30,13 @@
     applyElement(){const f=this.element;this.hero={...hero,color:f.color,accent:f.accent,q:f.q,e:f.e,r:f.r}}
     transformElement(id){
       if(id==='wood')id='nature';
-      if(!this.isElemental||this.dead||!forms.some(f=>f.id===id))return false;if(this.player.elementForm===id)return true;
+      if(!this.isElemental||this.dead||this.player.ultIntro||!forms.some(f=>f.id===id))return false;if(this.player.elementForm===id)return true;
       const previous=this.player.elementForm;this.player.elementForm=id;this.applyElement();this.syncElementClones();
       this.effect('element-transform',this.player.x,this.player.y,this.element.color,126,.75,{element:id,previous});this.emit('sound',{name:'element-'+id});return true;
     }
     selectSplitCount(count){if(!this.isElemental||![3,5,7].includes(count))return false;this.player.splitCount=count;return true}
     splitElementals(){
-      if(!this.isElemental||this.paused||this.dead)return false;
+      if(!this.isElemental||this.paused||this.dead||this.player.ultIntro)return false;
       if(this.elementSplitTime>0){this.elementClones=[];this.elementSummons=this.elementSummons.filter(s=>s.owner==='player');this.elementActions=this.elementActions.filter(a=>!a.owner||a.owner==='player');this.elementSplitTime=0;this.effect('element-recall',this.player.x,this.player.y,this.element.color,150,.65);this.emit('sound',{name:'skill'});return true}
       const n=this.player.splitCount,cost={3:30,5:45,7:60}[n];
       if(this.elementSplitCd>0||this.player.mp<cost){this.emit('toast',{text:this.elementSplitCd>0?'Phân thân đang hồi chiêu.':'Chưa đủ linh lực để phân thân.'});return false}
@@ -187,7 +187,7 @@
     summonElement(kind,origin,at,power,life,sourceProp){
       const owner=origin===this.player?'player':origin.id;
       const owned=this.elementSummons.filter(s=>s.owner===owner&&s.kind===kind&&s.life>0);if(owned.length>=(kind==='golem'?1:3))return;
-      const spot=this.elementSafeSpot(at.x,at.y)||{x:origin.x,y:origin.y};this.elementSummons.push({id:'element-summon-'+(++this.elementSerial),kind,owner:'player',sourceOwner:owner,...spot,sourceProp,r:kind==='golem'?29:18,hp:kind==='golem'?this.player.maxHp*2:this.player.maxHp,maxHp:kind==='golem'?this.player.maxHp*2:this.player.maxHp,power,life,maxLife:life,attackCd:0,action:null,alive:true,moveDir:'S',moveFacing:Math.PI/2,stride:0});
+      const spot=this.elementSafeSpot(at.x,at.y)||{x:origin.x,y:origin.y};this.elementSummons.push({id:'element-summon-'+(++this.elementSerial),kind,owner:'player',sourceOwner:owner,...spot,sourceProp,r:kind==='golem'?29:18,hp:kind==='golem'?this.player.maxHp*2:this.player.maxHp,maxHp:kind==='golem'?this.player.maxHp*2:this.player.maxHp,power,life,maxLife:life,attackCd:0,spawnAge:0,action:null,alive:true,moveDir:'S',moveFacing:Math.PI/2,stride:0});
     }
     updateCombatField(f,dt,clocked=false){
       if(!clocked){f.life-=dt;f.tick-=dt}const owner=f.owner==='player'?this.player:this.elementClones.find(c=>c.id===f.owner&&c.alive);
@@ -245,7 +245,7 @@
       for(const b of this.projectiles)if(!b.friendly&&b.life>0&&dist(b,s)<s.r+(b.r||0)){s.hp-=b.damage;b.life=0}
     }
     updateElementSummons(dt){
-      for(const s of this.elementSummons){s.life-=dt;if(s.life<=0||s.hp<=0){this.finishGolemThrow(s,0,true);continue;}s.shotCd=Math.max(0,(s.shotCd||0)-dt);s.attackCd=Math.max(0,s.attackCd-dt);if(s.action){s.action.elapsed+=dt;if(s.action.elapsed>=s.action.duration)s.action=null}
+      for(const s of this.elementSummons){s.life-=dt;s.spawnAge=Math.min(.45,(s.spawnAge||0)+dt);if(s.spawnAge<.45){s.moving=false;continue}if(s.life<=0||s.hp<=0){this.finishGolemThrow(s,0,true);continue;}s.shotCd=Math.max(0,(s.shotCd||0)-dt);s.attackCd=Math.max(0,s.attackCd-dt);if(s.action){s.action.elapsed+=dt;if(s.action.elapsed>=s.action.duration)s.action=null}
         if(s.owner!=='player'&&s.owner&&!this.elementClones.some(c=>c.id===s.owner&&c.alive)){s.life=0;this.finishGolemThrow(s,0,true);continue}
         if(s.kind==='golem'){this.updateGolem(s,dt);continue;}
         const enemy=this.world.enemies.filter(e=>e.alive&&dist(e,s)<600).sort((a,b)=>dist(a,s)-dist(b,s))[0];s.moving=false;
@@ -262,8 +262,8 @@
     skill(key){
       if(!this.isElemental)return super.skill(key);if(this.paused||this.dead||!['q','e','r'].includes(key))return false;
       const p=this.player,cost=key==='q'?24:key==='e'?38:0;
-      if(key==='r'&&p.ult<100||key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
-      if(key==='r'){p.ult=0;p.invulnerable=Math.max(p.invulnerable,1.2);p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.14);this.clearBullets(p.x,p.y,600);this.elementCinema={name:this.elementClones.length?this.element.r+' · HỢP KÍCH':this.element.r,life:1.8,maxLife:1.8,element:this.element.id}}
+      if(key==='r'&&p.cd.r>0||key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
+      if(key==='r'){p.cd.r=this.effectiveRCd();p.ult=0;p.invulnerable=Math.max(p.invulnerable,1.2);p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.14);this.clearBullets(p.x,p.y,600);this.elementCinema={name:this.elementClones.length?this.element.r+' · HỢP KÍCH':this.element.r,life:1.8,maxLife:1.8,element:this.element.id}}
       else{p.mp-=cost;p.cd[key]=(key==='q'?6:10)*(p.relics.cooling?.8:1)}
       p.cast=key==='r'?.7:.4;p.castKey=key;this.tutorial.skills++;this.castElement(this.element.id,key,p,1,key!=='r');
       if(key==='r'&&this.elementClones.length){const target=this.elementTarget(p,560);for(const clone of this.elementClones)if(clone.alive)this.castElement(clone.element,'r',clone,.18,false,target);this.effect('element-convergence',target.x,target.y,'#fff4db',300,1.5,{count:this.elementClones.length+1,points:[{x:p.x,y:p.y,element:this.element.id},...this.elementClones.map(c=>({x:c.x,y:c.y,element:c.element}))]});this.scheduleElement(.8,{type:'blast',...target,r:260,damage:p.damage*2.5,element:'light',charge:false,strong:false})}
@@ -276,7 +276,7 @@
     }
     updateTelegraphs(dt){for(const t of this.telegraphs)if(t.timer<=dt)for(const clone of this.elementClones)if(clone.alive&&dist(t,clone)<t.r+clone.r)this.damageElementClone(clone,t.damage);super.updateTelegraphs(dt)}
     damageElementClone(clone,amount){if(!clone.alive||clone.invulnerable>0||clone.hurtCd>0||!Number.isFinite(amount)||amount<=0)return;clone.hp-=amount;clone.hurtCd=.45;if(clone.hp<=0){clone.alive=false;this.effect('element-recall',clone.x,clone.y,byId(clone.element).color,65,.5)}}
-    moveEntity(object,dx,dy){if(object.frozen>0||object.rooted>0||object.rootHeld)return;return super.moveEntity(object,dx,dy)}
+    moveEntity(object,dx,dy){if(!(object===this.player&&object.ultIntro)&&(object.frozen>0||object.rooted>0||object.rootHeld))return;return super.moveEntity(object,dx,dy)}
     updateProjectiles(dt){
       for(const field of this.elementFields)if(field.life>0&&['wind','light'].includes(field.element)&&field.key==='e'){
         const owner=field.owner==='player'?this.player:this.elementClones.find(c=>c.id===field.owner&&c.alive),center=field.follow&&owner?owner:field;

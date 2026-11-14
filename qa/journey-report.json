@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T03:02:15.869Z",
+  "checkedAt": "2026-11-14T08:40:57.325Z",
   "tests": [
     {
       "name": "Smith interaction opens the actual shop rather than intercepting it with skills",
@@ -46,7 +46,7 @@
       "pass": true
     },
     {
-      "name": "Dash cancels recovery without clearing or duplicating released follow-up attacks",
+      "name": "Dash cannot cancel an ultimate intro or duplicate its release",
       "pass": true
     },
     {

@@ -62,7 +62,7 @@
     critMultiplier(){return 1.7+(this.mastery?.critical||0)*.02}
     registerHarmony(id){if(this.harmonyCooldown>0)return;const s=this.passiveState,p=this.player;if(!s.forms.includes(id))s.forms.push(id);s.formTime=12;if(s.forms.length>=3){s.forms=[];this.harmonyCooldown=6;p.mp=Math.min(p.maxMp,p.mp+12+this.skillRanks.passive*3);p.shield=Math.max(p.shield,Math.min(60,p.shield+10+3*this.skillRanks.passive));this.emit('toast',{text:'Hòa Âm Tam Linh · hồi linh lực và khiên, nghỉ 6 giây',reward:true})}}
     skill(key){
-      const p=this.player;if(this.paused||this.dead||p.dashTime>0)return false;
+      const p=this.player;if(this.paused||this.dead||p.ultIntro||p.dashTime>0)return false;
       if(this.hero.id==='an'&&key==='e'&&this.time<this.anRecastUntil&&this.mythicFields.some(f=>f.kind==='lantern'&&f.life>0)&&(!p.action||p.action.elapsed>=p.action.release+.1)){
         const lamps=this.mythicFields.filter(f=>f.kind==='lantern'&&f.life>0);this.mythicFields=this.mythicFields.filter(f=>!lamps.includes(f));this.anRecastUntil=0;
         const center={x:lamps.reduce((v,f)=>v+f.x,0)/lamps.length,y:lamps.reduce((v,f)=>v+f.y,0)/lamps.length};for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,center)<330){const d=dist(e,center),step=Math.min(80,d*.35);if(d>1)this.moveEntity(e,(center.x-e.x)/d*step,(center.y-e.y)/d*step)}
@@ -86,7 +86,7 @@
     onHostileBulletHit(b,dealt){if(dealt&&b.eliteElement==='ice')this.player.frostSlow=1.2}
     dash(){const ok=super.dash();if(!ok)return false;const p=this.player;if(p.action){if(p.action.elapsed>=p.action.release){p.action=null;p.cast=0}else p.action.cancelOnRelease=true}const speed=1+(this.mastery.step||0)*.03;p.dashX*=speed;p.dashY*=speed;return true}
     update(dt){
-      if(this.paused||this.dead||!this.started)return;const p=this.player,before=this.time,speed=p.speed;dt=clamp(dt,0,.04);if(this.charmTime>0)p.speed*=1.12;if(this.agileTime>0)p.speed*=1.15;if(p.frostSlow>0)p.speed*=.6;
+      if(this.paused||this.dead||!this.started)return;const p=this.player,before=this.time,speed=p.speed;dt=clamp(dt,0,.04);if(this.charmTime>0)p.speed*=1.12;if(this.agileTime>0)p.speed*=1.15;if(p.frostSlow>0&&!p.ultIntro)p.speed*=.6;
       try{super.update(dt)}finally{p.speed=speed}if(this.time===before)return;
       if(p.action?.cancelOnRelease&&p.action.elapsed>=p.action.release){p.action=null;p.cast=0}
       p.mp=Math.min(p.maxMp,p.mp+13*.05*this.mastery.spirit*dt);p.frostSlow=Math.max(0,(p.frostSlow||0)-dt);this.charmTime=Math.max(0,this.charmTime-dt);this.agileTime=Math.max(0,this.agileTime-dt);this.harmonyCooldown=Math.max(0,this.harmonyCooldown-dt);

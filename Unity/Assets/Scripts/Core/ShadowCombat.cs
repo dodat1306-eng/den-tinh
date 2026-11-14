@@ -22,7 +22,7 @@ namespace DenTinh.Core {
         bool FireShadow(){if(Paused||Dead||Player.fireTimer>0||Player.dashTime>0)return false;Player.fireTimer=Hero.fireRate;float angle=Mathx.Angle(Input.aim-Player.position);Player.action=Action("attack","shadow",Player.position,Input.aim,Player.motionEpoch);Player.action.released=true;Shoot(Player.position,angle,680/64f,Player.damage*1.15f,true,"shadow-crescent","#b86bff",4,"",true);shots++;return true;}
         bool ShadowSkill(string key){
             PlayerState p=Player;if(Paused||Dead||(key!="q"&&key!="e"&&key!="r")||p.action!=null&&p.action.elapsed<p.action.duration)return false;
-            float cost=key=="q"?28:key=="e"?32:0;if(p.mp<cost||key=="q"&&p.qTimer>0||key=="e"&&p.eTimer>0||key=="r"&&p.ult<100)return false;
+            float cost=key=="q"?28:key=="e"?32:0;if(p.mp<cost||key=="q"&&p.qTimer>0||key=="e"&&p.eTimer>0)return false;
             p.mp-=cost;if(key=="q")p.qTimer=9;if(key=="e")p.eTimer=7;if(key=="r")p.ult=0;p.action=Action(key,"shadow",p.position,Input.aim,p.motionEpoch);p.action.released=true;skills++;
             if(key=="q"){p.shadowArmor=6.5f;p.shield=Math.Min(130,p.shield+48+10*p.qRank);shadowPulse=0;ShadowFx("armor",p.position);return true;}
             foreach(Prop prop in Props)if(V2.Distance(prop.position,p.position)<(key=="r"?420:260)/64f)RecordShadow(prop);
@@ -41,6 +41,10 @@ namespace DenTinh.Core {
         void ShadowShot(ShadowUnit s,float angle,int pierce=1,bool venom=false){Shoot(s.position,angle,8.75f,s.power*.85f,true,"shadow-crescent","#b84dff",pierce,"",false);Bullets[Bullets.Count-1].shadowPoison=venom;}
         public void ShadowAttack(ShadowUnit s,EnemyState e){
             ShadowSpec spec=ShadowDefinition(s.kind);if(spec==null||e==null||!e.alive)return;float a=Mathx.Angle(e.position-s.position);s.aimAngle=a;s.action=Action("attack","shadow",s.position,e.position,0);s.action.duration=.6f;s.attackCd=(spec.behavior=="stomp"||spec.behavior=="darkfire"||spec.behavior=="quake"||spec.behavior=="web"?2.5f:1.05f)/(ShadowFrenzy>0?1.4f:1);
+            s.action.targetId=e.id;s.action.release=.22f;
+        }
+        void ReleaseShadowAttack(ShadowUnit s,EnemyState e){
+            ShadowSpec spec=ShadowDefinition(s.kind);float a=s.action.angle;
             switch(spec.behavior){
                 case "bite":ShadowArea(s,e.position,35,1.45f,"bleed");break;
                 case "claw":ShadowArea(s,e.position,95,2,"stun","physical");break;
@@ -72,7 +76,7 @@ namespace DenTinh.Core {
             if(Player.shadowArmor>0){Player.shadowArmor=Math.Max(0,Player.shadowArmor-dt);shadowPulse+=dt;if(shadowPulse>=.4f){shadowPulse-=.4f;int hits=ShadowArea(new ShadowUnit{power=Player.damage*(1+.05f*Player.passiveRank)},Player.position,125,.55f);Player.hp=Math.Min(Player.maxHp,Player.hp+hits*1.5f);ShadowFx("tendrils",Player.position,.3f);}}
             if(IsShadow&&Player.action!=null){Player.action.elapsed+=dt;if(Player.action.elapsed>=Player.action.duration)Player.action=null;}
             foreach(EnemyState e in Enemies.ToArray())if(e.alive){e.shadowCorrosion=Math.Max(0,e.shadowCorrosion-dt);if(e.shadowBleed>0){e.shadowBleed-=dt;e.shadowBleedTick-=dt;if(e.shadowBleedTick<=0){e.shadowBleedTick=.5f;DamageEnemy(e,e.shadowBleedPower,false);}}if(e.shadowFear>0){e.shadowFear-=dt;e.stunned=Math.Max(e.stunned,.05f);e.position=MoveEnemy(e,(e.position-e.fearOrigin).Unit*1.56f*dt,e.radius);}}
-            foreach(ShadowUnit s in ShadowArmy){s.life-=dt;s.attackCd-=dt;s.hurtCd-=dt;s.moving=false;if(s.action!=null){s.action.elapsed+=dt;if(s.action.elapsed>s.action.duration)s.action=null;}if(s.hp<=0||s.life<=0)continue;
+            foreach(ShadowUnit s in ShadowArmy){s.life-=dt;s.spawnAge=Math.Min(.45f,s.spawnAge+dt);if(s.spawnAge<.45f){s.moving=false;continue;}s.attackCd-=dt;s.hurtCd-=dt;s.moving=false;if(s.action!=null){s.action.elapsed+=dt;if(!s.action.released&&s.action.elapsed>=s.action.release){s.action.released=true;EnemyState hit=Enemies.Find(e=>e.id==s.action.targetId&&e.alive);if(hit!=null&&V2.Distance(hit.position,s.position)<340/64f)ReleaseShadowAttack(s,hit);}if(s.action.elapsed>s.action.duration)s.action=null;}if(s.hp<=0||s.life<=0)continue;
                 ShadowSpec spec=ShadowDefinition(s.kind);EnemyState target=Nearest(s.position,600/64f);Danger hazard=Dangers.Find(d=>d.time>0&&V2.Distance(d.position,s.position)<d.radius+s.radius+.4f);bool ranged=spec.behavior=="antlers"||spec.behavior=="venom"||spec.behavior=="feather"||spec.behavior=="siphon"||spec.behavior=="darkfire";float reach=(ranged?250:90)/64f;V2 destination=target==null?(ShadowArmy.Count>6?ShadowFormation(ShadowArmy.IndexOf(s)):Player.position):target.position;if(hazard!=null)destination=s.position+(s.position-hazard.position).Unit*2;
                 if(V2.Distance(s.position,Player.position)>17.2f)s.position=ShadowSpot(Player.position+new V2(1,0));V2 delta=destination-s.position;if(hazard!=null||delta.Length>(target==null?(ShadowArmy.Count>6?.3125f:1.56f):reach)){s.aimAngle=Mathx.Angle(delta);V2 step=delta.Unit*(spec.speed/64)*(ShadowFrenzy>0?1.4f:1)*dt;s.position=spec.flying?s.position+step:Move(s.position,step,s.radius);s.moving=true;}
                 if(target!=null&&hazard==null&&V2.Distance(target.position,s.position)<reach+target.radius&&s.attackCd<=0)ShadowAttack(s,target);

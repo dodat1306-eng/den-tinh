@@ -11,7 +11,7 @@ COLORS=['#12091a','#0c0914','#1b1429','#352752','#ffe0cc','#ebb89b','#c44dff','#
 PALETTES.update(qhair=COLORS[1:4]+[COLORS[20]],qskin=['#79516a','#ebb89b','#ffe0cc','#ffe0cc'],qcoat=['#110d1a','#231938','#422f66','#64406b'],qsilver=['#64406b','#9c849f','#c7d4e8','#ffffff'],qshade=['#110b18','#221633','#352752','#7a4d9b'],qglow=['#a64dff','#b84dff','#5ce1e6','#4deeea'])
 SPECIES=('wolf','bear','eagle','tiger','panther','lion','gorilla','rhino','elephant','stag','boar','cobra','scorpion','spider','croc','shark','bat','falcon','mantis','crab','treant','dragon')
 ACTIONS={'idle':4,'run':6,'dash':4,'attack':5,'q_cast':6,'e_cast':6,'r_ult':6,'hit':2}
-VIEWS={'S':0,'E':-math.pi/2,'N':math.pi,'W':math.pi/2}
+VIEWS={'S':0.0,'E':math.pi/3,'N':math.pi,'W':-math.pi/3}
 
 def eye(m,x,y,z,neon='#c44dff',size=.08):
     m.ico((x,y,z),(size*1.5,.035,size),'#12091a',1,False)
@@ -43,46 +43,57 @@ def sovereign(action,frame,count,view):
             for i in range(5):
                 a=i*math.tau/5+phase;m.path([(x+math.cos(a)*.09,y-.13+math.sin(a)*.06,z+.22),(x+math.cos(a)*.17,y-.14+math.sin(a)*.10,z+.35),(x+math.cos(a+.6)*.09,y-.13+math.sin(a+.6)*.06,z+.49)],.028,'qglow',end=.003)
     # Distinct chibi face, layered wolf-cut, swept fringe and sideburns.
-    m.ico(p(0,-.015,1.73),(.39,.29,.36),'qskin',2)
-    m.ico(p(0,.07,1.96),(.42,.3,.24),'qhair',2)
+    m.ico(p(0,-.015,1.76),(.29,.255,.29),'qskin',2)
+    m.ico(p(0,-.04,1.57),(.19,.21,.14),'qskin',1)
+    m.ico(p(0,.08,1.96),(.35,.30,.25),'qhair',2)
+    m.ico(p(0,.19,1.74),(.31,.20,.29),'qhair',2)
     for i in range(9):
-        x=(i-4)*.085;z=1.98-abs(i-4)*.025
+        x=(i-4)*.068;z=1.98-abs(i-4)*.025
         m.prism([(x-.10,z+.12+bob),(x+.11,z+.07+bob),(x+.06,1.68+bob+(i%3)*.07),(x-.04,1.78+bob)],'qhair',-.26-i*.007,.13)
     for side in (-1,1):
-        m.ico(p(side*.37,.01,1.69),(.10,.14,.18),'qskin',1)
-        for i in range(3):m.rod(p(side*(.31+i*.025),.1+i*.04,1.9+i*.04),p(side*(.4+i*.02),.04+i*.04,1.43+i*.06),.09,'qhair',end=.005,sides=5)
-        eye(m,side*.16,-.292,1.74+bob)
-        m.rod(p(side*.08,-.34,1.86),p(side*.27,-.31,1.89),.016,'#0c0914',part=False)
+        m.ico(p(side*.29,.01,1.69),(.10,.14,.18),'qskin',1)
+        for i in range(3):m.rod(p(side*(.255+i*.02),.1+i*.04,1.9+i*.04),p(side*(.29+i*.02),.04+i*.04,1.43+i*.06),.09,'qhair',end=.005,sides=5)
+        eye(m,side*.115,-.270,1.75+bob,size=.062)
+        m.rod(p(side*.08,-.34,1.86),p(side*.20,-.28,1.87),.016,'#0c0914',part=False)
     m.path([p(-.07,-.303,1.57),p(.035,-.32,1.565),p(.10,-.30,1.59)],.012,'#79516a',part=False)
     m.path([p(-.09,-.26,1.32),p(0,-.28,1.16),p(.09,-.26,1.32)],.014,'qsilver',part=False)
     m.ico(p(0,-.3,1.17),(.038,.02,.06),'#ff3b7c',1,False)
     # Character left is +X in front view. Geometry is rotated, never mirrored.
-    ear=Vector(p(.43,-.12,1.57));m.rod(tuple(ear+Vector((0,0,.13))),tuple(ear),.024,'qsilver',part=False)
+    ear=Vector(p(.34,-.12,1.60));m.rod(tuple(ear+Vector((0,0,.13))),tuple(ear),.024,'qsilver',part=False)
     m.ico(tuple(ear),(.055,.035,.09),'#b84dff',1,False)
-    if action=='q_cast':
-        for side in (-1,1):m.ico(p(side*.38,-.02,1.3),(.24,.23,.22),'qshade',1)
     if action=='hit':m.verts=[(x+z*.05*math.cos(phase),y,z*.96) for x,y,z in m.verts];ear=Vector((ear.x+ear.z*.05*math.cos(phase),ear.y,ear.z*.96))
     rotation=Matrix.Rotation(VIEWS[view],3,'Z');m.verts=[tuple(rotation@Vector(v)) for v in m.verts]
     ear=rotation@ear
     return m,ear
 
 def beast(kind,action,f,n):
-    m=Mesh();phase=f/n*math.tau;walk=math.sin(phase);strike=action=='attack';body='qshade';glow='qglow'
-    def orb(p,s,c=body,d=1):m.ico(p,s,c,d)
-    def limb(a,b,r=.10,c=body):m.rod(a,b,r,c,end=r*.65,sides=6)
-    def fang(a,b,r=.07):m.rod(a,b,r,'#c7d4e8',end=.002,sides=5)
+    m=Mesh();phase=f/n*math.tau;strike=action=='attack';body='qshade';glow='qglow'
+    drive=([-.25,-.7,1,.7,.25,0][min(f,5)] if strike else 0)
+    walk=math.sin(phase) if action=='walk' else .12*math.sin(phase) if action=='idle' else drive
+    root_y=-.22*drive;breath=.025*math.sin(phase) if action=='idle' else .04*abs(walk)
+    def p(v):return (v[0],v[1]+root_y,v[2]+breath)
+    def orb(v,s,c=body,d=1):m.ico(p(v),s,c,d)
+    def limb(a,b,r=.10,c=body):m.rod(p(a),p(b),r,c,end=r*.65,sides=6)
+    def fang(a,b,r=.07):m.rod(p(a),p(b),r,'#c7d4e8',end=.002,sides=5)
     def gaze(x,y,z,span=.16):
         for side in (-1,1):orb((x+side*span,y+.02,z),(.06,.11,.055),'#4deeea')
-    def tail(points,r=.12):m.path(points,r,body,end=.02)
+    def tail(points,r=.12):m.path([p((x+math.sin(phase+i*.7)*.06*i,y,z)) for i,(x,y,z) in enumerate(points)],r,body,end=.02)
     if kind in ('wolf','tiger','panther','lion','rhino','boar','stag','croc'):
         length=.68 if kind=='croc' else .48;wide=.42 if kind in ('rhino','boar') else .32;z=.65
         orb((0,.15,z),(wide,length,.34))
         for side in (-1,1):
             for rear in (-1,1):
-                step=walk*side*rear*.16;limb((side*wide*.8,rear*length*.7,z),(side*(wide+.04),rear*length*.7+step,.12),.10)
-                orb((side*(wide+.04),rear*length*.7+step-.06,.08),(.13,.18,.09))
+                step=walk*side*rear*.18 if action=='walk' else 0
+                lift=max(0,walk*side*rear)*.14 if action=='walk' else max(0,-drive)*.3 if rear==-1 else 0
+                foot=(side*(wide+.04),rear*length*.7+step-(max(0,drive)*.20 if rear==-1 else 0),.10+lift)
+                knee=(side*wide,rear*length*.7+step*.45,.35+lift)
+                limb((side*wide*.8,rear*length*.7,z),knee,.10);limb(knee,foot,.085)
+                orb(foot,(.13,.18,.09))
         headz=.72 if kind=='croc' else 1.02;heady=-.64 if kind=='croc' else -.42
-        orb((0,heady,headz),(.29,.27,.27));orb((0,heady-.23,headz-.1),(.22,.24,.13));gaze(0,heady-.24,headz+.06)
+        orb((0,heady,headz),(.29,.27,.27));orb((0,heady-.23,headz-.06),(.22,.24,.10));gaze(0,heady-.24,headz+.06)
+        jaw=.13 if strike and f in (0,1,2) else .025
+        orb((0,heady-.20,headz-.17-jaw),(.20,.23,.065))
+        for side in (-1,1):fang((side*.13,heady-.37,headz-.10),(side*.13,heady-.38,headz-.24),.045)
         if kind!='croc':
             for side in (-1,1):
                 if kind in ('tiger','panther','lion'):orb((side*.22,heady+.03,headz+.24),(.105,.09,.12))
@@ -118,9 +129,11 @@ def beast(kind,action,f,n):
     elif kind in ('bear','gorilla','elephant'):
         huge=kind=='elephant';orb((0,.12,1.03),(.72 if huge else .55,.44,.75))
         for side in (-1,1):
-            orb((side*.4,0,.18),(.25,.32,.23));limb((side*.36,.03,.65),(side*.4,0,.2),.24)
-            hand=(side*(.86 if kind=='gorilla' else .74),-.18,1.22+(.5*walk if strike else walk*.08))
-            limb((side*.52,.04,1.46),hand,.27);orb(hand,(.32,.29,.37))
+            step=walk*side*.19 if action=='walk' else 0
+            orb((side*.4,step,.18+max(0,step)),(.25,.32,.23));limb((side*.36,.03,.65),(side*.4,step,.2+max(0,step)),.24)
+            hand=(side*(.86 if kind=='gorilla' else .74),-.18-.6*drive,1.22+(-.25*drive if strike else walk*side*.10))
+            elbow=(side*.68,.02-.25*drive,1.40-.10*drive)
+            limb((side*.52,.04,1.46),elbow,.24);limb(elbow,hand,.22);orb(hand,(.32,.29,.37))
             if kind=='bear':
                 for i in range(3):fang((hand[0]+(i-1)*.13,hand[1]-.2,hand[2]),(hand[0]+(i-1)*.13,hand[1]-.35,hand[2]-.32),.055)
         orb((0,-.02,1.92),(.47,.36,.4));gaze(0,-.36,1.99,.21)
@@ -136,15 +149,19 @@ def beast(kind,action,f,n):
         dragon=kind=='dragon';z=1.1+walk*.10
         orb((0,0,z),(.27 if not dragon else .42,.22,.48))
         for side in (-1,1):
-            span=1.2 if kind in ('eagle','dragon') else .95;wingz=z+.35+walk*.20
+            start=len(m.verts)
+            span=1.2 if kind in ('eagle','dragon') else .95;wingz=z+.35
             outline=[(.16,z+.24),(.55,wingz+.3),(span,wingz+.13),(span-.12,wingz-.11),(.6,z-.12),(.25,z-.16)]
             if kind=='eagle':outline=[(.16,z+.24),(.55,wingz+.34),(span,wingz+.16),(1.11,wingz-.14),(.96,wingz-.04),(.88,wingz-.28),(.73,wingz-.13),(.62,z-.21),(.25,z-.16)]
             elif kind=='falcon':outline=[(.16,z+.24),(.58,wingz+.14),(1.12,wingz+.55),(.87,z-.08),(.48,z-.29),(.20,z-.2)]
             elif kind=='bat':outline=[(.16,z+.24),(.56,wingz+.33),(.95,wingz+.22),(.73,wingz-.18),(.56,z+.03),(.44,z-.25),(.25,z-.16)]
-            m.prism([(side*x,zz) for x,zz in outline],body,.03,.08)
+            m.prism([(side*max(.35,x),zz) for x,zz in outline],body,.03,.08)
             for i in range(5):
                 x=side*(.35+i*.16);y=-.06-i*.055;m.path([(side*(.18+i*.08),y,z+.16),(x,y-.01,wingz-i*.05),(x+side*.1,y-.025,wingz-.32-i*.04)],.022,glow,part=False)
-            fang((side*.13,-.06,z-.35),(side*.25,-.26,z-.56),.07)
+            pivot=Vector((side*.35,.03,z+.24));flap=(math.radians(3.5+38.5*math.cos(phase)) if action=='walk' else math.radians(6)*math.sin(phase) if action=='idle' else math.radians(30)*drive)
+            rot=Matrix.Rotation(-side*flap,3,'Y')
+            m.verts[start:]=[tuple(pivot+rot@(Vector(v)-pivot)) for v in m.verts[start:]]
+            fang((side*.13,-.06,z-.35),(side*.25,-.26-.15*drive,z-.56),.07)
         orb((0,-.13,z+.53),(.24,.23,.25));gaze(0,-.34,z+.58,.12)
         if kind in ('eagle','falcon'):fang((0,-.34,z+.49),(0,-.61,z+.37),.13)
         else:
@@ -154,7 +171,7 @@ def beast(kind,action,f,n):
             tail([(0,.2,z-.2),(.5,.4,.45),(.87,.3,.18),(1.07,.2,.4)],.22)
             orb((0,-.3,z+.35),(.22,.19,.16));m.path([(0,-.53,z+.4),(.2,-.7,z+.3),(.28,-.9,z+.48)],.07,glow,end=.015)
     elif kind=='cobra':
-        pts=[(math.sin(i*.8+phase*.1)*.52,.2-i*.05,.12+i*.08) for i in range(12)];tail(pts,.17)
+        pts=[(math.sin(i*.8+phase)*.52,.2-i*.05,.12+i*.08) for i in range(12)];tail(pts,.17)
         orb((0,-.27,1.26),(.45,.13,.51));orb((0,-.36,1.58),(.25,.23,.25));gaze(0,-.57,1.62,.13)
         for side in (-1,1):m.path([(side*.08,-.42,1.1),(side*.35,-.43,1.48),(side*.08,-.43,1.79)],.025,glow,part=False)
         m.path([(0,-.58,1.49),(0,-.76,1.46),(.10,-.82,1.5)],.02,'#ff3b7c',part=False)
@@ -162,12 +179,12 @@ def beast(kind,action,f,n):
         legs=4 if kind=='spider' else 3;orb((0,.1,.55),(.40,.45,.25));orb((0,-.31,.65),(.30,.24,.23));gaze(0,-.53,.72)
         for side in (-1,1):
             for i in range(legs):
-                y=-.35+i*.22;step=math.sin(phase+i)*.05;m.path([(side*.25,y,.55),(side*(.65+step),y+.15,.45),(side*(.81+step),y-.03,.06)],.055,body)
+                y=-.35+i*.22;step=math.sin(phase+i*math.pi+side)*(.13 if action=='walk' else .025);m.path([p((side*.25,y,.55)),p((side*(.65+step),y+.15,.45+max(0,step))),p((side*(.81+step),y-.03,.06+max(0,step)))],.055,body)
             if kind in ('scorpion','crab'):
-                x=side*.73;limb((side*.3,-.23,.61),(x,-.48,.77),.12);orb((x,-.53,.87),(.24,.23,.23))
+                x=side*(.73-.22*drive);limb((side*.3,-.23,.61),(x,-.48-.35*drive,.77+.15*drive),.12);orb((x,-.53-.35*drive,.87+.15*drive),(.24,.23,.23))
                 for sign in (-1,1):fang((x+sign*.14,-.58,.87),(x+sign*.07,-.83,.90),.12)
             if kind=='mantis':
-                m.path([(side*.22,-.1,.65),(side*.40,-.27,1.18),(side*.72,-.31,1.46),(side*.56,-.4,.91)],.09,glow,end=.015)
+                m.path([(side*.22,-.1,.65),(side*.40,-.27,1.18),(side*(.72-.2*drive),-.31-.4*drive,1.46-.3*drive),(side*(.56-.2*drive),-.4-.4*drive,.91-.2*drive)],.09,glow,end=.015)
         if kind=='scorpion':m.path([(0,.37,.58),(.2,.63,.91),(.12,.64,1.46),(0,.32,1.68),(0,.1,1.38)],.13,body,end=.035)
         if kind=='spider':orb((0,.38,.62),(.41,.4,.34));m.path([(-.2,.1,.91),(0,.35,1),(.2,.1,.91)],.04,glow,part=False)
         if kind=='crab':orb((0,.09,.75),(.57,.37,.22));fang((-.25,-.3,.76),(-.3,-.36,1.1),.04);fang((.25,-.3,.76),(.3,-.36,1.1),.04)
@@ -182,27 +199,57 @@ def beast(kind,action,f,n):
         orb((0,0,1.03),(.37,.28,.78));gaze(0,-.28,1.5,.16)
         for side in (-1,1):
             m.path([(side*.27,0,1.3),(side*.68,-.03,1.12),(side*.88,-.12,.61+walk*.12)],.13,body)
-            for j in range(3):tail([(side*.13,.04,.47),(side*(.35+j*.18),-.07,.17),(side*(.43+j*.22),-.2,.08)],.10)
+            for j in range(3):tail([(side*(.13+j*.07),.04+j*.028,.47),(side*(.35+j*.18),-.07,.17),(side*(.43+j*.22),-.2,.08)],.07)
             for i in range(3):m.path([(side*.16,.03,1.62),(side*(.31+i*.16),.05,1.91+i*.12),(side*(.36+i*.16),.04,2.18+i*.1)],.06,body)
         m.path([(-.08,-.28,.5),(.10,-.29,.92),(-.04,-.29,1.30)],.032,glow,part=False)
-    if strike:
-        m.verts=[(x*(1+.06*walk),y-.10*max(0,walk)*z,z+.05*math.sin(phase)) for x,y,z in m.verts]
-    elif kind=='shark':m.verts=[(x+z*.12*walk,y,z+.08*walk) for x,y,z in m.verts]
+    if strike and f in (2,3):
+        m.path([(-.55,-.9,.8),(-.25,-1.1,1.05),(.15,-1.12,.96),(.55,-.9,.65)],.045,'qglow',part=False)
+    if action=='spawn':
+        rise=(.12,.52,1.10,1.0)[f];height=max(v[2] for v in m.verts);sink=height*(1-rise)
+        # Rigid emergence through ground, keeping articulated limb geometry intact.
+        m.verts=[(x,y,z-sink) for x,y,z in m.verts]
+        keep=[i for i,face in enumerate(m.faces) if all(m.verts[j][2]>=.025 for j in face)]
+        m.faces=[m.faces[i] for i in keep];m.colors=[m.colors[i] for i in keep];m.parts=[m.parts[i] for i in keep]
+        used=sorted({j for face in m.faces for j in face});remap={old:new for new,old in enumerate(used)}
+        m.verts=[m.verts[j] for j in used];m.faces=[tuple(remap[j] for j in face) for face in m.faces]
+        for i in range(20):
+            a=i*math.tau/20;b=a+.25;m.rod((math.cos(a)*.75,math.sin(a)*.30,.025),(math.cos(b)*.75,math.sin(b)*.30,.025),.025,glow,part=False)
+        for side in (-1,1):orb((side*.45,-.28,.10),(.13,.16,.12))
     if kind in ('wolf','tiger','panther','lion','rhino','boar','stag','croc'):
         rotation=Matrix.Rotation(-.72,3,'Z');m.verts=[tuple(rotation@Vector(v)) for v in m.verts]
     return m
 
+def armor(layer,f,view):
+    m=Mesh();phase=f*math.tau/6
+    if layer=='back':
+        for i in range(5):
+            x=(i-2)*.18;wave=math.sin(phase+i*.8)*.08
+            m.prism([(x-.13,1.28),(x+.13,1.28),(x+.17+wave,.25),(x+wave,.10),(x-.14+wave,.35)],'qshade',.20+i*.045,.035)
+            m.path([(x,.28,1.20),(x+wave,.29,.64),(x+wave,.25,.12)],.018,'#a64dff',part=False)
+        for i in range(28):
+            a=i*math.tau/28;b=a+.16
+            m.rod((math.cos(a)*.84,math.sin(a)*.24,.025),(math.cos(b)*.84,math.sin(b)*.24,.025),.018,'qglow',part=False)
+    else:
+        for side in (-1,1):
+            m.ico((side*.34,-.08,1.24),(.21,.25,.14),'qshade',1)
+            m.path([(side*.22,-.29,1.24),(side*.40,-.27,1.34),(side*.52,-.1,1.30)],.025,'qglow',part=False)
+            m.rod((side*.42,-.01,1.30),(side*.48,.03,1.48+.025*math.sin(phase)),.06,'qshade',end=.003,sides=5)
+        m.prism([(-.23,1.20),(0,1.27),(.23,1.20),(.18,.89),(0,.83),(-.18,.89)],'qshade',-.27,.06)
+        m.ico((0,-.34,1.08),(.06,.035,.09),'qglow',1,False)
+        for i in range(3):
+            a=phase+i*math.tau/3;x=math.cos(a)*.65;y=math.sin(a)*.22-.15;z=.80+math.sin(a)*.10
+            m.prism([(x-.04,z-.15),(x+.05,z+.13),(x+.08,z+.19),(x-.04,z+.10)],'qsilver',y,.03)
+            m.rod((x,y-.04,z-.08),(x+.04,y-.04,z+.14),.014,'qglow',part=False)
+    rot=Matrix.Rotation(VIEWS[view],3,'Z');m.verts=[tuple(rot@Vector(v)) for v in m.verts]
+    return m
+
 def effect(kind,f,n):
     m=Mesh();phase=f/n*math.tau
-    if kind in ('armor','tendrils'):
-        for side in (-1,1):
-            m.ico((side*.41,0,1.22),(.25,.27,.22),'qshade',1)
-            for j in (-1,1):m.rod((side*.43,j*.1,1.35),(side*.58,j*.2,1.62),.09,'qshade',end=.002,sides=5)
-            m.prism([(side*.3,1.12),(side*.52,.9),(side*(.56+.05*math.sin(phase)),.1),(side*.27,.40)],'qshade',.15,.08)
-        for i in range(4):
-            a=i*math.tau/4+phase*.13;x=math.cos(a);y=math.sin(a)*.4
-            m.path([(x*.28,y*.28,.06),(x*.7,y*.7,.3),(x*1.1,y, .8+math.sin(phase+i)*.2)],.075,'qshade',end=.008)
-            m.rod((x*.73,y*.7-.09,.34),(x*1.06,y-.05,.74),.018,'#a64dff',end=.002,part=False)
+    if kind=='tendrils':
+        for i in range(5):
+            a=i*math.tau/5+phase*.15;x=math.cos(a);y=math.sin(a)*.25
+            m.path([(x*.35,y*.35,.04),(x*.75,y*.75,.16),(x,y,.30+.08*math.sin(phase+i))],.05,'qshade',end=.008)
+            m.rod((x*.5,y*.5-.07,.05),(x*.8,y*.8-.07,.20),.015,'qglow',part=False)
     elif kind in ('portal','legion','web','counter','roar','roots'):
         for j in range(2):
             r=.5+j*.27+f*.025
@@ -229,45 +276,60 @@ def write(image,meta,name):
     image.save(ROOT/meta['image'],optimize=True)
     raw=json.dumps(meta,separators=(',',':'));(ROOT/'assets'/f'{name}.json').write_text(raw,encoding='utf-8');(ROOT/'assets'/f'{name}.js').write_text('globalThis.'+('DTQuanLeAtlas' if name.endswith('v08') else 'DTQuanLeVFX')+'='+raw+';\n',encoding='utf-8')
 
-def run():
-    atlas=Atlas('quanle-pixel-v08',1024);earmarks=[]
+def bake_hero():
+    atlas=Atlas('quanle-pixel-v1',1024);earmarks=[]
     for view in VIEWS:
         for action,n in ACTIONS.items():
             for f,c in enumerate(atlas.cells(view+'/'+action,64,64,n,10)):
                 mesh,ear=sovereign(action,f,n,view);before=[Vector(v) for v in mesh.verts];atlas.add(c,mesh,'quanle');earmarks.append((mesh,before,ear,c,view,action,f))
-    image,meta=atlas.bake(HERE,'DTQuanLeAtlas',detached_parts='Eyes, earring glints and raised hair inlays are independent 2D sprite details.');pen=ImageDraw.Draw(image)
+    image,meta=atlas.bake(HERE,'DTQuanLeAtlas',detached_parts='Eyes, earring glints and raised hair inlays are independent 2D sprite details.',target_h=43);hero_transform=atlas.transforms['quanle'];pen=ImageDraw.Draw(image)
     for mesh,before,ear,c,view,action,f in earmarks:
         scale=(Vector(mesh.verts[1])-Vector(mesh.verts[0])).length/(before[1]-before[0]).length;offset=Vector(mesh.verts[0])-before[0]*scale;v=ear*scale+offset
         ex=round(c['anchorX']+v.x/PITCH);ey=round(c['anchorY']-v.dot(UP)/PITCH)
-        c['leftEarring']={'x':ex,'y':ey,'w':3,'h':5,'visible':view in ('S','E'),'physicalSide':'left'}
+        c['leftEarring']={'x':ex,'y':ey,'w':2,'h':3,'visible':view in ('S','E'),'physicalSide':'left'}
         if view in ('S','E'):
             x=c['x']+ex;y=c['y']+ey
-            pen.rectangle((x-1,y-2,x+1,y+2),fill='#12091a');pen.line((x,y-1,x,y+1),fill='#ffffff');pen.point((x,y+2),fill='#b84dff');pen.point((x,y),fill='#00f0ff')
+            pen.rectangle((x,y-1,x+1,y+1),fill='#c7d4e8');pen.point((x,y),fill='#00f0ff')
             if action in ('idle','run') and f%3==1:
                 for dx,dy in [(-2,0),(2,0),(0,-3)]:pen.point((x+dx,y+dy),fill='#ffffff')
-    meta['palette']=COLORS;meta['views']=list(VIEWS);meta['earringSide']='left';meta['version']='0.8.1';write(image,meta,'quanle-pixel-v08')
-    heroimage,herometa=image,meta
+    meta['palette']=COLORS;meta['views']=list(VIEWS);meta['earringSide']='left';meta['version']='0.8.2';write(image,meta,'quanle-pixel-v1')
+    return image,meta,hero_transform
+
+
+def run():
+    if '--vfx-only' in sys.argv:
+        herometa=json.loads((ROOT/'assets/quanle-pixel-v1.json').read_text(encoding='utf-8'))
+        heroimage=Image.open(ROOT/herometa['image']).convert('RGBA')
+        cell=herometa['clips']['S/idle']['cells'][0]
+        hero_transform={'scale':cell['worldScale'],'lift':cell['worldLift']}
+    else:
+        heroimage,herometa,hero_transform=bake_hero()
+    if '--hero-only' in sys.argv:return
     atlas=Atlas('quanle-vfx-pixel',2048)
     for kind in SPECIES:
         w,h=(96,96) if kind in ('bear','elephant','dragon') else (80,80) if kind in ('gorilla','eagle','stag','treant') else (64,64)
-        for action in ('walk','attack'):
-            for f,c in enumerate(atlas.cells('shadow_'+kind+'/'+action,w,h,6,10)):
-                atlas.add(c,beast(kind,action,f,6),'shadow_'+kind)
+        for action,n in [('spawn',4),('idle',4),('walk',6),('attack',6)]:
+            for f,c in enumerate(atlas.cells('shadow_'+kind+'/'+action,w,h,n,n/.45 if action=='spawn' else 10)):
+                atlas.add(c,beast(kind,action,f,n),'shadow_'+kind)
     for variant,source in [('vine_hydra','cobra'),('thorn_stalker','treant')]:
-        for action in ('walk','attack'):
-            for f,c in enumerate(atlas.cells('shadow_'+variant+'/'+action,80,80,6,10)):
-                mesh=beast(source,action,f,6)
+        for action,n in [('spawn',4),('idle',4),('walk',6),('attack',6)]:
+            for f,c in enumerate(atlas.cells('shadow_'+variant+'/'+action,80,80,n,n/.45 if action=='spawn' else 10)):
+                mesh=beast(source,action,f,n)
                 for side in (-1,1):mesh.path([(side*.2,.0,.8),(side*.5,0,1.4),(side*.65,-.1,1.9)],.10,'qshade',end=.02)
                 atlas.add(c,mesh,'shadow_'+variant)
-    for key,w,h in [('armor',80,80),('tendrils',128,96),('portal',96,64),('legion',160,112),('crescent',48,48),('slash',64,64),('soul',24,32),('counter',112,80),('web',96,64),('roar',96,64),('roots',96,80),('darkfire',112,96),('impact',40,40)]:
+    for key,w,h in [('tendrils',128,96),('portal',96,64),('legion',160,112),('crescent',48,48),('slash',64,64),('soul',24,32),('counter',112,80),('web',96,64),('roar',96,64),('roots',96,80),('darkfire',112,96),('impact',40,40)]:
         for f,c in enumerate(atlas.cells('shadow_'+key,w,h,6,12)):atlas.add(c,effect(key,f,6),'shadow_'+key)
-    image,meta=atlas.bake(HERE/'beasts','DTQuanLeVFX',detached_parts='Independent soul motes, neon eyes, feather inlays and summoned tendrils are emitted layers in a 2D flipbook; no rigid 3D export.');meta['catalog']=['shadow_'+k for k in SPECIES];meta['version']='0.8.1';write(image,meta,'quanle-vfx-pixel')
+    for view in VIEWS:
+        for layer in ('back','front'):
+            for f,c in enumerate(atlas.cells('shadow_armor_'+layer+'/'+view,64,64,6,12)):
+                atlas.add(c,armor(layer,f,view),'quanle')
+    image,meta=atlas.bake(HERE/'beasts','DTQuanLeVFX',transforms={'quanle':hero_transform},detached_parts='Independent soul motes, neon eyes, feather inlays and summoned tendrils are emitted layers in a 2D flipbook; no rigid 3D export.');meta['catalog']=['shadow_'+k for k in SPECIES];meta['version']='0.8.2';write(image,meta,'quanle-vfx-pixel')
     # Native texels enlarged exactly 4x, labels outside sprites.
     keys=['S/idle','S/q_cast']+['shadow_'+k+'/walk' for k in SPECIES];out=Image.new('RGB',(6*128,4*140),'#1b182a');draw=ImageDraw.Draw(out)
     for i,key in enumerate(keys):
         src,md=(heroimage,herometa) if i<2 else (image,meta);c=md['clips'][key]['cells'][1];tile=src.crop((c['x'],c['y'],c['x']+c['w'],c['y']+c['h']));x=i%6*128+(128-c['w'])//2;y=i//6*140+115-c['h'];out.paste(tile,(x,y),tile)
         if i==1:
-            a=meta['clips']['shadow_armor']['cells'][1];armor=image.crop((a['x'],a['y'],a['x']+a['w'],a['y']+a['h']));out.paste(armor,(i%6*128+(128-a['w'])//2,y+c['h']-a['h']),armor)
+            a=meta['clips']['shadow_armor_front/S']['cells'][1];layer=image.crop((a['x'],a['y'],a['x']+a['w'],a['y']+a['h']));out.paste(layer,(i%6*128+(128-a['w'])//2,y+c['h']-a['h']),layer)
         draw.text((i%6*128+4,i//6*140+120),'Quan Le' if i==0 else 'Q - Hac Giap' if i==1 else key[7:-5],fill='#e9d3ff')
     out.resize((out.width*4,out.height*4),Image.Resampling.NEAREST).save(HERE/'quanle-22shadows-preview.png')
     preview(heroimage,herometa,['S/idle','E/idle','N/idle','W/idle','S/attack','S/e_cast','S/r_ult'],HERE/'quanle-actions-preview.png',4)

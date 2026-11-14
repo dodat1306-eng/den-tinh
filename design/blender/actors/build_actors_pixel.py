@@ -40,16 +40,19 @@ def chibi_body(m,phase,action,cloth='leaf',skin='skin',scale=1):
 def human(kind,phase,action):
     m=Mesh();skin='skin';cloth={'elder':'wood','smith':'earth','ferryman':'leaf','mirror_maiden':'pink','bell_keeper':'water','sun_child':'red','bronze_pilot':'wood'}[kind]
     scale=.8 if kind=='sun_child' else 1;p=chibi_body(m,phase,action,cloth,scale=scale)
-    m.ico(p(0,0,1.53),(.36*scale,.27*scale,.34*scale),skin,2)
+    m.ico(p(0,0,1.53),(.29*scale,.25*scale,.29*scale),skin,2)
     # Sclera, iris, catchlight and eyebrows remain visible in every human face.
     for side in (-1,1):
-        m.ico(p(side*.135,-.258,1.55),(.085*scale,.024,.065*scale),'cream',1,False)
-        m.ico(p(side*.135,-.285,1.55),(.034*scale,.015,.05*scale),'wood',1,False)
-        m.ico(p(side*.145,-.3,1.57),(.015,.009,.018),'#ffffff',1,False)
+        m.ico(p(side*.105,-.248,1.55),(.085*scale,.024,.065*scale),'cream',1,False)
+        m.ico(p(side*.105,-.275,1.55),(.034*scale,.015,.05*scale),'wood',1,False)
+        m.ico(p(side*.115,-.29,1.57),(.015,.009,.018),'#ffffff',1,False)
         m.rod(p(side*.07,-.27,1.67),p(side*.21,-.24,1.68),.015,'wood',part=False)
     m.rod(p(-.05,-.27,1.39),p(.06,-.27,1.39),.012,'red',part=False)
     hair='cream' if kind in ('elder','ferryman') else 'earth' if kind=='bronze_pilot' else 'night'
-    m.ico(p(0,.06,1.77),(.37*scale,.26*scale,.19*scale),hair,2)
+    m.ico(p(0,.06,1.77),(.33*scale,.27*scale,.20*scale),hair,2)
+    m.ico(p(0,.17,1.53),(.28*scale,.17*scale,.27*scale),hair,2)
+    m.ico(p(0,-.04,1.32),(.18*scale,.20*scale,.12*scale),skin,1)
+    for side in (-1,1):m.rod(p(side*.25,.01,1.75),p(side*.265,-.10,1.40),.065*scale,hair,end=.015)
     for i in range(5):m.rod(p((i-2)*.12,-.08,1.83),p((i-2)*.13,-.22,1.63+(i%2)*.04),.08,hair,end=.012,sides=5)
     if kind=='elder':
         m.ico(p(0,.12,1.95),(.19,.18,.17),'cream',2)
@@ -192,11 +195,14 @@ def actor(kind,action,frame,count):
         for i in range(3):m.rod(tail[i],tail[i+1],.17-i*.025,'cream' if i==2 else 'orange',end=.12-i*.025)
         m.ico(tail[-1],(.09,.06,.15),'gold',1)
     elif kind in ('an','linh'):
-        p=chibi_body(m,phase,'walk' if action in ('run','dash') else 'attack' if action in ('q_cast','e_cast','r_ult') else action,'red' if kind=='an' else 'leaf' if kind=='linh' else 'water',scale=1.35)
-        m.ico(p(0,0,1.5),(.44,.34,.40),'skin',2)
-        m.ico(p(0,.08,1.77),(.47,.33,.20),'night',2)
-        for i in range(5):m.rod(p((i-2)*.12,-.12,1.82),p((i-2)*.14,-.25,1.61),.09,'night',end=.01)
-        eyes(m,p(0,-.34,1.56),.18,'cyan',.045)
+        p=chibi_body(m,phase,'walk' if action in ('run','dash') else 'attack' if action in ('q_cast','e_cast','r_ult') else action,'red' if kind=='an' else 'leaf' if kind=='linh' else 'water',scale=1)
+        m.ico(p(0,0,1.55),(.29,.25,.29),'skin',2)
+        m.ico(p(0,-.035,1.34),(.18,.20,.12),'skin',1)
+        m.ico(p(0,.08,1.79),(.33,.28,.22),'night',2)
+        m.ico(p(0,.18,1.55),(.29,.19,.28),'night',2)
+        for side in (-1,1):m.rod(p(side*.26,.01,1.77),p(side*.27,-.12,1.39),.075,'night',end=.012)
+        for i in range(5):m.rod(p((i-2)*.12,-.12,1.82),p((i-2)*.12,-.25,1.65),.055,'night',end=.01)
+        eyes(m,p(0,-.26,1.57),.11,'cyan',.043)
         if kind=='an':
             for i in range(5):m.rod(p(0,.02,1.74+i*.025),p(0,.02,1.77+i*.025),.62-i*.11,'cream',sides=12)
             m.path([p(-.48,-.12,1),p(-.5,-.12,.75),p(-.44,-.12,.72)],.02,'wood')
@@ -209,25 +215,31 @@ def actor(kind,action,frame,count):
             m.path([p(.45,-.1,.5),p(.4+max(0,pulse)*.15,-.2,1.07),p(.45,-.1,1.65)],.012,'gold',part=False)
     elif kind in ('golem','treant','boss'):
         size=1.65 if kind=='golem' else 1.18 if kind=='treant' else 1.8;rock=kind=='golem';body='earth' if rock else 'wood';swing=math.sin(phase) if moving else .1*pulse
+        drive=([-.3,-.8,1,.75,.25,0][min(frame,5)] if strike else 0)
         for side in (-1,1):
-            m.ico((side*.33*size,0,(.18+(.28*max(0,pulse) if action=='stomp' and side==1 else 0))*size),(.25*size,.28*size,.2*size),body,1)
+            m.ico((side*.33*size,0,(.18+(.28*max(0,-drive) if action=='stomp' and side==1 else max(0,swing*side)*.12 if moving else 0))*size),(.25*size,.28*size,.2*size),body,1)
             m.rod((side*.3*size,0,.23*size),(side*.24*size,0,.69*size),.2*size,body,end=.16*size,sides=7)
         m.ico((0,.04,.95*size),(.5*size,.32*size,.56*size),body,2)
         arms=4 if kind=='boss' else 2
         for arm in range(arms):
             side=(-1)**arm;z=1.26-(arm//2)*.35;x=side*.54*size
             tier=(arm//2)*.35*size
-            handZ=(1.55+.30*pulse if action=='throw' else 1.15+(.5*pulse) if action=='smash' else .85+side*.28*pulse if action=='punch' else .9+(swing*side*.1))*size-tier
+            handZ=(1.65-.7*max(0,drive) if action=='throw' else 1.25-.75*drive if action=='smash' else 1.12-.12*drive if action=='punch' else .9+(swing*side*.1))*size-tier
+            handX=side*(.8-.40*max(0,drive) if action=='attack' and not rock else .8)*size
+            handY=(-.10-.75*drive if action=='punch' and side==1 else -.1-.30*drive if strike else -.1+swing*side*.13)
             m.ico((x,0,z*size),(.28*size,.29*size,.27*size),body,1)
-            m.rod((x,0,z*size),(side*.76*size,-.09,handZ),.17*size,body,end=.2*size)
-            m.ico((side*.8*size,-.1,handZ),(.3*size,.26*size,.34*size),body,1)
+            elbow=(side*.70*size,handY*.45,(z*size+handZ)/2)
+            m.rod((x,0,z*size),elbow,.17*size,body,end=.19*size)
+            m.rod(elbow,(handX,handY,handZ),.18*size,body,end=.2*size)
+            m.ico((handX,handY,handZ),(.3*size,.26*size,.34*size),body,1)
             if not rock:
                 tip=side*(1.02+(.23*max(0,pulse) if strike else 0))*size
-                m.path([(side*.76*size,-.1,handZ),(tip,-.1,.7*size-tier),(tip+side*.13,-.12,1.04*size-tier)],.04*size,'leaf',end=.013)
+                m.path([(handX,handY,handZ),(tip-.5*side*drive,-.1-.5*drive,.7*size-tier),(tip+side*.13-.7*side*drive,-.12-.6*drive,1.04*size-tier)],.04*size,'leaf',end=.013)
         m.ico((0,-.05,1.62*size),(.36*size,.29*size,.35*size),body,2)
         eyes(m,(0,-.33*size,1.64*size),.15*size,'gold' if rock else 'cyan',.06*size)
         for side in (-1,1):m.rod((side*.23*size,0,1.83*size),(side*.34*size,0,2.03*size),.13*size,body,end=.004)
         m.path([(-.16*size,-.3,.7*size),(.02,-.34,.98*size),(-.09*size,-.3,1.25*size),(.06,-.3,1.45*size)],.033*size,'ember' if rock else 'jade',part=False)
+        if rock and action=='throw' and frame<3:m.ico((0,-.12,2.0*size),(.48,.39,.40),'earth',1)
         if not rock:
             for i in range(7):
                 x=(i-3)*.2*size;z=(1.83+math.sin(i*2)*.12)*size
@@ -299,6 +311,14 @@ def actor(kind,action,frame,count):
                 side=(-1)**arm;z=1.5+(arm//2)*.4;hand=(side*(.85+(arm//2)*.2),-.16,z+pulse*.12)
                 m.path([(side*.4,0,2),hand],.065,'purple');m.ico(hand,(.08,.07,.08),'cream',1)
                 m.path([hand,(side*1.4,.3,.4+(arm//2)*.35),(-side*1.4,.3,2.8-(arm//2)*.3)],.009,'cyan' if arm%2 else 'pink',part=False)
+    if action=='spawn' and kind in ('golem','treant'):
+        rise=(.12,.52,1.10,1.0)[frame];sink=max(v[2] for v in m.verts)*(1-rise)
+        m.verts=[(x,y,z-sink) for x,y,z in m.verts]
+        keep=[i for i,face in enumerate(m.faces) if all(m.verts[j][2]>=.025 for j in face)]
+        m.faces=[m.faces[i] for i in keep];m.colors=[m.colors[i] for i in keep];m.parts=[m.parts[i] for i in keep]
+        used=sorted({j for face in m.faces for j in face});remap={j:i for i,j in enumerate(used)}
+        m.verts=[m.verts[j] for j in used];m.faces=[tuple(remap[j] for j in face) for face in m.faces]
+        for side in (-1,1):m.path([(side*.2,0,.03),(side*.55,.08,.12),(side*.8,.12,.04)],.09,body)
     if action=='hit':
         for i,v in enumerate(m.verts):m.verts[i]=(v[0]+v[2]*.1*math.cos(phase),v[1],v[2]*(.93+.04*math.cos(phase)))
     return m
@@ -351,7 +371,7 @@ def pulse_safe(phase,i):return math.sin(phase+i)
 
 def export_summons_and_effects(image,metadata):
     path=ROOT/'assets/thienvu-vfx-pixel.json';old=json.loads(path.read_text(encoding='utf-8'));sheet=Image.open(ROOT/old['image']).convert('RGBA')
-    keys={'golem_walk':'golem/walk','golem_smash':'golem/smash','golem_punch':'golem/punch','golem_stomp':'golem/stomp','golem_throw':'golem/throw','treant_walk':'treant/walk','treant_whip':'treant/attack'}
+    keys={'golem_spawn':'golem/spawn','golem_idle':'golem/idle','golem_walk':'golem/walk','golem_smash':'golem/smash','golem_punch':'golem/punch','golem_stomp':'golem/stomp','golem_throw':'golem/throw','treant_spawn':'treant/spawn','treant_idle':'treant/idle','treant_walk':'treant/walk','treant_whip':'treant/attack'}
     extras={k:k for k in ('tornado_mesh','tornado_hurricane','wind_tornado','giant_fireball','meteor_burst','earth_tremor','lightning_sigil','convergence_hub','weapon_swing_lightning','weapon_swing_earth','weapon_swing_ice','weapon_swing_nature','light_flash_step','light_backstab_slash','golem_rock')}
     # Repack changed clips into appended native-sized cells; preserve every other source cell.
     width=old['width'];base=old.get('v08BaseHeight') or min(c['y'] for k in keys if k in old['clips'] for c in old['clips'][k]['cells'])
@@ -370,22 +390,22 @@ def export_summons_and_effects(image,metadata):
     path.write_text(json.dumps(old,separators=(',',':')),encoding='utf-8');(ROOT/'assets/thienvu-vfx-pixel.js').write_text('globalThis.DTThienVuVFX='+json.dumps(old,separators=(',',':'))+';\n',encoding='utf-8')
 
 def run():
-    atlas=Atlas('actors-pixel-v08',2048)
+    atlas=Atlas('actors-pixel-v1',2048)
     for kind in (*MONSTERS,*BOSSES,*NPCS,'fox','golem','treant'):
-        boss=kind in BOSSES;w,h=(96,96) if boss else (80,80) if kind=='golem' else (64,64) if kind=='treant' else (36,36) if kind=='fox' else (64,64) if kind=='smith' else (38,44) if kind=='sun_child' else (48,56) if kind in NPCS else (48,48)
-        actions={'idle':4,'move':6,'attack_slam':6,'cast_rage':6} if boss else {'idle':6} if kind in NPCS else {'idle':4,'run':6} if kind=='fox' else {'walk':6,'punch':6,'smash':6,'stomp':6,'throw':6} if kind=='golem' else {'walk':6,'attack':6} if kind=='treant' else {'idle':4,'walk':6,'attack':5,'hit':2}
+        boss=kind in BOSSES;w,h=(96,96) if boss else (80,80) if kind=='golem' else (64,64) if kind=='treant' else (36,36) if kind=='fox' else (64,64) if kind=='smith' else (64,64) if kind in NPCS else (48,48)
+        actions={'idle':4,'move':6,'attack_slam':6,'cast_rage':6} if boss else {'idle':6} if kind in NPCS else {'idle':4,'run':6} if kind=='fox' else {'spawn':4,'idle':4,'walk':6,'punch':6,'smash':6,'stomp':6,'throw':6} if kind=='golem' else {'spawn':4,'idle':4,'walk':6,'attack':6} if kind=='treant' else {'idle':4,'walk':6,'attack':5,'hit':2}
         for action,count in actions.items():
-            for frame,cell in enumerate(atlas.cells(kind+'/'+action,w,h,count,10 if action!='idle' else 6)):
+            for frame,cell in enumerate(atlas.cells(kind+'/'+action,w,h,count,count/.45 if action=='spawn' else 10 if action!='idle' else 6)):
                 atlas.add(cell,actor(kind,action,frame,count),kind)
     for key,w,h in [('tornado_mesh',96,128),('tornado_hurricane',128,160),('wind_tornado',84,96),('giant_fireball',96,96),('meteor_burst',144,144),('earth_tremor',144,96),('lightning_sigil',72,72),('convergence_hub',96,96),('weapon_swing_lightning',96,80),('weapon_swing_earth',96,80),('weapon_swing_ice',96,80),('weapon_swing_nature',96,80),('light_flash_step',64,64),('light_backstab_slash',96,80),('golem_rock',48,48)]:
         for frame,cell in enumerate(atlas.cells(key,w,h,6,12)):atlas.add(cell,effect(key,frame,6),key)
     for hero in ('an','linh'):
-        for direction,angle in [('S',0),('E',-math.pi/2),('N',math.pi),('W',math.pi/2)]:
+        for direction,angle in [('S',0),('E',math.pi/3),('N',math.pi),('W',-math.pi/3)]:
             from mathutils import Matrix,Vector
             for action,count in {'idle':4,'run':6,'dash':4,'attack':5,'q_cast':6,'e_cast':6,'r_ult':6,'hit':2}.items():
                 for index,cell in enumerate(atlas.cells(hero+'_'+direction+'/'+action,64,64,count,10)):
                     model=actor(hero,action,index,count);rotation=Matrix.Rotation(angle,3,'Z');model.verts=[tuple(rotation @ Vector(v)) for v in model.verts];atlas.add(cell,model,hero)
-    image,meta=(Image.open(ROOT/'assets/actors-pixel-v08.png').convert('RGBA'),json.loads((ROOT/'assets/actors-pixel-v08.json').read_text(encoding='utf-8'))) if '--export-only' in sys.argv else atlas.bake(HERE,'DTActorsPixelAtlas',detached_parts='Eyes, clothing inlays, sparks and spell particles are independent 2D sprite details.')
+    image,meta=(Image.open(ROOT/'assets/actors-pixel-v1.png').convert('RGBA'),json.loads((ROOT/'assets/actors-pixel-v1.json').read_text(encoding='utf-8'))) if '--export-only' in sys.argv else atlas.bake(HERE,'DTActorsPixelAtlas',target_h={k:43 for k in (*NPCS,'an','linh')},detached_parts='Eyes, clothing inlays, sparks and spell particles are independent 2D sprite details.')
     export_summons_and_effects(image,meta)
     keys=[k+'/idle' for k in (*MONSTERS,*BOSSES,*NPCS,'fox')]+['golem/walk','treant/walk']
     preview(image,meta,keys,HERE/'actors-soulknight-preview.png',5)
@@ -405,7 +425,7 @@ def run():
     (art/'ThienVuClips.json').write_text(json.dumps(clips,separators=(',',':')),encoding='utf-8')
     import shutil
     shutil.copyfile(ROOT/vfx['image'],art/'ThienVuVFX.png')
-    shutil.copyfile(ROOT/meta['image'],art/'actors-pixel-v08.png')
-    (art/'WorldPixelClips.json').write_text(json.dumps({'clips':[{'key':k,'texture':'actors-pixel-v08','fps':v['fps'],'cells':v['cells']} for k,v in meta['clips'].items()]},separators=(',',':')),encoding='utf-8')
+    shutil.copyfile(ROOT/meta['image'],art/'actors-pixel-v1.png')
+    (art/'WorldPixelClips.json').write_text(json.dumps({'clips':[{'key':k,'texture':'actors-pixel-v1','fps':v['fps'],'cells':v['cells']} for k,v in meta['clips'].items()]},separators=(',',':')),encoding='utf-8')
 
 if __name__=='__main__':run()

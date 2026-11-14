@@ -9,6 +9,10 @@
       "pass": true
     },
     {
+      "name": "Ultimate intro script is served",
+      "pass": true
+    },
+    {
       "name": "Runtime and browser profile cannot be served",
       "pass": true
     },
@@ -18,6 +22,10 @@
     },
     {
       "name": "Invalid save rejected without overwriting progress",
+      "pass": true
+    },
+    {
+      "name": "Canonical Quan Le and legacy Kiet saves persist; rejected writes preserve them",
       "pass": true
     },
     {

@@ -1,0 +1,21 @@
+{
+  "pass": true,
+  "nativeHeight": {
+    "HoaVi": 43,
+    "Thiên Vũ": 42,
+    "Quân Lê · Q S": 43,
+    "Quân Lê · Q E": 43,
+    "Quân Lê · Q N": 40,
+    "Quân Lê · Q W": 43,
+    "An": 43,
+    "Linh": 43,
+    "NPC": 43
+  },
+  "displayScale": 2,
+  "anchor": [
+    32,
+    58
+  ],
+  "armorFramesPerView": 6,
+  "sharedTransform": true
+}

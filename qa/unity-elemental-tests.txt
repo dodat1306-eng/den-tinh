@@ -34,7 +34,7 @@ PASS Treants expire at 30s
 PASS Seven forms include player and six independent NPCs
 PASS NPCs spread targets
 PASS NPC escapes exact danger center without zero vector
-PASS NPC Q E R do not consume player mana or recharge ultimate
+PASS NPC Q E R do not consume player mana or alter ultimate cooldown
 PASS Save keeps NPC cooldowns, drops pending casts
 PASS Teleport cancels delayed owned strikes
 PASS Respawn clears combat entities

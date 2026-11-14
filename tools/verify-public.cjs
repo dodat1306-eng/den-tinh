@@ -17,9 +17,9 @@ const report = {
 };
 
 async function verify() {
-  assert.equal(version, '0.8.1');
+  assert.equal(version, '0.8.2');
   const files = walk(dist).filter(file => file !== '_headers').sort();
-  assert.equal(files.length, 69, 'Build the complete v0.8.1 web release with Quân Lê and shadow atlases first');
+  assert.equal(files.length, 70, 'Build the complete v0.8.2 web release with ultimate-intro.js and remastered atlases first');
   for (let offset = 0; offset < files.length; offset += 4) {
     await Promise.all(files.slice(offset, offset + 4).map(async file => {
       const response = await fetch(new URL(file, base), {
@@ -52,7 +52,7 @@ verify().catch(error => {
 }).finally(() => {
   report.assets.sort((a, b) => a.file.localeCompare(b.file));
   fs.mkdirSync(path.join(root, 'qa'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'runtime/cloudflare-v'+version.split('.').slice(0,2).join('')+'-report.json'), JSON.stringify(report, null, 2));
+  fs.writeFileSync(path.join(root, 'runtime/cloudflare-v'+version.replaceAll('.','')+'-report.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ url: base, version, commit: report.commit,
     matchingAssets: report.assets.filter(asset => asset.matchesLocal).length,
     privatePaths404: report.privatePaths.filter(item => item.status === 404).length,

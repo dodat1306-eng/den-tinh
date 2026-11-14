@@ -1,0 +1,172 @@
+{
+  "pass": true,
+  "checkedAt": "2026-11-14T08:41:36.3575282Z",
+  "editor": "6000.3.27f1",
+  "live": {
+    "game-time-advances": {
+      "state": "met",
+      "met": true,
+      "timedOut": false,
+      "member": "Game.Time",
+      "op": "changed",
+      "value": 1.4161073,
+      "initialValue": 1.29978609,
+      "elapsedMs": 113,
+      "framesObserved": 2
+    },
+    "live-release": {
+      "state": "met",
+      "met": true,
+      "timedOut": false,
+      "member": "Game.Player.overclock",
+      "op": "greaterThan",
+      "value": 6.97952366,
+      "initialValue": 0.0,
+      "elapsedMs": 1882,
+      "framesObserved": 19
+    },
+    "live-result": {
+      "time": 5.77421331,
+      "intro": false,
+      "overclock": 5.72852659,
+      "cd": 12.2257967
+    }
+  },
+  "heroes": {
+    "thienvu": {
+      "intro": {
+        "ok": true,
+        "hero": "thienvu",
+        "elapsed": 3.49999738,
+        "cd": 16.5000534,
+        "clones": 0,
+        "army": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "release": {
+        "hero": "thienvu",
+        "clones": 6,
+        "army": 0,
+        "overclock": 0.0
+      }
+    },
+    "quanle": {
+      "intro": {
+        "ok": true,
+        "hero": "quanle",
+        "elapsed": 3.49999738,
+        "cd": 16.5000534,
+        "clones": 0,
+        "army": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "release": {
+        "hero": "quanle",
+        "clones": 0,
+        "army": 14,
+        "overclock": 0.0
+      }
+    },
+    "hoavi": {
+      "intro": {
+        "ok": true,
+        "hero": "hoavi",
+        "elapsed": 3.49999738,
+        "cd": 14.5000534,
+        "clones": 0,
+        "army": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "release": {
+        "hero": "hoavi",
+        "clones": 0,
+        "army": 0,
+        "overclock": 6.983333
+      }
+    },
+    "an": {
+      "intro": {
+        "ok": true,
+        "hero": "an",
+        "elapsed": 3.49999738,
+        "cd": 14.5000534,
+        "clones": 0,
+        "army": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "release": {
+        "hero": "an",
+        "clones": 0,
+        "army": 0,
+        "overclock": 0.0
+      }
+    },
+    "linh": {
+      "intro": {
+        "ok": true,
+        "hero": "linh",
+        "elapsed": 3.49999738,
+        "cd": 14.5000534,
+        "clones": 0,
+        "army": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "release": {
+        "hero": "linh",
+        "clones": 0,
+        "army": 0,
+        "overclock": 0.0
+      }
+    }
+  },
+  "compile": {
+    "success": true,
+    "command": "recompile",
+    "data": {
+      "status": "completed",
+      "compiling": false,
+      "failed": false,
+      "compilationFailed": false,
+      "errors": [],
+      "warnings": [],
+      "summary": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "console": {
+    "entries": [],
+    "cursor": 12,
+    "session": "c4496c545f484135994166507a8be9a8",
+    "returned": 0,
+    "dropped": false,
+    "reset": false,
+    "counts": {
+      "error": 0,
+      "warn": 0,
+      "log": 0
+    },
+    "groundTruth": {
+      "sampledUtc": "2026-11-14T08:41:36.3575282Z",
+      "ageMs": 134,
+      "compilationFailed": false,
+      "compiling": false,
+      "consoleErrors": 0,
+      "consoleWarnings": 0,
+      "consoleLogs": 0,
+      "seeded": true
+    }
+  },
+  "stagedCaptures": true,
+  "captureWarning": "CLI reported last-frame capture while the simulation fixture was paused. Frame-count waits met; distinct rendered hero scenes reviewed. Live time and release were verified separately.",
+  "originalSavesRestored": true,
+  "editorSettingsRestored": true
+}

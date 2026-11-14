@@ -13,6 +13,9 @@ def worker(args):
     from bpy_extras.object_utils import world_to_camera_view
     bpy.ops.wm.open_mainfile(filepath=str(HERE/'thienvu-pixel-v08.blend'))
     scene=bpy.context.scene;rig=bpy.data.objects['THIENVU_Armature']
+    camera=scene.camera;ratio=48/41;local=camera.matrix_world.inverted()@Vector((0,0,0))
+    camera.location+=camera.rotation_euler.to_matrix()@Vector(((1-ratio)*local.x,(1-ratio)*local.y,0))
+    camera.data.ortho_scale*=ratio
     scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=1;scene.cycles.use_denoising=False
     scene.render.use_persistent_data=True;scene.render.threads_mode='FIXED';scene.render.threads=4
     spec=json.loads((HERE/'rig-pixel-v08.json').read_text(encoding='utf-8'))

@@ -5,8 +5,8 @@ const projectRoot = path.resolve(__dirname, '..');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' };
 const allowed = new Set(['index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','frontier.js','scenery.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png','assets/environment-v03.png','assets/actors-v03.png','elemental.js','elemental-visuals.js','elemental-ui.js','elemental.css','assets/thien-vu-v04.png']);
 for(const file of ['assets/thienvu-pixel-v08.png', 'assets/thienvu-pixel-v08.js', 'assets/thienvu-pixel-v08.json', 'assets/thienvu-vfx-pixel.png', 'assets/thienvu-vfx-pixel.js', 'assets/thienvu-vfx-pixel.json', 'thienvu-pixel.js'])allowed.add(file);
-for(const file of ['world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v08.png','assets/actors-pixel-v08.js','assets/actors-pixel-v08.json',])allowed.add(file);
-for(const file of ['shadow.js', 'quanle-pixel.js', 'assets/quanle-pixel-v08.png', 'assets/quanle-pixel-v08.js', 'assets/quanle-pixel-v08.json', 'assets/quanle-vfx-pixel.png', 'assets/quanle-vfx-pixel.js', 'assets/quanle-vfx-pixel.json'])allowed.add(file);
+for(const file of ['world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v1.png','assets/actors-pixel-v1.js','assets/actors-pixel-v1.json',])allowed.add(file);
+for(const file of ['shadow.js', 'quanle-pixel.js', 'ultimate-intro.js', 'assets/quanle-pixel-v1.png', 'assets/quanle-pixel-v1.js', 'assets/quanle-pixel-v1.json', 'assets/quanle-vfx-pixel.png', 'assets/quanle-vfx-pixel.js', 'assets/quanle-vfx-pixel.json'])allowed.add(file);
 const isLoopback = address => address === '::1' || /^127\./.test(address || '') || /^::ffff:127\./i.test(address || '');
 for(const file of ['assets/hoavi-pixel-v08.png','assets/hoavi-pixel-v08.js','assets/hoavi-pixel-v08.json','assets/hoavi-vfx-pixel.png','assets/hoavi-vfx-pixel.js','assets/hoavi-vfx-pixel.json','hoavi-pixel.js'])allowed.add(file);
 for(const file of ['choreography.js','assets/spirit-fx-v07.png','journey.js','journey-ui.js','journey-visuals.js','journey.css','mythic-content.js','ascension.js','endless.js','ascension-visuals.js','ascension-ui.js','ascension.css','fonts.css','assets/fonts/NotoSans-Regular.ttf','assets/fonts/NotoSans-Bold.ttf','assets/fonts/OFL.txt'])allowed.add(file);
@@ -22,7 +22,7 @@ function createGameServer(options = {}) {
     if (url === '/health') {
       const address = server.address();
       res.writeHead(200, headers);
-      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 8, contentVersion:'0.8.1', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
+      res.end(JSON.stringify({ game: 'den-tinh-v1', serverVersion: 8, contentVersion:'0.8.2', lan: address.address === '0.0.0.0' || address.address === '::', port: address.port }));
       return;
     }
     if (url === '/save') {
@@ -44,7 +44,7 @@ function createGameServer(options = {}) {
           let save;
           try {
             save = JSON.parse(body);
-            if (save.version !== 1 || !['an', 'linh', 'kiet', 'hoavi','thienvu'].includes(save.hero) || !save.player || !Number.isFinite(save.player.x) || !Number.isFinite(save.player.y) || !Array.isArray(save.enemies)) throw new Error('Invalid save');
+            if (save.version !== 1 || !['an', 'linh', 'kiet', 'quanle', 'hoavi','thienvu'].includes(save.hero) || !save.player || !Number.isFinite(save.player.x) || !Number.isFinite(save.player.y) || !Array.isArray(save.enemies)) throw new Error('Invalid save');
           } catch { res.writeHead(400, headers); res.end('{}'); return; }
           try {
             fs.mkdirSync(path.dirname(savePath), { recursive: true }); fs.writeFileSync(savePath + '.new', JSON.stringify(save)); fs.renameSync(savePath + '.new', savePath);

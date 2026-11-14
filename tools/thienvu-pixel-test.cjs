@@ -53,7 +53,7 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
             if(kind==='five-cast'){p.mp=p.maxMp;g.skill('q');for(const clone of g.elementClones)g.castElement(clone.element,'q',clone,.26,false,{x:g.input.aimX,y:g.input.aimY})}
             else {p.ult=100;if(!g.skill('r'))throw Error('R rejected')}
           }
-          for(let i=0;i<(kind==='seven-r'?23:13);i++)g.update(1/60);
+          for(let i=0;i<(kind==='seven-r'?275:13);i++){g.pendingHitStop=g.hitStop=0;g.update(1/60)}
           g.paused=true;g.consumeEvents();r.camera.x=p.x-520/r.zoom;r.camera.y=p.y-390/r.zoom;r.draw(.016);
           const convergence=g.effects.find(e=>e.type==='element-convergence');
           return {bodies:DTChoreography.metrics.bodies,atlas:DTChoreography.metrics.atlas,triangles:DTChoreography.metrics.triangles,clones:g.elementClones.length,convergence:convergence?{x:convergence.x,y:convergence.y,points:convergence.points}:null,aim:{x:g.input.aimX,y:g.input.aimY},synthetic:g.elementClones.filter(c=>DTChoreography.synthetic.has(c)).length,effects:g.effects.length};

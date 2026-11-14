@@ -19,27 +19,27 @@ namespace DenTinh.Core {
         public static float Clamp(float v,float a,float b){return Math.Max(a,Math.Min(b,v));}
         public static float Angle(V2 v){return (float)Math.Atan2(v.y,v.x);}
     }
-    [Serializable] public class HeroDef {public string id,name,role,desc,color,cloth,accent,q,e,r;public float hp,speed,damage,fireRate,shotSpeed,qCd,eCd;}
+    [Serializable] public class HeroDef {public string id,name,role,desc,color,cloth,accent,q,e,r;public float hp,speed,damage,fireRate,shotSpeed,qCd,eCd,rCd;}
     [Serializable] public class WeaponDef {public string id,name,kind,rarity,color,effect,desc;public float power,interval,speed,reload;public int shots,pierce,clip;}
     [Serializable] public class RelicDef {public string id,name,icon,desc;}
     [Serializable] public class ElementDef {public string id,name,title,color,accent,q,e,r,desc,passive,icon;}
     public class StoryNpc {public string id,name,text;public V2 position;}
     [Serializable] public class ShadowSpec {public string id,name,behavior;public float speed,hp,r;public bool flying;}
     [Serializable] public class ShadowRemain {public V2 position;public string sourceType,enemyType,variant;public float life=20;}
-    [Serializable] public class ShadowUnit {public string id,kind,variant;public V2 position;public float hp,maxHp,power,life,maxLife,radius,attackCd,hurtCd,aimAngle;public bool moving;public ActorAction action;}
+    [Serializable] public class ShadowUnit {public string id,kind,variant;public V2 position;public float hp,maxHp,power,life,maxLife,radius,attackCd,hurtCd,aimAngle,spawnAge;public bool moving;public ActorAction action;}
     public class GolemThrow {public EnemyState enemy;public V2 start,target,position;public float elapsed,height;}
     [Serializable] public class ContentDatabase {public HeroDef[] heroes;public ShadowSpec[] shadows;public WeaponDef[] weapons;public RelicDef[] relics;public HeroDef elementalHero;public WeaponDef elementalWeapon;public ElementDef[] elements;public HeroDef Hero(string id){if(id=="kiet")id="quanle";return elementalHero!=null&&id==elementalHero.id?elementalHero:Array.Find(heroes,h=>h.id==id)??heroes[0];}public WeaponDef Weapon(string id){return elementalWeapon!=null&&id==elementalWeapon.id?elementalWeapon:Array.Find(weapons,w=>w.id==id)??weapons[0];}public RelicDef Relic(string id){return Array.Find(relics,r=>r.id==id);}public HeroDef[] PlayableHeroes {get{List<HeroDef> all=new List<HeroDef>(heroes);if(elementalHero!=null)all.Add(elementalHero);return all.ToArray();}}}
     [Serializable] public class WeaponState {public string id;public int level=1,ammo;public float reload;public WeaponState(){}public WeaponState(WeaponDef w){id=w.id;ammo=w.clip;}}
     [Serializable] public class PlayerState {
-        public V2 position=new V2(11.5f,10);public float hp,maxHp,mp=100,maxMp=100,damage,speed,armor,crit=.06f,xp,nextXp=65,fireTimer,dashTimer,dashTime,invulnerable,qTimer,eTimer,ult,code,shield,overclock,firewall,droneTimer;
-        public float shadowArmor;public int qRank,eRank,passiveRank,comboIndex=-1;
+        public V2 position=new V2(11.5f,10);public float hp,maxHp,mp=100,maxMp=100,damage,speed,armor,crit=.06f,xp,nextXp=65,fireTimer,dashTimer,dashTime,invulnerable,qTimer,eTimer,rCd,ult=100,code,shield,overclock,firewall,droneTimer;
+        public UltimateIntro ultIntro;public float shadowArmor;public int qRank,eRank,rRank,passiveRank,comboIndex=-1;
         public int level=1,gold,potions=3,slot;public bool moving;public float facing,aimAngle,moveFacing=-1.5707963f,hoverboard;public string moveDir="S",element="lightning";public int splitCount=3,motionEpoch;public ActorAction action;public V2 dashDirection;public List<string> relics=new List<string>();public WeaponState[] weapons;
         public bool Has(string id){return relics.Contains(id);}
     }
     [Serializable] public class EnemyState {public string id,type,challenge;public V2 position,home,chargeDirection;public float hp,maxHp,speed,damage,radius=.24f,timer,cooldown=2,hit,burn,burnTick,extraTimer,slow,frozen,rooted,stunned,poison,poisonTick,poisonPower;public float facing,throwLift,shadowBleed,shadowBleedTick,shadowBleedPower,shadowCorrosion,shadowFear;public V2 fearOrigin;public bool shadowRecorded,shadowHeld;public int phase,pattern;public bool alive=true,miniBoss,root,rootPhase;public int xp=12,gold=5;}
-    [Serializable] public class ActorAction {public string key,element,clip;public float elapsed,duration,release,angle;public V2 target;public bool released;public int epoch;}
+    [Serializable] public class ActorAction {public string key,element,clip,targetId;public float elapsed,duration,release,angle;public V2 target;public bool released;public int epoch;}
     [Serializable] public class CloneState {public string id,element,moveDir="S",aiState="regroup",targetId;public V2 position,velocity,dashDirection;public float radius=.21875f,speed=4.0625f,moveFacing=-1.5707963f,aimAngle,hp,maxHp,attackCd,qCd,eCd,rCd,dashCd,dashTime,hoverboard,hurtCd;public bool moving,alive=true;public int motionEpoch,comboIndex=-1;public ActorAction action;}
-    public class SummonState {public string id,kind,owner;public float punchCd,smashCd,stompCd,throwCd,aimAngle;public GolemThrow thrown;public int punchUses,smashUses,stompUses,throwUses;public V2 position;public Prop sourceProp;public float radius,hp,maxHp,power,life,maxLife,attackCd,shotCd;public bool moving;public ActorAction action;}
+    public class SummonState {public string id,kind,owner;public float punchCd,smashCd,stompCd,throwCd,aimAngle;public GolemThrow thrown;public int punchUses,smashUses,stompUses,throwUses;public V2 position;public Prop sourceProp;public float radius,hp,maxHp,power,life,maxLife,attackCd,shotCd,spawnAge;public bool moving;public ActorAction action;}
     public class ElementField {public string element,behavior,owner;public V2 position;public float radius,life,tick,power,angle,travel,delay;public bool follow,charge;public int epoch;}
     public class ElementStrike {public string owner,element,clip;public int epoch;public V2 position;public float delay,radius,power;public bool charge,strong;}
     public class Bullet {public V2 position,velocity;public string kind,color,effect,element,owner;public float damage,life=2,radius=.12f;public int pierce;public bool friendly,charge=true,returning,shadowPoison;public HashSet<string> hit=new HashSet<string>();public HashSet<Prop> propHits=new HashSet<Prop>();}

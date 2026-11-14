@@ -93,3 +93,17 @@ __pycache__/
 /design/blender/quanle/raw.png
 /design/blender/quanle/beasts/raw.png
 /design/blender/thienvu/held-weapons/raw.png
+
+# 0.8.2 acceptance evidence
+!/qa/unity-ultimate-tests.txt
+!/qa/v082-mesh-visual-review.json
+!/qa/v082/
+/qa/v082/*
+!/qa/v082/acceptance.json
+!/qa/v082/browser-report.json
+!/qa/v082/unity-playmode-report.json
+!/qa/v082/mesh-review-contact.png
+!/qa/v082/unity-intro-contact.png
+!/qa/v082/web-intro-contact.png
+!/qa/v082/touch-390.png
+!/qa/v082/touch-844.png

@@ -1,8 +1,8 @@
-# Đèn Tinh: Miền Sương Lạc — 0.8.1
+# Đèn Tinh: Miền Sương Lạc — 0.8.2
 
 Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
 
-**0.8.1** thay Kiệt bằng **Quân Lê**, đọc được bản lưu `kiet` cũ. Q tạo Hắc Giáp tức thì, E gọi một trong 22 bóng thú, R gọi 14 đồng đội tự chiến đấu. Thiên Vũ có vũ khí cầm tay riêng, bốn dạng cận chiến ba đòn, Quang Q dịch chuyển sau lưng địch; golem có đủ Đấm/Đập/Giậm/Quăng phá địa hình. Bảy NPC có tóc, khuôn mặt, trang phục và đạo cụ riêng. Web và Unity dùng chung atlas mới; bản Unity Windows còn chặn bởi giấy phép Editor. Xem [thay đổi 0.8.1](CHANGELOG-v0.8.1.md) và [trạng thái Unity](Unity/README_VI.md).
+**0.8.2** đổi R của cả năm nhân vật sang hồi chiêu 18–20 giây, sẵn sàng từ đầu trận, với intro riêng dài 4,5 giây trước khi phát chiêu. Thiên Vũ mở trận đồ bảy nguyên tố rồi mới tách phân thân; Quân Lê có Hắc Giáp ôm thân đúng bốn hướng, tỷ lệ người và tóc được chỉnh lại. 22 bóng thú, golem và Mộc Tinh có động tác trỗi dậy, đứng, di chuyển và lấy đà ra đòn. Web và Unity dùng chung atlas. Xem [thay đổi 0.8.2](CHANGELOG-v0.8.2.md) và [trạng thái Unity](Unity/README_VI.md).
 
 ## Chơi tại máy
 
@@ -12,7 +12,7 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 69 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v08-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 70 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v082-report.json`.
 
 ## Các thay đổi chính
 
@@ -41,9 +41,9 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
 | Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
 
-Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **Nhấn R** mở chọn 3/5/7, **giữ R 0,45 giây** tách bảy dạng; tuyệt kỹ/hợp kích dùng nút riêng trong vòng chọn. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; Băng đóng băng hoàn toàn 2 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
+Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **R** mở intro trận đồ 4,5 giây rồi triệu hồi sáu phân thân và phát hợp kích bảy dạng. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; Băng đóng băng hoàn toàn 2 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
 
-Tuyệt kỹ cần 100% lực từ chiến đấu. Sát thương từ R, phân thân và các đòn phụ của cổ vật không tự nạp R.
+R hồi sau 18 giây với HoaVi, An, Linh; 20 giây với Thiên Vũ, Quân Lê, giảm theo bậc kỹ năng và cổ vật. Hồi chiêu tính từ lúc bắt đầu intro. Trong intro, nhân vật miễn sát thương và khống chế, di chuyển còn 35%; địch trong 520 px di chuyển và ra đòn còn 25% tốc độ, bị đẩy nhẹ mỗi 0,8 giây. HUD hiển thị số giây còn lại.
 
 ## Thế giới và môi trường
 
@@ -87,7 +87,7 @@ Các hiệu ứng như chặn đòn chí tử, biên dịch thêm đòn, dây le
 | WASD / mũi tên | Di chuyển; thân quay theo phím, đi chéo ưu tiên hướng ngang; chuột ngắm riêng |
 | Chuột / giữ trái | Ngắm / đánh thường, không cần nạp |
 | Space | Lướt né |
-| Q, E, R | Kỹ năng, tuyệt kỹ; Thiên Vũ nhấn/giữ R để chọn/tách phân thân |
+| Q, E, R | Kỹ năng; R mở intro tuyệt kỹ 4,5 giây khi hết hồi chiêu |
 | F | Tương tác |
 | K / I | Học kỹ năng / nhân vật và cổ vật |
 | H | Dùng bình máu |
@@ -101,7 +101,7 @@ Trên điện thoại có hai cần và các nút kỹ năng/K/bình linh lực;
 
 Tự lưu mỗi 12 giây và sau các thao tác quan trọng. Chủ máy dùng `runtime/save.json`; LAN và bản web dùng tiến độ riêng của từng trình duyệt. Bản dự phòng trước 0.6 nằm ở `runtime/backup-before-v06-20261103`. Bản web không chứa save, hồ sơ trình duyệt hoặc cache của chủ máy. Nâng cấp làng được giữ bằng hồ sơ localStorage riêng, không đồng bộ thiết bị; xóa dữ liệu trang sẽ xóa hồ sơ này.
 
-Phân thân giữ dạng, HP và vị trí hợp lệ khi tải lại ở miền xa. Các chiêu đang chờ, trường kỹ năng và checkpoint không được khôi phục qua bản lưu; chết, hồi sinh và dịch chuyển hủy chúng.
+Phân thân giữ dạng, HP và vị trí hợp lệ khi tải lại ở miền xa. Intro R giữ thời gian đã chạy, hướng ngắm và hồi chiêu khi tải lại; chiêu chỉ phát một lần. Các đòn khác đang chờ, trường kỹ năng và checkpoint không được khôi phục qua bản lưu; chết, hồi sinh và dịch chuyển hủy chúng.
 
 ## Kiểm tra và đóng gói
 
@@ -117,5 +117,5 @@ Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp to
 
 Xem [thay đổi 0.7](CHANGELOG-v0.7.md), [kiểm chứng và giới hạn](VALIDATION-v0.7.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
 
-Unity Windows 0.8.1 đã build và chạy kiểm tra, có Quân Lê, 22 bóng thú, vũ khí Thiên Vũ, golem và NPC mới. Tải gói Windows tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.8.1); xem [hướng dẫn Unity](Unity/README_VI.md). Chiến dịch sáu chương tiếp nối hiện chỉ có ở Web. Tiến độ giữa hai bản lưu riêng.
+Unity Windows 0.8.2 có cơ chế R và intro tương ứng bản Web. Tải gói Windows tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.8.2); xem [hướng dẫn Unity](Unity/README_VI.md). Chiến dịch sáu chương tiếp nối hiện chỉ có ở Web. Tiến độ giữa hai bản lưu riêng.
 

@@ -4,7 +4,7 @@
     {
       "name": "Binary alpha, exact palette, 2x pixels, bounded beams and Canvas restore at DPR 1",
       "pass": true,
-      "sampledOpaquePixels": 64576,
+      "sampledOpaquePixels": 62632,
       "zoom": [
         0.8,
         1.28,
@@ -21,14 +21,14 @@
       "blinkEndpoints": true,
       "satelliteOrigins": [
         {
-          "x": 1522.379775318497,
-          "y": 925.0212404973494,
+          "x": 1527.0661065866475,
+          "y": 925.1874712868246,
           "tx": 1750,
           "ty": 1000
         },
         {
-          "x": 1517.620224681503,
-          "y": 1074.9787595026507,
+          "x": 1512.9338934133525,
+          "y": 1074.8125287131754,
           "tx": 1750,
           "ty": 1000
         }
@@ -41,7 +41,7 @@
     {
       "name": "Binary alpha, exact palette, 2x pixels, bounded beams and Canvas restore at DPR 2",
       "pass": true,
-      "sampledOpaquePixels": 64576,
+      "sampledOpaquePixels": 62632,
       "zoom": [
         0.8,
         1.28,

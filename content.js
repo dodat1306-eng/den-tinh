@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const hero={id:'hoavi',name:'HoaVi',role:'KIẾN TRÚC SƯ MÃ LỆNH',desc:'Tích Mã Lệnh, dựng tường lửa và bùng nổ Overclock.',color:'#74f4e3',cloth:'#69528c',accent:'#f29bd2',hp:110,speed:242,damage:16,fireRate:.2,shotSpeed:740,q:'Debug Pulse',e:'Firewall',r:'Overclock',qCd:5,eCd:10};
+  const hero={id:'hoavi',name:'HoaVi',role:'KIẾN TRÚC SƯ MÃ LỆNH',desc:'Tích Mã Lệnh, dựng tường lửa và bùng nổ Overclock.',color:'#74f4e3',cloth:'#69528c',accent:'#f29bd2',hp:110,speed:242,damage:16,fireRate:.2,shotSpeed:740,q:'Debug Pulse',e:'Firewall',r:'Overclock',qCd:5,eCd:10,rCd:18};
   root.DTWorld.HEROES.hoavi=hero;
   const weapons=[
     ['lantern','Đèn Lưu Hỏa','staff','common',1,.24,1,0,650,12,1.2,'#ffc777','burn','Tia lửa để lại cháy âm ỉ.'],

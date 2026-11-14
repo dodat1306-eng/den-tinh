@@ -1,0 +1,47 @@
+﻿PASS an R ready without rage
+PASS an intro blocks other attacks
+PASS an intro immunity
+PASS an no release before 4.5s
+PASS an pause freezes intro and cooldown
+PASS an release at 4.5s
+PASS an cooldown prevents second release
+PASS linh R ready without rage
+PASS linh intro blocks other attacks
+PASS linh intro immunity
+PASS linh no release before 4.5s
+PASS linh pause freezes intro and cooldown
+PASS linh release at 4.5s
+PASS linh cooldown prevents second release
+PASS quanle R ready without rage
+PASS quanle intro blocks other attacks
+PASS quanle intro immunity
+PASS quanle no release before 4.5s
+PASS quanle pause freezes intro and cooldown
+PASS quanle release at 4.5s
+PASS Legion appears at release
+PASS quanle cooldown prevents second release
+PASS hoavi R ready without rage
+PASS hoavi intro blocks other attacks
+PASS hoavi intro immunity
+PASS hoavi no release before 4.5s
+PASS hoavi pause freezes intro and cooldown
+PASS hoavi release at 4.5s
+PASS Overclock starts at release
+PASS hoavi cooldown prevents second release
+PASS thienvu R ready without rage
+PASS thienvu intro blocks other attacks
+PASS thienvu intro immunity
+PASS thienvu no release before 4.5s
+PASS thienvu pause freezes intro and cooldown
+PASS thienvu release at 4.5s
+PASS Six autonomous clones appear at release
+PASS thienvu cooldown prevents second release
+PASS Save preserves intro and target
+PASS Restored intro does not release early
+PASS Restored intro releases once
+PASS No duplicated restored army
+PASS Intro movement is 35 percent
+PASS 520px aura slows nearby movement and attacks by 75 percent
+PASS Rank and relic reduce R cooldown
+PASS Malformed ultimate save is bounded
+46 ultimate checks passed

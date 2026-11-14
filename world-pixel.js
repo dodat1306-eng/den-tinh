@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const world=new Image(),actors=new Image();world.src='assets/world-pixel-v08.png';actors.src='assets/actors-pixel-v08.png';
+  const world=new Image(),actors=new Image();world.src='assets/world-pixel-v08.png';actors.src='assets/actors-pixel-v1.png';
   const calm=()=>!!root.DTSettings?.reducedMotion,actorHistory=new WeakMap();
   const ready=()=>!!root.DTWorldPixelAtlas&&!!root.DTActorsPixelAtlas&&world.complete&&world.naturalWidth>0&&actors.complete&&actors.naturalWidth>0;
   function cell(c,image,frame,x,y,flip=false){
@@ -96,7 +96,8 @@
     if(!ready()||!['an','linh'].includes(h.id))return false;
     const angle=p.moveFacing??p.facing??0,direction=Math.abs(Math.cos(angle))>Math.abs(Math.sin(angle))?(Math.cos(angle)<0?'W':'E'):(Math.sin(angle)<0?'N':'S');
     const action=p.dashTime>0?'dash':p.hit>0?'hit':p.action?({q:'q_cast',e:'e_cast',r:'r_ult'}[p.action.key]||'attack'):p.moving?'run':'idle';
-    return actor(c,h.id+'_'+direction,p.x,p.y,{action,time:p.action?p.action.elapsed:time});
+    const clip=root.DTActorsPixelAtlas.clips[h.id+'_'+direction+'/'+action],number=p.action&&clip?Math.min(clip.frames-1,Math.floor(p.action.elapsed/p.action.duration*clip.frames)):undefined;
+    return actor(c,h.id+'_'+direction,p.x,p.y,{action,time:p.action?p.action.elapsed:time,frame:number});
   }
   root.DTWorldPixel={world,actors,ready,frame,sprite,prop,terrain,ground,hero};
   root.DTActorsPixel={draw:actor,enemy,npc,companion};

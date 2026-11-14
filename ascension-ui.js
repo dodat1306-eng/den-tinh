@@ -29,7 +29,7 @@
     const source=g.skillDescriptions?.[key]||root.DTContent.kits?.[g.hero.id]?.[key];
     if(typeof source==='string')return{name:g.hero[key],desc:source};
     const elemental=g.isElemental?g.element:null;
-    return{name:source?.name||elemental?.[key]||g.hero[key],desc:source?.desc||source?.description||({q:'Kỹ năng chủ động. Ngắm theo hướng chuột hoặc cần phải.',e:'Kỹ năng kiểm soát và phối hợp với nội tại.',r:'Tuyệt kỹ cần 100% lực, tích lũy từ đòn đánh và kỹ năng thường.'})[key],...source};
+    return{name:source?.name||elemental?.[key]||g.hero[key],desc:source?.desc||source?.description||({q:'Kỹ năng chủ động. Ngắm theo hướng chuột hoặc cần phải.',e:'Kỹ năng kiểm soát và phối hợp với nội tại.',r:'Tụ lực 4,5 giây rồi thi triển tuyệt kỹ. Hồi chiêu theo giây.'})[key],...source};
   }
   function objective(g){
     let o=g.objective?.()||{};
@@ -46,7 +46,7 @@
   function showSkills(){
     const g=game();if(!g.started||g.dead)return;
     const tree=nodes(g),p=passive(g),s=signature(g);
-    const skillCards=['q','e','r'].map(key=>{const k=skill(g,key);return '<article class="ascension-ability"><kbd>'+key.toUpperCase()+'</kbd><div><strong>'+esc(k.name)+'</strong><p>'+esc(k.desc)+'</p><small>'+esc(key==='r'?'Cần 100% lực tuyệt kỹ':(k.cost??(key==='q'?24:38))+' linh lực')+(k.cooldown?' · '+esc(k.cooldown)+' giây':'')+'</small></div></article>'}).join('');
+    const skillCards=['q','e','r'].map(key=>{const k=skill(g,key);return '<article class="ascension-ability"><kbd>'+key.toUpperCase()+'</kbd><div><strong>'+esc(k.name)+'</strong><p>'+esc(k.desc)+'</p><small>'+esc(key==='r'?'Hồi '+g.effectiveRCd().toFixed(1)+' giây · niệm 4,5 giây':(k.cost??(key==='q'?24:38))+' linh lực')+(k.cooldown?' · '+esc(k.cooldown)+' giây':'')+'</small></div></article>'}).join('');
     const nodeCards=tree.map(n=>{const r=rank(g,n),max=Math.max(1,Number(n.maxRank??n.max)||3),cost=Math.max(1,Number(n.cost)||1),locked=r>=max,prereq=n.mastery?!g.masteryUnlocked:n.requires&&rank(g,{id:n.requires})<1;
       return '<article class="ascension-node'+(r?' learned':'')+'"><div class="node-head"><strong>'+esc(n.name)+'</strong><span>'+r+' / '+max+'</span></div><p>'+esc(n.desc||n.description)+'</p><div class="rank-dots" aria-label="Bậc '+r+' trên '+max+'">'+Array.from({length:max},(_,i)=>'<i class="'+(i<r?'active':'')+'"></i>').join('')+'</div><button data-learn="'+esc(n.id)+'" '+(locked||points(g)<cost||prereq?'disabled':'')+'>'+esc(locked?'Đã thành thạo':prereq?'Học nhánh trước':'Học bậc '+(r+1)+' · '+cost+' điểm')+'</button></article>'}).join('');
     shell('skills',g.hero.name+' · Con đường kỹ năng','<div class="skill-points"><div><strong>'+points(g)+'</strong><span>ĐIỂM KỸ NĂNG</span></div><p>Lên cấp và hoàn thành hành trình để nhận điểm. Mỗi nhánh phát triển trực tiếp cách vận hành bộ chiêu.</p></div><div class="signature-detail"><small>BẢO KHÍ RIÊNG</small><strong>'+esc(s.name)+'</strong><p>'+esc(s.desc)+'</p></div><div class="passive-detail"><strong>NỘI TẠI · '+esc(p.name)+'</strong><p>'+esc(p.desc)+'</p><small>'+esc(status(g))+'</small></div><div class="ascension-abilities">'+skillCards+'</div><div class="ascension-tree">'+(nodeCards||'<p>Cây kỹ năng đang được khai mở.</p>')+'</div>');
@@ -67,7 +67,7 @@
   }
   function sync(g){
     const s=signature(g),p=passive(g);$('weaponName').textContent=s.name;$('weaponName').style.color=s.color||g.hero.color;$('weaponAmmo').textContent='K · Kỹ năng · '+points(g)+' điểm';$('passiveHud').textContent=status(g);$('passiveHud').title=p.desc;
-    for(const key of['q','e','r']){const el=$('skill-'+key),k=key==='r'&&g.isElemental?{name:'Chọn Phân Thân',desc:'Nhấn R chọn 3/5/7 dạng. Giữ R 0,45 giây tách bảy. Tuyệt kỹ '+g.element.r+' dùng nút riêng trong vòng chọn.'}:skill(g,key);el.title=key.toUpperCase()+' · '+k.name+'\n'+k.desc;el.setAttribute('aria-label',key.toUpperCase()+' · '+k.name+'. '+k.desc)}
+    for(const key of['q','e','r']){const el=$('skill-'+key),k=skill(g,key);el.title=key.toUpperCase()+' · '+k.name+'\n'+k.desc;el.setAttribute('aria-label',key.toUpperCase()+' · '+k.name+'. '+k.desc)}
     const o=objective(g);if(o.title)$('questTitle').textContent=o.title;if(o.text)$('questText').textContent=o.text;
     const skillButton=$('openSkillTree');if(skillButton)skillButton.textContent='K · Kỹ năng'+(points(g)?' · '+points(g):'');
   }
