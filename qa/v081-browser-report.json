@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-11-14T03:21:31.698Z",
+  "url": "http://127.0.0.1:58768/",
+  "pass": true,
+  "stagedCombatFixtures": true,
+  "physicalDevice": false,
+  "results": [
+    {
+      "name": "Quân Lê menu and real keyboard movement",
+      "pass": true
+    },
+    {
+      "name": "All 22 shadows and four hero views paint integer texels with binary alpha",
+      "pass": true,
+      "draws": 30,
+      "filled": 99556
+    },
+    {
+      "name": "Q armor applies immediately and renders new atlas",
+      "pass": true,
+      "armor": 6.5,
+      "shield": 48,
+      "atlas": 1
+    },
+    {
+      "name": "E consumes tree soul and paints wood beast",
+      "pass": true,
+      "count": 1,
+      "kind": "shadow_treant"
+    },
+    {
+      "name": "R paints fourteen distinct bodies; save restores entire army",
+      "pass": true,
+      "painted": 14,
+      "groundBeforeBodies": true,
+      "count": 14,
+      "restored": 14,
+      "distinct": 14,
+      "medianDrawMs": 2.600000023841858,
+      "p95DrawMs": 3.800000011920929
+    },
+    {
+      "name": "Reduced motion retains Quân Lê and full legion",
+      "pass": true
+    },
+    {
+      "name": "Portrait touch Q activates shadow armor",
+      "pass": true
+    },
+    {
+      "name": "No uncaught browser errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

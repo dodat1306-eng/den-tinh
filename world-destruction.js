@@ -40,7 +40,7 @@
     list.push(d);if(list.length>MAX_DECALS)list.splice(0,list.length-MAX_DECALS);return d;
   }
   function collapse(g,p,shatter=false){
-    p.damageStage=3;p.status=wood.has(p.type)?'ash_pile':p.type==='crystal'?'crystal_shards':'rubble';p.destroyed=true;p.r=0;p.burnTimer=p.frozenTimer=p.charTimer=0;
+    root.DTShadow?.remain(g,p,'tree');p.damageStage=3;p.status=wood.has(p.type)?'ash_pile':p.type==='crystal'?'crystal_shards':'rubble';p.destroyed=true;p.r=0;p.burnTimer=p.frozenTimer=p.charTimer=0;
     if(shatter){fx(g,'frozen_shatter',p.x,p.y,95);particles(g,p,'#dbfbff',8);for(const e of g.world.enemies||[])if(e.alive&&dist(e,p)<=95+(e.r||0))g.damageEnemy?.(e,(g.player?.damage||12)*.85,false)}
     else{particles(g,p,wood.has(p.type)?'#585c63':'#86939d',6);decal(g,wood.has(p.type)?'scorch_mark':'crater_mark',p.x,p.y,80)}
   }
@@ -60,7 +60,7 @@
     if(!['wind','earth','physical','lightning','light'].includes(element))return false;
     p.propHp=Math.max(0,p.propHp-power);p.sway=(p.sway||0)+.12;
     if(p.propHp<=0){collapse(g,p);return true}
-    if(p.propHp<=p.maxPropHp*.5){p.damageStage=2;p.status=wood.has(p.type)&&element!=='earth'?'sliced':'cracked';p.charTimer=p.status==='sliced'?.6:3;p.fallTime=0;particles(g,p,wood.has(p.type)?'#bd8d53':'#86939d',5)}
+    if(p.propHp<=p.maxPropHp*.5){root.DTShadow?.remain(g,p,'tree');p.damageStage=2;p.status=wood.has(p.type)&&element!=='earth'?'sliced':'cracked';p.charTimer=p.status==='sliced'?.6:3;p.fallTime=0;particles(g,p,wood.has(p.type)?'#bd8d53':'#86939d',5)}
     else{p.damageStage=1;p.status=element==='lightning'?'electrified':'intact';p.afflictTimer=1}
     return true;
   }
@@ -100,7 +100,7 @@
         p.burnTimer=Math.max(0,p.burnTimer-dt);p.spreadAcc=(p.spreadAcc||0)+dt;p.heatAcc=(p.heatAcc||0)+dt;
         if(p.status==='burning'&&p.spreadAcc>=.9){p.spreadAcc-=.9;spread.push(p)}
         if(p.status==='burning'&&p.heatAcc>=.5){p.heatAcc-=.5;heat.push(p)}
-        if(p.burnTimer<=1e-7){p.damageStage=2;p.status=wood.has(p.type)?'charred':'cracked';p.charTimer=3;p.burnTimer=0}
+        if(p.burnTimer<=1e-7){root.DTShadow?.remain(g,p,'tree');p.damageStage=2;p.status=wood.has(p.type)?'charred':'cracked';p.charTimer=3;p.burnTimer=0}
       }else if(p.damageStage===2){p.charTimer=Math.max(0,(p.charTimer||3)-dt);if(p.charTimer<=1e-7)collapse(g,p)}
       else if(p.status==='frozen'){p.frozenTimer=Math.max(0,p.frozenTimer-dt);if(p.frozenTimer<=1e-7){p.damageStage=p.beforeFreezeStage===2?2:0;p.status=p.damageStage===2?'charred':'intact';p.charTimer=p.damageStage===2?3:0}}
       else if(p.damageStage===1){p.afflictTimer=Math.max(0,(p.afflictTimer||0)-dt);if(!p.afflictTimer){p.damageStage=0;p.status='intact'}}
@@ -112,13 +112,13 @@
     const list=g.world.groundDecals||=[];for(let i=list.length-1;i>=0;i--){list[i].age+=dt;if(list[i].age>=list[i].life)list.splice(i,1)}
   }
   function state(p){
-    if(!init(p))return null;const out={damageStage:p.damageStage,status:p.status};
+    if(!init(p))return null;const out={damageStage:p.damageStage,status:p.status,shadowRecorded:!!p.shadowRecorded};
     for(const key of ['burnTimer','frozenTimer','charTimer','spreadAcc','afflictTimer','propHp','fallTime','beforeFreezeStage'])out[key]=clamp(p[key],0,key==='propHp'?110:5);
     return out;
   }
   function applyState(p,s){
     if(!init(p)||!s||typeof s!=='object')return;
-    p.damageStage=Number.isInteger(s.damageStage)?clamp(s.damageStage,0,3):0;p.status=statuses.has(s.status)?s.status:'intact';
+    p.shadowRecorded=s.shadowRecorded===true;p.damageStage=Number.isInteger(s.damageStage)?clamp(s.damageStage,0,3):0;p.status=statuses.has(s.status)?s.status:'intact';
     for(const key of ['burnTimer','frozenTimer','charTimer','spreadAcc','afflictTimer','propHp','fallTime','beforeFreezeStage'])p[key]=clamp(s[key],0,key==='propHp'?p.maxPropHp:5);
     if(p.damageStage===3){p.destroyed=true;p.r=0}else{p.destroyed=false;p.r=p.baseRadius}
     if(p.status==='burning'&&!p.burnTimer){p.damageStage=2;p.status='charred';p.charTimer=3}

@@ -18,7 +18,7 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
         const check=(allowed)=>{const a=c.getImageData(0,0,720,560).data;let filled=0;for(let i=0;i<a.length;i+=4){if(![0,255].includes(a[i+3]))throw Error('fractional alpha');if(a[i+3]){const h=Array.from(a.slice(i,i+3),n=>n.toString(16).padStart(2,'0')).join('');if(!allowed.has(h))throw Error('palette '+h);filled++}}if(!filled)throw Error('empty paint');checks++;return a};
         const all=new Set(DTThienVuVFX.palette.map(h=>h.slice(1)));
         for(const [form,spec] of Object.entries(meta.forms)){
-          const palette=new Set(spec.palette.map(h=>h.slice(1)));
+          const palette=new Set([...spec.palette,...DTThienVuVFX.palette].map(h=>h.slice(1)));
           for(const [facing,view] of [[0,'E'],[Math.PI/2,'S'],[Math.PI,'W'],[-Math.PI/2,'N']])for(const key of ['idle','run','dash','attack','q','e','r','hit']){
             const actor={x:250,y:230,elementForm:form,facing,moving:key==='run',dashTime:key==='dash'?.1:0,hit:key==='hit'?.1:0};if(['attack','q','e','r'].includes(key))actor.action={key,angle:facing,elapsed:.24,release:.16,duration:.65};
             if(P.frame(actor,2).direction!==view)throw Error('view '+view);c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,720,560);c.setTransform(1.28,0,0,1.28,13.4,10.6);c.imageSmoothingEnabled=true;c.globalAlpha=.37;P.hero(c,actor,2);check(palette);

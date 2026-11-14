@@ -1,4 +1,4 @@
-PASS Shared catalog has four original heroes, twelve weapons and twelve relics
+﻿PASS Shared catalog has four original heroes, thirteen weapons and twelve relics
 PASS All heroes can shoot and damage an enemy
 PASS Magazine, reload and weapon switch preserve separate ammunition
 PASS HoaVi Mã Lệnh charges from hits and Debug consumes stacks

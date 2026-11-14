@@ -83,8 +83,8 @@ def pack():
                         for cx,cy in centers:
                             if direction!='S':
                                 pen.rectangle((cx-2,cy-1,cx+1,cy+3),fill='#f6c9b2')
-                            pen.rectangle((cx-1,cy-1,cx+1,cy+1),fill='#100b18')
-                            pen.point((cx,cy),fill=data['palette'][-2] if form in ['lightning','nature'] else data['palette'][-1])
+                            pen.rectangle((cx-1,cy-1,cx+1,cy+1),fill='#ffee55' if form=='light' else '#100b18')
+                            pen.point((cx,cy),fill='#ffffff' if form=='light' else data['palette'][-2] if form in ['lightning','nature'] else data['palette'][-1])
                             pen.point((cx,cy-1),fill='#ffffff')
                             pen.line((cx-2,cy-3,cx+1,cy-2),fill='#4a5268')
                         cx,cy=m['face'];pen.point((cx,cy+4),fill='#b87664')

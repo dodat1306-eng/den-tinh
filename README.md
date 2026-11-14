@@ -1,8 +1,8 @@
-# Đèn Tinh: Miền Sương Lạc — 0.8
+# Đèn Tinh: Miền Sương Lạc — 0.8.1
 
 Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
 
-HoaVi và bảy dạng Thiên Vũ giữ bộ atlas pixel riêng; An, Linh, Kiệt có flipbook bốn hướng mới. Web và Unity dùng chung atlas môi trường, quái, NPC, triệu hồi cùng logic phá hủy. Xem [thay đổi 0.8](CHANGELOG-v0.8.md) và [trạng thái Unity](Unity/README_VI.md).
+**0.8.1** thay Kiệt bằng **Quân Lê**, đọc được bản lưu `kiet` cũ. Q tạo Hắc Giáp tức thì, E gọi một trong 22 bóng thú, R gọi 14 đồng đội tự chiến đấu. Thiên Vũ có vũ khí cầm tay riêng, bốn dạng cận chiến ba đòn, Quang Q dịch chuyển sau lưng địch; golem có đủ Đấm/Đập/Giậm/Quăng phá địa hình. Bảy NPC có tóc, khuôn mặt, trang phục và đạo cụ riêng. Web và Unity dùng chung atlas mới; bản Unity Windows còn chặn bởi giấy phép Editor. Xem [thay đổi 0.8.1](CHANGELOG-v0.8.1.md) và [trạng thái Unity](Unity/README_VI.md).
 
 ## Chơi tại máy
 
@@ -12,7 +12,7 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 61 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v08-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 69 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v08-report.json`.
 
 ## Các thay đổi chính
 
@@ -22,7 +22,7 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 
 - **F tại Chú Bảy** mở cửa hàng: cổ vật 105 xu, đổi bộ hàng từ 30 xu, bình linh lực 35 xu và bùa 60 giây giá 80 xu. Nâng cấp làng giữ qua hành trình mới trên cùng trình duyệt; bình máu và các nâng cấp cũ vẫn mua được.
 - Sau khi Q/E/R đều bậc 3, mở bốn nhánh Căn Cốt, Dưỡng Khí, Thân Pháp, Phá Thế; mỗi nhánh tối đa 50 bậc, dùng tổng cộng 600 điểm. Mỗi Q/E/R bậc 3 được chọn một trong hai chuyên hóa miễn phí, giữ trong hành trình đó.
-- Hòa Âm Thiên Vũ có hồi nội tại 6 giây và giới hạn khiên; phân thân dùng 62% sát thương bản chính, không tiêu linh lực hay tự nạp tuyệt kỹ. Kiệt được bảo vệ lúc lao Q; An có thể nhấn E lần hai để hút quái thường và nổ đèn.
+- Hòa Âm Thiên Vũ có hồi nội tại 6 giây và giới hạn khiên; phân thân dùng 62% sát thương bản chính, không tiêu linh lực hay tự nạp tuyệt kỹ. Quân Lê tạo Hắc Giáp tức thì bằng Q; An có thể nhấn E lần hai để hút quái thường và nổ đèn.
 - Lướt hủy thu thế; các đòn đã cam kết vẫn nhả đúng một lần. Vùng mới có khoảng 5% quái tinh anh Hỏa/Băng/Lôi, Đài Tế ba đợt trong 30 giây và vùng sương có XP gấp đôi.
 - Mỗi nhân vật gắn với một bảo khí riêng; bỏ đổi ô trang bị, băng đạn, nạp đạn, nhặt và nâng vũ khí rơi.
 - **K** mở bốn nhánh Q, E, R và nội tại, mỗi nhánh ba bậc. Khởi đầu có ba điểm; lên cấp, nối chương và khám phá môi trường cho thêm điểm.
@@ -37,7 +37,7 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 | --- | --- | --- |
 | An · Tâm Đăng | Đánh địch đang cháy để tích sáu Tàn Lửa; đặt tối đa ba đèn có dây nối, hồi máu khi đứng gần | Quét lửa hình quạt / đặt đèn, nhấn E lại trong 3 giây để nổ / phượng hỏa dọc hướng ngắm |
 | Linh · Cung Trúc Hồi Âm | Chạy tích tám Nhịp Trúc, đòn cường hóa xuyên và ghim dấu; Q bắn nối dấu | Giương cung xuyên tuyến / lộn lùi đặt bẫy / thiên tiễn lần lượt săn mục tiêu |
-| Kiệt · Lôi Thương | Đâm, lướt và chặn đạn tích năm Lôi Tức; Q cường hóa lao thương | Đâm xuyên hàng / chiến tuyến chặn đạn / bốn cọc lôi nối thành thiên lao |
+| Quân Lê · Hắc Ấn Đoản Kiếm | Đánh thường phóng nguyệt nhận; linh hồn xác quái/cây đổ tồn tại 20 giây | Hắc Giáp 6,5 giây / triệu hồi bóng thú, tối đa 6 / binh đoàn 14 bóng thú trong 24 giây |
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
 | Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; vẫn có phân thân 3/5/7 và hợp kích |
 

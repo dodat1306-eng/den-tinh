@@ -82,3 +82,14 @@ __pycache__/
 # Intermediate Blender render sheets
 /design/blender/actors/raw.png
 /design/blender/world/raw.png
+
+# Quân Lê remaster acceptance evidence
+!/qa/quanle-report.json
+!/qa/v081-*.json
+!/qa/v081-*.md
+!/qa/v081-*.png
+!/qa/unity-elemental-tests.txt
+!/qa/unity-shadow-tests.txt
+/design/blender/quanle/raw.png
+/design/blender/quanle/beasts/raw.png
+/design/blender/thienvu/held-weapons/raw.png

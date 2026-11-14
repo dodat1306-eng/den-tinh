@@ -4,7 +4,7 @@
       "id": "an",
       "name": "An",
       "role": "NGƯỜI GIỮ ĐÈN",
-      "desc": "Lửa linh, vòng trấn. Cân bằng và dễ làm quen.",
+      "desc": "Đèn Nuôi Hồn · Ngọn đèn riêng của An; dẫn lửa và nối đèn trấn.",
       "color": "#f1bf69",
       "cloth": "#459c83",
       "accent": "#e8c273",
@@ -13,9 +13,9 @@
       "damage": 18,
       "fireRate": 0.22,
       "shotSpeed": 640,
-      "q": "Liên Hỏa",
-      "e": "Vòng Trấn",
-      "r": "Thiên Đăng",
+      "q": "Hỏa Liêm Gọi Hồn",
+      "e": "Tam Đăng Kết Giới",
+      "r": "Phượng Hỏa Quy Đăng",
       "qCd": 5,
       "eCd": 9
     },
@@ -23,7 +23,7 @@
       "id": "linh",
       "name": "Linh",
       "role": "TRÚC ẢNH",
-      "desc": "Cung ngọc, mưa trúc. Nhanh và đánh từ xa.",
+      "desc": "Tám Nhịp Trúc · Cung riêng của Linh; tích nhịp theo quãng đường chạy.",
       "color": "#a5e3a2",
       "cloth": "#648f73",
       "accent": "#d9786c",
@@ -32,36 +32,36 @@
       "damage": 15,
       "fireRate": 0.15,
       "shotSpeed": 810,
-      "q": "Xuyên Vân",
-      "e": "Mưa Trúc",
-      "r": "Phong Linh",
+      "q": "Xuyên Ảnh Truy Phong",
+      "e": "Thoái Bộ Mộc Phục",
+      "r": "Thiên Tiễn Truy Danh",
       "qCd": 4,
       "eCd": 8
     },
     {
-      "id": "kiet",
-      "name": "Kiệt",
-      "role": "LÔI VỆ",
-      "desc": "Lôi thương, chấn địa. Bền bỉ và bùng nổ.",
-      "color": "#aebff7",
-      "cloth": "#63759e",
-      "accent": "#e7ad6b",
-      "hp": 155,
-      "speed": 212,
-      "damage": 13,
-      "fireRate": 0.33,
-      "shotSpeed": 560,
-      "q": "Lôi Liên",
-      "e": "Chấn Địa",
-      "r": "Thiên Lôi",
-      "qCd": 5,
-      "eCd": 9
+      "id": "quanle",
+      "name": "Quân Lê",
+      "role": "MA QUÂN BÓNG TỐI",
+      "desc": "Chúa Tể Bóng Tối · Vung lưỡi trăng khuyết bóng tối xuyên địch, mang cánh hoa hồng đen.",
+      "color": "#b86bff",
+      "cloth": "#1a132b",
+      "accent": "#5ce1e6",
+      "hp": 135,
+      "speed": 232,
+      "damage": 18,
+      "fireRate": 0.3,
+      "shotSpeed": 680,
+      "q": "Hắc Ảnh Chiến Giáp",
+      "e": "Hắc Ảnh Triệu Hồi",
+      "r": "Bách Quỷ Dạ Hành",
+      "qCd": 9,
+      "eCd": 7
     },
     {
       "id": "hoavi",
       "name": "HoaVi",
       "role": "KIẾN TRÚC SƯ MÃ LỆNH",
-      "desc": "Tích Mã Lệnh, dựng tường lửa và bùng nổ Overclock.",
+      "desc": "Trình Biên Dịch Sống · Bảng mã riêng của HoaVi; biên dịch đòn đánh và lưu điểm trở về.",
       "color": "#74f4e3",
       "cloth": "#69528c",
       "accent": "#f29bd2",
@@ -70,9 +70,9 @@
       "damage": 16,
       "fireRate": 0.2,
       "shotSpeed": 740,
-      "q": "Debug Pulse",
-      "e": "Firewall",
-      "r": "Overclock",
+      "q": "Debug · Điểm Gãy",
+      "e": "Checkpoint · Hồi Quy",
+      "r": "Overclock · Song Tinh",
       "qCd": 5,
       "eCd": 10
     }
@@ -112,8 +112,8 @@
     },
     {
       "id": "thunder",
-      "name": "Lôi Thương",
-      "kind": "spear",
+      "name": "Ấn Lôi Quang",
+      "kind": "orb",
       "rarity": "common",
       "power": 0.75,
       "interval": 0.34,
@@ -269,6 +269,22 @@
       "color": "#ffe1a2",
       "effect": "chain",
       "desc": "Ba rễ linh lan điện, xuyên mục tiêu."
+    },
+    {
+      "id": "shadow-crescent",
+      "name": "Hắc Ảnh Đoản Kiếm",
+      "kind": "shadow",
+      "color": "#b86bff",
+      "desc": "Vung lưỡi trăng khuyết bóng tối xuyên địch, mang cánh hoa hồng đen.",
+      "rarity": "signature",
+      "power": 1.15,
+      "interval": 0.3,
+      "speed": 680,
+      "reload": 0,
+      "shots": 1,
+      "pierce": 4,
+      "clip": 1,
+      "effect": ""
     }
   ],
   "relics": [
@@ -472,5 +488,205 @@
     "color": "#b4b2ff",
     "effect": "elemental",
     "desc": "Ấn chuyển đạn thường theo dạng nguyên tố của Thiên Vũ."
-  }
+  },
+  "shadows": [
+    {
+      "id": "shadow_wolf",
+      "name": "Sói Bóng Tối",
+      "speed": 270,
+      "hp": 110,
+      "r": 19,
+      "behavior": "bite",
+      "flying": false
+    },
+    {
+      "id": "shadow_bear",
+      "name": "Gấu Bóng Tối",
+      "speed": 125,
+      "hp": 330,
+      "r": 32,
+      "behavior": "claw",
+      "flying": false
+    },
+    {
+      "id": "shadow_eagle",
+      "name": "Đại Bàng Bóng Tối",
+      "speed": 245,
+      "hp": 130,
+      "r": 22,
+      "behavior": "feather",
+      "flying": true
+    },
+    {
+      "id": "shadow_tiger",
+      "name": "Mãnh Hổ Bóng Tối",
+      "speed": 230,
+      "hp": 180,
+      "r": 25,
+      "behavior": "pounce",
+      "flying": false
+    },
+    {
+      "id": "shadow_panther",
+      "name": "Báo Đen Ám Ảnh",
+      "speed": 285,
+      "hp": 125,
+      "r": 20,
+      "behavior": "blink",
+      "flying": false
+    },
+    {
+      "id": "shadow_lion",
+      "name": "Sư Tử Bờm Lửa Đen",
+      "speed": 200,
+      "hp": 220,
+      "r": 27,
+      "behavior": "roar",
+      "flying": false
+    },
+    {
+      "id": "shadow_gorilla",
+      "name": "Khỉ Đột Sơn Quân",
+      "speed": 155,
+      "hp": 300,
+      "r": 32,
+      "behavior": "quake",
+      "flying": false
+    },
+    {
+      "id": "shadow_rhino",
+      "name": "Tê Giác Thiết Giáp",
+      "speed": 195,
+      "hp": 320,
+      "r": 32,
+      "behavior": "charge",
+      "flying": false
+    },
+    {
+      "id": "shadow_elephant",
+      "name": "Voi Ma Mút Bóng Tối",
+      "speed": 105,
+      "hp": 420,
+      "r": 40,
+      "behavior": "stomp",
+      "flying": false
+    },
+    {
+      "id": "shadow_stag",
+      "name": "Hươu Sừng Kiếm",
+      "speed": 245,
+      "hp": 155,
+      "r": 23,
+      "behavior": "antlers",
+      "flying": false
+    },
+    {
+      "id": "shadow_boar",
+      "name": "Heo Rừng Nanh Hắc Ám",
+      "speed": 240,
+      "hp": 210,
+      "r": 25,
+      "behavior": "rush",
+      "flying": false
+    },
+    {
+      "id": "shadow_cobra",
+      "name": "Mãng Xà Vương",
+      "speed": 195,
+      "hp": 140,
+      "r": 20,
+      "behavior": "venom",
+      "flying": false
+    },
+    {
+      "id": "shadow_scorpion",
+      "name": "Bọ Cạp Khổng Lồ",
+      "speed": 170,
+      "hp": 240,
+      "r": 29,
+      "behavior": "sting",
+      "flying": false
+    },
+    {
+      "id": "shadow_spider",
+      "name": "Nhện Chúa",
+      "speed": 215,
+      "hp": 170,
+      "r": 28,
+      "behavior": "web",
+      "flying": false
+    },
+    {
+      "id": "shadow_croc",
+      "name": "Cá Sấu Đầm Lầy",
+      "speed": 150,
+      "hp": 270,
+      "r": 29,
+      "behavior": "tail",
+      "flying": false
+    },
+    {
+      "id": "shadow_shark",
+      "name": "Cá Mập Bóng Đêm",
+      "speed": 245,
+      "hp": 220,
+      "r": 28,
+      "behavior": "burrow",
+      "flying": false
+    },
+    {
+      "id": "shadow_bat",
+      "name": "Dơi Huyết Ma",
+      "speed": 260,
+      "hp": 115,
+      "r": 20,
+      "behavior": "siphon",
+      "flying": true
+    },
+    {
+      "id": "shadow_falcon",
+      "name": "Ưng Sấm Bóng Đêm",
+      "speed": 320,
+      "hp": 120,
+      "r": 19,
+      "behavior": "dive",
+      "flying": true
+    },
+    {
+      "id": "shadow_mantis",
+      "name": "Bọ Ngựa Lưỡi Liềm",
+      "speed": 250,
+      "hp": 165,
+      "r": 23,
+      "behavior": "scythes",
+      "flying": false
+    },
+    {
+      "id": "shadow_crab",
+      "name": "Cua Thiết Giáp",
+      "speed": 120,
+      "hp": 350,
+      "r": 31,
+      "behavior": "pincers",
+      "flying": false
+    },
+    {
+      "id": "shadow_treant",
+      "name": "Mộc Ảnh Cự Thú",
+      "speed": 135,
+      "hp": 300,
+      "r": 31,
+      "behavior": "roots",
+      "flying": false
+    },
+    {
+      "id": "shadow_dragon",
+      "name": "Hắc Long Bóng Tối",
+      "speed": 180,
+      "hp": 350,
+      "r": 35,
+      "behavior": "darkfire",
+      "flying": true
+    }
+  ]
 }

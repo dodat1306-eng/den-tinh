@@ -40,6 +40,7 @@
   // Keep the original painted sprites. Cast motion transforms the sprite as a
   // whole; it must never replace the face, outfit or elemental silhouette.
   function drawSpriteHero(c,p,h,time=0,scale=1,npc=false,clone=false){
+    if(h.id==='quanle'&&root.DTQuanLePixel)return root.DTQuanLePixel.hero(c,p,h,time);
     if(!npc&&root.DTWorldPixel?.hero(c,p,h,time))return;
     if(h.id==='thienvu'&&!npc)return root.DTThienVuPixel?.hero(c,p,time,-Infinity,clone);
     if(npc||!['an','linh','kiet','hoavi','thienvu'].includes(h.id))return oldHero(c,p,h,time,scale,npc);
@@ -310,7 +311,11 @@
       for(const l of g.loot||[])if(inView(l)){const bob=reduced()?0:Math.sin(g.time*5+l.x)*2.5;oval(c,l.x,l.y-5+bob,4,4,l.type==='gold'?'#f2d48b':'#e3adb4');}
       for(const l of root.DTContent.lore||[])if(!(g.memories||[]).includes(l.id)&&inView(l)){halo(c,l.x,l.y-20,32,'#d5b8ff',.2);c.fillStyle='#eadfff';c.fillRect(l.x-7,l.y-28,14,18);line(c,[[l.x-3,l.y-23],[l.x+4,l.y-23]],'#a68cba',2)}
       for(const e of g.effects||[])if(e.type==='choreo-code-wait')this.drawEffect(e);
+      for(const remain of g.shadowRemains||[])if(inView(remain))root.DTQuanLePixel?.remain(this,remain);
+      const shadowGround=['shadow-portal','shadow-legion','shadow-web','shadow-roots'];
+      for(const e of g.effects||[])if(shadowGround.includes(e.type))this.drawEffect(e);
       const objects=[];
+      for(const unit of g.shadowArmy||[])if(unit.life>0&&inView(unit))objects.push({y:unit.y,draw:()=>root.DTQuanLePixel?.beast(this,unit)});
       for(const a of g.elementClones||[])if(a.alive&&inView(a))objects.push({y:a.y,draw:()=>this.drawElementClone(a)});
       for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
       for(const a of g.elementSummons||[])if(a.life>0&&inView(a))objects.push({y:a.y,draw:()=>this.drawElementSummon?.(a)});
@@ -320,7 +325,7 @@
       for(const o of g.world.chests||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
       for(const e of g.world.enemies||[])if(e.alive&&inView(e))objects.push({y:e.y,draw:()=>this.drawEnemy(e)});
       objects.push({y:p.y,draw:()=>root.DTVisualHero(c,p,g.hero,g.time)});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
-      for(const b of g.projectiles||[])if(inView(b))this.drawProjectile(b);for(const e of g.effects||[])if(e.type!=='choreo-code-wait')this.drawEffect(e);
+      for(const b of g.projectiles||[])if(inView(b))this.drawProjectile(b);for(const e of g.effects||[])if(e.type!=='choreo-code-wait'&&!shadowGround.includes(e.type))this.drawEffect(e);
       c.save();c.globalCompositeOperation='lighter';for(const pt of g.particles||[])if(inView(pt)){c.globalAlpha=clamp(pt.life/pt.maxLife,0,1);c.fillStyle=pt.color;c.fillRect(pt.x,pt.y,pt.size,pt.size)}c.restore();
       for(const f of g.floaters||[]){c.save();c.globalAlpha=clamp(f.life*2,0,1);c.font='700 12px "DenTinh Sans"';c.textAlign='center';c.fillStyle='#122734';c.fillText(f.text,f.x+1,f.y+1);c.fillStyle=f.color;c.fillText(f.text,f.x,f.y);c.restore()}
       if(g.hero.id!=='hoavi'&&p.overclock>0&&!g.mythicFields?.some(f=>f.kind==='satellites'))for(let i=0;i<2;i++){const a=g.time*2+i*Math.PI,x=p.x+Math.cos(a)*48,y=p.y+Math.sin(a)*29-23;c.fillStyle='#173448';c.fillRect(x-8,y-5,16,10);line(c,[[x-5,y],[x+5,y]],'#98ffe8',3)}

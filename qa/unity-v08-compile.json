@@ -1,30 +1,31 @@
 {
-  "version": "0.8.0",
-  "checkedAt": "2026-11-14T00:15:56.765553+00:00",
+  "version": "0.8.1",
+  "checkedAt": "2026-11-14T03:21:30.941587+00:00",
   "unityVersion": "6000.3.27f1",
-  "compiler": "Unity bundled Roslyn with UnityEngine, UnityEditor and netstandard 2.1 reference assemblies",
+  "compiler": "Unity bundled Roslyn with UnityEngine/UnityEditor modules and netstandard 2.1 reference assemblies",
   "apiCompilation": {
     "pass": true,
+    "sourceFiles": 8,
     "errors": 0,
-    "warnings": [
-      "CS0169: DenTinhGame.scroll is never used"
-    ]
+    "warnings": []
   },
   "sources": {
-    "Unity/Assets/Scripts/Core/CatalogData.cs": "87b97b086cb75332412bd3949c760040b01ffa924cbac5ca6ecc45042f14df88",
-    "Unity/Assets/Scripts/Core/Definitions.cs": "2c77291017ee58dc932f7048cce4c514c75c1cbb4943ab29772a73651c534d76",
-    "Unity/Assets/Scripts/Core/ElementalCombat.cs": "00ed0f7a2890f83c1b4906b3041568b836c6c38226a5416b54bc925a076ae346",
-    "Unity/Assets/Scripts/Core/Simulation.cs": "7cb5a91642ab62d7b76f5b8637e8055b6e0756a0e446e60d9d1604a1bc3b0967",
-    "Unity/Assets/Scripts/Runtime/DenTinhGame.cs": "acc04ee87ba0737d7556790e3e5e949912bf694a3c40eccfde8983b91160d9c9",
-    "Unity/Assets/Scripts/Runtime/PixelArt.cs": "3befb6cfc5027ab4609ff3667d5e8d109d896dfed206ed1c5ea1a989fe65c232",
-    "Unity/Assets/Editor/BuildGame.cs": "387e815e0646abcbdb99c1aab548afae0cbd283cd82e7f436d5b037153d84baa"
+    "Unity/Assets/Editor/BuildGame.cs": "541cfd39aa20586cda69aa9c4ef4abd7736c8f0648c6bf0ac99835a848b2d02e",
+    "Unity/Assets/Scripts/Core/CatalogData.cs": "0eeebcf6af7600115762bf0bc78a5c7cd1c280e0c8a27d2a1c0630e0e845f7d0",
+    "Unity/Assets/Scripts/Core/Definitions.cs": "81a6a814638bcfc0e4a7c8ce8540b778c46f66ff370113c154edae9d3772abac",
+    "Unity/Assets/Scripts/Core/ElementalCombat.cs": "16633898f649a3f46fa1158ac1dd7c1e153cc4edfbd3bf6f2bd57636ccb51c0b",
+    "Unity/Assets/Scripts/Core/ShadowCombat.cs": "1c9f3a92a42c1b0d01cc53bf92532df6a7ec353ea3072c9f97b6859269fdd48c",
+    "Unity/Assets/Scripts/Core/Simulation.cs": "1891e6484ce220574a82f1a8f5fc9297a7c7fdaef87d748199ed6449845a05a3",
+    "Unity/Assets/Scripts/Runtime/DenTinhGame.cs": "934346281198868375670b3b513c64de0c428fa734a6f2938af7a63b86550d71",
+    "Unity/Assets/Scripts/Runtime/PixelArt.cs": "284f5b620c27ed352d4149c874780b269d9f9fa96f850c7e3314f5d58215c297"
   },
   "editorBuild": {
     "attempted": true,
     "exitCode": 198,
     "pass": false,
-    "reason": "No valid Unity Editor license found. Please activate your license.",
     "playerBuilt": false,
-    "playModeVerified": false
+    "playModeVerified": false,
+    "reason": "No valid Unity Editor license found. Please activate your license. Unity Hub is waiting for user acceptance of Software License Terms.",
+    "log": "Unity/Logs/build-windows.log"
   }
 }

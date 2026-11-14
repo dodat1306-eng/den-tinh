@@ -5,7 +5,7 @@
   const weapons=[
     ['lantern','Đèn Lưu Hỏa','staff','common',1,.24,1,0,650,12,1.2,'#ffc777','burn','Tia lửa để lại cháy âm ỉ.'],
     ['bamboo','Cung Trúc Ảnh','bow','common',.95,.19,1,1,900,16,1.1,'#b5f1a1','pierce','Xuyên một mục tiêu.'],
-    ['thunder','Lôi Thương','spear','common',.75,.34,3,0,620,15,1.35,'#b6c7ff','shock','Ba tia điện tỏa hình quạt.'],
+    ['thunder','Ấn Lôi Quang','orb','common',.75,.34,3,0,620,15,1.35,'#b6c7ff','shock','Ba tia điện tỏa hình quạt.'],
     ['terminal','Terminal 01','code','common',1,.21,1,0,790,18,1.15,'#72f4de','code','Đạn mã lệnh cộng dồn nội tại HoaVi.'],
     ['lotus','Liên Hoa Tán','fan','rare',.65,.46,5,0,550,20,1.6,'#ff9dce','heal','Hạ quái có cơ hội hồi máu.'],
     ['ember','Hỏa Pháo Tro Tàn','shotgun','rare',.88,.65,7,0,560,21,1.8,'#ff9366','burn','Tầm gần bùng nổ, gây thiêu đốt.'],
@@ -33,7 +33,7 @@
   const passives={
     an:{name:'Ngọn Lửa Bền Bỉ',desc:'Đòn lửa đốt thêm sát thương; thức tỉnh một ấn hồi đầy máu.'},
     linh:{name:'Nhịp Lá',desc:'Di chuyển liên tục tăng 12% tốc đánh; cung có khả năng xuyên.'},
-    kiet:{name:'Lôi Giáp',desc:'Giảm sẵn 8% sát thương; lướt phát một xung điện.'},
+    quanle:{name:'Chúa Tể Bóng Tối',desc:'Xác quái và cây gãy hóa linh hồn; dùng E gọi bóng thú, Q khoác Hắc Giáp, R tập hợp binh đoàn.'},
     hoavi:{name:'Mã Lệnh',desc:'Mỗi lần đánh trúng tích một Mã Lệnh (tối đa 8). Q tiêu thụ mã để tăng sát thương và rút hồi chiêu; E dựng Firewall, hồi máu và cấp khiên. R Overclock tăng tốc bắn và triển khai drone.'}
   };
   const lore=[

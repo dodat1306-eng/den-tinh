@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-11-07T07:17:49.495Z",
+  "checkedAt": "2026-11-14T03:02:15.180Z",
   "numericCanvasValidation": true,
   "visualInspection": false,
-  "drawCalls": 195894,
+  "drawCalls": 114702,
   "results": [
     {
-      "name": "All five heroes and seven elemental forms retain their original sprite atlas cells",
+      "name": "Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells at unit two for heroes and clones",
       "pass": true
     },
     {

@@ -77,7 +77,7 @@
     const boss=e.type.startsWith('boss'),attacking=t-old.attack<.55;
     const action=e.hit>0&&!boss?'hit':attacking?(boss?(e.pattern%3===0?'cast_rage':'attack_slam'):'attack'):moving?(boss?'move':'walk'):'idle';
     const elapsed=e.hit>0?.18-e.hit:attacking?t-old.attack:t;
-    actor(c,e.type,e.x,e.y,{action,time:elapsed,face:boss||e.type==='slime'?1:g.player.x<e.x?-1:1});
+    actor(c,e.type,e.x,e.y-(e.throwLift||0),{action,time:elapsed,face:boss||e.type==='slime'?1:g.player.x<e.x?-1:1});
     actorHistory.set(e,{x:e.x,y:e.y,cool:e.cool||0,attack:old.attack});
     const h=meta.clips[e.type+'/idle'].cells[0].h*2-12;elite(c,e,calm()?0:t,h);
     if(e.hp<e.maxHp){c.fillStyle='#12091a';c.fillRect(Math.round(e.x-24),Math.round(e.y-h-12),48,4);c.fillStyle=e.elite?'#ffdd77':'#d9384a';c.fillRect(Math.round(e.x-23),Math.round(e.y-h-11),Math.round(46*Math.max(0,e.hp/e.maxHp)),2)}
@@ -93,7 +93,7 @@
     return actor(renderer.ctx,'fox',f.x,f.y,{time:g.time,action:speed>4?'run':'idle',face:p.velocityX<0?-1:1});
   }
   function hero(c,p,h,time){
-    if(!ready()||!['an','linh','kiet'].includes(h.id))return false;
+    if(!ready()||!['an','linh'].includes(h.id))return false;
     const angle=p.moveFacing??p.facing??0,direction=Math.abs(Math.cos(angle))>Math.abs(Math.sin(angle))?(Math.cos(angle)<0?'W':'E'):(Math.sin(angle)<0?'N':'S');
     const action=p.dashTime>0?'dash':p.hit>0?'hit':p.action?({q:'q_cast',e:'e_cast',r:'r_ult'}[p.action.key]||'attack'):p.moving?'run':'idle';
     return actor(c,h.id+'_'+direction,p.x,p.y,{action,time:p.action?p.action.elapsed:time});

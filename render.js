@@ -67,7 +67,10 @@
       }
       for(const t of g.telegraphs){c.save();const f=1-t.timer/t.maxTimer;c.globalAlpha=.15+f*.15;ellipse(c,t.x,t.y,t.r,t.r,'#f49983');c.globalAlpha=.8;c.strokeStyle=t.color;c.lineWidth=2;c.beginPath();c.arc(t.x,t.y,t.r,0,TAU);c.stroke();c.globalAlpha=.3;ellipse(c,t.x,t.y,t.r*f,t.r*f,t.color);c.restore()}
       for(const l of g.loot)if(inView(l)){const bob=Math.sin(g.time*5+l.x)*3;c.fillStyle=l.type==='gold'?'#e8c46e':'#bc5f70';c.fillRect(l.x-4,l.y-8+bob,8,8);c.fillStyle=l.type==='gold'?'#ffe6a0':'#edc3ad';c.fillRect(l.x-2,l.y-7+bob,3,3);glow(c,l.x,l.y,18,l.type==='gold'?'#efc773':'#d8a2a9',.12)}
+      for(const remain of g.shadowRemains||[])if(inView(remain))root.DTQuanLePixel?.remain(this,remain);
+      for(const e of g.effects)if(['shadow-portal','shadow-legion','shadow-web','shadow-roots'].includes(e.type))this.drawEffect(e);
       const objects=[];
+      for(const unit of g.shadowArmy||[])if(unit.life>0&&inView(unit))objects.push({y:unit.y,draw:()=>root.DTQuanLePixel?.beast(this,unit)});
       if(this.drawElementClone)for(const ally of g.elementClones||[])if(ally.alive&&inView(ally))objects.push({y:ally.y,draw:()=>this.drawElementClone(ally)});
       if(this.drawBeacon)for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
       for(const ally of g.elementSummons||[])if(ally.life>0&&inView(ally))objects.push({y:ally.y,draw:()=>this.drawElementSummon?.(ally)});
@@ -79,7 +82,7 @@
       objects.sort((a,b)=>a.y-b.y);objects.forEach(o=>o.draw());
       this.drawCompanion();
       for(const b of g.projectiles){if(!inView(b))continue;if(this.drawProjectile){this.drawProjectile(b);continue}c.save();c.translate(b.x,b.y);c.rotate(b.angle);c.fillStyle=b.color;if(b.kind==='arrow'){c.fillRect(-11,-2,22,4);poly(c,[[12,-4],[18,0],[12,4]],b.color);c.fillStyle='#ffffffbb';c.fillRect(1,-1,12,2)}else{c.fillRect(-b.r,-b.r,b.r*2,b.r*2);c.fillStyle='#fff6d5';c.fillRect(-2,-2,4,4)}c.restore();}
-      for(const e of g.effects)this.drawEffect(e);
+      for(const e of g.effects)if(!['shadow-portal','shadow-legion','shadow-web','shadow-roots'].includes(e.type))this.drawEffect(e);
       c.save();c.globalCompositeOperation='lighter';for(const pt of g.particles){if(!inView(pt))continue;c.globalAlpha=Math.min(1,pt.life/pt.maxLife);c.fillStyle=pt.color;c.fillRect(Math.round(pt.x),Math.round(pt.y),pt.size,pt.size)}c.restore();
       for(const f of g.floaters){c.save();c.globalAlpha=Math.min(1,f.life*2);c.font='bold 12px Segoe UI';c.textAlign='center';c.fillStyle='#182225';c.fillText(f.text,f.x+1,f.y+1);c.fillStyle=f.color;c.fillText(f.text,f.x,f.y);c.restore()}
       for(let i=0;i<28;i++){const xx=this.camera.x+((i*97+g.time*8)%(1280/z)),yy=this.camera.y+((i*71+Math.sin(g.time*.5+i)*25)%(720/z));c.globalAlpha=.25+Math.sin(g.time*2+i)*.15;c.fillStyle='#e2dba0';c.fillRect(xx,yy,2,2)}c.globalAlpha=1;

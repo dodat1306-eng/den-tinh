@@ -128,6 +128,8 @@
       this.saga.chapter=clamp(Number(this.saga.chapter)||0,0,CHAPTERS.length);this.world.ensureChunks(this.player.x,this.player.y);this.refreshSagaEnvironment();
     }
     refreshSagaEnvironment(){
+      this.world.npcs=this.world.npcs.filter(n=>!n.storyNPC);
+      for(const [i,type] of ['ferryman','mirror_maiden','bell_keeper','sun_child','bronze_pilot'].entries()){const c=CHAPTERS[i];this.world.npcs.push({id:'story-npc-'+c.id,type,storyNPC:true,chapter:i,name:c.speaker,x:c.x-105,y:c.y+100,r:0})}
       const c=CHAPTERS[this.saga.chapter];if(!c){this.world.setStoryEnvironment([]);return}
       const list=[{id:'saga-gate-'+c.id,type:'sagaGate',sagaGate:true,x:c.x,y:c.y+95,name:c.name,r:0,color:c.color,used:false}];
       if(this.saga.stage==='echoes')for(let i=0;i<3;i++)if(!this.saga.echoes.includes(i))list.push({id:'saga-echo-'+c.id+'-'+i,type:'storyEcho',storyEcho:true,echoIndex:i,x:c.x+echoOffsets[i][0],y:c.y+echoOffsets[i][1],name:'Tiếng Vọng '+(i+1),r:0,color:c.color,used:false});
@@ -152,7 +154,7 @@
       return{...o,environment:true,label:o.sagaGate?(!this.victory?'Ngọn đèn bên kia sương · Cần giải thoát Cội Đa':this.saga.stage==='claim'?'Nối ngọn đèn · Nhận cổ vật':this.saga.stage==='boss'?'Người canh đang thức tỉnh':this.saga.stage==='echoes'&&this.saga.echoes.length===3?'Gọi người canh của '+o.name:'Lắng nghe '+o.name):o.storyEcho?'Lắng nghe '+o.name:o.name+(o.type==='barrel'?' · Phá bằng lửa hoặc tương tác':' · Khám phá')};
     }
     interact(){
-      if(this.paused||this.dead)return false;const target=this.nearby();if(!target?.environment)return super.interact();
+      if(this.paused||this.dead)return false;const target=this.nearby();if(target?.storyNPC){const c=CHAPTERS[target.chapter];this.emit('dialogue',{title:c.name,speaker:c.speaker,text:c.intro});return true}if(!target?.environment)return super.interact();
       const o=this.world.environment.find(e=>e.id===target.id);if(!o)return false;
       if(o.sagaGate){const ok=this.interactSagaGate();if(ok)this.onMythicInteract?.(o);return ok}
       const c=CHAPTERS[this.saga.chapter];

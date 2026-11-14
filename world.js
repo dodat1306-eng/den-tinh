@@ -4,8 +4,9 @@
   const HEROES={
     an:{id:'an',name:'An',role:'NGƯỜI GIỮ ĐÈN',desc:'Lửa linh, vòng trấn. Cân bằng và dễ làm quen.',color:'#f1bf69',cloth:'#459c83',accent:'#e8c273',hp:120,speed:230,damage:18,fireRate:.22,shotSpeed:640,q:'Liên Hỏa',e:'Vòng Trấn',r:'Thiên Đăng',qCd:5,eCd:9},
     linh:{id:'linh',name:'Linh',role:'TRÚC ẢNH',desc:'Cung ngọc, mưa trúc. Nhanh và đánh từ xa.',color:'#a5e3a2',cloth:'#648f73',accent:'#d9786c',hp:100,speed:264,damage:15,fireRate:.15,shotSpeed:810,q:'Xuyên Vân',e:'Mưa Trúc',r:'Phong Linh',qCd:4,eCd:8},
-    kiet:{id:'kiet',name:'Kiệt',role:'LÔI VỆ',desc:'Lôi thương, chấn địa. Bền bỉ và bùng nổ.',color:'#aebff7',cloth:'#63759e',accent:'#e7ad6b',hp:155,speed:212,damage:13,fireRate:.33,shotSpeed:560,q:'Lôi Liên',e:'Chấn Địa',r:'Thiên Lôi',qCd:5,eCd:9}
+    quanle:{id:'quanle',name:'Quân Lê',role:'MA QUÂN BÓNG TỐI',desc:'Điều khiển bóng tối, khoác Hắc Giáp và triệu hồi binh đoàn quái vật bóng tối.',color:'#b86bff',cloth:'#1a132b',accent:'#5ce1e6',hp:135,speed:232,damage:18,fireRate:.3,shotSpeed:680,q:'Hắc Ảnh Chiến Giáp',e:'Hắc Ảnh Triệu Hồi',r:'Bách Quỷ Dạ Hành',qCd:9,eCd:7}
   };
+  Object.defineProperty(HEROES,'kiet',{value:HEROES.quanle,enumerable:false});
   const ZONES=[
     {id:'village',name:'Làng Đèn',sub:'NƠI NGỌN LỬA BẮT ĐẦU',color:'#496b58',center:[720,2200]},
     {id:'forest',name:'Rừng Trúc',sub:'NGHE TIẾNG LÁ NHỚ TÊN NGƯỜI',color:'#224a43',center:[840,770]},

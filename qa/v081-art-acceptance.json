@@ -1,0 +1,151 @@
+{
+  "version": "0.8.1",
+  "checkedAt": "2026-11-14T03:25:08.834087+00:00",
+  "visualReview": {
+    "completed": true,
+    "modes": [
+      "random",
+      "wire"
+    ],
+    "views": [
+      "front",
+      "right",
+      "back",
+      "three_quarter"
+    ],
+    "report": "qa/v081-mesh-visual-review.json",
+    "reviewedContactSheets": 8,
+    "allObjectsVisibleFromEachView": true
+  },
+  "assets": [
+    {
+      "report": "design/blender/quanle/bake-report.json",
+      "frames": 156,
+      "totalTriangles": 301728,
+      "minTrianglesPerObject": 1928,
+      "maxTrianglesPerObject": 1968,
+      "pass": true,
+      "allFramesChecked": true,
+      "batches": 7,
+      "errors": 0,
+      "zFightingPairs": 0,
+      "warningCount": 319,
+      "warningKinds": {
+        "duplicate_vertices": 156,
+        "bake_cell_placement": 7,
+        "detached_emissive_details": 156
+      },
+      "numeric": {
+        "degenerate_faces": 0,
+        "zero_length_edges": 0,
+        "inconsistent_normals_edges": 0,
+        "inside_out_islands": 0,
+        "duplicate_verts": 2652
+      }
+    },
+    {
+      "report": "design/blender/quanle/beasts/bake-report.json",
+      "frames": 366,
+      "totalTriangles": 274992,
+      "minTrianglesPerObject": 120,
+      "maxTrianglesPerObject": 1664,
+      "pass": true,
+      "allFramesChecked": true,
+      "batches": 16,
+      "errors": 0,
+      "zFightingPairs": 0,
+      "warningCount": 1521,
+      "warningKinds": {
+        "duplicate_vertices": 318,
+        "bake_cell_placement": 16,
+        "enclosed_details": 2,
+        "hidden_faces": 20,
+        "detached_emissive_details": 1165
+      },
+      "numeric": {
+        "degenerate_faces": 0,
+        "zero_length_edges": 0,
+        "inconsistent_normals_edges": 0,
+        "inside_out_islands": 0,
+        "duplicate_verts": 2736
+      }
+    },
+    {
+      "report": "design/blender/actors/bake-report.json",
+      "frames": 735,
+      "totalTriangles": 957900,
+      "minTrianglesPerObject": 84,
+      "maxTrianglesPerObject": 3080,
+      "pass": true,
+      "allFramesChecked": true,
+      "batches": 31,
+      "errors": 0,
+      "zFightingPairs": 0,
+      "warningCount": 1875,
+      "warningKinds": {
+        "duplicate_vertices": 660,
+        "enclosed_details": 7,
+        "bake_cell_placement": 31,
+        "hidden_faces": 66,
+        "detached_emissive_details": 1111
+      },
+      "numeric": {
+        "degenerate_faces": 0,
+        "zero_length_edges": 0,
+        "inconsistent_normals_edges": 0,
+        "inside_out_islands": 0,
+        "duplicate_verts": 11606
+      }
+    },
+    {
+      "report": "design/blender/thienvu/held-weapons/bake-report.json",
+      "frames": 28,
+      "totalTriangles": 11968,
+      "minTrianglesPerObject": 112,
+      "maxTrianglesPerObject": 780,
+      "pass": true,
+      "allFramesChecked": true,
+      "batches": 2,
+      "errors": 0,
+      "zFightingPairs": 0,
+      "warningCount": 97,
+      "warningKinds": {
+        "hidden_faces": 12,
+        "enclosed_details": 1,
+        "bake_cell_placement": 2,
+        "detached_emissive_details": 82
+      },
+      "numeric": {
+        "degenerate_faces": 0,
+        "zero_length_edges": 0,
+        "inconsistent_normals_edges": 0,
+        "inside_out_islands": 0,
+        "duplicate_verts": 0
+      }
+    }
+  ],
+  "acceptedWarnings": {
+    "duplicate_vertices": "Primitive seams remain independent in posed source meshes to preserve part IDs and flat palette borders. Runtime ships baked PNGs, no 3D meshes.",
+    "detached_emissive_details": "Eyes, neon inlays, sparks, soul motes and summoned tendrils are deliberately separated sprite layers; random and wire review shows no unintended spikes.",
+    "hidden_faces": "Back-to-back faces remain inside overlapping stylized source primitives. They do not run in Web or Unity; export uses baked 2D pixels.",
+    "enclosed_details": "Inner weapon and eye details are intentional layered pieces.",
+    "bake_cell_placement": "Each independent atlas cell is elevated/offset for baking; these source objects are not ground props."
+  },
+  "fixedIssues": [
+    "Blender 5 tessellation index handling",
+    "inconsistent winding and inward normals",
+    "degenerate faces and zero-length edges",
+    "wireframe even-offset review spikes",
+    "smith bandana hidden by hair",
+    "active Web renderer skipped shadow army; fixed and regression checked",
+    "portals layered over bodies; moved to ground pass",
+    "Duplicate hand VFX branches and coplanar hair layers",
+    "Repeated wisp tendrils, boss hands, boar foliage and layered wing facets",
+    "Atlas-wide audit exceeded triangle ceiling; every frame now checked in bounded batches"
+  ],
+  "limitations": [
+    "No native Unity player or Play Mode acceptance until Editor license is usable.",
+    "Browser touch and timings use desktop emulation; no physical phone benchmark."
+  ],
+  "pass": true
+}
