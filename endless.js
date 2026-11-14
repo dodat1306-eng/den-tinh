@@ -31,7 +31,7 @@
   function attachStream(world){
     if(world.infinite)return world;
     const coreProps=world.props,coreEnemies=world.enemies,coreChests=world.chests,active=new Map(),changes=new Map();let anchor='',grid=new Map();
-    world.infinite=true;world.coreWidth=CORE_W;world.coreHeight=CORE_H;world.environment=[];world.storyEnvironment=[];
+    world.infinite=true;world.coreWidth=CORE_W;world.coreHeight=CORE_H;world.coreProps=coreProps;world.groundDecals=[];world.environment=[];world.storyEnvironment=[];
     world.coreEnvironment=[
       ['campfire',760,2355,'Bếp Lửa Lữ Khách'],['barrel',1330,1750,'Thùng Nhựa Thông'],['spiritTree',1080,1440,'Cây Nguyện Ước'],
       ['ore',1440,1050,'Mạch Quặng Linh'],['shrine',2220,1550,'Miếu Kể Chuyện'],['barrel',2780,1230,'Thùng Nhựa Thông'],
@@ -40,14 +40,14 @@
     ].map((a,i)=>({id:'core-environment-'+i,type:a[0],x:a[1],y:a[2],name:a[3],r:0,used:false,elementalState:''}));
     world.sagaSites=CHAPTERS.map((c,index)=>({id:c.id,index,x:c.x,y:c.y,name:c.name,color:c.color}));
     const safeArena=(x,y)=>CHAPTERS.some(c=>Math.hypot(x-c.x,y-c.y)<490);
-    function deltaFor(key){return changes.get(key)||{dead:[],damaged:{},open:[],used:{},broken:[]}}
+    function deltaFor(key){return changes.get(key)||{dead:[],damaged:{},open:[],used:{},broken:[],props:{}}}
     function snapshot(chunk){
-      const delta={dead:[],damaged:{},open:[],used:{},broken:[]};
+      const delta={dead:[],damaged:{},open:[],used:{},broken:[],props:{}};
       for(const e of chunk.enemies){if(!e.alive)delta.dead.push(e.streamIndex);else if(e.hp<e.maxHp)delta.damaged[e.streamIndex]=Math.max(1,Math.round(e.hp))}
       for(const c of chunk.chests)if(c.open)delta.open.push(c.streamIndex);
-      for(const o of chunk.environment)if(o.used||o.elementalState)delta.used[o.streamIndex]={used:!!o.used,state:o.elementalState||''};
-      for(const p of chunk.props)if(p.destroyed)delta.broken.push(p.streamIndex);
-      if(delta.dead.length||Object.keys(delta.damaged).length||delta.open.length||Object.keys(delta.used).length||delta.broken.length)changes.set(chunk.key,delta);else changes.delete(chunk.key);
+      for(const o of chunk.environment)if(o.used||o.elementalState||o.damageStage)delta.used[o.streamIndex]={used:!!o.used,state:o.elementalState||'',prop:root.DTDestruction?.state(o)};
+      for(const p of chunk.props){if(p.destroyed)delta.broken.push(p.streamIndex);if(p.damageStage>0||p.propHp<p.maxPropHp)delta.props[p.streamIndex]=root.DTDestruction?.state(p)}
+      if(delta.dead.length||Object.keys(delta.damaged).length||delta.open.length||Object.keys(delta.used).length||delta.broken.length||Object.keys(delta.props).length)changes.set(chunk.key,delta);else changes.delete(chunk.key);
     }
     function generate(cx,cy){
       const key=cx+','+cy,rng=D.rand(hash(world.seed,cx,cy)),biome=biomes[hash(81231,cx,cy)%biomes.length],delta=deltaFor(key),chunk={key,cx,cy,props:[],enemies:[],chests:[],environment:[]};
@@ -67,14 +67,14 @@
       const kinds=['campfire','barrel','ore','spiritTree','shrine'];
       for(let i=0;i<3;i++){
         const p=point(110);if(!allowed(p)||!free(p))continue;const type=kinds[(i+hash(world.seed+31,cx,cy))%kinds.length],saved=delta.used[i];
-        chunk.environment.push({id:'stream-environment-'+key+'-'+i,streamKey:key,streamIndex:i,type,...p,r:0,name:{campfire:'Bếp Lửa Lữ Khách',barrel:'Thùng Nhựa Thông',ore:'Mạch Quặng Linh',spiritTree:'Cây Nguyện Ước',shrine:'Miếu Kể Chuyện'}[type],used:!!saved?.used,elementalState:saved?.state||''});
+        const environment={id:'stream-environment-'+key+'-'+i,streamKey:key,streamIndex:i,type,...p,r:0,name:{campfire:'Bếp Lửa Lữ Khách',barrel:'Thùng Nhựa Thông',ore:'Mạch Quặng Linh',spiritTree:'Cây Nguyện Ước',shrine:'Miếu Kể Chuyện'}[type],used:!!saved?.used,elementalState:saved?.state||''};root.DTDestruction?.applyState(environment,saved?.prop);chunk.environment.push(environment);
       }
       if(hash(world.seed+93,cx,cy)%4===0){const p=point(170);if(allowed(p)&&free(p)){const type=hash(world.seed+95,cx,cy)%2?'trial':'fog',saved=delta.used[3];chunk.environment.push({id:'stream-event-'+key,streamKey:key,streamIndex:3,type,...p,r:0,name:type==='trial'?'Đài Tế Nguyện Ước':'Đèn Lạc · Sương Đậm',used:!!saved?.used,elementalState:''})}}
-      for(const p of chunk.props)if(p.destroyed)p.r=0;
+      for(const p of chunk.props){if(p.destroyed){p.r=0;p.damageStage=3}root.DTDestruction?.applyState(p,delta.props?.[p.streamIndex])}
       return chunk;
     }
     function rebuild(){
-      world.props=coreProps.concat(...[...active.values()].map(c=>c.props.filter(p=>!p.destroyed)));
+      world.props=coreProps.concat(...[...active.values()].map(c=>c.props));
       const dynamic=world.enemies.filter(e=>!e.streamKey&&!coreEnemies.includes(e));
       world.enemies=coreEnemies.concat(dynamic,...[...active.values()].map(c=>c.enemies));
       world.chests=coreChests.concat(...[...active.values()].map(c=>c.chests));
@@ -95,20 +95,21 @@
       if(!Number.isFinite(x)||!Number.isFinite(y))return true;
       if(!outside(x,y)&&D.frontier?.riverAt(x,y,r)&&!D.frontier.onBridge(x,y,r))return true;
       const gx=Math.floor(x/96),gy=Math.floor(y/96);
-      for(let i=gx-2;i<=gx+2;i++)for(let j=gy-2;j<=gy+2;j++)for(const p of grid.get(i+','+j)||[])if(Math.hypot(x-p.x,y-p.y)<p.r+r)return true;
+      for(let i=gx-2;i<=gx+2;i++)for(let j=gy-2;j<=gy+2;j++)for(const p of grid.get(i+','+j)||[])if(p.r>0&&Math.hypot(x-p.x,y-p.y)<p.r+r)return true;
       return false;
     };
     world.setStoryEnvironment=function(list){world.storyEnvironment=list;rebuild()};
-    world.exportStream=function(){for(const c of active.values())snapshot(c);return{version:1,changes:[...changes.entries()],coreEnvironment:world.coreEnvironment.filter(o=>o.used||o.elementalState).map(o=>({id:o.id,used:o.used,state:o.elementalState}))}};
+    world.exportStream=function(){for(const c of active.values())snapshot(c);return{version:1,changes:[...changes.entries()],coreEnvironment:world.coreEnvironment.filter(o=>o.used||o.elementalState||o.damageStage).map(o=>({id:o.id,used:o.used,state:o.elementalState,prop:root.DTDestruction?.state(o)}))}};
     world.restoreStream=function(saved,x,y){
       changes.clear();
-      for(const o of world.coreEnvironment){const item=(saved?.coreEnvironment||[]).find(s=>s.id===o.id);o.used=!!item?.used;o.elementalState=typeof item?.state==='string'?item.state.slice(0,30):''}
+      for(const o of world.coreEnvironment){const item=(saved?.coreEnvironment||[]).find(s=>s.id===o.id);o.used=!!item?.used;o.elementalState=typeof item?.state==='string'?item.state.slice(0,30):'';root.DTDestruction?.applyState(o,item?.prop)}
       for(const entry of Array.isArray(saved?.changes)?saved.changes:[]){
         if(!Array.isArray(entry)||!/^[-]?\d+,[-]?\d+$/.test(entry[0])||!entry[1]||typeof entry[1]!=='object')continue;
-        const value=entry[1],clean={dead:[],damaged:{},open:[],used:{},broken:[]};
+        const value=entry[1],clean={dead:[],damaged:{},open:[],used:{},broken:[],props:{}};
         for(const [field,max]of[['dead',5],['open',2],['broken',42]])clean[field]=(Array.isArray(value[field])?value[field]:[]).filter(n=>Number.isInteger(n)&&n>=0&&n<max);
         for(const [i,hp]of Object.entries(value.damaged||{}))if(/^\d$/.test(i)&&Number(i)<5&&Number.isFinite(hp)&&hp>0)clean.damaged[i]=Math.min(10000,hp);
-        for(const [i,v]of Object.entries(value.used||{}))if(/^[0-3]$/.test(i)&&v&&typeof v==='object')clean.used[i]={used:!!v.used,state:typeof v.state==='string'?v.state.slice(0,30):''};
+        for(const [i,v]of Object.entries(value.used||{}))if(/^[0-3]$/.test(i)&&v&&typeof v==='object')clean.used[i]={used:!!v.used,state:typeof v.state==='string'?v.state.slice(0,30):'',prop:v.prop&&root.DTDestruction?.cleanState(v.prop)};
+        for(const [i,v]of Object.entries(value.props||{}))if(/^\d{1,2}$/.test(i)&&Number(i)<42&&v&&typeof v==='object')clean.props[i]=root.DTDestruction?.cleanState(v);
         changes.set(entry[0],clean);
       }
       active.clear();anchor='';world.ensureChunks(x,y);
@@ -186,7 +187,7 @@
     }
     startSagaBoss(saved){
       const c=CHAPTERS[this.saga.chapter];if(!c)return;this.sagaTelegraphs=[];
-      const level=this.player.level,hp=2100+this.saga.chapter*680+level*85,e={id:'saga-boss-'+c.id,type:this.saga.chapter===3?'boar':'shade',sagaBoss:true,sagaIndex:this.saga.chapter,name:c.boss,x:c.x,y:c.y,homeX:c.x,homeY:c.y,r:40,hp,maxHp:hp,speed:48,damage:17+this.saga.chapter*2,xp:130+this.saga.chapter*30,gold:90,alive:true,cool:1.8,timer:0,phase:1,pattern:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:c.color,anchorsSpawned:false,...saved};
+      const level=this.player.level,hp=2100+this.saga.chapter*680+level*85,e={id:'saga-boss-'+c.id,type:['boss_haba','boss_hotinh','boss_thantrung','boss_cuukhucxa','boss_thietdieu','boss_kedetsuong'][this.saga.chapter],sagaBoss:true,sagaIndex:this.saga.chapter,name:c.boss,x:c.x,y:c.y,homeX:c.x,homeY:c.y,r:40,hp,maxHp:hp,speed:48,damage:17+this.saga.chapter*2,xp:130+this.saga.chapter*30,gold:90,alive:true,cool:1.8,timer:0,phase:1,pattern:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:c.color,anchorsSpawned:false,...saved};
       this.world.enemies=this.world.enemies.filter(x=>!x.sagaBoss&&!x.sagaAnchor&&!x.sagaSummon);this.world.enemies.push(e);this.player.mp=this.player.maxMp;this.player.ult=100;this.player.invulnerable=1.3;this.emit('toast',{text:c.boss+' · '+c.tip});this.effect('ultimate',c.x,c.y,c.color,300,1.2);
     }
     spawnSagaAnchors(e,count){
@@ -249,6 +250,7 @@
         if(t.kind==='disc')hit=d<t.r+p.r;
         if(t.kind==='ring')hit=d<t.r+p.r&&d>Math.max(0,t.inner-p.r);
         if(t.kind==='line'){const dx=t.x2-t.x,dy=t.y2-t.y,f=clamp(((p.x-t.x)*dx+(p.y-t.y)*dy)/(dx*dx+dy*dy||1),0,1);hit=Math.hypot(p.x-t.x-dx*f,p.y-t.y-dy*f)<t.r+p.r}
+        if(t.kind==='line')root.DTDestruction?.trace(this,'lightning',t.x,t.y,t.x2,t.y2,t.r,30);else root.DTDestruction?.react(this,'earth',t.x,t.y,t.r,30);
         if(hit)this.damagePlayer(t.damage);this.effect(t.kind==='line'?'lightning':'shock',t.x,t.y,t.color,t.kind==='ring'?t.r:t.r||50,.4,{tx:t.x2,ty:t.y2});
         if(t.chargeBoss){const e=this.world.enemies.find(e=>e.id===t.chargeBoss&&e.alive);if(e)this.moveEntity(e,Math.cos(t.chargeA)*260,Math.sin(t.chargeA)*260)}
         this.sagaTelegraphs.splice(i,1);
@@ -263,9 +265,6 @@
         else if(element==='ice'){o.used=true;this.elementFields?.push({element:'ice',key:'e',owner:'environment',x:o.x,y:o.y,r:150,life:3,tick:0,power:this.player.damage*.3,charge:false,follow:false});this.effect('ring',o.x,o.y,'#abecff',150,.8)}
         else if(element==='fire'){this.player.mp=Math.min(this.player.maxMp,this.player.mp+12);this.effect('ring',o.x,o.y,'#ffc78a',70,.5)}
         else{o.used=true;if(element==='nature')this.player.hp=Math.min(this.player.maxHp,this.player.hp+30);this.environmentReward(o);this.effect('ring',o.x,o.y,'#c9f3a2',100,.7)}
-      }
-      if(element==='earth'||element==='fire'){
-        let changed=false;for(const p of this.world.props)if(p.streamKey&&!p.destroyed&&['rock','crystal','deadTree'].includes(p.type)&&dist(p,{x,y})<r){p.destroyed=true;p.r=0;changed=true;count++;this.spark(p.x,p.y,8,element==='fire'?'#ffb674':'#cbd4bb',90,.4)}if(changed)this.world.rebuildStream();
       }
       return count;
     }

@@ -89,6 +89,7 @@
       if(id==='nature'&&!e.alive&&b.charge!==false)this.player.hp=Math.min(this.player.maxHp,this.player.hp+2);
     }
     elementArea(x,y,r,damage,id,charge=false,strong=false,knock=0){
+      root.DTDestruction?.react(this,id,x,y,r,damage);
       for(const e of this.world.enemies)if(e.alive&&Math.hypot(e.x-x,e.y-y)<r+e.r){this.damageEnemy(e,damage,charge);if(charge&&damage>0)this.registerHarmony?.(id);this.applyElementStatus(e,id,damage,strong);if(knock){const a=Math.atan2(e.y-y,e.x-x);e.knockX=Math.cos(a)*knock;e.knockY=Math.sin(a)*knock}}
     }
     scheduleElement(delay,action){const owner=action.owner==='player'?this.player:this.elementClones.find(c=>c.id===action.owner);this.elementActions.push({delay,...action,epoch:owner?.motionEpoch||0})}
@@ -96,6 +97,7 @@
       const a=Math.atan2(target.y-origin.y,target.x-origin.x),length=Math.min(800,dist(origin,target));let end=length;
       for(let d=24;d<length;d+=12)if(this.world.collision(origin.x+Math.cos(a)*d,origin.y+Math.sin(a)*d,2)){end=d;break}
       const tx=origin.x+Math.cos(a)*end,ty=origin.y+Math.sin(a)*end;
+      root.DTDestruction?.trace(this,id,origin,{x:tx,y:ty},width,power);
       for(const e of this.world.enemies)if(e.alive){const t=clamp(((e.x-origin.x)*Math.cos(a)+(e.y-origin.y)*Math.sin(a))/Math.max(1,end),0,1);if(Math.hypot(e.x-origin.x-(tx-origin.x)*t,e.y-origin.y-(ty-origin.y)*t)<width+e.r){this.damageEnemy(e,power,charge);if(charge&&power>0)this.registerHarmony?.(id);this.applyElementStatus(e,id,power,id==='lightning')}}
       this.effect('element-beam',origin.x,origin.y-18,byId(id).color,width,.65,{element:id,tx,ty:ty-18});
     }

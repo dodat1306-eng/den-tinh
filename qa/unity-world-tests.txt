@@ -1,0 +1,19 @@
+﻿PASS fire enters 2.5-second burning
+PASS fire leaves glowing scorch
+PASS no early fire spread
+PASS fire spreads after .9 seconds within 85 pixels
+PASS charred trunk remains solid
+PASS ash persists without collision
+PASS ash footsteps create dust and scatter
+PASS ice freezes prop for five seconds
+PASS fire melts frost into steam
+PASS frozen shatter damages nearby enemy
+PASS wind slices trunk before collapse
+PASS sliced trunk falls into remains
+PASS pause freezes decals
+PASS decal memory cap
+PASS scorch expires after 90 seconds
+PASS save restores core prop state
+PASS save restores ground traces
+PASS reject non-finite damage
+18/18 world destruction checks passed

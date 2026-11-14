@@ -46,7 +46,7 @@ namespace DenTinh.Core {
         }
         public void ElementFx(string clip,V2 at,string element,float duration,float angle=0,V2? end=null){Effects.Add(new Effect{kind="element",clip=clip,element=element,position=at,end=end??at,color=Element(element).color,time=duration,maxTime=duration,angle=angle});}
         void Status(EnemyState e,string id,float power,bool strong){if(!e.alive)return;if(id=="ice"){e.slow=Math.Max(e.slow,1.8f);if(strong)e.frozen=2;}if(id=="lightning"&&strong)e.stunned=.8f;if(id=="fire"){e.burn=2.6f;e.burnTick=0;}if(id=="nature"){e.poison=3;e.poisonPower=power*.12f;if(strong)e.rooted=2.5f;}}
-        void ElementArea(V2 at,float radius,float power,string id,bool charge,bool strong=false){foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,at)<radius+e.radius){DamageEnemy(e,power,charge);Status(e,id,power,strong);}}
+        void ElementArea(V2 at,float radius,float power,string id,bool charge,bool strong=false){ReactEnvironment(id,at,radius,power);foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,at)<radius+e.radius){DamageEnemy(e,power,charge);Status(e,id,power,strong);}}
         void ElementBeam(V2 from,V2 end,float width,float power,string id,bool charge){
             V2 delta=end-from;float length=Math.Min(12.5f,delta.Length);V2 direction=delta.Unit;
             for(float d=.375f;d<length;d+=.1875f)if(Collides(from+direction*d,.03f)){length=d;break;}end=from+direction*length;

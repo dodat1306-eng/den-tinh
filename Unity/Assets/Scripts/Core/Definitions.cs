@@ -36,10 +36,11 @@ namespace DenTinh.Core {
     public class SummonState {public string id,kind,owner;public V2 position;public Prop sourceProp;public float radius,hp,maxHp,power,life,maxLife,attackCd,shotCd;public bool moving;public ActorAction action;}
     public class ElementField {public string element,behavior,owner;public V2 position;public float radius,life,tick,power,angle,travel,delay;public bool follow,charge;public int epoch;}
     public class ElementStrike {public string owner,element,clip;public int epoch;public V2 position;public float delay,radius,power;public bool charge,strong;}
-    public class Bullet {public V2 position,velocity;public string kind,color,effect,element,owner;public float damage,life=2,radius=.12f;public int pierce;public bool friendly,charge=true,returning;public HashSet<string> hit=new HashSet<string>();}
+    public class Bullet {public V2 position,velocity;public string kind,color,effect,element,owner;public float damage,life=2,radius=.12f;public int pierce;public bool friendly,charge=true,returning;public HashSet<string> hit=new HashSet<string>();public HashSet<Prop> propHits=new HashSet<Prop>();}
     [Serializable] public class Shrine {public string id,name,kind;public V2 position;public bool active,started,complete;public float time,hp=100,waveTimer;public int wave;public List<string> enemies=new List<string>();}
     [Serializable] public class Loot {public string id,kind,weapon;public V2 position;public int amount=1,level=1;public bool collected;}
-    [Serializable] public class Prop {public V2 position;public string type,zone;public float radius;public int variant;}
+    [Serializable] public class Prop {public V2 position;public string type,zone,status="intact";public float radius,baseRadius=-1,burnTimer,frozenTimer,charTimer,spreadTimer,heatTimer,afflictTimer,touchTimer,sway,fallTime,hp=80;public int variant,damageStage,beforeFreezeStage;}
+    [Serializable] public class GroundDecal {public V2 position;public string type,size;public float age,life=90,emberLife;}
     public class Danger {public V2 position;public float radius=1,time=1,maxTime=1,damage=18;public string color="#ff8b83";}
     public class ZoneEffect {public V2 position;public float radius,time,tick,damage;public string color;public bool follow,charge=true;}
     public class Effect {public string kind,color,text,element,clip;public V2 position,end;public float time,maxTime,radius,angle;}
@@ -49,5 +50,6 @@ namespace DenTinh.Core {
         public int version=2,seed,cycle,kills,deaths,tutorial,serial,pendingLevels,tutorialDashes,tutorialSkills;public float time,tutorialMoved,tutorialShots;public string hero;public bool bossStarted,victory,tutorialChest;public PlayerState player;
         public List<EnemyState> enemies;public List<Shrine> shrines;public List<Loot> loot;public List<string> memories,achievements;
         public List<CloneState> clones;public float splitTime,splitCooldown;
+        public List<Prop> props;public List<GroundDecal> decals;
     }
 }

@@ -1,48 +1,35 @@
-# Đèn Tinh 0.2 — dự án Unity 2D
+# Đèn Tinh 0.8 — dự án Unity 2D
 
-Dự án Unity thật, viết bằng C#, dùng Camera trực giao, SpriteRenderer, hoạt ảnh khung hình, LineRenderer, ParticleSystem và AudioSource. Không nhúng trang web vào Unity. Phần logic thuần C# nằm trong `Assets/Scripts/Core`; dữ liệu nhân vật, vũ khí và di vật được xuất từ cùng catalog với bản trình duyệt bằng `tools/export-unity-content.cjs`.
+Runtime C# dùng camera trực giao và SpriteRenderer, không nhúng Web. Lõi mô phỏng nằm trong `Assets/Scripts/Core`; dữ liệu nhân vật và di vật xuất từ catalog chung bằng `tools/export-unity-content.cjs`.
+
+## Nội dung 0.8
+
+- Năm nhân vật, pháp khí riêng và cây kỹ năng. Thiên Vũ có bảy dạng, phân thân 3/5/7 và triệu hồi golem/treant; không có co-op.
+- Atlas môi trường/actors giống hệt bản Web: terrain ghép tile, cây/đá/kiến trúc, quái hoạt ảnh, NPC và cáo. Texture dùng Point filtering, alpha nhị phân, anchor riêng; camera căn lưới để mỗi texel hiện 2 × 2 pixel.
+- Vật thể có bốn cấp phá hủy, cháy lan, đóng băng/vỡ băng, chém đổ, tro tung bụi và vết tích mặt đất. Bản lưu giữ trạng thái và timer; đọc được bản lưu cũ.
+- Bộ hình bảy boss có trong atlas chung; chiến dịch sáu chương tiếp nối hiện chỉ có ở Web.
 
 ## Trạng thái kiểm tra
 
-- Lõi C# được biên dịch và kiểm tra độc lập bằng .NET Framework có sẵn trên máy.
-- Editor/build Unity chưa được xác nhận chạy: máy chưa có Unity được cài và chưa kích hoạt tài khoản/giấy phép. Không có file `.exe` Unity đã phát hành trong gói này.
-- Bản trình duyệt 0.7 ở thư mục cha là bản dùng được để chơi ngay trong khi hoàn thành cài đặt Unity.
+- Lõi C#: 17 bài cơ bản, 4 tình huống chiến dịch, 43 kiểm tra nguyên tố và 18 tình huống phá hủy đều đạt.
+- Toàn bộ bảy file Runtime/Core/Editor được biên dịch bằng Roslyn với assembly thật của Unity **6000.3.27f1**: không có lỗi. Có một cảnh báo trường `scroll` cũ không dùng.
+- Editor đã khởi chạy ở batch mode nhưng build dừng với mã **198**: `No valid Unity Editor license found. Please activate your license.` Chưa có bản Windows/WebGL hay kiểm tra Play Mode; cần người sở hữu đăng nhập và kích hoạt giấy phép trong Hub.
+- Kết quả Chrome và cảm ứng giả lập chỉ xác nhận bản Web, không xác nhận giao diện/cảm ứng Unity.
 
-## Mở và chạy bằng Unity
+## Mở và build
 
-1. Cài Unity Hub từ [trang chính thức](https://unity.com/download), tự tạo/đăng nhập tài khoản và kích hoạt giấy phép phù hợp. Unity Personal cần đăng nhập Hub; không nhập mật khẩu vào script hoặc gửi trong chat.
-2. Cài **Unity 6.3 LTS 6000.3.27f1**, chọn vị trí trên ổ E. Bộ cài chính thức, đã kiểm tra chữ ký và MD5, có sẵn tại `E:\Tools\UnityDownloads\UnitySetup64-6000.3.27f1.exe`.
-3. Trong Hub chọn **Add → Add project from disk**, trỏ đến thư mục `E:\Games\DenTinh\Unity`.
-4. Khi import xong, menu **Đèn Tinh → Chuẩn bị scene và cấu hình** tạo `Assets/Scenes/Main.unity`; bấm Play. Dự án cũng có bootstrap tạo game khi mở một scene trống.
-5. Chọn **Đèn Tinh → Build Windows 64-bit** hoặc chạy `BUILD_UNITY.bat` ở thư mục cha. Bản xuất hiện tại `Unity/Builds/Windows/DenTinh.exe`.
+1. Dùng Unity **6.3 LTS 6000.3.27f1**. Editor được cài tại `E:\Tools\Unity\6000.3.27f1`. Kích hoạt giấy phép hợp lệ qua Unity Hub trước khi chạy Editor.
+2. Thêm thư mục `E:\Games\DenTinh\Unity` vào Hub rồi mở. Menu **Đèn Tinh → Chuẩn bị scene và cấu hình** tạo scene nếu chưa có; bấm Play.
+3. Chọn **Đèn Tinh → Build Windows 64-bit** hoặc chạy `BUILD_UNITY.bat`. Kết quả tại `Unity/Builds/Windows/DenTinh.exe`. Windows dùng Mono, không cần Visual Studio/IL2CPP. WebGL cần cài thêm Web Build Support đúng phiên bản.
 
-Windows dùng Mono nên không cần cài Visual Studio/IL2CPP để xuất bản này. Nếu muốn WebGL, cài thêm Web Build Support đúng phiên bản, rồi dùng menu **Đèn Tinh → Build WebGL**. Điều khiển cảm ứng đã có trong runtime; chưa có APK được build hoặc kiểm tra trên điện thoại thật.
-
-## Nội dung
-
-- An, Linh, Kiệt, **Thiên Vũ** và **HoaVi**. HoaVi tích tối đa 8 Mã Lệnh, Q Debug Pulse tiêu thụ mã, E Firewall chặn đạn và hồi phục/cấp khiên, R Overclock kéo dài 7 giây và triển khai drone.
-- Hai ô vũ khí, 12 loại, băng đạn, nạp lại, độ hiếm và nâng tối đa +5.
-- 12 di vật thay đổi cách bắn, lướt, thiêu đốt, xuyên mục tiêu, lan điện, hồi máu và khả năng của Đốm.
-- Săn miniboss Trúc Vệ, bảo vệ Đèn Sen 36 giây, phá ba lõi Tro; boss cuối có rễ bảo vệ và giai đoạn ba.
-- Hướng dẫn bằng hành động, mảnh ký ức, thành tựu, nhạc theo vùng, điều chỉnh âm lượng, giảm chuyển động, cảm ứng và Hành trình + với seed mới.
-
-## Thiên Vũ và atlas chung
-
-- Thân quay theo phím di chuyển; đi chéo giữ cả hai trục và ưu tiên hướng ngang. Vũ khí/đạn ngắm riêng theo chuột. Đứng yên giữ hướng cuối.
-- C hoặc 1–7 đổi nguyên tố; G chọn 3/5/7 dạng; X tách/hợp. Nhấn R mở chọn phân thân, giữ R 0,45 giây tách bảy dạng; nút tuyệt kỹ/hợp kích nằm trong bảng chọn. Nút R cảm ứng hỗ trợ nhấn/giữ; mất focus hủy lần giữ.
-- Mỗi NPC có vị trí, vận tốc, HP, mục tiêu, động tác và hồi chiêu đánh/Q/E/R riêng; áp sát, chạy vòng hoặc thả diều theo vũ khí. Sát thương bằng 62% bản chính, không tiêu MP hay nạp R của chủ.
-- Golem tồn tại 18 giây và hấp thụ sát thương; cây biến thành treant chiến đấu 30 giây. Đóng băng dừng cả AI/tấn công đúng 2 giây, trói chân chặn cả dịch chuyển của quái trong 2,5 giây. Dịch chuyển qua đền/hồi sinh dọn thực thể sở hữu; đổi vị trí hủy chiêu chờ.
-- `Art/ThienVu.png` (1024×3968), `Art/ThienVuVFX.png` (1024×1728), `Art/ThienVuClips.json` (324 clip) được xuất từ atlas Web. PixelArt đổi tọa độ PNG từ trên xuống sang Sprite của Unity, dùng Point/Clamp, 32 PPU và pivot bàn chân. Importer giữ max 8192, không nén, không mipmap, không đổi kích thước NPOT.
+Kiểm tra lõi độc lập Editor:
 
 ```powershell
-node tools/export-unity-content.cjs
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/Test-Unity-Core.ps1
 ```
 
-Kiểm tra lõi: 17/17 bài cũ, 4/4 chiến dịch và 43 kiểm tra nguyên tố đạt. Chưa chạy Editor, kiểm tra giao diện/cảm ứng Unity hoặc build Windows/WebGL vì máy chưa cài Unity Editor. Bản Web đã kiểm tra Chrome và cảm ứng giả lập; không dùng kết quả đó để xác nhận runtime Unity.
+## Lưu và tài nguyên
 
-## Lưu và dữ liệu
+Unity lưu tại `Saves` cạnh bản chạy, hoặc `Unity/Saves` trong Editor, kèm `unity-save.json.bak`. Web và Unity có định dạng/tọa độ riêng, chưa tự chuyển tiến độ giữa hai nền tảng.
 
-Unity lưu tại thư mục `Saves` cạnh bản chạy (hoặc `Unity/Saves` trong Editor). Bản sao gần nhất là `unity-save.json.bak`. Bản trình duyệt lưu theo định dạng cũ có mở rộng; hai bản có hệ tọa độ và định dạng riêng, không tự động chuyển tiến độ giữa hai nền tảng. Bản lưu 0.1 của trình duyệt được đọc và bổ sung dữ liệu 0.2, đồng thời có bản sao trước nâng cấp trong `runtime/backup-before-v02-20261030`.
-
-Hình minh họa và sprite mới do công cụ tạo ảnh xây riêng cho dự án; không dùng nhân vật/tài nguyên của Soul Knight. Soul Knight là tham chiếu về trải nghiệm game 2D hành động.
+Nguồn mesh và bake: `design/blender/world`, `design/blender/actors`; ảnh chung tại `Unity/Assets/Resources/Art`. Đồ họa tự dựng cho dự án; Soul Knight là tham chiếu phong cách, không dùng tài nguyên của game đó.

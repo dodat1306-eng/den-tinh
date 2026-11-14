@@ -18,5 +18,9 @@ try {
   & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityElementalTests.exe $coreSources 'Unity\Tests\ElementalTests.cs'
   if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
   $elementalOutput=& '.\qa\UnityElementalTests.exe';$elementalOutput | Out-File -LiteralPath 'qa\unity-elemental-tests.txt' -Encoding utf8;$elementalOutput
+  if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+  & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityWorldTests.exe $coreSources 'Unity\Tests\WorldDestructionTests.cs'
+  if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+  $worldOutput=& '.\qa\UnityWorldTests.exe';$worldOutput | Out-File -LiteralPath 'qa\unity-world-tests.txt' -Encoding utf8;$worldOutput
   exit $LASTEXITCODE
 } finally { Pop-Location }

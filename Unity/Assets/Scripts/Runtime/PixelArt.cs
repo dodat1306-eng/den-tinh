@@ -8,13 +8,19 @@ namespace DenTinh.UnityRuntime {
         static readonly Dictionary<string,Sprite> cache=new Dictionary<string,Sprite>();
         static Texture2D atlas;static bool triedAtlas;
         public static Material Material;
-        [Serializable] public class Cell {public int x,y,w,h;}
+        [Serializable] public class Cell {public int x,y,w,h;public float anchorX,anchorY;}
         [Serializable] public class Clip {public string key,texture;public float fps;public Cell[] cells;}
         [Serializable] public class Clips {public Clip[] clips;}
         static Dictionary<string,Clip> clips;
         static readonly Dictionary<string,Texture2D> textures=new Dictionary<string,Texture2D>();
-        static Clip GetClip(string key){if(clips==null){clips=new Dictionary<string,Clip>();TextAsset data=Resources.Load<TextAsset>("Art/ThienVuClips");if(data!=null){Clips parsed=JsonUtility.FromJson<Clips>(data.text);if(parsed!=null&&parsed.clips!=null)foreach(Clip c in parsed.clips)if(c.cells!=null&&c.cells.Length>0)clips[c.key]=c;}}Clip clip;return clips.TryGetValue(key,out clip)?clip:null;}
-        static Sprite Frame(string key,int index,bool actor){Clip clip=GetClip(key);if(clip==null)return Dot();index=Mathf.Clamp(index,0,clip.cells.Length-1);string id="atlas/"+key+"/"+index;if(cache.ContainsKey(id))return cache[id];Texture2D texture;if(!textures.TryGetValue(clip.texture,out texture)){texture=Resources.Load<Texture2D>("Art/"+clip.texture);if(texture==null)return Dot();texture.filterMode=FilterMode.Point;texture.wrapMode=TextureWrapMode.Clamp;textures[clip.texture]=texture;}Cell c=clip.cells[index];return cache[id]=Sprite.Create(texture,new Rect(c.x,texture.height-c.y-c.h,c.w,c.h),actor?new Vector2(.5f,6f/64):new Vector2(.5f,.5f),32,0,SpriteMeshType.FullRect);}
+        static void LoadClips(string resource,string prefix){TextAsset data=Resources.Load<TextAsset>("Art/"+resource);if(data==null)return;Clips parsed=JsonUtility.FromJson<Clips>(data.text);if(parsed!=null&&parsed.clips!=null)foreach(Clip c in parsed.clips)if(c.cells!=null&&c.cells.Length>0)clips[prefix+c.key]=c;}
+        static Clip GetClip(string key){if(clips==null){clips=new Dictionary<string,Clip>();LoadClips("ThienVuClips","");LoadClips("WorldPixelClips","actors/");LoadClips("WorldTilesClips","world/");}Clip clip;return clips.TryGetValue(key,out clip)?clip:null;}
+        static Texture2D AtlasTexture(string name){Texture2D texture;if(!textures.TryGetValue(name,out texture)){texture=Resources.Load<Texture2D>("Art/"+name);if(texture!=null){texture.filterMode=FilterMode.Point;texture.wrapMode=TextureWrapMode.Clamp;textures[name]=texture;}}return texture;}
+        static Sprite Frame(string key,int index,bool actor){Clip clip=GetClip(key);if(clip==null)return Dot();index=Mathf.Clamp(index,0,clip.cells.Length-1);string id="atlas/"+key+"/"+index;if(cache.ContainsKey(id))return cache[id];Texture2D texture=AtlasTexture(clip.texture);if(texture==null)return Dot();Cell c=clip.cells[index];Vector2 pivot=key.StartsWith("world/")||key.StartsWith("actors/")?new Vector2(c.anchorX/c.w,1-c.anchorY/c.h):actor?new Vector2(.5f,6f/64):new Vector2(.5f,.5f);return cache[id]=Sprite.Create(texture,new Rect(c.x,texture.height-c.y-c.h,c.w,c.h),pivot,32,0,SpriteMeshType.FullRect);}
+        public static Sprite World(string key,float time=0,bool calm=false){key="world/"+key;Clip c=GetClip(key);return Frame(key,c==null||calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,false);}
+        public static Sprite Actor(string kind,string action,float time,bool calm=false){string key="actors/"+kind+"/"+action;Clip c=GetClip(key);return c==null?Item(kind):Frame(key,calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,true);}
+        public static Sprite WorldProp(Prop p,float time,bool calm){string state=p.damageStage==3?"ash":p.status=="frozen"?"frozen":p.status=="burning"||p.status=="heated"?"burning":p.status=="sliced"?"sliced":p.damageStage==2?"charred":"intact";string key="world/"+p.type+"/"+state;Clip c=GetClip(key);return c==null?Item(p.type,p.variant):Frame(key,p.status=="sliced"?(int)(p.fallTime/.6f*c.cells.Length):calm?0:(int)(time*c.fps)%c.cells.Length,true);}
+        public static Sprite WorldHero(HeroDef h,PlayerState p,float time,bool calm){string action=p.dashTime>0?"dash":p.action!=null?(p.action.key=="q"?"q_cast":p.action.key=="e"?"e_cast":p.action.key=="r"?"r_ult":"attack"):p.moving?"run":"idle";return Actor(h.id+"_"+p.moveDir,action,p.action==null?time:p.action.elapsed,calm);}
         public static Sprite Vfx(string key,float time,bool calm=false){Clip c=GetClip(key);return Frame(key,c==null||calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,false);}
         public static Sprite ElementActor(string form,string direction,bool moving,float dashTime,ActorAction action,float time,bool calm=false){
             if(action!=null&&action.elapsed>=action.release&&action.elapsed<action.release+.14f){V2 aim=V2.Angle(action.angle);direction=Math.Abs(aim.x)>=Math.Abs(aim.y)?(aim.x>=0?"E":"W"):(aim.y>=0?"N":"S");}
@@ -22,6 +28,20 @@ namespace DenTinh.UnityRuntime {
             if(action!=null){int release=pose=="attack"?1:pose=="q_cast"?2:3;float wind=Math.Max(.001f,action.release),recovery=Math.Max(.001f,action.duration-wind);frame=action.elapsed<wind?(int)(action.elapsed/wind*release):release+(int)((action.elapsed-wind)/recovery*(c.cells.Length-release));}if(calm)frame=action==null?0:pose=="attack"?1:pose=="q_cast"?2:3;return Frame(key,frame,true);
         }
         public static Color ColorOf(string hex){Color c;return ColorUtility.TryParseHtmlString(hex,out c)?c:Color.white;}
+        public static Sprite Ground(int seed){
+            const int width=1920,height=1440;Texture2D source=AtlasTexture("world-pixel-v08");if(source==null)throw new InvalidOperationException("Missing world-pixel-v08 atlas");
+            RenderTexture previous=RenderTexture.active,copy=RenderTexture.GetTemporary(source.width,source.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);Texture2D readable=new Texture2D(source.width,source.height,TextureFormat.RGBA32,false);
+            Color32[] atlasPixels;
+            try{Graphics.Blit(source,copy);RenderTexture.active=copy;readable.ReadPixels(new Rect(0,0,source.width,source.height),0,0);readable.Apply();atlasPixels=readable.GetPixels32();}finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(copy);UnityEngine.Object.Destroy(readable);}
+            Dictionary<string,Color32[]> tiles=new Dictionary<string,Color32[]>();Color32[] pixels=new Color32[width*height];System.Random rng=new System.Random(seed+77);
+            for(int y=0;y<height;y+=16)for(int x=0;x<width;x+=16){
+                V2 at=new V2((x+8)/32f,(y+8)/32f);string key="terrain/"+Simulation.Zone(at)+"/"+rng.Next(6);
+                if(Simulation.OnPath(at)){int mask=0;if(Simulation.OnPath(at+new V2(0,.5f)))mask|=1;if(Simulation.OnPath(at+new V2(.5f,0)))mask|=2;if(Simulation.OnPath(at+new V2(0,-.5f)))mask|=4;if(Simulation.OnPath(at+new V2(-.5f,0)))mask|=8;key="road/"+mask;}
+                Color32[] tile;if(!tiles.TryGetValue(key,out tile)){Clip clip=GetClip("world/"+key);if(clip==null)throw new InvalidOperationException("Missing tile "+key);Cell c=clip.cells[0];tile=new Color32[256];for(int row=0;row<16;row++)Array.Copy(atlasPixels,(source.height-c.y-c.h+row)*source.width+c.x,tile,row*16,16);tiles[key]=tile;}
+                for(int row=0;row<16;row++)Array.Copy(tile,row*16,pixels,(y+row)*width+x,16);
+            }
+            Texture2D ground=Texture(width,height);ground.SetPixels32(pixels);ground.Apply(false,true);return Sprite.Create(ground,new Rect(0,0,width,height),Vector2.zero,32,0,SpriteMeshType.FullRect);
+        }
         static Texture2D Texture(int w,int h){Texture2D t=new Texture2D(w,h,TextureFormat.RGBA32,false);t.filterMode=FilterMode.Point;t.wrapMode=TextureWrapMode.Clamp;Color[] pixels=new Color[w*h];t.SetPixels(pixels);return t;}
         static void Box(Texture2D t,int x,int y,int w,int h,Color c){for(int yy=Math.Max(0,y);yy<Math.Min(t.height,y+h);yy++)for(int xx=Math.Max(0,x);xx<Math.Min(t.width,x+w);xx++)t.SetPixel(xx,yy,c);}
         static void Circle(Texture2D t,int x,int y,int rx,int ry,Color c){for(int yy=Math.Max(0,y-ry);yy<Math.Min(t.height,y+ry+1);yy++)for(int xx=Math.Max(0,x-rx);xx<Math.Min(t.width,x+rx+1);xx++)if((xx-x)*(xx-x)/(float)(rx*rx)+(yy-y)*(yy-y)/(float)(ry*ry)<=1)t.SetPixel(xx,yy,c);}

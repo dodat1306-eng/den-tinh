@@ -210,7 +210,7 @@
       }
     }
     updateTelegraphs(dt){
-      for(let i=this.telegraphs.length-1;i>=0;i--){const t=this.telegraphs[i];t.timer-=dt;if(t.timer<=0){this.effect('roots',t.x,t.y,'#d0ac85',t.r,.55);this.spark(t.x,t.y,20,'#e6bd83',140,.5);if(Math.hypot(t.x-this.player.x,t.y-this.player.y)<t.r+this.player.r)this.damagePlayer(t.damage);this.telegraphs.splice(i,1)}}
+      for(let i=this.telegraphs.length-1;i>=0;i--){const t=this.telegraphs[i];t.timer-=dt;if(t.timer<=0){globalThis.DTDestruction?.react(this,'earth',t.x,t.y,t.r,30);this.effect('roots',t.x,t.y,'#d0ac85',t.r,.55);this.spark(t.x,t.y,20,'#e6bd83',140,.5);if(Math.hypot(t.x-this.player.x,t.y-this.player.y)<t.r+this.player.r)this.damagePlayer(t.damage);this.telegraphs.splice(i,1)}}
     }
     updateActiveEffects(dt){
       for(let i=this.activeEffects.length-1;i>=0;i--){const e=this.activeEffects[i];e.life-=dt;e.tick-=dt;if(e.follow){e.x=this.player.x;e.y=this.player.y}

@@ -38,3 +38,6 @@ test('Rewinding or teleporting a surviving ally clears stale synthetic poses',()
 test('A failed paint call does not leave the Canvas drawImage interception installed',()=>{const g=game(),c=context();const draw=function(){throw Error('paint fixture failure')};c.drawImage=draw;assert.throws(()=>Art.drawHero(c,g.player,g.hero,1),/paint fixture failure/);assert.equal(c.drawImage,draw)});
 test('Pausing freezes motion progress and does not advance a committed skill',()=>{const g=game();g.skill('q');g.paused=true;const time=g.time,a=g.player.action.elapsed,before=Art.state(g.player,g.time,g.hero);g.update(.04);assert.equal(g.time,time);assert.equal(g.player.action.elapsed,a);assert.deepEqual(Art.state(g.player,g.time,g.hero),before)});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});fs.writeFileSync(path.join(root,'qa/choreography-report.json'),JSON.stringify({checkedAt:new Date().toISOString(),results,numericCanvas:true,actualDamageCompared:true,visualInspection:false},null,2));console.log(results.filter(r=>r.pass).length+'/'+results.length+' choreography checks passed');process.exitCode=results.every(r=>r.pass)?0:1;
+
+// Full-stack destruction checks run in an isolated VM process.
+if(require('node:child_process').spawnSync(process.execPath,[path.join(__dirname,'world-pixel-test.cjs')],{stdio:'inherit'}).status!==0)process.exitCode=1;

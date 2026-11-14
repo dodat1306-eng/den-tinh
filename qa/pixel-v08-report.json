@@ -1,0 +1,153 @@
+{
+  "pass": true,
+  "source": "http://127.0.0.1:52485/",
+  "physicalDevice": false,
+  "stagedCombatFixtures": true,
+  "results": [
+    {
+      "name": "Binary alpha, per-form palette, all poses/views, integer nearest draws, VFX and bounded cache at DPR 1",
+      "pass": true,
+      "checks": 276,
+      "cache": {
+        "rasters": 64,
+        "bytes": 1904320,
+        "sources": 26
+      }
+    },
+    {
+      "name": "Element wheel paints all seven square pixel previews",
+      "pass": true
+    },
+    {
+      "name": "Full projectile hook skips smooth signature trails",
+      "pass": true
+    },
+    {
+      "name": "Real browser combat fixture transform-q",
+      "pass": true,
+      "bodies": 1,
+      "atlas": 1,
+      "triangles": 0,
+      "clones": 0,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 0,
+      "effects": 8
+    },
+    {
+      "name": "Real browser combat fixture ice-e",
+      "pass": true,
+      "bodies": 1,
+      "atlas": 1,
+      "triangles": 0,
+      "clones": 0,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 0,
+      "effects": 14
+    },
+    {
+      "name": "Real browser combat fixture five-cast",
+      "pass": true,
+      "bodies": 5,
+      "atlas": 5,
+      "triangles": 0,
+      "clones": 4,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 4,
+      "effects": 39
+    },
+    {
+      "name": "Real browser combat fixture seven-r",
+      "pass": true,
+      "bodies": 7,
+      "atlas": 7,
+      "triangles": 0,
+      "clones": 6,
+      "convergence": {
+        "x": 1790,
+        "y": 1060,
+        "points": [
+          {
+            "x": 1500,
+            "y": 1000,
+            "element": "lightning"
+          },
+          {
+            "x": 1542.2403547720774,
+            "y": 950.9154108977074,
+            "element": "wind"
+          },
+          {
+            "x": 1575.968180731229,
+            "y": 1063.6659855700875,
+            "element": "earth"
+          },
+          {
+            "x": 1493.3034975898868,
+            "y": 993.2095539751595,
+            "element": "fire"
+          },
+          {
+            "x": 1571.0835692961832,
+            "y": 1013.9791877915153,
+            "element": "ice"
+          },
+          {
+            "x": 1474.1552615827318,
+            "y": 885.9513108534495,
+            "element": "nature"
+          },
+          {
+            "x": 1581.168091093478,
+            "y": 980.8580363211142,
+            "element": "light"
+          }
+        ]
+      },
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 6,
+      "effects": 35
+    },
+    {
+      "name": "Transform scanline ghost ends after 0.32 game seconds",
+      "pass": true,
+      "first": 1,
+      "second": 2,
+      "last": 2,
+      "from": "lightning"
+    },
+    {
+      "name": "Reduced motion and low graphics keep the pixel atlas",
+      "pass": true
+    },
+    {
+      "name": "Binary alpha, per-form palette, all poses/views, integer nearest draws, VFX and bounded cache at DPR 2",
+      "pass": true,
+      "checks": 276,
+      "cache": {
+        "rasters": 64,
+        "bytes": 1904320,
+        "sources": 26
+      }
+    },
+    {
+      "name": "No browser JavaScript errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

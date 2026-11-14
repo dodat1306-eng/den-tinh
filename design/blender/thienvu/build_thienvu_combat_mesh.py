@@ -90,26 +90,17 @@ def build():
             for i,f in enumerate(palettes):
                 a=i*math.tau/7;crest(f,math.cos(a)*1.25,1+math.sin(a)*.66,.40)
         elif key.startswith('golem_') or key.startswith('treant_'):
-            tree=key.startswith('treant');f='nature' if tree else 'earth';prefix='Summon_TreantMonster' if tree else 'Summon_EarthGolem'
-            box(prefix+'_Torso',0,1.05,.85,.9,f,depth=.55);gem(prefix+'_Core',0,1.12,.32,.45,f,y=-.16)
-            box(prefix+'_CoreWhite',0,1.12,.08,.16,f,y=-.175,depth=.008,core=True)
-            box(prefix+'_Head',0,1.78,.64,.52,f,depth=.48)
-            for sign in [-1,1]:
-                gem(prefix+'_Shoulder',sign*.65,1.48,.64,.48,f,y=-.23)
-                gem(prefix+'_Knee',sign*.24,.42,.4,.32,f,y=-.23)
-                box(prefix+'_Fist',sign*.69,.65,.55,.43,f,y=-.16,depth=.48)
-                for j in range(2):
-                    gem(prefix+'_StonePlate',sign*(.12+j*.17),1.22-j*.23,.3,.28,f,y=-.145)
-                if tree:
-                    prism(prefix+'_Thorn',[(sign*.79,.7),(sign*1.05,.87),(sign*.8,.95)],form=f,y=-.17)
-            box(prefix+'_Brow',0,1.94,.64,.1,f,y=-.14,depth=.04)
-            for sign in [-1,1]:
-                box(prefix+'_Eye',sign*.16,1.83,.10,.07,f,y=-.14,depth=.014,core=True)
-                ob=box(prefix+'_Arm',sign*.67,1.02,.43,.85,f,depth=.43);ob['animate']='arm';ob['side']=sign
-                ob=box(prefix+'_Leg',sign*.24,.32,.34,.58,f,depth=.4);ob['animate']='leg';ob['side']=sign
-                if tree:
-                    for j in range(3):gem(prefix+'_Foliage',sign*(.35+j*.12),1.57+j*.14,.55,.56,f)
-                    prism(prefix+'_Branch',[(sign*.17,1.8),(sign*.3,2.31),(sign*.45,2.4),(sign*.37,2.05),(sign*.52,2.14),(sign*.39,1.86)],form=f)
+            sys.path.insert(0,str(HERE.parent/'actors'))
+            from build_actors_pixel import actor
+            from pixel_pipeline import material as pixel_material
+            kind='golem' if key.startswith('golem') else 'treant'
+            model=actor(kind,'walk' if key.endswith('walk') else 'attack',0,6)
+            mesh=bpy.data.meshes.new('Summon_EarthGolem' if kind=='golem' else 'Summon_TreantMonster')
+            mesh.from_pydata(model.verts,[],model.faces);mesh.update()
+            colors=sorted(set(model.colors))
+            for color in colors:mesh.materials.append(pixel_material(color))
+            for face,color in zip(mesh.polygons,model.colors):face.material_index=colors.index(color)
+            current.objects.link(bpy.data.objects.new(mesh.name,mesh))
         elif key in ['earth_spikes','ice_mountain','freeze_cage']:
             for i in range(5 if key!='freeze_cage' else 6):
                 a=i*math.tau/6;x=(i-2)*.36 if key!='freeze_cage' else math.cos(a)*.5
