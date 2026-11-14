@@ -31,6 +31,7 @@ PASS light r performs combat behavior
 PASS Golem 18s and treants 30s lifetimes
 PASS Golem expires before treants
 PASS Treants expire at 30s
+PASS Split waits for intro
 PASS Seven forms include player and six independent NPCs
 PASS NPCs spread targets
 PASS NPC escapes exact danger center without zero vector
@@ -41,4 +42,4 @@ PASS Respawn clears combat entities
 PASS Light backstab guarantees one critical and restores crit 0
 PASS Light backstab guarantees one critical and restores crit 1
 PASS Shrine travel clears owned combat entities
-43 elemental checks passed
+44 elemental checks passed

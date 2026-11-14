@@ -1,0 +1,113 @@
+{
+  "pass": true,
+  "source": "http://127.0.0.1:54244/",
+  "physicalDevice": false,
+  "stagedCombatFixtures": true,
+  "results": [
+    {
+      "name": "Binary alpha, per-form palette, all poses/views, integer nearest draws, VFX and bounded cache at DPR 1",
+      "pass": true,
+      "checks": 276,
+      "cache": {
+        "rasters": 64,
+        "bytes": 1904320,
+        "sources": 32
+      }
+    },
+    {
+      "name": "Element wheel paints all seven square pixel previews",
+      "pass": true
+    },
+    {
+      "name": "Full projectile hook skips smooth signature trails",
+      "pass": true
+    },
+    {
+      "name": "Real browser combat fixture transform-q",
+      "pass": true,
+      "bodies": 1,
+      "atlas": 1,
+      "triangles": 0,
+      "clones": 0,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 0,
+      "effects": 8
+    },
+    {
+      "name": "Real browser combat fixture ice-e",
+      "pass": true,
+      "bodies": 1,
+      "atlas": 1,
+      "triangles": 0,
+      "clones": 0,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 0,
+      "effects": 16
+    },
+    {
+      "name": "Real browser combat fixture five-cast",
+      "pass": true,
+      "bodies": 5,
+      "atlas": 5,
+      "triangles": 0,
+      "clones": 4,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 4,
+      "effects": 43
+    },
+    {
+      "name": "Real browser combat fixture seven-r",
+      "pass": true,
+      "bodies": 7,
+      "atlas": 7,
+      "triangles": 0,
+      "clones": 6,
+      "convergence": null,
+      "aim": {
+        "x": 1790,
+        "y": 1060
+      },
+      "synthetic": 0,
+      "effects": 20
+    },
+    {
+      "name": "Transform scanline ghost ends after 0.32 game seconds",
+      "pass": true,
+      "first": 1,
+      "second": 2,
+      "last": 2,
+      "from": "lightning"
+    },
+    {
+      "name": "Reduced motion and low graphics keep the pixel atlas",
+      "pass": true
+    },
+    {
+      "name": "Binary alpha, per-form palette, all poses/views, integer nearest draws, VFX and bounded cache at DPR 2",
+      "pass": true,
+      "checks": 276,
+      "cache": {
+        "rasters": 64,
+        "bytes": 1904320,
+        "sources": 32
+      }
+    },
+    {
+      "name": "No browser JavaScript errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

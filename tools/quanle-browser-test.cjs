@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require('../runtime/qa-tools/node_modules/playwright'),{createGameServer}=require('./server.cjs');
-const out=path.resolve(__dirname,'../qa/v082'),results=[],errors=[];
+const out=path.resolve(process.env.DENTINH_QA_OUTPUT||path.join(__dirname,'../qa/v083')),results=[],errors=[];
 fs.mkdirSync(out,{recursive:true});
 const pass=(name,details={})=>{results.push({name,pass:true,...details});console.log('PASS '+name)};
 (async()=>{

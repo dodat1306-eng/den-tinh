@@ -1,0 +1,84 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "name": "Binary alpha, exact palette, 2x pixels, bounded beams and Canvas restore at DPR 1",
+      "pass": true,
+      "sampledOpaquePixels": 62632,
+      "zoom": [
+        0.8,
+        1.28,
+        2
+      ],
+      "angles": 5,
+      "beamPhases": 5
+    },
+    {
+      "name": "Q miss and stored ghost origin, exact echo delay, checkpoint endpoints and satellite damage origins",
+      "pass": true,
+      "echoDelay": 0.35,
+      "missEcho": true,
+      "blinkEndpoints": true,
+      "satelliteOrigins": [
+        {
+          "x": 1538.4130025984448,
+          "y": 1060.6276053509896,
+          "tx": 1750,
+          "ty": 1000
+        },
+        {
+          "x": 1651.9965809017076,
+          "y": 1000.6765639709078,
+          "tx": 1750,
+          "ty": 1000
+        },
+        {
+          "x": 1436.2702070297687,
+          "y": 980.9209693316931,
+          "tx": 1750,
+          "ty": 1000
+        },
+        {
+          "x": 1453.1789260452733,
+          "y": 1081.0659973608738,
+          "tx": 1750,
+          "ty": 1000
+        },
+        {
+          "x": 1585.3167903717863,
+          "y": 958.4514253173173,
+          "tx": 1750,
+          "ty": 1000
+        },
+        {
+          "x": 1454.8244930530193,
+          "y": 918.2574386682185,
+          "tx": 1750,
+          "ty": 1000
+        }
+      ]
+    },
+    {
+      "name": "Q, checkpoint, 12-slice recall and R screenshots captured in actual browser",
+      "pass": true
+    },
+    {
+      "name": "Binary alpha, exact palette, 2x pixels, bounded beams and Canvas restore at DPR 2",
+      "pass": true,
+      "sampledOpaquePixels": 62632,
+      "zoom": [
+        0.8,
+        1.28,
+        2
+      ],
+      "angles": 5,
+      "beamPhases": 5
+    },
+    {
+      "name": "No uncaught browser errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "note": "Headless Chrome, DPR 1/2 and emulated zoom; staged combat screenshots."
+}

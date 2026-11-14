@@ -71,7 +71,7 @@
       if(p.hoverboard>0)flip(c,'hoverboard',calm()?0:Math.floor(time*12)%6,s.x,s.y-4,unit);
       if(!(p.invulnerable>0&&!calm()&&Math.floor(time*12)%2===0))cell(c,character,pose.cell,s.x,s.y,32,58,unit);
       if(['earth','fire'].includes(pose.form))for(const side of [-1,1])flip(c,held,hf,s.x+Math.round((side*37+Math.cos(aim+swing)*12)/2)*2,s.y+Math.round((-44+Math.sin(aim+swing)*12)/2)*2,2,side*swing);
-      else if(pose.form!=='light')flip(c,held,hf,s.x+Math.round(Math.cos(aim+swing)*51/2)*2,s.y+Math.round((-47+Math.sin(aim+swing)*34)/2)*2,2,aim+swing);
+      else if(pose.form!=='light')flip(c,held,hf,s.x+Math.round(Math.cos(aim+swing)*51/2)*2,s.y+Math.round((-47+Math.sin(aim+swing)*34)/2)*2,2,aim+swing+(pose.form==='lightning'?Math.PI/4:0));
       if(pose.form==='light'&&p.moving&&!calm()){c.fillStyle='#fffbe0';for(let i=1;i<=3;i++)c.fillRect(s.x-Math.round(Math.cos(p.moveFacing||0)*i*8)-2,s.y-74-Math.round(Math.sin(p.moveFacing||0)*i*8),4,2)}
       if(p.shield>0)flip(c,'shield_'+pose.form,calm()?0:Math.floor(time*6)%2,s.x,s.y-48,2);
       if(clone&&p.hp<p.maxHp){c.fillStyle='#100b18';c.fillRect(s.x-18,s.y+8,36,4);c.fillStyle=root.DTThienVuAtlas.forms[pose.form].palette[13];c.fillRect(s.x-17,s.y+9,Math.round(34*clamp(p.hp/p.maxHp,0,1)),2)}

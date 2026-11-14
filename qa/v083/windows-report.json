@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "version": "0.8.3",
+  "build": "Succeeded\nErrors: 0\nSize: 188754989",
+  "smoke": {
+    "aliveAfterSeconds": 12,
+    "runtimeErrors": [],
+    "renderApi": "Direct3D 11"
+  },
+  "zip": {
+    "file": "DenTinh-Windows-v0.8.3.zip",
+    "files": 142,
+    "bytes": 39213920,
+    "sha256": "8178dc022ef0bedbb951a698c788afa33e1d4a974221dd63df7fc36ec7f119bd"
+  }
+}

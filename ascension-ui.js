@@ -29,7 +29,7 @@
     const source=g.skillDescriptions?.[key]||root.DTContent.kits?.[g.hero.id]?.[key];
     if(typeof source==='string')return{name:g.hero[key],desc:source};
     const elemental=g.isElemental?g.element:null;
-    return{name:source?.name||elemental?.[key]||g.hero[key],desc:source?.desc||source?.description||({q:'Kỹ năng chủ động. Ngắm theo hướng chuột hoặc cần phải.',e:'Kỹ năng kiểm soát và phối hợp với nội tại.',r:'Tụ lực 4,5 giây rồi thi triển tuyệt kỹ. Hồi chiêu theo giây.'})[key],...source};
+    return{name:source?.name||elemental?.[key]||g.hero[key],desc:source?.desc||source?.description||({q:'Kỹ năng chủ động. Ngắm theo hướng chuột hoặc cần phải.',e:'Kỹ năng kiểm soát và phối hợp với nội tại.',r:g.isElemental?'Tụ lực 0,28 giây, chỉ thi triển R của dạng hiện tại.':'Tụ lực 4,5 giây rồi thi triển tuyệt kỹ. Hồi chiêu theo giây.'})[key],...source};
   }
   function objective(g){
     let o=g.objective?.()||{};

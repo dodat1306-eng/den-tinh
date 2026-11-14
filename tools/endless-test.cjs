@@ -31,7 +31,7 @@ test('A v0.4 save retains original hero, HP, gold and original quest and receive
   const g=DTGame.restore(legacySave);assert.equal(g.hero.id,'an');assert.equal(g.player.gold,123);assert.equal(g.player.hp,61);assert(g.world.infinite);assert.equal(g.saga.chapter,0);assert.equal(g.saga.stage,'locked');assert.equal(g.world.shrines.filter(s=>s.active).length,0);
 });
 test('Elemental targeting and saved clones retain their distant coordinates instead of clamping to the old map',()=>{
-  const g=game('thienvu');move(g,-6500,-6500);g.input.aimX=-6100;g.input.aimY=-6500;assert.deepEqual(g.elementTarget(g.player,540),{x:-6100,y:-6500});g.selectSplitCount(5);assert(g.splitElementals());assert.equal(g.elementClones.length,4);g.elementClones[0].hp-=9;const hp=g.elementClones[0].hp,form=g.elementClones[0].element;
+  const g=game('thienvu');move(g,-6500,-6500);g.input.aimX=-6100;g.input.aimY=-6500;assert.deepEqual(g.elementTarget(g.player,540),{x:-6100,y:-6500});g.selectSplitCount(5);assert(g.splitElementals());g.updateElementSplitIntro(4.2);assert.equal(g.elementClones.length,4);g.elementClones[0].hp-=9;const hp=g.elementClones[0].hp,form=g.elementClones[0].element;
   const r=DTGame.restore(JSON.parse(JSON.stringify(g.serialize())));assert.equal(r.elementClones.length,4);assert.equal(r.elementClones.find(c=>c.element===form).hp,hp);for(const clone of r.elementClones){assert(Math.hypot(clone.x-r.player.x,clone.y-r.player.y)<250);assert(clone.x<0&&clone.y<0);assert(!r.world.collision(clone.x,clone.y,13))}
 });
 test('New F interactions activate Chu Dong Tu and Jack relic hooks when the full skill module is loaded',()=>{

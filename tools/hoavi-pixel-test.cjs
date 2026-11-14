@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.DENTINH_PLAYWRIGHT||'../runtime/qa-tools/node_modules/playwright'),{createGameServer}=require('./server.cjs');
-const root=path.resolve(__dirname,'..'),out=path.join(root,'design/blender/hoavi'),results=[],errors=[];
+const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.DENTINH_QA_OUTPUT||path.join(root,'design/blender/hoavi')),results=[],errors=[];
 const pass=(name,details)=>{results.push({name,pass:true,...details});console.log('PASS '+name)};
 (async()=>{
   const server=createGameServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'chrome',headless:true});
@@ -38,8 +38,8 @@ const pass=(name,details)=>{results.push({name,pass:true,...details});console.lo
           g.updateCastQueue(.349);if(g.effects.some(e=>e.type==='choreo-code-echo'))throw Error('early echo');g.updateCastQueue(.0011);const ghost=g.effects.find(e=>e.type==='choreo-code-echo');if(!ghost||ghost.x!==start.x)throw Error('late/missing echo on miss');
           const save=g.serialize();if(JSON.stringify(save).includes('choreo-code'))throw Error('transient ghost serialized');
           g.cancelActions();g.effects=[];g.checkpoint={x:1520,y:1000,life:5};p.x=1670;p.y=1040;p.action=null;const from={x:p.x,y:p.y};if(!g.skill('e'))throw Error('E recall failed');const blink=g.effects.find(e=>e.type==='choreo-pixel-blink');if(!blink||blink.x!==from.x||blink.y!==from.y||blink.tx!==p.x||blink.ty!==p.y||!p.action.blink)throw Error('blink endpoints/pose');
-          g.cancelActions();g.effects=[];g.world.enemies=[{id:'pixel-target',x:1750,y:1000,hp:100000,maxHp:100000,r:15,alive:true,codeFault:2}];g.releaseCast({key:'r',angle:0,power:1,target:{x:1750,y:1000}});g.updateFields(.4);const field=g.mythicFields.find(f=>f.kind==='satellites'),beams=g.effects.filter(e=>e.key==='satellite');if(beams.length!==2||field.pixelAim.length!==2)throw Error('two satellite rays missing');
-          for(const aim of field.pixelAim){const b=beams.find(b=>b.side===aim.side);if(b.x!==aim.x||b.y!==aim.y||b.tx!==aim.tx||b.ty!==aim.ty||aim.targetId!=='pixel-target')throw Error('satellite aim differs from damage')}
+          g.cancelActions();g.effects=[];g.world.enemies=[{id:'pixel-target',x:1750,y:1000,hp:100000,maxHp:100000,r:15,alive:true,codeFault:2}];g.releaseCast({key:'r',angle:0,power:1,target:{x:1750,y:1000}});g.updateFields(.4);const field=g.mythicFields.find(f=>f.kind==='satellites'),beams=g.effects.filter(e=>e.key==='satellite'&&e.type==='element-beam');if(beams.length!==6||field.pixelAim.length!==6)throw Error('six satellite rays missing '+JSON.stringify({beams:beams.length,count:field.count,aims:field.pixelAim.length,types:g.effects.map(e=>[e.type,e.key,e.eye])}));
+          for(const aim of field.pixelAim){const b=beams.find(b=>b.eye===aim.eye);if(b.x!==aim.x||b.y!==aim.y||b.tx!==aim.tx||b.ty!==aim.ty||aim.targetId!=='pixel-target')throw Error('satellite aim differs from damage')}
           return{echoDelay:.35,missEcho:true,blinkEndpoints:true,satelliteOrigins:beams.map(b=>({x:b.x,y:b.y,tx:b.tx,ty:b.ty}))};
         });pass('Q miss and stored ghost origin, exact echo delay, checkpoint endpoints and satellite damage origins',combat);
         // Actual game screenshots; fixtures freeze each skill at a readable phase.
@@ -56,5 +56,5 @@ const pass=(name,details)=>{results.push({name,pass:true,...details});console.lo
       await context.close();
     }
     assert.deepEqual(errors,[]);pass('No uncaught browser errors');
-  }finally{await browser.close();await new Promise(r=>server.close(r));fs.writeFileSync(path.join(out,'pixel-browser-verified.json'),JSON.stringify({pass:errors.length===0&&results.length===5,results,errors,note:'Headless Chrome, DPR 1/2 and emulated zoom; staged combat screenshots.'},null,2))}
+  }finally{await browser.close();await new Promise(r=>server.close(r));fs.writeFileSync(path.join(out,process.env.DENTINH_QA_OUTPUT?'hoavi-pixel-report.json':'pixel-browser-verified.json'),JSON.stringify({pass:errors.length===0&&results.length===5,results,errors,note:'Headless Chrome, DPR 1/2 and emulated zoom; staged combat screenshots.'},null,2))}
 })().catch(e=>{console.error(e);process.exitCode=1});

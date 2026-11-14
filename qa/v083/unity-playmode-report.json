@@ -1,0 +1,152 @@
+{
+  "pass": true,
+  "editor": "6000.3.27f1",
+  "verification": "CLI/API; no computer use or Unity screenshots",
+  "live": {
+    "frame-live": {
+      "state": "met",
+      "met": true,
+      "timedOut": false,
+      "member": "UnityEngine.Time.frameCount",
+      "op": "changed",
+      "value": 7857,
+      "initialValue": 7850,
+      "elapsedMs": 113,
+      "framesObserved": 2
+    },
+    "time-live": {
+      "state": "met",
+      "met": true,
+      "timedOut": false,
+      "member": "Game.Time",
+      "op": "changed",
+      "value": 1.4752208,
+      "initialValue": 1.37533534,
+      "elapsedMs": 104,
+      "framesObserved": 2
+    },
+    "live-r-release": {
+      "state": "met",
+      "met": true,
+      "timedOut": false,
+      "member": "Game.Player.overclock",
+      "op": "greaterThan",
+      "value": 17.9266434,
+      "initialValue": 0.0,
+      "elapsedMs": 1845,
+      "framesObserved": 19
+    },
+    "live-count": {
+      "eyes": 6,
+      "life": 16.6266289,
+      "time": 5.88212,
+      "frame": 8280
+    },
+    "console": {
+      "entries": [],
+      "cursor": 0,
+      "session": "fd2e943b23c74d9bb10ce687c2c2949a",
+      "returned": 0,
+      "dropped": false,
+      "reset": false,
+      "counts": {
+        "error": 0,
+        "warn": 0,
+        "log": 0
+      },
+      "groundTruth": {
+        "sampledUtc": "2026-11-14T18:17:43.0413034Z",
+        "ageMs": 209,
+        "compilationFailed": false,
+        "compiling": false,
+        "consoleErrors": 0,
+        "consoleWarnings": 0,
+        "consoleLogs": 0,
+        "seeded": true
+      }
+    },
+    "compile-final": {
+      "success": true,
+      "command": "recompile",
+      "data": {
+        "status": "completed",
+        "compiling": false,
+        "failed": false,
+        "compilationFailed": false,
+        "errors": [],
+        "warnings": [],
+        "summary": {
+          "errors": 0,
+          "warnings": 0
+        }
+      },
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "acceptance": {
+    "pass": true,
+    "count": 59,
+    "checks": [
+      "X starts 3",
+      "X waits 4.2s 3",
+      "X releases 3",
+      "X starts 5",
+      "X waits 4.2s 5",
+      "X releases 5",
+      "X starts 7",
+      "X waits 4.2s 7",
+      "X releases 7",
+      "R alone lightning",
+      "R alone wind",
+      "R alone earth",
+      "R alone fire",
+      "R alone ice",
+      "R alone nature",
+      "R alone light",
+      "HoaVi count/life 0",
+      "Centered eye 0/0",
+      "Centered eye 0/1",
+      "Centered eye 0/2",
+      "Centered eye 0/3",
+      "Centered eye 0/4",
+      "Centered eye 0/5",
+      "Atlas laser endpoints 0/9",
+      "Atlas laser endpoints 0/11",
+      "Atlas laser endpoints 0/13",
+      "Atlas laser endpoints 0/15",
+      "Atlas laser endpoints 0/17",
+      "Atlas laser endpoints 0/19",
+      "All eyes fire 0",
+      "HoaVi count/life 3",
+      "Centered eye 3/0",
+      "Centered eye 3/1",
+      "Centered eye 3/2",
+      "Centered eye 3/3",
+      "Centered eye 3/4",
+      "Centered eye 3/5",
+      "Centered eye 3/6",
+      "Centered eye 3/7",
+      "Centered eye 3/8",
+      "Centered eye 3/9",
+      "Centered eye 3/10",
+      "Centered eye 3/11",
+      "Atlas laser endpoints 3/15",
+      "Atlas laser endpoints 3/17",
+      "Atlas laser endpoints 3/19",
+      "Atlas laser endpoints 3/21",
+      "Atlas laser endpoints 3/23",
+      "Atlas laser endpoints 3/25",
+      "Atlas laser endpoints 3/27",
+      "Atlas laser endpoints 3/29",
+      "Atlas laser endpoints 3/31",
+      "Atlas laser endpoints 3/33",
+      "Atlas laser endpoints 3/35",
+      "Atlas laser endpoints 3/38",
+      "All eyes fire 3",
+      "Quan Le attack aim overrides move direction",
+      "Quan Le dash ghosts preserve opacity",
+      "Quan Le projectile centered on damage path"
+    ]
+  }
+}

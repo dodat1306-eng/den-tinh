@@ -17,9 +17,9 @@ const report = {
 };
 
 async function verify() {
-  assert.equal(version, '0.8.2');
+  assert.equal(version, '0.8.3');
   const files = walk(dist).filter(file => file !== '_headers').sort();
-  assert.equal(files.length, 70, 'Build the complete v0.8.2 web release with ultimate-intro.js and remastered atlases first');
+  assert.equal(files.length, 70, 'Build the complete v0.8.3 web release with ultimate-intro.js and remastered atlases first');
   for (let offset = 0; offset < files.length; offset += 4) {
     await Promise.all(files.slice(offset, offset + 4).map(async file => {
       const response = await fetch(new URL(file, base), {

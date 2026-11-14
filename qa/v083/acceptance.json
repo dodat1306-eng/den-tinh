@@ -1,0 +1,68 @@
+{
+  "pass": true,
+  "scope": "local verification before publication",
+  "version": "0.8.3",
+  "checkedAt": "2026-11-14T18:26:08.908503+00:00",
+  "reports": {
+    "atlas-report": {
+      "pass": true,
+      "file": "atlas-report.json"
+    },
+    "gameplay-report": {
+      "pass": true,
+      "file": "gameplay-report.json"
+    },
+    "browser-report": {
+      "pass": true,
+      "file": "browser-report.json"
+    },
+    "thienvu-pixel-report": {
+      "pass": true,
+      "file": "thienvu-pixel-report.json"
+    },
+    "hoavi-pixel-report": {
+      "pass": true,
+      "file": "hoavi-pixel-report.json"
+    },
+    "quanle-browser-report": {
+      "pass": true,
+      "file": "quanle-browser-report.json"
+    },
+    "unity-playmode-report": {
+      "pass": true,
+      "file": "unity-playmode-report.json"
+    },
+    "windows-report": {
+      "pass": true,
+      "file": "windows-report.json"
+    }
+  },
+  "nativeCoreChecks": 246,
+  "editorRuntimeChecks": 59,
+  "webChecks": 234,
+  "webFiles": 70,
+  "windows": {
+    "file": "DenTinh-Windows-v0.8.3.zip",
+    "files": 142,
+    "bytes": 39213920,
+    "sha256": "8178dc022ef0bedbb951a698c788afa33e1d4a974221dd63df7fc36ec7f119bd"
+  },
+  "visualReview": {
+    "splitCounts": [
+      3,
+      5,
+      7
+    ],
+    "satellites": [
+      6,
+      12
+    ],
+    "swordMaterialAndWire": true,
+    "atlasOrderIndependent": true
+  },
+  "limits": [
+    "Touch tested in Chrome emulation; no physical phone verification.",
+    "Unity verified through CLI and APIs without computer use or screenshots.",
+    "Six-chapter continuation remains Web-only."
+  ]
+}

@@ -109,13 +109,22 @@ namespace DenTinh.Core {
             V2 direction=Input.move.Length>1?Input.move.Unit:Input.move;p.moving=direction.Length>.05f;p.facing=p.aimAngle=Mathx.Angle(Input.aim-p.position);if(p.moving){p.moveFacing=Mathx.Angle(direction);p.moveDir=MoveDirection(direction);}V2 before=p.position;
             if(p.dashTime>0){p.dashTime-=dt;p.position=Move(p.position,p.dashDirection*13.3f*dt,.2f);}else p.position=Move(p.position,direction*p.speed*(p.ultIntro!=null?.35f:1)*(p.shadowArmor>0?1.25f:1)*(p.hoverboard>0?1.65f:1)*(IsElemental&&p.element=="wind"?1.12f:1)*dt,.2f);moved+=V2.Distance(before,p.position);
             if(Input.attack)Fire();
-            if(p.overclock>0){droneTimer-=dt;if(droneTimer<=0){droneTimer=.35f;EnemyState e=Nearest(p.position,9);if(e!=null){for(int i=0;i<2;i++){V2 from=p.position+V2.Angle(Time*3+(i==0?-1:1))*.8f;Shoot(from,Mathx.Angle(e.position-from),14,p.damage*1.2f,true,"code","#7affe5",1,"",false);}}}}
+            UpdateSatellites(dt);
             UpdateElements(dt);UpdateEnemies(dt);UpdateBullets(dt);UpdateDangers(dt);UpdateChallenges(dt);UpdateZones(dt);UpdateEnvironment(dt);UpdateShadows(dt);UpdateUltimate(dt);
             foreach(EnemyState e in Enemies.ToArray())if(e.alive){e.frozen=Math.Max(0,e.frozen-dt);e.rooted=Math.Max(0,e.rooted-dt);e.stunned=Math.Max(0,e.stunned-dt);if(e.poison>0){e.poison-=dt;e.poisonTick-=dt;if(e.poisonTick<=0){e.poisonTick=.5f;DamageEnemy(e,e.poisonPower,false);}}e.hit=Math.Max(0,e.hit-dt);e.slow=Math.Max(0,e.slow-dt);if(e.burn>0){e.burn-=dt;e.burnTick-=dt;if(e.burnTick<=0){e.burnTick=.5f;DamageEnemy(e,p.damage*.23f,false);}}}
             foreach(Loot l in Drops)if(!l.collected&&(l.kind=="gold"||l.kind=="potion")){float d=V2.Distance(l.position,p.position);if(d<(p.Has("dom")?5:2.8f))l.position+=(p.position-l.position).Unit*5*dt;if(d<.4f){l.collected=true;if(l.kind=="gold")p.gold+=l.amount;else p.potions=Math.Min(12,p.potions+1);Emit("sound","pickup");}}
             if(p.Has("dom"))p.hp=Math.Min(p.maxHp,p.hp+dt);
             for(int i=Effects.Count-1;i>=0;i--){Effects[i].time-=dt;if(Effects[i].time<=0)Effects.RemoveAt(i);}if(Effects.Count>220)Effects.RemoveRange(0,Effects.Count-220);if(Bullets.Count>550)Bullets.RemoveRange(0,Bullets.Count-550);
             if(Tutorial<5){bool[] done={moved>1.7f,shots>=4,dashes>0,skills>0,chest};if(done[Tutorial]){Tutorial++;Emit("sound","pickup");if(Tutorial==5)Unlock("first-light","Người giữ lửa đầu tiên");}}
+        }
+        public int SatelliteCount {get{return 6+Player.rRank*2;}}
+        public readonly List<V2> SatelliteAims=new List<V2>();
+        public V2 SatellitePosition(int i){bool inner=i%2==0;float a=Player.satelliteAge*(inner?3.4f:-2.6f)+i*Mathx.Tau/SatelliteCount;return Player.position+new V2((float)Math.Cos(a)*(inner?88:132)/64f,(float)Math.Sin(a)*(inner?62:94)/64f);}
+        void UpdateSatellites(float dt){
+            if(Player.overclock<=0||Hero.id!="hoavi")return;Player.satelliteAge+=dt;droneTimer-=dt;if(droneTimer>0)return;droneTimer=.32f;SatelliteAims.Clear();Dictionary<string,int> assigned=new Dictionary<string,int>();
+            for(int i=0;i<SatelliteCount;i++){V2 from=SatellitePosition(i);EnemyState target=AllyTarget(from,assigned,760/64f);V2 end=target==null?from:target.position;
+                if(target!=null){V2 direction=(end-from).Unit;float length=V2.Distance(from,end);for(float d=12/64f;d<length;d+=12/64f)if(Collides(from+direction*d,.03f)){end=from+direction*d;break;}foreach(EnemyState e in Enemies.ToArray())if(e.alive&&Segment(e.position,from,end)<12/64f+e.radius)DamageEnemy(e,Player.damage*.85f*(1+.18f*Player.rRank),false);Effects.Add(new Effect{kind="satellite",clip="satellite_beam",position=from,end=end,time=.32f,maxTime=.32f,color="#8ff3de"});}SatelliteAims.Add(end);
+            }
         }
         public bool Fire(){if(Player.ultIntro!=null)return false;if(IsShadow)return FireShadow();if(IsElemental&&Weapon.id=="prism")return FireElement();PlayerState p=Player;WeaponState state=Active;WeaponDef w=Weapon;if(p.fireTimer>0||p.dashTime>0||state.reload>0)return false;if(state.ammo<=0){Reload();return false;}p.fireTimer=w.interval*(p.overclock>0?.55f:1)*(Hero.id=="linh"&&p.moving?.88f:1)/(1+.13f*p.relics.FindAll(x=>x=="haste").Count);int count=w.shots+(p.Has("split")?1:0);for(int i=0;i<count;i++)Shoot(p.position,p.facing+(i-(count-1)*.5f)*(w.kind=="shotgun"?.14f:.105f),w.speed/64,p.damage*w.power*(1+(state.level-1)*.18f)*(p.Has("split")?.85f:1),true,w.kind=="code"?"code":w.kind=="bow"?"arrow":"orb",w.color,w.pierce+(p.Has("pierce")?2:0),w.effect,true);state.ammo--;shots++;Fx("muzzle",p.position+V2.Angle(p.facing)*.5f,.3f,w.color,.12f);Emit("sound",w.kind=="code"?"codeShot":"shoot");return true;}
         public void Shoot(V2 from,float angle,float speed,float damage,bool friendly,string kind,string color,int pierce=0,string effect="",bool charge=true){V2 v=V2.Angle(angle);Bullets.Add(new Bullet{position=from+v*.35f,velocity=v*speed,damage=damage,friendly=friendly,kind=kind,color=color,pierce=pierce,effect=effect,charge=charge,life=friendly?1.3f:3});}
@@ -139,7 +148,7 @@ namespace DenTinh.Core {
                 Fx("circuit",p.position,2.5f,Hero.color,.75f);
             }else{
                 p.ult=0;p.invulnerable=Math.Max(p.invulnerable,1.2f);p.hp=Math.Min(p.maxHp,p.hp+p.maxHp*.14f);ClearBullets(p.position,9.5f);
-                if(Hero.id=="hoavi"){p.overclock=7;p.code=8;droneTimer=0;}else{if(Hero.id=="linh")Zones.Add(new ZoneEffect{position=p.position,radius=4.4f,time=5,damage=p.damage*1.5f,color=Hero.color,follow=true,charge=false});else Area(p.position,Hero.id=="kiet"?6.1f:5.3f,p.damage*(Hero.id=="kiet"?9:7),false);for(int j=0;j<24;j++)Shoot(p.position,j/24f*Mathx.Tau,10,p.damage*2,true,"orb",Hero.color,3,"",false);}
+                if(Hero.id=="hoavi"){p.overclock=18+p.rRank*2.5f;p.satelliteAge=0;p.code=8;droneTimer=0;}else{if(Hero.id=="linh")Zones.Add(new ZoneEffect{position=p.position,radius=4.4f,time=5,damage=p.damage*1.5f,color=Hero.color,follow=true,charge=false});else Area(p.position,Hero.id=="kiet"?6.1f:5.3f,p.damage*(Hero.id=="kiet"?9:7),false);for(int j=0;j<24;j++)Shoot(p.position,j/24f*Mathx.Tau,10,p.damage*2,true,"orb",Hero.color,3,"",false);}
                 Fx("ultimate",p.position,5.5f,Hero.color,1.25f);Shake=.45f;
             }
             Emit("sound",key=="r"?"ultimate":"skill");return true;
