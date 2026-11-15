@@ -1,8 +1,8 @@
-# Đèn Tinh: Miền Sương Lạc — 0.8.3
+# Đèn Tinh: Miền Sương Lạc — 0.9.0
 
 Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
 
-**0.8.3** tách R Thiên Vũ khỏi X: R thi triển riêng nguyên tố sau 0,28 giây; X mở trận đồ 3/5/7 trong 4,2 giây rồi duy trì phân thân 18 giây. Sửa atlas Đại Kiếm Sét, hướng đánh và đạn Quân Lê; phân thân, bóng thú, golem và cây tự săn địch, tuần tra độc lập. HoaVi có 6–12 mắt laser trong 18–25,5 giây. Web và Unity dùng chung atlas. Xem [thay đổi 0.8.3](CHANGELOG-v0.8.3.md) và [trạng thái Unity](Unity/README_VI.md).
+**0.9.0** đưa 32 cổ vật vào thế giới: 12 món rơi từ Boss và 20 món trên bệ đá, đều phải nhấn F để nhận. Lên cấp dùng đường cong EXP mới, nhận 2 điểm cho 12 chỉ số RPG và 1 điểm kỹ năng; popup Thiên Phú cũ đã bỏ. Bản đồ có mạng NPC và bốn tầng sự thật gắn với năm tuyến nhân vật. Xem [thay đổi 0.9.0](CHANGELOG-v0.9.0.md) và [trạng thái Unity](Unity/README_VI.md).
 
 ## Chơi tại máy
 

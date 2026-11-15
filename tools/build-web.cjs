@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const output = path.resolve(root, 'dist');
 const files = [
+  'v09-content.js','v09.js','v09-ui.js','v09-visuals.js','assets/relics-pixel-v09.png',
   'shadow.js','quanle-pixel.js','assets/quanle-pixel-v1.png','assets/quanle-pixel-v1.js','assets/quanle-pixel-v1.json','assets/quanle-vfx-pixel.png','assets/quanle-vfx-pixel.js','assets/quanle-vfx-pixel.json',
   'world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v1.png','assets/actors-pixel-v1.js','assets/actors-pixel-v1.json',
   'assets/thienvu-pixel-v08.png','assets/thienvu-pixel-v08.js','assets/thienvu-pixel-v08.json','assets/thienvu-vfx-pixel.png','assets/thienvu-vfx-pixel.js','assets/thienvu-vfx-pixel.json','thienvu-pixel.js',

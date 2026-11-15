@@ -294,75 +294,195 @@
   "relics": [
     {
       "id": "power",
-      "name": "Tâm Hỏa",
-      "icon": "✦",
-      "desc": "+5 sát thương cho mọi đòn đánh."
+      "name": "Tâm Hỏa Cổ Ấn",
+      "icon": "◇",
+      "desc": "Tổng sát thương +18%; đòn thứ ba nổ lửa."
     },
     {
       "id": "vitality",
-      "name": "Bền Rễ",
-      "icon": "◈",
-      "desc": "+30 máu tối đa, hồi 45 máu và thêm 4% giáp."
+      "name": "Cội Rễ Ngàn Năm",
+      "icon": "◇",
+      "desc": "+65 Máu, +6% Giáp và hồi Máu gần thiên nhiên."
     },
     {
       "id": "haste",
-      "name": "Gió Trúc",
-      "icon": "↝",
-      "desc": "Tăng tốc đánh 13% và tốc di chuyển."
+      "name": "Chuông Gió Trúc Lâm",
+      "icon": "◇",
+      "desc": "+16% tốc đánh, +12% tốc chạy."
     },
     {
       "id": "spirit",
-      "name": "Tâm Ngọc",
+      "name": "Ngọc Tịnh Tâm",
       "icon": "◇",
-      "desc": "+20 linh lực tối đa và 5% chí mạng."
+      "desc": "+40 Linh lực, +8% chí mạng; chí mạng hồi Linh lực."
     },
     {
       "id": "wildfire",
-      "name": "Lửa Truyền",
-      "icon": "♨",
-      "desc": "Đòn đánh gây cháy; quái đang cháy lan lửa khi bị hạ."
+      "name": "Lồng Đèn Lưu Hỏa",
+      "icon": "◇",
+      "desc": "Đòn đánh thiêu đốt; mục tiêu cháy chết gây nổ lan."
     },
     {
       "id": "dashshock",
-      "name": "Dấu Chân Sấm",
-      "icon": "ϟ",
-      "desc": "Lướt để lại tia sét gây sát thương quanh điểm xuất phát."
+      "name": "Trống Đồng Lôi Vũ",
+      "icon": "◇",
+      "desc": "Lướt gọi sét tại điểm đầu và cuối."
     },
     {
       "id": "split",
-      "name": "Nhánh Trúc",
-      "icon": "⋔",
-      "desc": "Thêm một đạn, mỗi viên giữ 85% sát thương."
+      "name": "Nỏ Liên Châu Cổ",
+      "icon": "◇",
+      "desc": "Đòn bắn thêm một tia phụ 85% sát thương."
     },
     {
       "id": "pierce",
-      "name": "Xuyên Mây",
-      "icon": "➶",
-      "desc": "Mọi đạn xuyên thêm hai mục tiêu."
+      "name": "Mũi Giáo Xuyên Vân",
+      "icon": "◇",
+      "desc": "Đạn xuyên thêm ba mục tiêu và mạnh dần."
     },
     {
       "id": "vampire",
-      "name": "Sương Sen",
-      "icon": "❀",
-      "desc": "Hạ quái hồi 3 máu; ấn Sen hồi phục mạnh hơn."
+      "name": "Chén Ngọc Huyết Sen",
+      "icon": "◇",
+      "desc": "Hút 4% sát thương; hạ địch hồi Máu."
     },
     {
       "id": "chain",
-      "name": "Mạch Lôi",
-      "icon": "⌁",
-      "desc": "Đòn đánh có 25% cơ hội lan sét tới hai quái."
+      "name": "Hồ Lô Lôi Điện",
+      "icon": "◇",
+      "desc": "35% cơ hội phóng sét qua ba mục tiêu."
     },
     {
       "id": "cooling",
-      "name": "Tản Nhiệt",
-      "icon": "❄",
-      "desc": "Q và E hồi nhanh hơn 20%; nạp vũ khí nhanh hơn."
+      "name": "Lõi Băng Thiên Cơ",
+      "icon": "◇",
+      "desc": "Giảm 22% hồi Q/E/R và phát hàn khí."
     },
     {
       "id": "dom",
-      "name": "Lời Hứa Của Đốm",
-      "icon": "✧",
-      "desc": "Đốm nhặt vật phẩm từ xa, chỉ rương bí mật và hồi 1 máu mỗi giây."
+      "name": "Vòng Cổ Linh Thú Của Đốm",
+      "icon": "◇",
+      "desc": "Đốm hút xa, chỉ đường, hồi Máu và tấn công."
+    },
+    {
+      "id": "kimquy",
+      "name": "Móng Kim Quy",
+      "icon": "◇",
+      "desc": "Khi chịu đòn: khiên 35 + 15% Máu và ba tên phản kích; hồi 10 giây."
+    },
+    {
+      "id": "giong",
+      "name": "Đốt Tre Phù Đổng",
+      "icon": "◇",
+      "desc": "Mỗi đòn thứ tư gọi hàng tre, hất tung và gây 220% sát thương."
+    },
+    {
+      "id": "thachsan",
+      "name": "Đàn Thần Thạch Sanh",
+      "icon": "◇",
+      "desc": "E phát Khúc Nhạc Giải Binh khống chế quái thường, làm yếu Boss."
+    },
+    {
+      "id": "sontinh",
+      "name": "Ấn Núi Tản Viên",
+      "icon": "◇",
+      "desc": "Thạch giáp giảm 25% sát thương; Q dựng ba cột đá."
+    },
+    {
+      "id": "thuytinh",
+      "name": "Giọt Nước Thủy Phủ",
+      "icon": "◇",
+      "desc": "Q tạo xoáy nước, kéo và gắn Ẩm Ướt."
+    },
+    {
+      "id": "cuoi",
+      "name": "Lá Đa Chú Cuội",
+      "icon": "◇",
+      "desc": "Chặn tử vong, hồi 60% Máu và toàn bộ Linh lực; hồi 180 giây."
+    },
+    {
+      "id": "ankh",
+      "name": "Chìa Khóa Sinh Mệnh Ankh",
+      "icon": "◇",
+      "desc": "Hạ mục tiêu bị khống chế hồi 5% Máu và tăng 15% sát thương."
+    },
+    {
+      "id": "hermes",
+      "name": "Đôi Hài Cánh Hermes",
+      "icon": "◇",
+      "desc": "Tốc chạy +18%, thêm một lượt lướt liên tiếp."
+    },
+    {
+      "id": "ariadne",
+      "name": "Cuộn Chỉ Vàng Ariadne",
+      "icon": "◇",
+      "desc": "Lướt để lại chỉ cắt giáp, làm chậm và gây sát thương chuẩn."
+    },
+    {
+      "id": "mjolnir",
+      "name": "Ấn Búa Sấm Mjölnir",
+      "icon": "◇",
+      "desc": "Mỗi đòn thứ năm gọi búa sấm và sét chuỗi."
+    },
+    {
+      "id": "wukong",
+      "name": "Sợi Lông Hầu Vương",
+      "icon": "◇",
+      "desc": "E hoặc lướt gọi hai Hầu Ảnh trong 4 giây."
+    },
+    {
+      "id": "phoenix",
+      "name": "Lông Vũ Phượng Hoàng Lửa",
+      "icon": "◇",
+      "desc": "R bung cánh lửa, hồi Máu và tăng 25% sát thương."
+    },
+    {
+      "id": "chudong",
+      "name": "Trượng Nón Chử Đồng Tử",
+      "icon": "◇",
+      "desc": "Tương tác dựng lâu đài hộ mệnh, hồi Máu/Linh lực và tăng Giáp."
+    },
+    {
+      "id": "tam",
+      "name": "Chiếc Hài Gấm Cô Tấm",
+      "icon": "◇",
+      "desc": "Lướt để lại quả thị ảo ảnh thu hút địch."
+    },
+    {
+      "id": "antiem",
+      "name": "Hạt Dưa Đỏ Mai An Tiêm",
+      "icon": "◇",
+      "desc": "Mỗi sáu mạng tạo dưa hồi Máu/Linh lực."
+    },
+    {
+      "id": "traucau",
+      "name": "Lá Trầu Phượng Cánh",
+      "icon": "◇",
+      "desc": "Bình Máu mạnh hơn, tạo khiên và có thể không tiêu hao."
+    },
+    {
+      "id": "aegis",
+      "name": "Khiên Thần Aegis",
+      "icon": "◇",
+      "desc": "Khiên định kỳ; khi vỡ hóa đá địch gần."
+    },
+    {
+      "id": "aladdin",
+      "name": "Đèn Thần Aladdin",
+      "icon": "◇",
+      "desc": "Tiêu 80 Linh lực gọi Thần Đèn bắn tia xuyên."
+    },
+    {
+      "id": "jack",
+      "name": "Hạt Đậu Thần Khổng Lồ",
+      "icon": "◇",
+      "desc": "Dây leo định kỳ trói nhóm địch và hút máu."
+    },
+    {
+      "id": "cinderella",
+      "name": "Hài Thủy Tinh Lọ Lem",
+      "icon": "◇",
+      "desc": "Né bằng lướt tích pha lê cường hóa Q."
     }
   ],
   "elementalHero": {

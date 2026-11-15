@@ -70,14 +70,14 @@
     else{try{const old=localStorage.getItem(SAVE);if(old)localStorage.setItem(SAVE+'-previous',old)}catch(e){}game=new DTGame(selected);game.start()}
     renderer.setGame(game);$('mainMenu').classList.add('hidden');$('hud').classList.remove('hidden');$('toastBox').innerHTML='';saveTime=0;
     $('heroName').textContent=game.hero.name;$('heroBadge').textContent=game.hero.name.toUpperCase();$('qName').textContent=game.hero.q;$('eName').textContent=game.hero.e;$('rName').textContent=game.hero.r;hud();
-    handleEvents();if(restore){toast('Ngọn đèn vẫn chờ ngươi. Hành trình đã tiếp tục.');if(game.pendingLevels)showTalent()}
+    handleEvents();if(restore)toast('Ngọn đèn vẫn chờ ngươi. Hành trình đã tiếp tục.');
   }
   function showModal(type,html){
     modalType=type;game.paused=true;keys={};mouse.down=false;$('modalContent').innerHTML=html;$('modal').classList.remove('hidden');
     const first=$('modalContent').querySelector('button');if(first)first.focus({preventScroll:true});
   }
   function closeModal(resume=true){modalType='';$('modal').classList.add('hidden');if(resume&&game.started&&!game.dead&&!mapOpen)game.paused=false;keys={};mouse.down=false}
-  function closeAndContinue(){closeModal();if(game.pendingLevels>0&&game.started)showTalent();save()}
+  function closeAndContinue(){closeModal();save()}
   const DIALOGUES={
     intro:{speaker:'BÀ NĂM · LÀNG ĐÈN',title:'Đừng để ngọn đèn quên.',text:'Mỗi ngôi làng đều có một cái tên để sương không lạc vào. Đêm qua, tiếng chuông từ cội đa im bặt, rồi người ta bắt đầu quên tên nhau.<br><br>Ba ấn linh cần ba thử thách: <b>săn Trúc Vệ ở rừng phía tây bắc, bảo vệ Đèn Sen ở đầm phía đông nam, phá ba lõi Tro trên đồi phía đông bắc.</b><br><br>Mang ánh sáng đến cả ba nơi. Sau đó, tìm cội đa phía bắc. Đốm sẽ đi cùng con — nó nhớ những con đường mà chúng ta đã quên.'},
     elder:{speaker:'BÀ NĂM',title:'Ánh đèn chưa từng nhỏ.',text:'Con có thể đi đến ba ấn theo bất kỳ thứ tự nào. Mỗi ấn có một thử thách riêng. Hạ Trúc Vệ, giữ Đèn Sen sáng 36 giây, rồi phá ba lõi Tro giữa những vòng lửa.<br><br>Nhìn bản đồ bằng <b>M</b>. Gặp Chú Bảy để học kỹ năng và dùng xu tìm cổ vật. Nếu mệt, Giếng Ngọc sẽ hồi sức và bổ sung bình máu. Đến một ấn đã thức tỉnh, nhấn <b>F</b> để trở về làng.'},
@@ -114,7 +114,7 @@
       if(e.type==='shrine'){toast(`${game.world.shrines.find(s=>s.id===e.id).name} đã thức tỉnh. +45 xu.`,true);save()}
       if(e.type==='boss'){toast('Mộc Quỷ thức tỉnh. Tuyệt kỹ đã sẵn sàng!');save()}
     }
-    if(events.some(e=>e.type==='death'))death();else if(events.some(e=>e.type==='victory'))victory();else if(game.pendingLevels>0&&!modalType&&!mapOpen){audio.sfx('level');showTalent()}
+    if(events.some(e=>e.type==='death'))death();else if(events.some(e=>e.type==='victory'))victory();
   }
   function hud(){
     const p=game.player,z=DTWorld.zoneAt(p.x,p.y),q=game.objective();$('hpBar').style.width=(p.hp/p.maxHp*100)+'%';$('mpBar').style.width=(p.mp/p.maxMp*100)+'%';$('xpBar').style.width=(p.xp/p.nextXp*100)+'%';$('hpText').textContent=`${Math.ceil(p.hp)} / ${p.maxHp}`;$('mpText').textContent=`${Math.floor(p.mp)} / ${p.maxMp}`;$('levelLabel').textContent=`CẤP ${p.level}`;$('goldLabel').textContent=`◈ ${p.gold} xu`;$('zoneName').textContent=z.name;$('zoneSub').textContent=z.sub;$('questTitle').textContent=q.title;$('questText').textContent=q.text;$('potionLabel').textContent=`${p.potions} bình máu`;
