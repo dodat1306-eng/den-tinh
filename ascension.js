@@ -13,7 +13,7 @@
         this.skillPoints=clamp(Number(saved.points)||0,0,999);for(const id of ['q','e','r','passive'])this.skillRanks[id]=clamp(Math.floor(Number(saved.ranks?.[id])||0),0,3);
         this.usedRelics={cuoi:!!saved.usedRelics?.cuoi};
         for(const id of Object.keys(this.relicCooldowns))delete this.relicCooldowns[id];
-        for(const [id,t] of Object.entries(saved.relicCooldowns||{}))if(C.relic(id)&&Number.isFinite(t))this.relicCooldowns[id]=clamp(t,0,60);
+        for(const [id,t] of Object.entries(saved.relicCooldowns||{}))if(C.relic(id)&&Number.isFinite(t))this.relicCooldowns[id]=clamp(t,0,180);
         for(const [id,n] of Object.entries(saved.relicCounters||{}))if(C.relic(id)&&Number.isFinite(n))this.relicCounters[id]=clamp(n,0,1000);
       }
       delete this.player.weapons;delete this.player.weaponSlot;this.weaponDrops=[];this.player.action=this.player.ultIntro?.mode==='split'?this.player.action:null;
@@ -32,7 +32,7 @@
       for(const chest of this.world.chests)delete chest.weaponId;
     }
     get weapon(){return {...(this.signature||M.signature[this.hero.id]),power:1,interval:this.hero.fireRate,clip:0,reload:0,speed:this.hero.shotSpeed,pierce:0,effect:'signature'}}
-    effectiveRCd(){const p=this.player;return (this.hero.rCd||18)*(1-.06*(this.skillRanks?.r||0))*(p.relics?.cooling?.8:1)*(this.charmTime>0?.9:1)}
+    effectiveRCd(){const p=this.player;return (this.hero.rCd||18)*(1-.06*(this.skillRanks?.r||0))*(p.relics?.cooling?.78:1)*(this.charmTime>0?.9:1)}
     syncUltimate(){const p=this.player;p.cd.r=Math.max(0,Number.isFinite(p.cd.r)?p.cd.r:0);p.ult=p.cd.r<=0?100:clamp(Math.floor(100*(1-p.cd.r/Math.max(1,this.effectiveRCd()))),0,100)}
     updateUltIntro(dt){
       const p=this.player,i=p.ultIntro;if(!i||i.mode==='split')return;
@@ -58,7 +58,7 @@
     switchWeapon(){return false}
     reloadWeapon(){return false}
     dropWeapon(){return false}
-    addXp(amount){const before=this.player.level;super.addXp(amount);if(this.skillRanks){const levels=this.player.level-before;if(levels>0){this.skillPoints+=levels;this.emit('toast',{text:'+'+levels+' điểm kỹ năng · nhấn K để học',reward:true})}}}
+    addXp(amount){const before=this.player.level;super.addXp(amount);if(this.skillRanks){const levels=this.player.level-before;if(levels>0){this.emit('toast',{text:'+'+levels+' điểm kỹ năng · nhấn K để học',reward:true})}}}
     buy(item){if(item==='weapon')return false;return super.buy(item)}
     interact(){const o=this.nearby(),oldX=this.player.x,oldY=this.player.y;if(o?.id==='smith'){if(this.paused||this.dead)return false;this.emit('skills');return true}const ok=super.interact();if(ok&&o)this.onMythicInteract(o);if(ok&&Math.hypot(this.player.x-oldX,this.player.y-oldY)>200){this.cancelActions();this.elementClones=[];this.elementFields=[];this.elementActions=[];this.elementSplitTime=0}return ok}
     onMythicInteract(o){
@@ -82,10 +82,10 @@
         this.shoot(p.x,p.y,p.facing,590,p.damage*.45,this.signature.color,{r:4,life:.38,pierce:1,signature:true});
       }else{
         const empowered=id==='linh'&&s.wind>=8;if(empowered)s.wind=0;
-        const n=1+(p.relics.split?1:0);for(let i=0;i<n;i++)this.shoot(p.x,p.y,p.facing+(i-(n-1)/2)*.08,id==='linh'?980:id==='hoavi'?860:650,p.damage*scale*(empowered?1.8:1)*(n>1?.85:1),this.signature.color,{kind:id==='linh'?'arrow':id==='hoavi'?'code':'orb',pierce:(id==='linh'?1:0)+(empowered?4:0)+(p.relics.pierce?2:0),r:id==='an'?6:4,life:1.15,signature:true,sourceSkill:empowered?'wind-mark':''});
+        this.shoot(p.x,p.y,p.facing,id==='linh'?980:id==='hoavi'?860:650,p.damage*scale*(empowered?1.8:1),this.signature.color,{kind:id==='linh'?'arrow':id==='hoavi'?'code':'orb',pierce:(id==='linh'?1:0)+(empowered?4:0),r:id==='an'?6:4,life:1.15,signature:true,sourceSkill:empowered?'wind-mark':''});
       }
-      if(p.relics.giong&&s.attackCount%5===0){this.lineHit(p,{x:p.x+Math.cos(p.facing)*310,y:p.y+Math.sin(p.facing)*310},20,p.damage*1.8,'nature',false);this.effect('mythic-tether',p.x,p.y,'#a4d477',310,.4,{tx:p.x+Math.cos(p.facing)*310,ty:p.y+Math.sin(p.facing)*310})}
-      if(p.relics.mjolnir&&s.attackCount%6===0){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,p)<460).sort((a,b)=>dist(a,p)-dist(b,p)).slice(0,3);let from=p;for(const e of targets){this.damageEnemy(e,p.damage*.9,false);this.effect('lightning',from.x,from.y,'#b6bfff',0,.3,{tx:e.x,ty:e.y});from=e}}
+      if(p.relics.giong&&s.attackCount%4===0){const end={x:p.x+Math.cos(p.facing)*340,y:p.y+Math.sin(p.facing)*340};this.lineHit(p,end,20,p.damage*2.2,'nature',false);for(const e of this.world.enemies)if(e.alive&&segment(e,p,end)<20+e.r){e.lift=.6;e.stunned=.6}this.effect('mythic-tether',p.x,p.y,'#a4d477',340,.6,{tx:end.x,ty:end.y})}
+      if(p.relics.mjolnir&&s.attackCount%5===0){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,p)<460).sort((a,b)=>dist(a,p)-dist(b,p)),first=targets[0];if(first){this.areaDamage(first.x,first.y,120,p.damage*1.3,50,false);this.effect('bolt',first.x,first.y,'#b6bfff',120,.5);let from=first;for(const e of targets.filter(e=>e!==first).slice(0,4)){this.damageEnemy(e,p.damage*1.3,false);this.effect('lightning',from.x,from.y,'#b6bfff',0,.3,{tx:e.x,ty:e.y});from=e}}}
       this.emit('sound',{name:id==='hoavi'?'codeShot':'shoot'});return true;
     }
     skill(key){
@@ -97,17 +97,18 @@
         this.projectiles=this.projectiles.filter(b=>b.friendly||segment(b,p,spot)>70);p.x=spot.x;p.y=spot.y;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*(.08+.04*this.skillRanks.passive));p.invulnerable=Math.max(.45,p.invulnerable);this.beginAction('e',p.facing);p.action.blink=true;return true;
       }
       const def=this.skillDescriptions[key],cost=def.cost||0;if(key==='r'&&p.cd.r>0)return false;if(key!=='r'&&(p.cd[key]>0||p.mp<cost))return false;
-      if(key==='r'){p.cd.r=this.effectiveRCd();this.syncUltimate()}else{p.mp-=cost;p.cd[key]=def.cooldown*(1-.06*this.skillRanks[key])*(p.relics.cooling?.8:1)}
+      if(key==='r'){p.cd.r=this.effectiveRCd();this.syncUltimate()}else{p.mp-=cost;p.cd[key]=def.cooldown*(1-.06*this.skillRanks[key])*(p.relics.cooling?.78:1)}
       p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.aimAngle,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
-      const empowered=key==='q'&&p.relics.cinderella&&(this.relicCounters.cinderella||0)>=3;if(empowered){this.relicCounters.cinderella=0;p.mp=Math.min(p.maxMp,p.mp+10)}
+      const shards=key==='q'&&p.relics.cinderella?(this.relicCounters.cinderella||0):0,empowered=shards>0;if(empowered){this.relicCounters.cinderella=0;for(let i=0;i<shards*4;i++)this.shoot(p.x,p.y,i*TAU/(shards*4),650,p.damage*.5,'#cdefff',{sourceSkill:'q',pierce:1,r:3})}
       const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
-      const cast={type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(empowered?1.6:1)};
+      const cast={type:'cast',delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(1+shards*.3)};
       if(key==='r'&&!this.isElemental){p.ultIntro={elapsed:0,duration:4.5,pulse:0,cast};Object.assign(p.action,{duration:4.5,release:4.5,windup:4.5});p.cast=4.5;p.invulnerable=Math.max(p.invulnerable,4.8);p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       else if(windup===0)this.releaseCast(cast);else this.castQueue.push(cast);
       if(pixelOrigin&&p.code>=4)this.effect('choreo-code-wait',p.x,p.y,'#1fc8db',64,windup+.35,{hero:'hoavi',angle:a});
       this.tutorial.skills++;if(key!=='r')this.onRelicCast(key,cost,target);this.emit('sound',{name:key==='r'?'ultimate':'skill'});if(key!=='r')this.effect('mythic-rune',p.x,p.y,this.hero.color,48,windup+.1,{key,angle:a});return true;
     }
     onRelicCast(key,cost,target){
+      if(this.relicCast)return this.relicCast(key,cost,target);
       const p=this.player;
       if(key!=='r'&&p.relics.aegis&&p.shield<=0&&this.readyRelic('aegis',8))p.shield=18;
       if(key==='q'&&p.relics.thuytinh)this.addField('water',target.x,target.y,{element:'water',life:4,r:130,power:p.damage*.2});
@@ -129,7 +130,7 @@
       if(this.isElemental&&element&&previous&&previous!==element&&this.time-(e.markTime||0)<6){const rank=this.skillRanks.passive,reaction=(previous==='fire'&&element==='ice'||previous==='ice'&&element==='fire')?'Hóa Hơi':element==='wind'?'Cuốn Xoáy':element==='light'||previous==='light'?'Phá Ấn':'Cộng Hưởng';this.damageEnemy(e,p.damage*(.65+rank*.12),false);this.effect('element-impact',e.x,e.y,root.DTElements.byId(element).color,60,.45,{element});if(this.floaters.length<60)this.floaters.push({x:e.x,y:e.y-50,text:reaction,color:'#ffe4a4',life:.8,vy:-30});e.markElement=null}else if(element){e.markElement=element;e.markTime=this.time}
       this.damageEnemy(e,damage,charge);if(charge&&this.isElemental&&element)this.registerHarmony(element);
       if(element==='fire'){e.burn=3;e.burnTick=0}if(element==='ice'){e.slow=2;e.frozen=Math.max(e.frozen||0,.65)}if(element==='nature'){e.rooted=e.type==='boss'||e.sagaBoss?.3:1.25;e.poison=3;e.poisonPower=p.damage*.17}if(element==='lightning')e.slow=Math.max(e.slow||0,1);
-      if(charge&&p.relics.hermes&&this.readyRelic('hermes',.8)){p.cd.dash=Math.max(0,p.cd.dash-.35);p.swiftTime=1}
+      if(!this.relicCast&&charge&&p.relics.hermes&&this.readyRelic('hermes',.8)){p.cd.dash=Math.max(0,p.cd.dash-.35);p.swiftTime=1}
     }
     releaseCast(c){if(this.hero.id==='quanle')return root.DTShadow.release(this,c);
       const p=this.player,id=this.hero.id,key=c.key,a=c.angle,power=p.damage*c.power,s=this.passiveState,t=c.target,charge=key!=='r',origin={x:p.x,y:p.y};
@@ -183,9 +184,10 @@
     }
     damageEnemy(e,amount,charge=true){
       if(!e?.alive||!Number.isFinite(amount)||amount<=0)return;const before=e.alive,controlled=e.rooted>0||e.frozen>0||e.slow>0;super.damageEnemy(e,amount,charge);
-      if(before&&!e.alive&&this.skillRanks){const p=this.player;if(p.relics.ankh&&controlled)p.hp=Math.min(p.maxHp,p.hp+4);if(p.relics.antiem){this.relicCounters.antiem=(this.relicCounters.antiem||0)+1;if(this.relicCounters.antiem>=8){this.relicCounters.antiem=0;p.hp=Math.min(p.maxHp,p.hp+18);p.mp=Math.min(p.maxMp,p.mp+12);this.effect('ring',p.x,p.y,'#b0e28f',65,.6)}}}
+      if(before&&!e.alive&&this.skillRanks&&!this.relicCast){const p=this.player;if(p.relics.ankh&&controlled)p.hp=Math.min(p.maxHp,p.hp+4)}
     }
     damagePlayer(amount){
+      if(this.relicCast)return super.damagePlayer(amount);
       const p=this.player;if(!this.skillRanks)return super.damagePlayer(amount);const hp=p.hp,shield=p.shield,eligible=!this.dead&&p.invulnerable<=0;
       if(p.stoneGuard&&eligible){amount*=.82;p.stoneGuard=false;this.relicCooldowns.sontinh=6;this.areaDamage(p.x,p.y,100,p.damage*.5,180,false)}
       if(eligible&&p.relics.cuoi&&!this.usedRelics.cuoi&&amount*(1-p.armor)>=p.hp+p.shield){this.usedRelics.cuoi=true;p.hp=Math.max(p.hp,p.maxHp*.35);p.invulnerable=2;this.effect('mythic-rune',p.x,p.y,'#b8e99e',100,1);this.emit('toast',{text:'Lá Đa Chú Cuội giữ lại ngọn đèn! Đã dùng lần hồi sinh của hành trình.',reward:true});return}
@@ -193,12 +195,11 @@
       if(p.hp<hp||p.shield<shield){this.passiveState.wind=Math.max(0,this.passiveState.wind-2);if(this.hero.id==='kiet')this.passiveState.thunder=Math.min(5,this.passiveState.thunder+1);if(p.relics.kimquy&&this.readyRelic('kimquy',12)){p.shield=Math.min(110,p.shield+28);const e=this.world.enemies.filter(e=>e.alive&&dist(e,p)<330).sort((a,b)=>dist(a,p)-dist(b,p))[0];if(e){this.damageEnemy(e,p.damage*1.8,false);this.effect('lightning',p.x,p.y,'#eddb98',0,.3,{tx:e.x,ty:e.y})}}}
       if(this.dead)this.cancelActions();
     }
-    heal(){const ok=super.heal();if(ok&&this.player.relics.traucau){this.player.shield=Math.min(110,this.player.shield+25);this.player.mp=Math.min(this.player.maxMp,this.player.mp+15)}return ok}
+    heal(){const ok=super.heal();if(ok&&!this.relicCast&&this.player.relics.traucau){this.player.shield=Math.min(110,this.player.shield+25);this.player.mp=Math.min(this.player.maxMp,this.player.mp+15)}return ok}
     dash(){
       const ok=super.dash();if(!ok)return false;const p=this.player;
       if(this.hero.id==='kiet')this.passiveState.thunder=Math.min(5,this.passiveState.thunder+1);
-      if(p.relics.tam&&this.readyRelic('tam',5)){this.addField('decoy',p.x,p.y,{life:1.8,r:210,power:0});p.swiftTime=2}
-      if(p.relics.ariadne&&p.hp<p.maxHp*.3&&this.readyRelic('ariadne',12))p.invulnerable+=.35;
+      if(!this.relicCast&&p.relics.tam&&this.readyRelic('tam',5)){this.addField('decoy',p.x,p.y,{life:1.8,r:210,power:0});p.swiftTime=2}
       return true;
     }
     updateProjectiles(dt){
@@ -234,10 +235,10 @@
         if(f.kind==='garden'&&dist(p,f)<f.r)p.hp=Math.min(p.maxHp,p.hp+dt*4);
         if(f.kind==='decoy')for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,f)<f.r){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*e.speed*dt*.9,Math.sin(a)*e.speed*dt*.9);e.cool=Math.max(.3,e.cool)}
         if(f.tick>0||f.life<=0)continue;f.tick=f.kind==='satellites'?.32:.45;
-        if(f.kind==='lantern'){for(const other of lamps)if(other.id!==f.id&&other.id>f.id)this.lineHit(f,other,17,f.power,'fire',false);for(const e of this.world.enemies)if(e.alive&&dist(e,f)<55)this.mythicHit(e,f.power,'fire',false)}
+        if(f.kind==='lantern'){for(const other of lamps)if(other.id!==f.id&&other.id>f.id)this.withDamage?this.withDamage('summon',()=>this.lineHit(f,other,17,f.power,'fire',false)):this.lineHit(f,other,17,f.power,'fire',false);for(const e of this.world.enemies)if(e.alive&&dist(e,f)<55)this.withDamage?this.withDamage('summon',()=>this.mythicHit(e,f.power,'fire',false)):this.mythicHit(e,f.power,'fire',false)}
         else if(f.kind==='trap'){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,f)<f.r);if(targets.length){for(const e of targets){this.mythicHit(e,f.power,'nature',true);e.trucMark=6+this.skillRanks.passive;e.rooted=e.sagaBoss||e.type==='boss'?.45:2}f.life=0;this.effect('leaves',f.x,f.y,'#b5e79d',f.r,.7)}}
         else if(f.kind==='cage'){const points=[{x:f.x-f.r,y:f.y-f.r},{x:f.x+f.r,y:f.y-f.r},{x:f.x+f.r,y:f.y+f.r},{x:f.x-f.r,y:f.y+f.r}];for(let i=0;i<4;i++)this.lineHit(points[i],points[(i+1)%4],22,f.power,'lightning',false)}
-        else if(f.kind==='satellites'){const assigned=new Map();f.pixelAim=[];for(let i=0;i<(f.count||6);i++){const o=root.DTSatellitePose(f,p,i),target=this.allyTarget(o,assigned,760);if(target){const end=this.lineHit(o,target,12,f.power,'light',false,{hero:'hoavi',key:'satellite',eye:i});f.pixelAim.push({eye:i,x:o.x,y:o.y,tx:end.x,ty:end.y,targetId:target.id});this.effect('choreo-hit',end.x,end.y,'#8ff3de',24,.22,{hero:'hoavi',key:'satellite'})}}}
+        else if(f.kind==='satellites'){const assigned=new Map();f.pixelAim=[];for(let i=0;i<(f.count||6);i++){const o=root.DTSatellitePose(f,p,i),target=this.allyTarget(o,assigned,760);if(target){const end=this.withDamage?this.withDamage('summon',()=>this.lineHit(o,target,12,f.power,'light',false,{hero:'hoavi',key:'satellite',eye:i})):this.lineHit(o,target,12,f.power,'light',false,{hero:'hoavi',key:'satellite',eye:i});f.pixelAim.push({eye:i,x:o.x,y:o.y,tx:end.x,ty:end.y,targetId:target.id});this.effect('choreo-hit',end.x,end.y,'#8ff3de',24,.22,{hero:'hoavi',key:'satellite'})}}}
 
         else if(['vine','garden','vortex','orbs','sigil','tornado'].includes(f.kind)){for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r){this.mythicHit(e,f.power,f.element,false);if(['vortex','tornado'].includes(f.kind)){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*20,Math.sin(a)*20)}}this.effect('element-pulse',f.x,f.y,root.DTElements.byId(f.element).color,f.r,.5,{element:f.element})}
         else if(f.kind==='water')for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r)e.slow=1;
@@ -259,7 +260,7 @@
     update(dt){
       if(this.paused||this.dead||!this.started)return;dt=clamp(dt,0,.04);if(!dt)return;const touch=root.DTTouch,p=this.player,x=p.x,y=p.y,t=this.time,dx=touch?.active?touch.move.x:this.input.dx,dy=touch?.active?touch.move.y:this.input.dy,speed=p.speed;
       const blend=1-Math.exp(-dt*42);this.motion.vx=dx*this.motion.vx<=0||!dx?dx:this.motion.vx+(dx-this.motion.vx)*blend;this.motion.vy=dy*this.motion.vy<=0||!dy?dy:this.motion.vy+(dy-this.motion.vy)*blend;if(Math.abs(this.motion.vx)<.002)this.motion.vx=0;if(Math.abs(this.motion.vy)<.002)this.motion.vy=0;this.input.dx=this.motion.vx;this.input.dy=this.motion.vy;
-      if(p.swiftTime>0)p.speed*=p.relics.tam?1.2:1.12;if(p.ultIntro){p.speed*=.35;p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
+      if(p.swiftTime>0)p.speed*=p.relics.tam?1.25:1.12;if(p.ultIntro){p.speed*=.35;p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       try{super.update(dt)}finally{this.input.dx=dx;this.input.dy=dy;p.speed=speed}if(t===this.time)return;
       if(p.action&&p.ultIntro?.mode!=='split'){p.action.elapsed+=dt;if(p.action.elapsed>=p.action.duration)p.action=null}
       for(const id in this.relicCooldowns)this.relicCooldowns[id]=Math.max(0,this.relicCooldowns[id]-dt);
@@ -267,7 +268,7 @@
       if(this.hero.id==='linh'){s.distance+=moved;const step=36-this.skillRanks.passive*5;while(s.distance>=step){s.distance-=step;s.wind=Math.min(8,s.wind+1)}}
       if(this.hero.id==='an'&&this.time-s.lastHit>6)s.embers=Math.max(0,s.embers-dt*.8);
       if(s.formTime>0){s.formTime-=dt;if(s.formTime<=0)s.forms=[]}
-      if(p.relics.sontinh){p.stillTime=moved<.15?(p.stillTime||0)+dt:0;if(p.stillTime>.8&&!(this.relicCooldowns.sontinh>0))p.stoneGuard=true}
+      if(p.relics.sontinh&&!this.relicCast){p.stillTime=moved<.15?(p.stillTime||0)+dt:0;if(p.stillTime>.8&&!(this.relicCooldowns.sontinh>0))p.stoneGuard=true}
       if(this.checkpoint){this.checkpoint.life-=dt;if(this.checkpoint.life<=0)this.checkpoint=null}
       this.updateCastQueue(dt);this.updateFields(dt);this.updateUltIntro(dt);this.syncUltimate();this.weaponDrops=[];
     }

@@ -35,8 +35,11 @@ namespace DenTinh.UnityRuntime {
             if(action!=null){int release=pose=="attack"?1:pose=="q_cast"?2:3;float wind=Math.Max(.001f,action.release),recovery=Math.Max(.001f,action.duration-wind);frame=action.elapsed<wind?(int)(action.elapsed/wind*release):release+(int)((action.elapsed-wind)/recovery*(c.cells.Length-release));}if(calm)frame=action==null?0:pose=="attack"?1:pose=="q_cast"?2:3;return Frame(key,frame,true);
         }
         public static Color ColorOf(string hex){Color c;return ColorUtility.TryParseHtmlString(hex,out c)?c:Color.white;}
+        static Sprite GridArt(string name,int index,int columns,int w,int h,Vector2 pivot){string key=name+"/"+index;if(cache.ContainsKey(key))return cache[key];Texture2D t=AtlasTexture(name);if(t==null)throw new InvalidOperationException("Missing atlas "+name);return cache[key]=Sprite.Create(t,new Rect(index%columns*w,t.height-(index/columns+1)*h,w,h),pivot,32,0,SpriteMeshType.FullRect);}
+        public static Sprite Relic(int index){return GridArt("Relics",index,8,32,32,new Vector2(.5f,.5f));}
+        public static Sprite Npc(int index){return GridArt("Npcs",index,5,40,56,new Vector2(.5f,.1f));}
         public static Sprite Ground(int seed){
-            const int width=1920,height=1440;Texture2D source=AtlasTexture("world-pixel-v08");if(source==null)throw new InvalidOperationException("Missing world-pixel-v08 atlas");
+            const int width=7936,height=3200;Texture2D source=AtlasTexture("world-pixel-v08");if(source==null)throw new InvalidOperationException("Missing world-pixel-v08 atlas");
             RenderTexture previous=RenderTexture.active,copy=RenderTexture.GetTemporary(source.width,source.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);Texture2D readable=new Texture2D(source.width,source.height,TextureFormat.RGBA32,false);
             Color32[] atlasPixels;
             try{Graphics.Blit(source,copy);RenderTexture.active=copy;readable.ReadPixels(new Rect(0,0,source.width,source.height),0,0);readable.Apply();atlasPixels=readable.GetPixels32();}finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(copy);UnityEngine.Object.Destroy(readable);}

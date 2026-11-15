@@ -314,7 +314,7 @@
       for(const remain of g.shadowRemains||[])if(inView(remain))root.DTQuanLePixel?.remain(this,remain);
       const shadowGround=['shadow-portal','shadow-legion','shadow-web','shadow-roots'];
       for(const e of g.effects||[])if(shadowGround.includes(e.type))this.drawEffect(e);
-      const objects=[];
+      const objects=this.rpgObjects?.(inView)||[];
       for(const unit of g.shadowArmy||[])if(unit.life>0&&inView(unit))objects.push({y:unit.y,draw:()=>root.DTQuanLePixel?.beast(this,unit)});
       for(const a of g.elementClones||[])if(a.alive&&inView(a))objects.push({y:a.y,draw:()=>this.drawElementClone(a)});
       for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});

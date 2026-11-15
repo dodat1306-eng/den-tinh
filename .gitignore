@@ -50,6 +50,7 @@
 !/qa/v08-*.png
 
 # Build output and dependencies
+/builds/
 /node_modules/
 /.wrangler/
 /dist/
@@ -127,3 +128,26 @@ __pycache__/
 !/qa/v083/hoavi-12-eyes.png
 !/qa/v083/sword-material.png
 !/qa/v083/sword-wire.png
+
+# 0.9.1 acceptance evidence
+!/qa/v091/
+/qa/v091/*
+!/qa/v091/acceptance.json
+!/qa/v091/art-report.json
+!/qa/v091/runtime-report.json
+!/qa/v091/browser-report.json
+!/qa/v091/unity-editor-report.json
+!/qa/v091/windows-report.json
+!/qa/v091/windows-package.json
+!/qa/v091/web-tests.txt
+!/qa/v091/unity-core-suite.txt
+!/qa/v091/relic-contact.png
+!/qa/v091/npc-contact.png
+!/qa/v091/inventory-desktop.png
+!/qa/v091/inventory-mobile.png
+!/qa/v091/relic-discovery.png
+!/qa/v091/pedestal-ruins.png
+!/qa/v091/pedestal-waterfall.png
+!/qa/v091/village-npc.png
+!/qa/v091/map.png
+!/qa/unity-rpg-tests.txt

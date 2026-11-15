@@ -1,9 +1,14 @@
 $ErrorActionPreference='Stop'
 if(-not $env:ALLUSERSPROFILE){$env:ALLUSERSPROFILE=[Environment]::GetFolderPath('CommonApplicationData')}
 $unityProjectPath=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\Unity'))
-$unityCandidates=@('E:\Tools\Unity\6000.3.27f1\Editor\Unity.exe','C:\Program Files\Unity\Hub\Editor\6000.3.27f1\Editor\Unity.exe')
+$unityCliPath=Join-Path $env:USERPROFILE '.codex\tools\unity-automation\unity_cli.py'
+if(Test-Path -LiteralPath $unityCliPath){
+  python $unityCliPath build $unityProjectPath --target StandaloneWindows64 --execute-method DenTinh.Editor.BuildGame.BuildWindows --allow-dirty-build --no-tail --timeout 540 --format json
+  exit $LASTEXITCODE
+}
+$unityCandidates=@('E:\Tools\Unity\6000.6.9f1\Editor\Unity.exe','C:\Program Files\Unity\Hub\Editor\6000.6.9f1\Editor\Unity.exe')
 $unityEditorPath=$unityCandidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
-if(-not $unityEditorPath){Write-Host 'Chua co Unity Editor 6000.3.27f1. Doc Unity\README_VI.md de cai va kich hoat Unity Personal.';exit 2}
+if(-not $unityEditorPath){Write-Host 'Chua co Unity Editor 6000.6.9f1. Doc Unity\README_VI.md de cai va kich hoat Unity Personal.';exit 2}
 $unityLogDir=Join-Path $unityProjectPath 'Logs';New-Item -ItemType Directory -Path $unityLogDir -Force | Out-Null
 $unityTempDir=Join-Path $unityProjectPath 'Temp';New-Item -ItemType Directory -Path $unityTempDir -Force | Out-Null
 $env:TEMP=$unityTempDir;$env:TMP=$unityTempDir

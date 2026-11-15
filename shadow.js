@@ -65,10 +65,10 @@
     }
   }
   function area(g,s,x,y,r,m,status,terrain){
-    let hits=0;for(const e of g.world.enemies)if(e.alive&&Math.hypot(e.x-x,e.y-y)<r+(e.r||0)){g.damageEnemy(e,s.power*m,false);hits++;if(status)Object.assign(e,status);const a=Math.atan2(e.y-y,e.x-x);e.knockX=Math.cos(a)*100;e.knockY=Math.sin(a)*100}
+    let hits=0;for(const e of g.world.enemies)if(e.alive&&Math.hypot(e.x-x,e.y-y)<r+(e.r||0)){g.withDamage&&s.kind?g.withDamage('summon',()=>g.damageEnemy(e,s.power*m,false)):g.damageEnemy(e,s.power*m,false);hits++;if(status)Object.assign(e,status);const a=Math.atan2(e.y-y,e.x-x);e.knockX=Math.cos(a)*100;e.knockY=Math.sin(a)*100}
     if(terrain)root.DTDestruction?.react(g,terrain,x,y,r,90);return hits;
   }
-  function shoot(g,s,angle,opts={}){g.shoot(s.x,s.y,angle,560,s.power*.85,'#b84dff',{owner:s.id,kind:'shadow-crescent',shadow:true,charge:false,life:1.1,pierce:1,r:9,...opts})}
+  function shoot(g,s,angle,opts={}){g.shoot(s.x,s.y,angle,560,s.power*.85,'#b84dff',{owner:s.id,ally:true,kind:'shadow-crescent',shadow:true,charge:false,life:1.1,pierce:1,r:9,...opts})}
   function attack(g,s,e,spec){
     const a=Math.atan2(e.y-s.y,e.x-s.x);s.aimAngle=a;s.action={key:'attack',elapsed:0,duration:.6,release:.22,released:false,targetId:e.id,angle:a};s.attackCd=(['stomp','darkfire','quake','web'].includes(spec.behavior)?2.5:1.05)/(g.shadowFrenzy>0?1.4:1);
   }
@@ -83,7 +83,7 @@
       case 'blink':{const ea=Number.isFinite(e.facing)?e.facing:a+Math.PI,spot=g.elementSafeSpot(e.x-Math.cos(ea)*55,e.y-Math.sin(ea)*55);if(spot){s.x=spot.x;s.y=spot.y}aoe(60,2.4);break}
       case 'roar':area(g,s,s.x,s.y,150,.8,{slow:2,shadowFear:1.2,shadowFearX:s.x,shadowFearY:s.y});aoe(55,1.6);fx(g,'roar',s.x,s.y,150);break;
       case 'quake':aoe(120,2.4,{stunned:1.1},'earth');break;
-      case 'charge':case 'rush':case 'dive':{const reach=spec.behavior==='charge'?240:180,old={x:s.x,y:s.y};if(spec.flying){s.x+=Math.cos(a)*reach;s.y+=Math.sin(a)*reach}else g.moveEntity(s,Math.cos(a)*reach,Math.sin(a)*reach);const dx=s.x-old.x,dy=s.y-old.y,len=dx*dx+dy*dy;for(const t of g.world.enemies)if(t.alive){const u=clamp(((t.x-old.x)*dx+(t.y-old.y)*dy)/Math.max(1,len),0,1);if(Math.hypot(t.x-old.x-dx*u,t.y-old.y-dy*u)<s.r+(t.r||0)+15)g.damageEnemy(t,s.power*2.4,false)}for(let i=0;i<4;i++)root.DTDestruction?.react(g,'earth',old.x+dx*i/3,old.y+dy*i/3,55,100);break}
+      case 'charge':case 'rush':case 'dive':{const reach=spec.behavior==='charge'?240:180,old={x:s.x,y:s.y};if(spec.flying){s.x+=Math.cos(a)*reach;s.y+=Math.sin(a)*reach}else g.moveEntity(s,Math.cos(a)*reach,Math.sin(a)*reach);const dx=s.x-old.x,dy=s.y-old.y,len=dx*dx+dy*dy;for(const t of g.world.enemies)if(t.alive){const u=clamp(((t.x-old.x)*dx+(t.y-old.y)*dy)/Math.max(1,len),0,1);if(Math.hypot(t.x-old.x-dx*u,t.y-old.y-dy*u)<s.r+(t.r||0)+15)g.withDamage?g.withDamage('summon',()=>g.damageEnemy(t,s.power*2.4,false)):g.damageEnemy(t,s.power*2.4,false)}for(let i=0;i<4;i++)root.DTDestruction?.react(g,'earth',old.x+dx*i/3,old.y+dy*i/3,55,100);break}
       case 'stomp':area(g,s,s.x,s.y,165,2.3,{stunned:1.2},'earth');break;
       case 'antlers':for(const d of [-.22,0,.22])shoot(g,s,a+d,{pierce:3});break;
       case 'venom':for(const d of [-.25,0,.25])shoot(g,s,a+d,{shadowPoison:true});aoe(75,.6,{poison:4,poisonPower:s.power*.18,shadowCorrosion:4});break;
