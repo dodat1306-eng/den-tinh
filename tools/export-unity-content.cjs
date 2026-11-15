@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');cons
 const data={heroes:Object.values(context.DTWorld.HEROES),weapons:context.DTContent.weapons,relics:context.DTContent.relics.map(x=>({...x}))};
 data.weapons=[...data.weapons];context.DTGame=class {};vm.runInContext(fs.readFileSync(path.join(root,'elemental.js'),'utf8'),context);
 data.elementalHero=context.DTElements.hero;data.elements=context.DTElements.forms;data.elementalWeapon=context.DTContent.weapons.find(w=>w.id==='prism');
-vm.runInContext(fs.readFileSync(path.join(root,'mythic-content.js'),'utf8'),context);vm.runInContext(fs.readFileSync(path.join(root,'shadow.js'),'utf8'),context);data.shadows=context.SHADOW_BEAST_CATALOG;
+vm.runInContext(fs.readFileSync(path.join(root,'mythic-content.js'),'utf8'),context);vm.runInContext(fs.readFileSync(path.join(root,'v09-content.js'),'utf8'),context);for(const relic of context.DTV09Content.relics){const item={id:relic.id,name:relic.name,icon:relic.icon||'◇',desc:relic.desc},old=data.relics.find(x=>x.id===relic.id);if(old)Object.assign(old,item);else data.relics.push(item)}vm.runInContext(fs.readFileSync(path.join(root,'shadow.js'),'utf8'),context);data.shadows=context.SHADOW_BEAST_CATALOG;
 data.weapons.push({...context.DTMythic.signature.quanle,rarity:'signature',power:1.15,interval:.3,speed:680,reload:0,shots:1,pierce:4,clip:1,effect:''});
 const quote=s=>JSON.stringify(s),float=n=>Number(n).toString()+'f';
 const definitions={HeroDef:{ints:[],floats:['hp','speed','damage','fireRate','shotSpeed','qCd','eCd','rCd']},WeaponDef:{ints:['shots','pierce','clip'],floats:['power','interval','speed','reload']},RelicDef:{ints:[],floats:[]},ElementDef:{ints:[],floats:[]}};
