@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-15T05:10:09.883Z",
+  "stagedCombatFixtures": true,
+  "physicalDevice": false,
+  "results": [
+    {
+      "name": "I shows twelve stats; real click spends point and changes Max HP",
+      "pass": true
+    },
+    {
+      "name": "Level toast leaves gameplay running without talent modal",
+      "pass": true
+    },
+    {
+      "name": "K retains independent skill progression",
+      "pass": true
+    },
+    {
+      "name": "F picks landed relic and opens illustrated lore",
+      "pass": true
+    },
+    {
+      "name": "F uses NPC-specific personal quest dialogue",
+      "pass": true
+    },
+    {
+      "name": "World renders relic atlas, guarded seals, access paths and NPC atlas",
+      "pass": true
+    },
+    {
+      "name": "390px inventory has readable text, 44px tap targets and no page overflow",
+      "pass": true
+    },
+    {
+      "name": "Browser reports no uncaught errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

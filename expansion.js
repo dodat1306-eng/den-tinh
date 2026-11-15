@@ -89,8 +89,8 @@
       const alive=e.alive;super.damageEnemy(e,amount,charge);
       if(charge&&this.hero.id==='hoavi')this.player.code=Math.min(8,this.player.code+1);
       if(alive&&!e.alive){
-        const p=this.player;if(p.relics.vampire)p.hp=Math.min(p.maxHp,p.hp+3);
-        if(e.burn>0&&p.relics.wildfire){for(const other of this.world.enemies)if(other.alive&&dist(other,e)<150){other.burn=2.5;other.burnTick=0}this.effect('ring',e.x,e.y,'#ffa565',150,.45)}
+        const p=this.player;if(!this.relicCast&&p.relics.vampire)p.hp=Math.min(p.maxHp,p.hp+3);
+        if(!this.relicCast&&e.burn>0&&p.relics.wildfire){for(const other of this.world.enemies)if(other.alive&&dist(other,e)<150){other.burn=2.5;other.burnTick=0}this.effect('ring',e.x,e.y,'#ffa565',150,.45)}
         if(e.miniBoss){this.dropWeapon(e.x,e.y,'jade');this.unlock('truc-hunter','Đánh bại Trúc Vệ')}
         if(!e.summon&&!e.challenge&&this.kills%14===0)this.dropWeapon(e.x,e.y,C.weapons[4+Math.floor(this.rng()*7)].id);
         if(this.kills>=30)this.unlock('hunter-30','Ba mươi ký ức được giải phóng');
@@ -101,9 +101,9 @@
       const p=this.player,effect=b.weaponEffect;
       if(effect==='burn'||p.relics.wildfire||this.hero.id==='an'){e.burn=2.3;e.burnTick=0}
       if(effect==='shock'){e.slow=Math.max(e.slow,.7)}
-      if((effect==='chain'||p.relics.chain)&&this.rng()<.25){
-        const targets=this.world.enemies.filter(x=>x.alive&&x.id!==e.id&&dist(x,e)<180).slice(0,2);
-        for(const x of targets){this.damageEnemy(x,b.damage*.45,b.charge!==false);this.effect('lightning',e.x,e.y,'#c4c0ff',0,.3,{tx:x.x,ty:x.y})}
+      if((effect==='chain'||p.relics.chain)&&this.rng()<(this.procChance?.(.35)||.35)){
+        const targets=this.world.enemies.filter(x=>x.alive&&x.id!==e.id&&dist(x,e)<220).slice(0,3);
+        for(const x of targets){this.damageEnemy(x,b.damage*.65,b.charge!==false);this.effect('lightning',e.x,e.y,'#c4c0ff',0,.3,{tx:x.x,ty:x.y})}
       }
       if(effect==='explode'){for(const x of this.world.enemies)if(x.alive&&x.id!==e.id&&dist(x,e)<95)this.damageEnemy(x,b.damage*.55,b.charge!==false);this.effect('circuit',e.x,e.y,b.color,95,.4)}
       if(effect==='heal'&&!e.alive&&this.rng()<.2)p.hp=Math.min(p.maxHp,p.hp+5);
@@ -118,8 +118,8 @@
           if(root.DTDestruction?.projectile(this,b))break;
           if(this.world.collision(b.x,b.y,2)){b.life=0;break}
           if(b.friendly){
-            for(const e of this.world.enemies)if(e.alive&&!b.hitIds.includes(e.id)&&dist(e,b)<e.r+b.r){this.damageEnemy(e,b.damage,b.charge!==false);this.onBulletHit(b,e);b.hitIds.push(e.id);if(b.pierce>0)b.pierce--;else{b.life=0;break}}
-          }else if(dist(b,p)<p.r+b.r){const before=p.hp+(p.shield||0);this.damagePlayer(b.damage);this.onHostileBulletHit?.(b,p.hp+(p.shield||0)<before);b.life=0}
+            for(const e of this.world.enemies)if(e.alive&&!b.hitIds.includes(e.id)&&dist(e,b)<e.r+b.r){const prior=this.hitContext;this.hitContext=b;try{this.damageEnemy(e,b.damage,b.charge!==false);this.onBulletHit(b,e)}finally{this.hitContext=prior}b.hitIds.push(e.id);if(this.player.relics.pierce)b.damage*=1.12;if(b.pierce>0)b.pierce--;else{b.life=0;break}}
+          }else if(dist(b,p)<p.r+b.r){const before=p.hp+(p.shield||0);this.incomingAttacker=this.world.enemies.find(e=>e.id===b.sourceAttacker)||null;this.damagePlayer(b.damage);this.incomingAttacker=null;this.onHostileBulletHit?.(b,p.hp+(p.shield||0)<before);b.life=0}
           if(!b.friendly&&p.firewall>0&&dist(b,p)<155){b.life=0;this.spark(b.x,b.y,5,'#f0a4eb',80,.25)}
         }
         b.trail+=dt;if(b.trail>.04&&this.particles.length<580){b.trail=0;this.particles.push({x:b.x,y:b.y-18,color:b.color,size:b.friendly?3:3.5,life:.18,maxLife:.18})}
@@ -206,17 +206,15 @@
     interact(){
       if(this.paused||this.dead)return false;const o=this.nearby(),p=this.player;if(!o)return false;
       if(o.weaponDrop){const old=this.weaponStateActive;this.weaponDrops=this.weaponDrops.filter(d=>d.id!==o.id);p.weapons[p.weaponSlot]=this.weaponState(o.weaponId);this.dropWeapon(p.x+110,p.y,old.id,old.level);p.weapons[p.weaponSlot].level=o.level||1;this.emit('toast',{text:'Đã trang bị '+this.weapon.name,reward:true});this.unlock('arsenal','Thử một vũ khí mới');return true}
-      if(o.lore){this.memories.push(o.id);this.grantRelic(o.reward);p.gold+=25;this.emit('toast',{text:o.title+': '+o.text,reward:true});this.unlock('memory','Một ký ức được gọi tên');return true}
+      if(o.lore){this.memories.push(o.id);this.addXp(180);p.gold+=25;this.emit('toast',{text:o.title+': '+o.text,reward:true});this.unlock('memory','Một ký ức được gọi tên');return true}
       if(o.guardians&&!o.active){const s=this.world.shrines.find(s=>s.id===o.id),state=this.challenge[s.id];if(s.id!=='truc'&&!state.complete){if(!state.started)return this.startChallenge(s);return false}}
       const wasChest=this.world.chests.find(c=>c.id===o.id&&!c.open);const ok=super.interact();
-      if(ok&&wasChest){this.tutorial.chest=true;this.dropWeapon(wasChest.x+35,wasChest.y,wasChest.weaponId);if(this.world.chests.filter(c=>c.open).length%3===0){const choices=this.talentChoices();this.grantRelic(choices[0].id)}}
-      if(ok&&o.guardians){const state=this.challenge[o.id];state.complete=true;this.grantRelic(o.id==='truc'?'pierce':o.id==='sen'?'vampire':'wildfire');this.dropWeapon(o.x+45,o.y,o.id==='truc'?'jade':o.id==='sen'?'lotusblade':'ember');this.unlock('seal-'+o.id,'Thức tỉnh '+o.name)}
+      if(ok&&wasChest){this.tutorial.chest=true;this.dropWeapon(wasChest.x+35,wasChest.y,wasChest.weaponId);if(this.world.chests.filter(c=>c.open).length%3===0)this.addXp(180)}
+      if(ok&&o.guardians){const state=this.challenge[o.id];state.complete=true;this.addXp(220);this.dropWeapon(o.x+45,o.y,o.id==='truc'?'jade':o.id==='sen'?'lotusblade':'ember');this.unlock('seal-'+o.id,'Thức tỉnh '+o.name)}
       return ok;
     }
     dropWeapon(x,y,id,level=1){this.weaponDrops.push({id:'weapon-'+(++this.droppedWeapons),x,y,weaponId:C.weapon(id).id,level});if(this.weaponDrops.length>32)this.weaponDrops.shift()}
     grantRelic(id){const r=C.relic(id);if(!r)return false;const p=this.player;p.relics[id]=(p.relics[id]||0)+1;if(id==='power')p.damage+=5;if(id==='vitality'){p.maxHp+=30;p.hp=Math.min(p.maxHp,p.hp+45);p.armor=Math.min(.45,p.armor+.04)}if(id==='haste'){p.fireRate=Math.max(.065,p.fireRate*.87);p.speed=Math.min(350,p.speed+10)}if(id==='spirit'){p.maxMp+=20;p.mp=p.maxMp;p.crit=Math.min(.6,p.crit+.05)}this.emit('toast',{text:'Di vật: '+r.name+' · '+r.desc,reward:true});return true}
-    talentChoices(){const pool=C.relics.filter(r=>['power','vitality','haste','spirit'].includes(r.id)||!this.player.relics[r.id]);const offset=(this.player.level*3+this.world.seed)%pool.length;return[0,1,2].map(i=>pool[(offset+i*5)%pool.length]).filter((r,i,a)=>a.findIndex(x=>x.id===r.id)===i)}
-    applyTalent(id){if(this.pendingLevels<1||!C.relic(id))return false;if(['power','vitality','haste','spirit'].includes(id)){const ok=super.applyTalent(id);if(ok)this.player.relics[id]=(this.player.relics[id]||0)+1;return ok}this.pendingLevels--;return this.grantRelic(id)}
     buy(item){
       if(item==='weapon'){const cost=55+this.weaponStateActive.level*30;if(this.player.gold<cost||this.weaponStateActive.level>=5)return false;this.player.gold-=cost;this.weaponStateActive.level++;this.emit('sound',{name:'pickup'});return true}
       if(item==='relic'){const cost=105;if(this.player.gold<cost)return false;this.player.gold-=cost;const pool=C.relics.filter(r=>!this.player.relics[r.id]);return this.grantRelic((pool.length?pool:C.relics)[Math.floor(this.rng()*(pool.length||C.relics.length))].id)}

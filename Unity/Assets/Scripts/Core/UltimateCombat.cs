@@ -3,9 +3,9 @@ using System;
 namespace DenTinh.Core {
     [Serializable] public class UltimateIntro {public string mode;public int splitCount;public float Duration {get{return mode=="split"?4.2f:4.5f;}}public float elapsed;public int pulse;public V2 target;public string element;}
     public sealed partial class Simulation {
-        public float EffectiveRCd {get{return (Hero.rCd>0?Hero.rCd:IsElemental||IsShadow?20:18)*(1-.06f*Player.rRank)*(Player.Has("cooling")?.8f:1);}}
-        void SyncUltimate(){Player.rCd=Safe(Player.rCd,0,20);Player.ult=Player.rCd<=0?100:Mathx.Clamp((float)Math.Floor(100*(1-Player.rCd/Math.Max(1,EffectiveRCd))),0,100);}
-        public bool Skill(string key){
+        public float EffectiveRCd {get{return (Hero.rCd>0?Hero.rCd:IsElemental||IsShadow?20:18)*(1-.06f*Player.rRank)*(Player.Has("cooling")?.78f:1)*(1-CooldownReduction);}}
+        void SyncUltimate(){Player.rCd=Safe(Player.rCd,0,180);Player.ult=Player.rCd<=0?100:Mathx.Clamp((float)Math.Floor(100*(1-Player.rCd/Math.Max(1,EffectiveRCd))),0,100);}
+        bool SkillCore(string key){
             PlayerState p=Player;if(Paused||Dead||p.ultIntro!=null)return false;
             if(key!="r")return ReleaseSkill(key);
             if(p.rCd>0||p.dashTime>0||p.action!=null&&p.action.key!="attack")return false;

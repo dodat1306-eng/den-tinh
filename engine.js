@@ -6,7 +6,7 @@
   class Game{
     constructor(hero='an',seed=71426){
       this.world=D.makeWorld(seed);this.rng=D.rand(seed+123);this.hero=D.HEROES[hero]||D.HEROES.an;
-      this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:65,gold:0,potions:3,ult:100,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0,r:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
+      this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:220,gold:0,potions:3,ult:100,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0,r:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
       this.projectiles=[];this.effects=[];this.particles=[];this.loot=[];this.floaters=[];this.telegraphs=[];this.events=[];
       this.time=0;this.paused=true;this.started=false;this.dead=false;this.victory=false;this.storyStarted=false;this.bossStarted=false;this.kills=0;this.deaths=0;this.upgrades=0;this.pendingLevels=0;this.visited=new Set(['village']);this.zone='village';this.shake=0;this.hitFlash=0;this.activeEffects=[];this.respawnPoint={x:740,y:2200};
       this.input={dx:0,dy:0,fire:false,aimX:1000,aimY:2200};
@@ -127,7 +127,7 @@
       if(p.hp<=0){this.dead=true;this.emit('death')}
     }
     damageEnemy(e,amount,charge=true){
-      if(!e.alive)return;const crit=this.rng()<this.player.crit,dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));e.hp-=dmg;e.hit=.12;
+      if(!e.alive)return;const crit=this.damageContext!=='true'&&this.rng()<this.player.crit,dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));this.lastCritical=crit;e.hp-=dmg;e.hit=.12;
 
       if(this.floaters.length<70)this.floaters.push({x:e.x+(this.rng()-.5)*15,y:e.y-e.r-15,text:String(dmg)+(crit?'!':''),color:crit?'#ffda83':'#e9ecce',life:.65,vy:-42});
       this.spark(e.x,e.y,5,e.type==='boss'?'#edb482':'#cce5c1',100,.23);
@@ -142,23 +142,14 @@
     }
     addXp(amount){
       const p=this.player;p.xp+=amount;
-      while(p.xp>=p.nextXp){p.xp-=p.nextXp;p.level++;p.nextXp=Math.floor(p.nextXp*1.32+18);p.maxHp+=10;p.hp=Math.min(p.maxHp,p.hp+45);p.damage+=2;p.mp=p.maxMp;this.pendingLevels++;this.emit('level',{level:p.level});this.effect('ring',p.x,p.y,'#ffe5a0',90,.65)}
-    }
-    applyTalent(id){
-      if(this.pendingLevels<1)return false;const p=this.player;
-      if(id==='power')p.damage+=5;
-      else if(id==='vitality'){p.maxHp+=30;p.hp=Math.min(p.maxHp,p.hp+45);p.armor=Math.min(.45,p.armor+.04)}
-      else if(id==='haste'){p.fireRate=Math.max(.065,p.fireRate*.87);p.speed=Math.min(350,p.speed+10)}
-      else if(id==='spirit'){p.maxMp+=20;p.mp=p.maxMp;p.crit=Math.min(.6,p.crit+.05)}
-      else return false;
-      this.pendingLevels--;return true;
+      while(p.xp>=p.nextXp){p.xp-=p.nextXp;p.level++;p.nextXp=Math.floor(p.nextXp*1.32+18);p.maxHp+=10;p.hp=Math.min(p.maxHp,p.hp+45);p.damage+=2;p.mp=p.maxMp;p.statPoints=(p.statPoints||0)+2;this.skillPoints=(this.skillPoints||0)+1;this.emit('level',{level:p.level});this.effect('ring',p.x,p.y,'#ffe5a0',90,.65)}
     }
     updateEnemies(dt){
       const p=this.player;
       for(const e of this.world.enemies){
         const stepDt=dt*(p.ultIntro&&distance(e,p)<=520?.25:1);
         if(!e.alive)continue;e.hit=Math.max(0,e.hit-stepDt);e.slow=Math.max(0,e.slow-stepDt);e.cool-=stepDt;
-        if(Math.hypot(e.knockX,e.knockY)>4){this.moveEntity(e,e.knockX*stepDt,e.knockY*stepDt);e.knockX*=Math.exp(-8*stepDt);e.knockY*=Math.exp(-8*stepDt)}
+        if(Math.hypot(e.knockX,e.knockY)>4){this.moveEntity(e,e.knockX*stepDt*(p.knockMultiplier||1),e.knockY*stepDt*(p.knockMultiplier||1));e.knockX*=Math.exp(-8*stepDt);e.knockY*=Math.exp(-8*stepDt)}
         const dist=distance(e,p);if(dist>900)continue;
         if(e.type==='boss'){this.updateBoss(e,stepDt);continue}
         if(this.victory&&!e.frontier)continue;
@@ -181,7 +172,7 @@
             if(dist>e.r+p.r){mx=Math.cos(a)*e.speed;my=Math.sin(a)*e.speed}
             if(e.type==='shade'&&!e.rooted&&!e.rootHeld&&e.cool<=0&&dist>160&&dist<430){const nx=p.x-Math.cos(a)*95,ny=p.y-Math.sin(a)*95;if(!this.world.collision(nx,ny,e.r)){this.spark(e.x,e.y,16,'#918ba9',120,.3);e.x=nx;e.y=ny;this.effect('ring',nx,ny,'#ae9bb7',34,.3)}e.cool=4}
           }
-          if(dist<e.r+p.r+5)this.damagePlayer(e.type==='boar'&&e.phase===2?e.damage*1.4:e.damage);
+          if(dist<e.r+p.r+5){this.incomingAttacker=e;this.damagePlayer(e.type==='boar'&&e.phase===2?e.damage*1.4:e.damage);this.incomingAttacker=null;}
         }
         this.moveEntity(e,mx*stepDt*slow,my*stepDt*slow);
       }
@@ -247,7 +238,7 @@
         const s=this.world.shrines.find(s=>s.id===o.id);
         if(s.active){p.x=740;p.y=2200;p.hp=p.maxHp;p.mp=p.maxMp;this.projectiles=[];this.telegraphs=[];this.emit('toast',{text:'Ánh đèn đưa ngươi trở về Làng Đèn.'});return true}
         if(s.guardians.some(id=>this.world.enemies.some(e=>e.id===id&&e.alive))){this.emit('toast',{text:'Đánh bại hộ vệ quanh ấn trước.'});return false}
-        s.active=true;p.gold+=45;p.hp=p.maxHp;p.mp=p.maxMp;p.potions=Math.min(12,p.potions+1);this.addXp(65);
+        s.active=true;p.gold+=45;p.hp=p.maxHp;p.mp=p.maxMp;p.potions=Math.min(12,p.potions+1);this.addXp(220);
         this.effect('ultimate',s.x,s.y,s.color,220,1.2);this.spark(s.x,s.y,70,s.color,240,1);this.emit('shrine',{id:s.id});this.emit('sound',{name:'ultimate'});return true;
       }
       if(o.id==='altar'){

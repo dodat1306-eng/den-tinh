@@ -1,0 +1,88 @@
+{
+  "version": "0.9.1",
+  "checkedAt": "2026-11-15 05:11:04 UTC",
+  "content": {
+    "relics": 32,
+    "bossRelics": 12,
+    "pedestals": 20,
+    "npcs": 25,
+    "stats": 12,
+    "heroStories": 5,
+    "truthLayers": 4,
+    "sagaChapters": 6,
+    "allocationPerLevel": 2,
+    "skillPointsPerLevel": 1
+  },
+  "planResolution": "Detailed item/NPC lists take precedence over conflicting 14/18 and 24 totals in the prompt.",
+  "web": {
+    "command": "npm test",
+    "passedAssertions": 257,
+    "failed": 0,
+    "rpgReport": "runtime-report.json",
+    "rpgChecks": 24,
+    "browserReport": "browser-report.json",
+    "browserChecks": 8,
+    "httpChecks": 9,
+    "publicAssets": 76,
+    "artReport": "art-report.json"
+  },
+  "unity": {
+    "editorVersion": "6000.6.9f1",
+    "coreCommand": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/Test-Unity-Core.ps1",
+    "corePassedAssertions": 257,
+    "coreFailed": 0,
+    "rpgChecks": 11,
+    "coreLog": "unity-core-suite.txt",
+    "editorCommand": "DenTinh.Editor.ReleaseChecks.Validate",
+    "editorReport": "unity-editor-report.json",
+    "editorChecks": 72,
+    "buildTarget": "StandaloneWindows64",
+    "buildSucceeded": true,
+    "buildErrors": 0,
+    "playerReport": "windows-report.json",
+    "player": {
+      "version": "0.9.1",
+      "renderedHeroesAndPanels": 11,
+      "saveRoundTrip": true,
+      "errors": 0
+    },
+    "packageReport": "windows-package.json",
+    "package": {
+      "version": "0.9.1",
+      "file": "DenTinh-Windows-v0.9.1.zip",
+      "bytes": 43905322,
+      "sha256": "0c4e019da48c327ddf8448c7b3383503f974c77f855dfb267eb9688916f9f210",
+      "nativeAssemblySha256": "056abb78693fd6e57cb68ce5edcd39ec32ee42b0d2b6d11003c5d3c5ac9cb23c",
+      "files": 161,
+      "zipCrcValid": true,
+      "privateSavesIncluded": false
+    },
+    "nunitEditModeClaimed": false
+  },
+  "verificationScope": {
+    "browser": "Headless Chrome, real buttons and keyboard; isolated save route; staged world/combat fixtures.",
+    "native": "Compiled C# simulations, real Unity JsonUtility and atlas checks, built Windows executable with rendered GUI frames and isolated save.",
+    "physicalPhone": false,
+    "nativeVisualReview": false,
+    "webgl": false,
+    "humanFullPlaythrough": false,
+    "oldSaveMigration": "Pre-RPG saves without training history use a one-time estimate; original inflated history cannot be reconstructed exactly."
+  },
+  "screenshots": [
+    "inventory-desktop.png",
+    "inventory-mobile.png",
+    "relic-discovery.png",
+    "pedestal-ruins.png",
+    "pedestal-waterfall.png",
+    "village-npc.png",
+    "map.png",
+    "relic-contact.png",
+    "npc-contact.png"
+  ],
+  "release": {
+    "github": "https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.9.1",
+    "live": "https://den-tinh.dodat1306.workers.dev/",
+    "publicVerificationCommand": "node tools/verify-public.cjs",
+    "publicVerificationReport": "cloudflare-v091-report.json attached after deployment"
+  }
+}

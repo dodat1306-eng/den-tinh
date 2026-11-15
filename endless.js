@@ -163,7 +163,7 @@
       if(o.type==='campfire'){p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.35);p.mp=p.maxMp;this.respawnPoint={x:o.x,y:o.y};this.emit('toast',{text:'Bếp lửa hồi 35% máu, đầy linh lực và trở thành điểm hồi sinh.',reward:true})}
       if(o.type==='barrel'){this.areaDamage(o.x,o.y,150,p.damage*2.8,100,false);this.effect('shock',o.x,o.y,'#ffb779',150,.6);this.emit('toast',{text:'Nhựa thông bùng nổ, đẩy lùi những kẻ quanh thùng.'})}
       if(o.type==='ore'){p.gold+=35;this.environmentReward(o);this.emit('toast',{text:'Khai mở mạch quặng: +35 xu và một mảnh truyền thuyết.',reward:true})}
-      if(o.type==='spiritTree'){p.hp=Math.min(p.maxHp,p.hp+28);p.mp=Math.min(p.maxMp,p.mp+30);this.environmentReward(o);this.emit('toast',{text:'Cây nhận lời nguyện. Bạn hồi 28 máu, 30 linh lực và tìm được cổ vật.',reward:true})}
+      if(o.type==='spiritTree'){p.hp=Math.min(p.maxHp,p.hp+28);p.mp=Math.min(p.maxMp,p.mp+30);this.environmentReward(o);this.emit('toast',{text:'Cây nhận lời nguyện. Bạn hồi 28 máu, 30 linh lực và 180 EXP.',reward:true})}
       if(o.type==='shrine'){this.environmentReward(o);this.emit('dialogue',{title:o.name,speaker:'Người Qua Đường',text:['Có người kể rằng ngọn đèn chỉ sáng khi còn một người nhớ đường về. Mảnh truyền thuyết này dành cho chuyến đi của bạn.','Dòng sông không chảy lùi, nhưng người kể chuyện có thể quay lại sửa một lời hứa. Hãy giữ cổ vật này để nhớ điều đó.','Đi hết một tấm bản đồ, người giữ đèn lại vẽ tấm khác. Miền đất trước mặt bạn chưa bao giờ là đoạn cuối.'][hash(this.world.seed,Math.floor(o.x),Math.floor(o.y))%3]})}
       this.effect('ring',o.x,o.y,'#f3d98b',78,.6);this.emit('sound',{name:'pickup'});this.sagaContract.count++;this.onMythicInteract?.(o);
       if(this.sagaContract.count%5===0){this.sagaContract.completed++;p.gold+=50;this.awardSkillPoints?.(1,'Năm dấu chân khám phá');this.emit('toast',{text:'Dấu chân khám phá: 5 điểm tương tác · +50 xu, +1 điểm kỹ năng.',reward:true})}
@@ -182,7 +182,7 @@
       if(this.saga.stage==='claim'){
         this.saga.cleared.push(c.id);this.player.gold+=150;this.player.hp=this.player.maxHp;this.player.mp=this.player.maxMp;
         this.awardSkillPoints?.(2,'Nối ngọn đèn '+c.name);
-        if(C.relic(c.relic)&&!this.player.relics[c.relic])this.grantRelic(c.relic);else this.environmentReward({x:c.x,y:c.y});this.respawnPoint={x:c.x,y:c.y+95};this.emit('dialogue',{title:'Ngọn đèn '+(this.saga.chapter+1)+' đã nối',speaker:c.speaker,text:c.win+'\n\nPhần thưởng: một cổ vật, 150 xu và 2 điểm kỹ năng.'});
+        this.addXp(450);this.respawnPoint={x:c.x,y:c.y+95};this.emit('dialogue',{title:'Ngọn đèn '+(this.saga.chapter+1)+' đã nối',speaker:c.speaker,text:c.win+'\n\nPhần thưởng: 450 EXP, 150 xu và 2 điểm kỹ năng. Thánh vật nằm tại cột sáng; nhấn F để nhận.'});
         this.saga.chapter++;this.saga.stage=this.saga.chapter===CHAPTERS.length?'complete':'locked';this.saga.echoes=[];this.refreshSagaEnvironment();this.emit('sound',{name:'ultimate'});return true;
       }
       return false;

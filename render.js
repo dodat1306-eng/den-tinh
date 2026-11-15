@@ -69,7 +69,7 @@
       for(const l of g.loot)if(inView(l)){const bob=Math.sin(g.time*5+l.x)*3;c.fillStyle=l.type==='gold'?'#e8c46e':'#bc5f70';c.fillRect(l.x-4,l.y-8+bob,8,8);c.fillStyle=l.type==='gold'?'#ffe6a0':'#edc3ad';c.fillRect(l.x-2,l.y-7+bob,3,3);glow(c,l.x,l.y,18,l.type==='gold'?'#efc773':'#d8a2a9',.12)}
       for(const remain of g.shadowRemains||[])if(inView(remain))root.DTQuanLePixel?.remain(this,remain);
       for(const e of g.effects)if(['shadow-portal','shadow-legion','shadow-web','shadow-roots'].includes(e.type))this.drawEffect(e);
-      const objects=[];
+      const objects=this.rpgObjects?.(inView)||[];
       for(const unit of g.shadowArmy||[])if(unit.life>0&&inView(unit))objects.push({y:unit.y,draw:()=>root.DTQuanLePixel?.beast(this,unit)});
       if(this.drawElementClone)for(const ally of g.elementClones||[])if(ally.alive&&inView(ally))objects.push({y:ally.y,draw:()=>this.drawElementClone(ally)});
       if(this.drawBeacon)for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});

@@ -6,7 +6,7 @@ if(-not(Test-Path -LiteralPath $coreCompiler)){throw 'Can .NET Framework C# comp
 Push-Location -LiteralPath $gameRoot
 try {
   New-Item -ItemType Directory -Path 'qa' -Force | Out-Null
-  $coreSources=@('Unity\Assets\Scripts\Core\Definitions.cs','Unity\Assets\Scripts\Core\Simulation.cs','Unity\Assets\Scripts\Core\CatalogData.cs','Unity\Assets\Scripts\Core\ElementalCombat.cs','Unity\Assets\Scripts\Core\ShadowCombat.cs','Unity\Assets\Scripts\Core\UltimateCombat.cs')
+  $coreSources=@('Unity\Assets\Scripts\Core\Definitions.cs','Unity\Assets\Scripts\Core\Simulation.cs','Unity\Assets\Scripts\Core\CatalogData.cs','Unity\Assets\Scripts\Core\ElementalCombat.cs','Unity\Assets\Scripts\Core\ShadowCombat.cs','Unity\Assets\Scripts\Core\UltimateCombat.cs','Unity\Assets\Scripts\Core\RpgSystems.cs','Unity\Assets\Scripts\Core\RpgCatalog.cs')
   & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityCoreTests.exe $coreSources 'Unity\Tests\SimulationTests.cs'
   if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
   $coreOutput=& '.\qa\UnityCoreTests.exe';$coreOutput | Out-File -LiteralPath 'qa\unity-core-tests.txt' -Encoding utf8;$coreOutput
@@ -30,5 +30,9 @@ try {
   & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityUltimateTests.exe $coreSources 'Unity\Tests\UltimateTests.cs'
   if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
   $ultimateOutput=& '.\qa\UnityUltimateTests.exe';$ultimateOutput | Out-File -LiteralPath 'qa\unity-ultimate-tests.txt' -Encoding utf8;$ultimateOutput
+  if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+  & $coreCompiler /nologo /utf8output /langversion:5 /target:exe /out:qa\UnityRpgTests.exe $coreSources 'Unity\Tests\RpgTests.cs'
+  if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+  $rpgOutput=& '.\qa\UnityRpgTests.exe';$rpgOutput | Out-File -LiteralPath 'qa\unity-rpg-tests.txt' -Encoding utf8;$rpgOutput
   exit $LASTEXITCODE
 } finally { Pop-Location }

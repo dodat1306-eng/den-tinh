@@ -39,9 +39,9 @@
   function tabs(current){return '<nav class="ascension-tabs" aria-label="Bảng nhân vật">'+[['skills','Kỹ năng · K'],['inventory','Nhân vật · I'],['relics','Cổ vật & truyền thuyết']].map(([id,label])=>'<button data-asc-tab="'+id+'" class="'+(current===id?'selected':'')+'" aria-current="'+(current===id?'page':'false')+'">'+label+'</button>').join('')+'</nav>'}
   function shell(tab,title,body){
     const g=game();
-    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 0.7 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
+    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 0.9.1 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
     $('ascensionClose').onclick=()=>app().closeAndContinue();
-    $('modalContent').querySelectorAll('[data-asc-tab]').forEach(b=>b.onclick=()=>b.dataset.ascTab==='skills'?showSkills():b.dataset.ascTab==='relics'?showRelics():showInventory());
+    $('modalContent').querySelectorAll('[data-asc-tab]').forEach(b=>b.onclick=()=>root.DTAscensionUI[b.dataset.ascTab==='skills'?'showSkills':b.dataset.ascTab==='relics'?'showRelics':'showInventory']());
   }
   function showSkills(){
     const g=game();if(!g.started||g.dead)return;
@@ -71,7 +71,7 @@
     const o=objective(g);if(o.title)$('questTitle').textContent=o.title;if(o.text)$('questText').textContent=o.text;
     const skillButton=$('openSkillTree');if(skillButton)skillButton.textContent='K · Kỹ năng'+(points(g)?' · '+points(g):'');
   }
-  root.DTAscensionUI={showSkills,showInventory,showRelics,showTrainer,sync,passive,status};
+  root.DTAscensionUI={shell,showSkills,showInventory,showRelics,showTrainer,sync,passive,status};
   $('weaponHud').classList.add('signature-hud');$('weaponHud').querySelector('.eyebrow').textContent='BẢO KHÍ RIÊNG · NỘI TẠI';
   const skillButton=document.createElement('button');skillButton.id='openSkillTree';skillButton.textContent='K · Kỹ năng';skillButton.onclick=showSkills;document.querySelector('.bottom-info').insertBefore(skillButton,$('pauseButton'));
   document.querySelector('.bottom-info>span').textContent='WASD di chuyển · Chuột đánh · F tương tác · K kỹ năng · I cổ vật';

@@ -2,7 +2,7 @@ using System;
 using DenTinh.Core;
 public static class CombatPlaythrough {
     static int ticks;
-    static void Reward(Simulation g){while(g.PendingLevels>0)g.ApplyRelic(g.Player.hp<g.Player.maxHp*.5f?"vitality":"power",true);g.Events.Clear();}
+    static void Reward(Simulation g){while(g.Player.statPoints>0)g.AllocateStat(g.Player.hp<g.Player.maxHp*.5f?"vit":"str");while(g.Player.skillPoints>0&&g.LearnSkill("q")){}g.Events.Clear();}
     static bool Fight(Simulation g,V2 center,Func<bool> done,int cap){
         for(int i=0;i<cap;i++){
             if(done())return true;if(g.Dead){g.Respawn();g.Player.position=center+new V2(3.6f,.8f);}
@@ -19,15 +19,15 @@ public static class CombatPlaythrough {
         }
         return done();
     }
-    public static int Main(){foreach(HeroDef hero in CatalogData.Create().heroes){ticks=0;Simulation g=new Simulation(CatalogData.Create(),hero.id,71426);g.Tutorial=5;
+    public static int Main(){foreach(HeroDef hero in CatalogData.Create().heroes){if(Environment.GetEnvironmentVariable("TEST_HERO")!=null&&Environment.GetEnvironmentVariable("TEST_HERO")!=hero.id)continue;ticks=0;Simulation g=new Simulation(CatalogData.Create(),hero.id,71426);g.Tutorial=5;
             foreach(Shrine s in g.Shrines){g.Player.position=s.position+new V2(3.6f,.8f);bool clear;
                 if(s.id=="truc")clear=Fight(g,s.position,()=>!g.Enemies.Exists(e=>e.alive&&s.enemies.Contains(e.id)),16000);
                 else{clear=false;for(int attempt=0;attempt<5&&!clear;attempt++){g.Player.position=s.position+new V2(0,.6f);g.Interact();if(!s.started)g.Interact();bool ended=Fight(g,s.position,()=>s.complete||!s.started,16000);if(!ended)break;clear=s.complete;}}
                 if(!clear){EnemyState stuck=g.Enemies.Find(e=>e.miniBoss);Console.WriteLine("FAIL "+hero.id+" challenge "+s.id+" player="+g.Player.position.x+","+g.Player.position.y+" hp="+g.Player.hp+" deaths="+g.Deaths+" miniboss="+(stuck==null?"none":stuck.hp+" at "+stuck.position.x+","+stuck.position.y));return 1;}
-                g.Player.position=s.position+new V2(0,.6f);for(int tries=0;tries<10&&!s.active;tries++)g.Interact();if(!s.active){Console.WriteLine("FAIL "+hero.id+" shrine interaction "+s.id);return 1;}Reward(g);
+                for(int settle=0;settle<75;settle++)g.Tick(1/60f);g.Player.position=s.position+new V2(0,.6f);for(int tries=0;tries<30&&!s.active;tries++){for(int frame=0;frame<6;frame++)g.Tick(1/60f);g.Interact();}if(!s.active){Console.WriteLine("FAIL "+hero.id+" shrine interaction "+s.id+" near="+g.Nearby()+" relics="+g.WorldRelics.FindAll(r=>!r.claimed&&V2.Distance(r.position,g.Player.position)<2).Count+" started="+s.started+" complete="+s.complete);return 1;}Reward(g);
             }
-            g.Player.position=new V2(29,37.6f);for(int tries=0;tries<10&&!g.BossStarted;tries++)g.Interact();Reward(g);g.Player.position=new V2(32.5f,37.8f);
-            if(!g.BossStarted||!Fight(g,new V2(29,37),()=>g.Victory,22000)){Console.WriteLine("FAIL "+hero.id+" boss");return 1;}
+            g.Player.position=Simulation.Altar+new V2(0,.6f);for(int tries=0;tries<10&&!g.BossStarted;tries++)g.Interact();Reward(g);g.Player.position=Simulation.Altar+new V2(3.5f,.8f);
+            if(!g.BossStarted||!Fight(g,Simulation.Altar,()=>g.Victory,22000)){Console.WriteLine("FAIL "+hero.id+" boss");return 1;}
             Console.WriteLine("PASS hero="+hero.id+" seals=3 victory=true deaths="+g.Deaths+" level="+g.Player.level+" combatSeconds="+(ticks/60)+" kills="+g.Kills);
         }Console.WriteLine("4/4 C# combat campaigns passed. Combat only: relocation between arenas excludes travel time; normal attacks, skills, healing and respawn only.");return 0;}
 }

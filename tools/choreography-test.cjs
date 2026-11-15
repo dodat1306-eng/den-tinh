@@ -62,7 +62,7 @@ test('Intro movement is 35 percent, control immune, and nearby enemy movement an
   const g=ritualGame();g.skill('r');const near={...enemy(),id:'near',x:1800,y:1000,homeX:1800,homeY:1000,speed:100,cool:10,knockX:0,knockY:0},far={...near,id:'far',x:2025,homeX:2025};g.world.enemies=[near,far];g.updateEnemies(.4);assert(Math.abs(near.x-1790)<1e-6);assert(Math.abs(far.x-1985)<1e-6);assert(Math.abs(near.cool-9.9)<1e-8);assert(Math.abs(far.cool-9.6)<1e-8);
 });
 test('R cooldown supports ranks and relics; all summon states have ordered nonlooping spawn and attack',()=>{
-  const g=ritualGame();g.skillRanks.r=3;g.player.relics.cooling=1;assert(g.skill('r'));assert(Math.abs(g.player.cd.r-18*.82*.8)<1e-9);
+  const g=ritualGame();g.skillRanks.r=3;g.player.relics.cooling=1;assert(g.skill('r'));assert(Math.abs(g.player.cd.r-18*.82*.78)<1e-9);
   for(const kind of SHADOW_BEAST_CATALOG.map(s=>s.id))for(const[mode,n]of[['spawn',4],['idle',4],['walk',6],['attack',6]])assert.equal(DTQuanLeVFX.clips[kind+'/'+mode].frames,n);
   const s={spawnAge:0,moving:false,action:null};assert.equal(DTQuanLePixel.state(s),'spawn');s.spawnAge=.45;assert.equal(DTQuanLePixel.state(s),'idle');s.moving=true;assert.equal(DTQuanLePixel.state(s),'walk');s.action={elapsed:0,duration:.6};assert.equal(DTQuanLePixel.state(s),'attack');
 });

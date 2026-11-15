@@ -1,0 +1,103 @@
+{
+  "suite": "full-browser-runtime",
+  "passed": 24,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Full runtime contains 32 relics, 20 pedestals, 25 unique NPCs and four additional boss encounters",
+      "pass": true
+    },
+    {
+      "name": "Burst levels award exactly 2 stat / 1 skill points; no talent or mastery API remains",
+      "pass": true
+    },
+    {
+      "name": "Save repeated 20 times preserves every derived stat, training, allocations and currency",
+      "pass": true
+    },
+    {
+      "name": "Migration refunds spent mastery points and validates malformed RPG input",
+      "pass": true
+    },
+    {
+      "name": "Normal, skill and summon damage use separate coefficients; boss and armor penetration apply",
+      "pass": true
+    },
+    {
+      "name": "AS, movement, dash cooldown, crit, projectile speed, range, regen and CDR are consumed",
+      "pass": true
+    },
+    {
+      "name": "Omnivamp, kill healing, defense flat block, thorns, tenacity and gold find affect gameplay",
+      "pass": true
+    },
+    {
+      "name": "Stat reset charges exactly 80 at village and clamps HP/MP without inflation",
+      "pass": true
+    },
+    {
+      "name": "Boss relic follows parabola, lands, persists and requires F; paused/dead cannot claim",
+      "pass": true
+    },
+    {
+      "name": "All twelve named Boss sources produce exactly their own unowned drop",
+      "pass": true
+    },
+    {
+      "name": "Pedestals reject guards and wrong elements, tools solve seal, claimed state persists",
+      "pass": true
+    },
+    {
+      "name": "Kim Quy, Cuoi, Thach San, Thuy Tinh, Wukong and Phoenix use requested timers and effects",
+      "pass": true
+    },
+    {
+      "name": "An Tiem drops consumable every six kills; Aladdin spends 80, returns 30; cooling is 22%",
+      "pass": true
+    },
+    {
+      "name": "Split adds one 85% projectile, Pierce adds three and grows after hits",
+      "pass": true
+    },
+    {
+      "name": "Giong triggers fourth attack, Mjolnir fifth, Aegis break stuns, fate thread lasts four seconds",
+      "pass": true
+    },
+    {
+      "name": "DOM buffs real shadow units, elemental clones and summons without scaling twice",
+      "pass": true
+    },
+    {
+      "name": "Summon HP and lifetime survive ten saves and live DOM changes without inflation",
+      "pass": true
+    },
+    {
+      "name": "Phoenix aura ticks damage and charmed contact enemies cannot attack",
+      "pass": true
+    },
+    {
+      "name": "Golems and treants survive repeated JSON saves with exact HP, duration and DOM",
+      "pass": true
+    },
+    {
+      "name": "Third-hit relic snapshots attack number while bullets are in flight",
+      "pass": true
+    },
+    {
+      "name": "Cuoi ignores a shielded hit and prevents actual lethal damage after armor",
+      "pass": true
+    },
+    {
+      "name": "Truth layer four requires final saga, gate waits for returning village memories",
+      "pass": true
+    },
+    {
+      "name": "Five hero stories complete through actual NPC / memory / melody / battle interactions",
+      "pass": true
+    },
+    {
+      "name": "Three seeds keep every core NPC, pedestal and puzzle tool on reachable walkable cells",
+      "pass": true
+    }
+  ]
+}
