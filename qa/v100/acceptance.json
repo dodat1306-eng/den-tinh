@@ -42,6 +42,13 @@
   "deployment": {
     "method": "Existing Cloudflare Workers Builds integration, main branch",
     "url": "https://den-tinh.dodat1306.workers.dev/",
-    "verification": "Pending GitHub push and public asset verification"
-  }
+    "verification": "Passed public SHA-256, cache policy, private-path and live desktop/mobile checks.",
+    "releaseCommit": "2eb0c90e1f3e74c6db5e3a382351d1e889287f36",
+    "workerVersionPrefix": "e6417877",
+    "matchingAssets": 87,
+    "privatePaths404": 11,
+    "liveBrowserChecks": 5,
+    "verifiedAt": "2026-11-16T17:42:42.478Z"
+  },
+  "pass": true
 }

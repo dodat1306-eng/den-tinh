@@ -1,0 +1,839 @@
+{
+  "checkedAt": "2026-11-16T17:42:42.478Z",
+  "url": "https://den-tinh.dodat1306.workers.dev/",
+  "version": "1.0.0",
+  "commit": "2eb0c90e1f3e74c6db5e3a382351d1e889287f36",
+  "anonymousRequests": true,
+  "assets": [
+    {
+      "file": "app.js",
+      "status": 200,
+      "bytes": 26140,
+      "sha256": "f94dbe71dcb0e5aa72d9976c4db2c016e58a94cbca536da62b160095507cef90",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "ascension-ui.js",
+      "status": 200,
+      "bytes": 13345,
+      "sha256": "1cc318cc8526849121fc0dcd906583c5e3ba7546ce1fda029a55bfaddabe619c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "ascension-visuals.js",
+      "status": 200,
+      "bytes": 38708,
+      "sha256": "ab29f9cfcf965fbf9d75fad698105b58973edb0636bb1b3f1fe4bbc5d74875d9",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "ascension.css",
+      "status": 200,
+      "bytes": 9987,
+      "sha256": "032bb0a489a2b440ab24216f324bf15e24dc05665c4b32fab69a287dbf4912dc",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/css"
+    },
+    {
+      "file": "ascension.js",
+      "status": 200,
+      "bytes": 42139,
+      "sha256": "57eb9b6ee9fbafa7c44d240f7bc88cc171e7ceac5f11aa27126698634f30b25e",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/actors-pixel-v1.js",
+      "status": 200,
+      "bytes": 109731,
+      "sha256": "ea93980a0db16208273af8747d317aca7e06300d3daa8cd9b2640d9a32182cee",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/actors-pixel-v1.json",
+      "status": 200,
+      "bytes": 109698,
+      "sha256": "df43f49b663aee11e10b4317ce2c44e74e2284e66745a36fdf13f0a9675cf045",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/actors-pixel-v1.png",
+      "status": 200,
+      "bytes": 389024,
+      "sha256": "9f00757960b9681ff53682faa12c04d81bca1b400f9fef3152e02024926688a5",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/actors-v03.png",
+      "status": 200,
+      "bytes": 1510169,
+      "sha256": "c95e8aff71f3e5ce6dd3ae169aa38a7186aaf33772da8bd36454db62f3b09cdb",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/environment-v03.png",
+      "status": 200,
+      "bytes": 2908723,
+      "sha256": "6a0a79ece8ce0edd7f427d4f35f452759c31389d788d66503d9eb807015e8b90",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/fonts/NotoSans-Bold.ttf",
+      "status": 200,
+      "bytes": 575740,
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "font/ttf"
+    },
+    {
+      "file": "assets/fonts/NotoSans-Regular.ttf",
+      "status": 200,
+      "bytes": 569208,
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "font/ttf"
+    },
+    {
+      "file": "assets/fonts/OFL.txt",
+      "status": 200,
+      "bytes": 4377,
+      "sha256": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/plain"
+    },
+    {
+      "file": "assets/heroes.png",
+      "status": 200,
+      "bytes": 1862011,
+      "sha256": "6bfdd6843480d502e36058107c4c1dc8d6d4f10c7ea6923b5f4ab017ec52e78c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/hoavi-pixel-v08.js",
+      "status": 200,
+      "bytes": 13062,
+      "sha256": "97dcc2bf6e8aa41a462908f8619545c52dcf3a725c9b8a8a95a787b2be9f3889",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/hoavi-pixel-v08.json",
+      "status": 200,
+      "bytes": 13035,
+      "sha256": "a607f0832be276b004929791376a18318b2e5de3557409bf36e8bb9bf5373b12",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/hoavi-pixel-v08.png",
+      "status": 200,
+      "bytes": 131810,
+      "sha256": "32ec3074de7a743fadf3d4c7e7676fe301379cc6b84f08f8e4eaa0bebfb18e0f",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/hoavi-vfx-pixel.js",
+      "status": 200,
+      "bytes": 3055,
+      "sha256": "4c46a4668642d16a5842c623affdd1e07785ee4f27224354d7c1f1acfa528b71",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/hoavi-vfx-pixel.json",
+      "status": 200,
+      "bytes": 3030,
+      "sha256": "1b3df1b58fc92e0648930f7c0a01446e50dcc8fcc925ee937eba288f04d56dd8",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/hoavi-vfx-pixel.png",
+      "status": 200,
+      "bytes": 11983,
+      "sha256": "0ca3975599de33527361df07108895fe84f42eaefa0ecacd27912a5a8c7c965a",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/key-art.png",
+      "status": 200,
+      "bytes": 2838424,
+      "sha256": "93ec930c0eb316d3a1c05a1ccda37b2f1a2bd8657b74585c5c3d3989b2ae9fcb",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/npcs-v091.js",
+      "status": 200,
+      "bytes": 23508,
+      "sha256": "ba1e136458311e8c6df35df46b1e1318e68992ff78b50bec60d84963ec9bf28e",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/npcs-v091.json",
+      "status": 200,
+      "bytes": 23478,
+      "sha256": "aea37ed862a62222164bbe8dae050e6a8abc90869d44a9e89c2f69b831583bc3",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/npcs-v091.png",
+      "status": 200,
+      "bytes": 133807,
+      "sha256": "6c1f213462f4ba56006daf762577c3ea1f0649778de8511aa908c38af6ffebdf",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/quanle-pixel-v1.js",
+      "status": 200,
+      "bytes": 36746,
+      "sha256": "cb44b7e69a96a24fcc58296f78f79619e1968dbc1e7084f3a0a0f5d79a4ceb04",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/quanle-pixel-v1.json",
+      "status": 200,
+      "bytes": 36718,
+      "sha256": "a78e8427365b33f1e493beceb02e204a0c6f8d2acf1e7ac280505d9d1d51b5fa",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/quanle-pixel-v1.png",
+      "status": 200,
+      "bytes": 58961,
+      "sha256": "bba15a50895b6f78ab92f91f1848ea00621f901985d7478985464df0c9756326",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/quanle-vfx-pixel.js",
+      "status": 200,
+      "bytes": 85851,
+      "sha256": "83b20fa0a54a25ecdaa1ee1e1d8ad441e99c8894dd821b8bf0c6d338d68dda5c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/quanle-vfx-pixel.json",
+      "status": 200,
+      "bytes": 85825,
+      "sha256": "3c6f51af96bec9040c4c5be7038194b01f276e1357c99e24ad98df7e4faa0ccd",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/quanle-vfx-pixel.png",
+      "status": 200,
+      "bytes": 280335,
+      "sha256": "7f947fc7e578477a9712a5c7d4e1ae2b3a1a009f6f4a2c5b0d07fd6fbff89e4f",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/quynhkun-pixel-v1.js",
+      "status": 200,
+      "bytes": 24387,
+      "sha256": "f34955d22f57cc272563e4d06e4316e1a1b51648535a5cc9f4391ec624d97a04",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/quynhkun-pixel-v1.json",
+      "status": 200,
+      "bytes": 24357,
+      "sha256": "7a0e09648a19b02240066032d40f752f417a18f111d06ae8892282f61b8ff6db",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/quynhkun-pixel-v1.png",
+      "status": 200,
+      "bytes": 113288,
+      "sha256": "3bf936e38e840f67335d0744cc76a4e21133604cc0c023d47c319827875727e4",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/quynhkun-vfx-pixel.js",
+      "status": 200,
+      "bytes": 15858,
+      "sha256": "2f09e4eac6521bb759afddc1dc0ca1ea6e23bbec1a129400ef82d0507b0b08c5",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/quynhkun-vfx-pixel.json",
+      "status": 200,
+      "bytes": 15830,
+      "sha256": "22fe8f4fcfb71e3076213d8fb9c9c5ad4c388165a97dd473fa42ecf9f7a9076f",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/quynhkun-vfx-pixel.png",
+      "status": 200,
+      "bytes": 51655,
+      "sha256": "6c9738b38ec8c607516e90f0ba3dfad2beaf1a4a1dd0fd6c60560e5410336d13",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/relics-pixel-v09.png",
+      "status": 200,
+      "bytes": 9951,
+      "sha256": "d124ba1da614025205d508feb3c2df64e1d5e7c9c512806c19ac3897c31466a4",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/spirit-fx-v07.png",
+      "status": 200,
+      "bytes": 467985,
+      "sha256": "ce35911b76b645dd8aa0a672dd7591f750b3f7b62978b9c24eac4ae4b351975b",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/thien-vu-v04.png",
+      "status": 200,
+      "bytes": 2536819,
+      "sha256": "7afaa2809b955978b80cf731e8cb5882c1a89bf8f703c27bb46ad68d5fe8dfbd",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/thienvu-pixel-v08.js",
+      "status": 200,
+      "bytes": 178212,
+      "sha256": "7e1bba49bbdb7cba179ffb16d31a12eb3a115e809821fef23e40c203ae0b42e8",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/thienvu-pixel-v08.json",
+      "status": 200,
+      "bytes": 178183,
+      "sha256": "67394fa4eedf8ccd547020caf7b529f93251ff7a81a1de298931b8855d83b472",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/thienvu-pixel-v08.png",
+      "status": 200,
+      "bytes": 478033,
+      "sha256": "d6657199533dc28abf39a77d82f2b9b6129b623ae909260685a6c02ed6298485",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/thienvu-vfx-pixel.js",
+      "status": 200,
+      "bytes": 45735,
+      "sha256": "499c0c01f93eb07ee9f845df70b4a7405ec5e1179d2f4d8a2513e0e77918bc43",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/thienvu-vfx-pixel.json",
+      "status": 200,
+      "bytes": 45708,
+      "sha256": "13bf419fd369529e08454d86fe4b28be17a8ea36678e0b9f0555bc1951a75461",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/thienvu-vfx-pixel.png",
+      "status": 200,
+      "bytes": 199184,
+      "sha256": "775f5f60ccbf4479f969c79661c238d0373fce1c5f08f4b6272270c5d5afae9e",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "assets/world-pixel-v08.js",
+      "status": 200,
+      "bytes": 43850,
+      "sha256": "a346eeb1f36614600e14a4b6190dbbd03770815b6eda6097a0bf64f3ca37ae1d",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "assets/world-pixel-v08.json",
+      "status": 200,
+      "bytes": 43818,
+      "sha256": "c31cd58a4850516bfae53c421874f6f80a682107bdef92fdc37957136a8a349c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "application/json"
+    },
+    {
+      "file": "assets/world-pixel-v08.png",
+      "status": 200,
+      "bytes": 379099,
+      "sha256": "0b75c3235c5fb30e0a4e05ad87726dc5b991dfccc14a187a974afe8af58a7231",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/png"
+    },
+    {
+      "file": "choreography.js",
+      "status": 200,
+      "bytes": 21786,
+      "sha256": "a29afe113aec3772b3e859fa7e2de55e381f9102e09dc8fbbda2b67ce74b9020",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "content.js",
+      "status": 200,
+      "bytes": 5171,
+      "sha256": "d27a133dd92ceb7b2350196224df9b347d6da86bb963ad6eebb2910fdfaa478b",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "controls.js",
+      "status": 200,
+      "bytes": 8224,
+      "sha256": "21ba387a4e46f73a96690f88d48623140d8e0ab86677b3ea526b87459ab9d673",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "elemental-ui.js",
+      "status": 200,
+      "bytes": 7943,
+      "sha256": "c7aed0239f9b11e49f34ed493d73ffeca558e573574a20d516f525004c88152f",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "elemental-visuals.js",
+      "status": 200,
+      "bytes": 1869,
+      "sha256": "db870e99af70669392f6a0143b63f8dd3b05972ea319bb9a0f9f23cc88026706",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "elemental.css",
+      "status": 200,
+      "bytes": 4349,
+      "sha256": "73630a46d314842b58d034fb4e1358bf49f12287b4f6e6b39075d715465d1cce",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/css"
+    },
+    {
+      "file": "elemental.js",
+      "status": 200,
+      "bytes": 45591,
+      "sha256": "84c01666d5e19112668249a90504938008bb088dfbd6a9202d62f5b76856acf0",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "endless.js",
+      "status": 200,
+      "bytes": 40187,
+      "sha256": "d6bbf953ca9b9a48fead8b25491ecfb94ff758824b43c7ad99a39d6fdd91067c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "engine.js",
+      "status": 200,
+      "bytes": 26971,
+      "sha256": "9fcbd3b1a5728692d38d74febb79450fa9c6ad20382bd2df255be73602c93734",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "expansion.css",
+      "status": 200,
+      "bytes": 8281,
+      "sha256": "01e19e48c74e834e1a4208b3bd4b86691c8529b1cda4a265e09619e8f81c55dd",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/css"
+    },
+    {
+      "file": "expansion.js",
+      "status": 200,
+      "bytes": 26413,
+      "sha256": "b59fc20d188b7135d2221baf04994c6ff67e802a0c9e14e91bad87abee195b09",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "fonts.css",
+      "status": 200,
+      "bytes": 733,
+      "sha256": "1f9fb57863c3f1807a87188b2ab4518b5ebd4137c116f0d8ac4e8ee7077394b1",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/css"
+    },
+    {
+      "file": "frontier.js",
+      "status": 200,
+      "bytes": 14241,
+      "sha256": "3af3e8ee4c922fd4d013ae4111f47c098300263cf9e212a739e220ad83fbd504",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "hoavi-pixel.js",
+      "status": 200,
+      "bytes": 11546,
+      "sha256": "08c2c2623fbc62f257303b3ad1abd1781e5169df4b406ab332e354f63d9d0d4c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "icon.svg",
+      "status": 200,
+      "bytes": 434,
+      "sha256": "b9a5ae3e31591f3379dbb6859dcecfdea2cd70d843e85ad92ff3b5eba4ebdd37",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "image/svg+xml"
+    },
+    {
+      "file": "index.html",
+      "status": 200,
+      "bytes": 8200,
+      "sha256": "0de5e51847a7d2a32b48f66f8fef005acf030740f1cd164f9718a2b720895764",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/html"
+    },
+    {
+      "file": "journey-ui.js",
+      "status": 200,
+      "bytes": 4942,
+      "sha256": "2550aeee7b2a3521f765941dd24c590c692b2710f571051208569d2cd4bf51f4",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "journey-visuals.js",
+      "status": 200,
+      "bytes": 2305,
+      "sha256": "5761937a76a45113b6d455eca1f127f3a5da7ca763b3bdd2f92a40b742ed99b0",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "journey.css",
+      "status": 200,
+      "bytes": 2013,
+      "sha256": "d7b2d90bf884935c5bb46cba3de94227d9f15be1c6600c93e54be5a17b6b8eeb",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/css"
+    },
+    {
+      "file": "journey.js",
+      "status": 200,
+      "bytes": 15933,
+      "sha256": "c640593bc095a4df01abf31fad44b4eb5bfd4cf7eca7431fe14b3beb42c96f24",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "mythic-content.js",
+      "status": 200,
+      "bytes": 13825,
+      "sha256": "e305144579ffe47212db992abf8826a430e6da87da3c6f7149b701c91b699b89",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "quanle-pixel.js",
+      "status": 200,
+      "bytes": 4319,
+      "sha256": "4ef478a3f364679d1b0756f3257493a042a3bb14b28542138794dd69a8eb59ff",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "quynhkun-pixel.js",
+      "status": 200,
+      "bytes": 3743,
+      "sha256": "ff275d959a416e568d4f658ee6cff4700081b9c2ab20959d252a50eb2da24c13",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "quynhkun.js",
+      "status": 200,
+      "bytes": 11541,
+      "sha256": "54d9f3d4c5c9ec91dedbc985301d254cc1e27d64818e563ccd35dab346fa5399",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "relic-trials.js",
+      "status": 200,
+      "bytes": 17563,
+      "sha256": "a7d19d08015bfd8616acfaa50d8fca35fa986d017a54d54ec33601e0c9574d3e",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "render.js",
+      "status": 200,
+      "bytes": 26040,
+      "sha256": "9fea4c418d45c2054dbe11769ad4823528e91b3f4161540b95d122b77c8ab63d",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "scenery.js",
+      "status": 200,
+      "bytes": 22680,
+      "sha256": "442ca672a65191292573ed37cf6c8186488f586732179f4c6061b615aef93ac5",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "shadow.js",
+      "status": 200,
+      "bytes": 16356,
+      "sha256": "1acdff51c2a608495b2375acef5e8d75a6270e3fb8dcf8445753d42d11dda1fb",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "style.css",
+      "status": 200,
+      "bytes": 9899,
+      "sha256": "fa5ed1ce54e8e27db0923485aa68a0389bcbfc141d62b4b22121f3bd29c552f3",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/css"
+    },
+    {
+      "file": "thienvu-pixel.js",
+      "status": 200,
+      "bytes": 18577,
+      "sha256": "e5a7cc02fd317aea932cabdb3def158a4e26b4a6ca5cdd5b22a4c9ce44a335c4",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "ultimate-intro.js",
+      "status": 200,
+      "bytes": 12399,
+      "sha256": "7ed56e5b22d9d16bd08a892a79fd7873933952537dfdf65228e30a219b416238",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "v09-content.js",
+      "status": 200,
+      "bytes": 46924,
+      "sha256": "bac8fcbdab779f3d36082e0e86b48aea82a6f29027d5e74d3b23e9174ef29011",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "v09-ui.js",
+      "status": 200,
+      "bytes": 8509,
+      "sha256": "19f74ed7c89cd98bbd969bfdb222e9895257c9db519d0170c5059864c3f20278",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "v09-visuals.js",
+      "status": 200,
+      "bytes": 13326,
+      "sha256": "be67969ed11232a661287de619832c7117c3ac7b7b711f9c56bba3061a1a1748",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "v09.js",
+      "status": 200,
+      "bytes": 38079,
+      "sha256": "69f85855dd833e4a00a757e20b3e9459beb31e4e810ae8dc18b45e901a69a11f",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "visuals.js",
+      "status": 200,
+      "bytes": 14362,
+      "sha256": "4bab9fa4e3771cfe063642c9428b968f5440776d00f1fd553ec70050c2802a17",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "world-destruction.js",
+      "status": 200,
+      "bytes": 12744,
+      "sha256": "c4145631edd16a2824d689a62cdfbdc86a4d2573026753f1e701d141f20efcdd",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "world-pixel.js",
+      "status": 200,
+      "bytes": 10108,
+      "sha256": "62469aac29a40ea86a5233ff9606369e6eb667f7ab5c983e0e204bacc14ffc35",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    },
+    {
+      "file": "world.js",
+      "status": 200,
+      "bytes": 7677,
+      "sha256": "514fad3f18bfec816d4ae8d83cb1367eb153e6fb6ad0ee39763750ffd2d54a2c",
+      "matchesLocal": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "contentType": "text/javascript"
+    }
+  ],
+  "privatePaths": [
+    {
+      "path": "/save",
+      "status": 404
+    },
+    {
+      "path": "/runtime/save.json",
+      "status": 404
+    },
+    {
+      "path": "/tools/server.cjs",
+      "status": 404
+    },
+    {
+      "path": "/Unity/README_VI.md",
+      "status": 404
+    },
+    {
+      "path": "/README.md",
+      "status": 404
+    },
+    {
+      "path": "/package.json",
+      "status": 404
+    },
+    {
+      "path": "/wrangler.jsonc",
+      "status": 404
+    },
+    {
+      "path": "/.git/config",
+      "status": 404
+    },
+    {
+      "path": "/.gitignore",
+      "status": 404
+    },
+    {
+      "path": "/_headers",
+      "status": 404
+    },
+    {
+      "path": "/not-a-game-file.js",
+      "status": 404
+    }
+  ],
+  "pass": true
+}
