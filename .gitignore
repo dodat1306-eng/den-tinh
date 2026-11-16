@@ -151,3 +151,12 @@ __pycache__/
 !/qa/v091/village-npc.png
 !/qa/v091/map.png
 !/qa/unity-rpg-tests.txt
+
+# 1.0.0 release evidence
+!/qa/v100/
+/qa/v100/*
+!/qa/v100/*.json
+!/qa/v100/*.txt
+!/qa/v100/*.png
+/design/blender/quynhkun/raw.png
+/design/blender/quynhkun/vfx/raw.png

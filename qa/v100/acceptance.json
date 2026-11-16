@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "checkedAt": "2026-11-16T17:39:54.407122+00:00",
+  "localPass": true,
+  "hero": "quynhkun",
+  "empoweredE": "Places two Bagua stakes simultaneously; free recast within four seconds recalls both.",
+  "combatChecks": 16,
+  "unityQuynhKunChecks": 43,
+  "browserChecks": 5,
+  "commands": [
+    {
+      "check": "web-tests",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0
+    },
+    {
+      "check": "http",
+      "exit": 0
+    },
+    {
+      "check": "web-build",
+      "exit": 0
+    }
+  ],
+  "campaign": "All six heroes complete three seals and six saga chapters with zero deaths.",
+  "art": {
+    "heroFrames": 156,
+    "vfxFrames": 110,
+    "meshBakePass": true,
+    "scaleReport": "../../design/blender/quynhkun/scale-verification.json"
+  },
+  "unity": {
+    "version": "1.0.0",
+    "renderedHeroesAndPanels": 16,
+    "saveRoundTrip": true,
+    "errors": 0
+  },
+  "unityNpcAtlas": "Validated all 25 first-frame cells against shared atlas; runtime uses 64x64 cells and anchor 32,58.",
+  "deployment": {
+    "method": "Existing Cloudflare Workers Builds integration, main branch",
+    "url": "https://den-tinh.dodat1306.workers.dev/",
+    "verification": "Pending GitHub push and public asset verification"
+  }
+}

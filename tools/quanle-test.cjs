@@ -1,7 +1,7 @@
 const {track:trackCooldown,check:checkCooldown}=require('./cooldown-check.cjs');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),tests=[];
-for(const f of ['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js','world-destruction.js','shadow.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+for(const f of ['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ascension.js','endless.js','journey.js','world-destruction.js','shadow.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 function test(name,fn){try{fn();tests.push({name,pass:true});console.log('PASS '+name)}catch(e){tests.push({name,pass:false,error:e.stack});console.error('FAIL '+name+' '+e.stack)}}
 function arena(hero='quanle',form){const g=new DTGame(hero,71426);g.start();g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.world.props=[];g.world.ensureChunks=()=>{};g.world.collision=()=>false;g.player.x=1500;g.player.y=1000;g.player.facing=0;g.player.crit=0;g.player.invulnerable=0;g.player.regen=0;g.input={dx:0,dy:0,fire:false,aimX:1700,aimY:1000};if(form)g.transformElement(form);return trackCooldown(g)}
 function enemy(id='dummy',x=1580,y=1000,type='slime'){return{id,type,x,y,homeX:x,homeY:y,r:15,hp:1e6,maxHp:1e6,speed:0,damage:0,xp:0,gold:0,alive:true,cool:999,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,facing:0}}

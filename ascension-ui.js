@@ -39,7 +39,7 @@
   function tabs(current){return '<nav class="ascension-tabs" aria-label="Bảng nhân vật">'+[['skills','Kỹ năng · K'],['inventory','Nhân vật · I'],['relics','Cổ vật & truyền thuyết']].map(([id,label])=>'<button data-asc-tab="'+id+'" class="'+(current===id?'selected':'')+'" aria-current="'+(current===id?'page':'false')+'">'+label+'</button>').join('')+'</nav>'}
   function shell(tab,title,body){
     const g=game();
-    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 0.9.1 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
+    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 1.0.0 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
     $('ascensionClose').onclick=()=>app().closeAndContinue();
     $('modalContent').querySelectorAll('[data-asc-tab]').forEach(b=>b.onclick=()=>root.DTAscensionUI[b.dataset.ascTab==='skills'?'showSkills':b.dataset.ascTab==='relics'?'showRelics':'showInventory']());
   }
@@ -68,6 +68,7 @@
   function sync(g){
     const s=signature(g),p=passive(g);$('weaponName').textContent=s.name;$('weaponName').style.color=s.color||g.hero.color;$('weaponAmmo').textContent='K · Kỹ năng · '+points(g)+' điểm';$('passiveHud').textContent=status(g);$('passiveHud').title=p.desc;
     for(const key of['q','e','r']){const el=$('skill-'+key),k=skill(g,key);el.title=key.toUpperCase()+' · '+k.name+'\n'+k.desc;el.setAttribute('aria-label',key.toUpperCase()+' · '+k.name+'. '+k.desc)}
+    if(g.hero.id==='quynhkun'){const recast=g.canRecastE();$('eName').textContent=recast?'Thu Phù Hộ Thể':g.hero.e;const button=$('skill-e');button.classList.toggle('ready',recast);if(recast){button.querySelector('i').style.transform='scaleY(0)';button.dataset.time='E · THU PHÙ';button.classList.remove('cooling');button.setAttribute('aria-label','E · Thu Phù Hộ Thể. Thu cọc và bật vòng bùa, không tốn linh lực.')}}
     const o=objective(g);if(o.title)$('questTitle').textContent=o.title;if(o.text)$('questText').textContent=o.text;
     const skillButton=$('openSkillTree');if(skillButton)skillButton.textContent='K · Kỹ năng'+(points(g)?' · '+points(g):'');
   }

@@ -1,0 +1,306 @@
+
+> den-tinh@1.0.0 test
+> node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs && node tools/choreography-test.cjs && node tools/elemental-npc-test.cjs && node tools/quanle-test.cjs && node tools/element-split-patrol-test.cjs && node tools/v09-test.cjs && node tools/npc-startup-test.cjs && node tools/quynhkun-test.cjs
+
+PASS Deterministic world, valid starting point
+  walkable cells: 34636
+PASS Every shrine, NPC, chest and final altar reachable on foot
+PASS Movement respects map boundaries and solid objects
+PASS Shooting hits, kills and awards XP
+PASS Dash grants immunity and cannot ignore cooldown
+PASS All three heroes: Q, E and R function and spend resources
+PASS Potions and shops have bounded costs; levels award points without relic choices
+PASS Three seals and final encounter enforce progression
+PASS Save and restore preserve character, progress and combat health
+PASS Death and respawn retain progress, charge correct gold penalty
+PASS Boss projectile death does not break the update loop
+PASS All local HTML dependencies exist; no remote runtime dependencies
+PASS Ultimate attacks never refill their own charge; dropped loot survives saves
+13/13 checks passed
+PASS Base catalog includes five heroes before elemental extension, twelve distinct weapons and twelve relics
+PASS HoaVi passive charges from hits; Debug consumes stacks and mana
+PASS Firewall restores health, grants a shield and blocks hostile shots
+PASS Every ultimate, including Overclock drones and burning hits, never recharges itself
+PASS Both weapon slots have independent clips, reload and upgrades
+PASS Split, piercing and dash relics change actual attacks
+PASS A relic found outside level-up grants its advertised stat effect
+PASS Truc has a single miniboss, Sen starts defense, Tro spawns destructible cores
+PASS Defense only completes at its timer, failure is retryable and cannot award an early seal
+PASS Boss progression enforces seals, then adds roots and a third phase
+PASS Weapons can be found in chests and picked up by F
+PASS Lore rewards XP and Dom highlights nearby discoveries
+PASS Expanded save round-trip preserves both weapons, modifiers, armor, challenge and dynamic enemies
+PASS Legacy 0.1 saves migrate without losing player upgrades or seals
+PASS Missing coordinates are rejected and missing optional expansion fields recover safely
+PASS A weapon at a completed shrine never blocks F activation or traps the player in swaps
+PASS Saving during the root phase never duplicates boss weak points
+PASS Village is safe and failed challenges reset after respawn
+PASS New Game Plus varies worlds, scales enemy health and preserves selected hero
+PASS New runtime assets exist and JavaScript files parse without remote runtime dependencies
+20/20 expansion checks passed
+PASS World is 2.59 times larger with nine distinct regions and a continuous road loop
+PASS Original seed layout, enemy IDs and story locations remain unchanged
+  seed 71426: 60668 connected cells
+  seed 1306: 60839 connected cells
+  seed 20261102: 61094 connected cells
+PASS All shrines, all chests and all four beacons are reachable on foot across multiple seeds
+PASS River banks block walking while both wooden bridges are traversable
+PASS A new beacon requires two full waves before granting its reward exactly once
+PASS Travel rejects locked destinations and remote calls, cancels a dodge and allows safe return from its menu
+PASS A v0.2 save retains hero, health, gold, armor, weapons, relics and awakened seals
+PASS Saving mid encounter preserves the active wave, unique guardian IDs and destination unlocks
+PASS New region coordinates survive save restoration and do not fall back to the village
+PASS Nearby loot cannot trap the interaction at the center of an unlocked station
+PASS Death resets unfinished outpost waves while keeping earned unlocks
+PASS All heroes emit their own skill visuals and retain resource and cooldown rules
+PASS Running animation follows real movement and a wall does not advance the stride
+PASS Reduced motion disables new dash afterimages without disabling the actual dodge
+PASS The original finale remains gated; postgame frontier enemies can still deal damage
+PASS New game code parses and generated atlas stays within hosting limits
+16/16 frontier checks passed
+PASS Fifth hero has seven distinct forms, twenty-one named skills and its catalyst weapon
+PASS Transformation changes appearance and skills while retaining cooldowns, health and ultimate charge
+PASS Every form Q damages a target using its actual attack behavior
+PASS Every form E implements a persistent field or actual earth shield
+PASS Every ultimate damages and never refills itself, including delayed hits and fields
+PASS Split modes create exactly 3, 5 or 7 different living elemental bodies
+PASS Clone AI really attacks and does not generate free ultimate charge
+PASS Changing the leader form during a split preserves remaining time and unique elements
+PASS Recall retains cooldown, expired clones disappear and paused games do not run timers
+PASS Hostile bullets hit and remove clones without damaging the leader remotely
+PASS Zero damage cannot grant a clone protection from real damage
+PASS Ice actually slows and freezes movement, nature poison deals damage, light reflects without ult charge
+PASS Shots keep their original element after transformation
+PASS Elemental ultimate keeps the leader element with real damage and no self charging
+PASS Save and restore retain form, split size, remaining time, clone health and player resources
+PASS Malformed clone saves are bounded and old heroes keep their progress
+PASS Death and travel cancel clones and scheduled attacks
+PASS New source parses and art is a deployable transparent PNG
+18/18 elemental checks passed
+PASS All five heroes own a fixed signature and four rankable skill paths without gear inventory
+PASS All hero Q/E/R actions have anticipation, consume resources once and delay the main release
+PASS Hero E mechanics create different persistent gameplay states
+PASS An can connect three lamps and consumes six embers to empower his cone
+PASS Linh earns eight wind stacks by moving and her next hit marks and roots the target
+PASS Quân Lê replaces lightning wall with instant armor and autonomous summon
+PASS HoaVi Q faults targets and repeats with code; E safely returns to checkpoint
+PASS All hero ultimates and delayed damage do not recharge themselves
+PASS Learning spends available points, caps every path at three, and level rewards add points
+PASS V0.4 saves migrate gear levels to skill points while retaining hero, relics, money and outposts
+PASS V0.5 rank and relic progress survive JSON save/restore while actions are cancelled
+PASS Death, respawn and beacon travel remove pending casts, fields and checkpoint
+PASS An awakened seal returning to the village cancels pending casts, fields and elemental allies
+PASS Exactly twenty new relics have unique ids and Vietnamese/world origin plus distinct trigger text
+PASS Kim Quy reflects once and grants a bounded shield on damage
+PASS Giong creates a noncharging bamboo strike on the fifth primary attack
+PASS Thach Sanh E roots ordinary enemies with a bounded cooldown
+PASS Chu Dong Tu rewards a fresh interaction only, including after save and restore
+PASS Son Tinh standing guard reduces the next hit and then requires cooldown
+PASS Thuy Tinh Q creates water which slows an enemy in the target area
+PASS Thuy Tinh water reacts once to fire, ice and lightning without proc recursion or R charge
+PASS Tam dash creates a temporary decoy and movement boon
+PASS Legacy An Tiem direct-heal proc stays disabled for physical melon drops
+PASS Cuoi saves one lethal hit only and preserves that use across death and respawn
+PASS Trau Cau potion adds shield and mana with one potion spent
+PASS Mjolnir fifth attack chains to four nearby targets without R feedback
+PASS Aegis Q/E shield requires no existing shield, respects cooldown, and excludes R
+PASS Hermes controlled skill hit reduces dash cooldown once per window
+PASS Legacy dash keeps base immunity; RPG fate thread is handled by final runtime
+PASS Phoenix R heals and burns without earning R from the burn ticks
+PASS Ankh kills on a controlled target heal four exactly once
+PASS Wukong E schedules exactly three bounded noncharging echoes
+PASS Aladdin spending ninety mana refunds twenty-five and fires a noncharging beam
+PASS Jack interaction plants one trap per eight-second window
+PASS Cinderella counts close projectile dodges once each, ignores distant threats and empowers one Q
+PASS Duplicate mythic relics give coins instead of unbounded stacking
+PASS All relics together keep ultimate damage noncharging and field/projectile counts bounded
+PASS Seven elemental Qs all damage after release and preserve their original form while queued
+PASS Seven elemental Es implement different defenses and sustain states
+PASS Seven elemental Rs damage without self charging, including delayed sweeps and rings
+PASS Harmony requires actual hits from three distinct elements; misses and repeats do not fill it
+PASS Full stack provides environment reactions and successful interactions invoke relic hooks
+PASS New gameplay and UI source parses as UTF-8 without replacement characters
+43/43 ascension checks passed
+PASS Infinite streaming is deterministic across positive and negative coordinates and bounded after long travel
+PASS The old map edge can be crossed, and invalid coordinates still collide
+PASS Defeats, partial damage, chests and environmental state survive chunk eviction and revisit
+PASS Save/restore preserves distant negative position and changed chunks without serializing generated chunks
+PASS A v0.4 save retains original hero, HP, gold and original quest and receives infinite terrain
+PASS Elemental targeting and saved clones retain their distant coordinates instead of clamping to the old map
+PASS New F interactions activate Chu Dong Tu and Jack relic hooks when the full skill module is loaded
+PASS Core environmental objects can be used once and persist; elemental barrel explosion cannot recur
+PASS All six chapters enforce three echoes, start distinct bosses, award once and allow postgame exploration
+PASS Saga fight save preserves boss and anchors, discards pending attacks and death resets the encounter
+PASS Post-Coi-Da endless enemies and ring/line boss attacks still deal real damage
+11/11 endless checks passed
+PASS Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells at unit two for heroes and clones
+PASS Cast poses remain finite and complete at anticipation, release and recovery
+PASS Original sprites keep finite cast motion in both facing directions
+PASS Bundled font is applied to inherited canvas text setters
+PASS Full renderer draws terrain, effects, map, enemies and environment beyond negative and positive core edges
+PASS Reduced motion renders the same complete game without dropping action state
+PASS All persistent fields and all six named boss silhouettes draw each frame
+PASS Smith interaction opens the actual shop rather than intercepting it with skills
+PASS Shop offers, paid rerolls and sold slots survive loading without free changes
+PASS Failed purchases and full consumable stocks do not deduct gold
+PASS Mana potions heal real MP once and cannot be used while paused or full
+PASS Talisman lasts sixty active seconds, does not stack and preserves base speed
+PASS Village investments cap, persist and do not multiply HP on repeated restore
+PASS Removed mastery cannot consume points or reappear as learnable skills
+PASS Tier3 specializations are mutually exclusive and saved
+PASS Linh specialization emits a ten-target arrow or a real impact explosion
+PASS E and R specializations change lifetime, cooldown and actual recovery
+PASS Dash cannot cancel an ultimate intro or duplicate its release
+PASS Dashing during windup keeps a single release and cancels subsequent recovery
+PASS Legacy Kiet Q selects Quan Le armor and dash retains its iframe window
+PASS An can detonate lamps once, pull normal foes and retain E cost/cooldown
+PASS Harmony cannot be spammed and clone power cannot proc it
+PASS Seeded elites are stable after stream eviction and occur around5percent
+PASS Elite ice shots slow only on a damaging hit; invulnerability prevents slow
+PASS Fog makes enemies tougher and awards exactly double kill XP
+PASS Altar advances three waves, saves active enemies and rewards only once
+PASS Altar timeout or leaving clears summons and never awards progress
+PASS Old progress migrates; removed mastery stays absent and additions stay bounded
+PASS Village meta progression starts new journeys with its buffs and extra supplies
+22/22 journey tests passed
+PASS Blender flipbook contains the seven declared rows and eight transparent PNG frames
+PASS Walk, windup, release, recovery and dash vertices remain finite across five heroes and seven forms
+PASS Elemental gait profiles distinguish heavy earth from flowing wind and light
+PASS Hero rendering retains each atlas and restores Canvas methods, alpha and stack
+PASS HoaVi ships all 208 nonclipped RGBA frames with fixed foot anchor and synchronized metadata
+PASS HoaVi selects every action and cardinal view without applying the sprite warp
+PASS HoaVi gates missing atlas, retains bounded dash ghosts and restores Canvas on paint failure
+PASS Q echo damage and phantom share the .35-second queue event, stored origin and clipped endpoint
+PASS Detail levels bound triangle work and reduced motion uses a single undeformed sprite
+PASS Visual hooks preserve actual hit damage and charge resources
+PASS Restored v0.6 journeys retain the new visual hooks without serializing transient actions
+PASS All split counts preserve their original mana costs and animate real ally casts
+PASS Transform effects only mark a successful changed form
+PASS Extra impacts are bounded and travel cancellation clears visual history
+PASS Full renderer draws new hero skills, seven elements and clone effects in each detail mode
+PASS Rewinding or teleporting a surviving ally clears stale synthetic poses
+PASS A failed paint call does not leave the Canvas drawImage interception installed
+PASS Pausing freezes motion progress and does not advance a committed skill
+PASS Four cinematic R casts wait 4.5 seconds and release once; elemental R has its own timing
+PASS Saving an intro preserves elapsed time and aim, validates malformed data and avoids duplicate release
+PASS Intro movement is 35 percent, control immune, and nearby enemy movement and attacks run at 25 percent
+PASS R cooldown supports ranks and relics; all summon states have ordered nonlooping spawn and attack
+PASS Six distinct intro scenes and seven crests render with finite coordinates and balanced Canvas state
+23/23 choreography checks passed
+PASS Fire keeps intact, burning, charred and ash stages with exact timers and persistent scorch
+PASS Fire spreads after .9 seconds within 85 pixels without refreshing existing fire
+PASS Ice melts to steam and frozen props shatter into eight shards with enemy area damage
+PASS Frozen props thaw at five seconds and fire is quenched by ice
+PASS Wind slices a trunk before collapse; ash footsteps create bounded two-pixel dust and scatter
+PASS Physical hits crack stone first, then keep rubble in the prop array
+PASS Each projectile hits each prop once and foliage rustles when an actor crosses it
+PASS Scorch, seismic, lightning and frost traces expire and obey a hard memory cap
+PASS Core props survive save/load with burn progress; old saves remain compatible
+PASS Stream eviction and reload retain ash and collision-free remains
+PASS Core barrels retain burning and ash across saves
+PASS Pause freezes environmental timers; malformed saved states cannot inject fields or non-finite decals
+PASS Six saga guardians have unique types and complete 96-texel action sets
+PASS Atlas metadata contains nine biomes, every destructible stage and true monster flipbooks
+PASS All new props, actors, NPCs and three heroes draw complete frames at unit two
+PASS A failed atlas paint restores the Canvas stack
+PASS Full renderer remains finite across five heroes, destruction effects and reduced motion
+17/17 world pixel checks passed
+PASS Canonical Quân Lê keeps old saves and exposes exactly 22 distinct species
+PASS Q grants instant bounded shield, 35% damage reduction, counter and healing tendrils
+PASS Q speed boosts only active duration and pause freezes armor
+PASS Enemy death and six destroyed tree types create one 20 second soul each
+PASS E chooses nearest corpse, consumes it, and tree souls yield wood variants
+PASS E seeded random reaches every species and refreshes oldest unit at six
+PASS R consumes all nearby souls, creates 14 diverse autonomous bodies and lasts 24 seconds
+PASS Idle legion independently patrols without returning to owner
+PASS All species attack; venom, webs, fear, drain and terrain have real effects
+PASS Army saves validate IDs, finite values, caps and preserve old alias
+PASS Four melee forms never create gun bullets and third hits retain special control
+PASS Light Q teleports immediately behind target within 520, crits and never beams
+PASS Golem chooses all four attacks and throws elites with landing damage and craters
+PASS Mandatory atlas contract contains 24 colors, one left earring, 22 animals, seven weapons and seven people
+14/14 remaster checks passed
+PASS All heroes keep diagonal motion, horizontal body priority and independent aim
+PASS Freeze hard stops regular and saga boss AI until two seconds; root blocks shade teleport
+PASS NPC roles hunt, kite, spread targets and escape exact danger center
+PASS Every NPC releases independent attack Q E R at 62% power without spending player resources
+PASS Summon durations, expiry and owner epoch cancellation
+PASS Save restores signed movement and cooldowns; pending actions never survive reload
+PASS Light backstab guarantees one critical and restores crit even if damage throws
+7 NPC scenario checks passed
+PASS Canonical Quân Lê keeps old saves and exposes exactly 22 distinct species
+PASS Q grants instant bounded shield, 35% damage reduction, counter and healing tendrils
+PASS Q speed boosts only active duration and pause freezes armor
+PASS Enemy death and six destroyed tree types create one 20 second soul each
+PASS E chooses nearest corpse, consumes it, and tree souls yield wood variants
+PASS E seeded random reaches every species and refreshes oldest unit at six
+PASS R consumes all nearby souls, creates 14 diverse autonomous bodies and lasts 24 seconds
+PASS Idle legion independently patrols without returning to owner
+PASS All species attack; venom, webs, fear, drain and terrain have real effects
+PASS Army saves validate IDs, finite values, caps and preserve old alias
+PASS Four melee forms never create gun bullets and third hits retain special control
+PASS Light Q teleports immediately behind target within 520, crits and never beams
+PASS Golem chooses all four attacks and throws elites with landing damage and craters
+PASS Mandatory atlas contract contains 24 colors, one left earring, 22 animals, seven weapons and seven people
+14/14 remaster checks passed
+PASS Seven elemental R casts release once at 0.28 seconds without intro, split or synchronized allies
+PASS Solar R reaches across screen and ice R freezes for 2.5 seconds
+PASS X uses exactly 4.2 seconds then 18 seconds, pause and recall retain cooldown
+PASS Pending split and R survive reload once; cancellation never releases them
+PASS Legacy R migrates once; split restore rejects conflicting pending R
+PASS Allies hunt from their own location, spread targets and patrol signed coordinates without teleport
+PASS Quân Lê primary has exact muzzle, speed, radius and 1/1/3 aim combo
+PASS HoaVi ranks use 6/8/10/12 eyes for 18/20.5/23/25.5 seconds with shared orbits and distributed lasers
+PASS Full runtime has 32 relics, 20 sealed pedestals, 25 NPCs and four dormant boss altars
+PASS Burst levels award exactly 2 stat / 1 skill points; no talent or mastery API remains
+PASS Save repeated 20 times preserves every derived stat, training, allocations and currency
+PASS Migration refunds spent mastery points and validates malformed RPG input
+PASS Normal, skill and summon damage use separate coefficients; boss and armor penetration apply
+PASS AS, movement, dash cooldown, crit, projectile speed, range, regen and CDR are consumed
+PASS Omnivamp, kill healing, defense flat block, thorns, tenacity and gold find affect gameplay
+PASS Stat reset charges exactly 80 at village and clamps HP/MP without inflation
+PASS Boss relic follows parabola, lands, persists and requires F; paused/dead cannot claim
+PASS All twelve named Boss sources produce exactly their own unowned drop
+PASS Ordered lamps require four real inputs; elemental proximity cannot unlock; pickup persists
+PASS Kim Quy, Cuoi, Thach San, Thuy Tinh, Wukong and Phoenix use requested timers and effects
+PASS An Tiem drops consumable every six kills; Aladdin spends 80, returns 30; cooling is 22%
+PASS Split adds one 85% projectile, Pierce adds three and grows after hits
+PASS Giong triggers fourth attack, Mjolnir fifth, Aegis break stuns, fate thread lasts four seconds
+PASS DOM buffs real shadow units, elemental clones and summons without scaling twice
+PASS Summon HP and lifetime survive ten saves and live DOM changes without inflation
+PASS Phoenix aura ticks damage and charmed contact enemies cannot attack
+PASS Golems and treants survive repeated JSON saves with exact HP, duration and DOM
+PASS Third-hit relic snapshots attack number while bullets are in flight
+PASS Cuoi ignores a shielded hit and prevents actual lethal damage after armor
+PASS Truth layer four requires final saga, gate waits for returning village memories
+PASS Five hero stories complete through actual NPC / memory / melody / battle interactions
+PASS Three seeds preserve forest, 950px spacing, 900px village exclusion and reachable trials including frontier
+PASS Trial attacks respect beam range, blocking terrain and command projectile kind across heroes
+PASS Lamps and compass bells reset wrong order; one area hit cannot enter four ordered inputs
+PASS Crystals and regenerating stone pillars take damage and regrow on their 12/10s deadlines
+PASS All five heroes break ritual crystals with their real primary attack
+PASS Electrical ritual accepts F or lightning/code hits; wrong element and expired charges fail
+PASS Phoenix needs four lights AND four defeated nest guards; leaving resets incomplete ritual
+PASS Three mirror rotations form complete beam only when every orientation matches
+PASS Memory drums play four colors at 0.6s; wrong color replays; player may take time to repeat
+PASS Blood altar charges current HP, enforces circle, requires two waves and full 15s survival
+PASS Dodge trial counts real hostile bullet contacts, resets after third hit, and stops with pause
+PASS Roots count four distinct enemy deaths inside 165px only; outside kills replenish forest enemies
+PASS Discovery requires 260px or DOM 650px; valid progress and active boss HP survive reload; timed trials restart
+PASS All 25 NPCs draw valid cells at startup, negative timestamps and reduced motion
+PASS Six heroes, exact base stats, signature, skill names and costs
+PASS Every third shot adds a piercing 135% slash, two marks and one coin per attack
+PASS Five marks burst, recover MP, grant shield, stun mobs and weaken bosses
+PASS Passive caps preserve external shields; spread terminates across dense packs
+PASS SPI applies once per passive shield gain inside nested recovery and respects cap
+PASS Burst inside normal bullet context still uses INT, true bonus bypasses armor
+PASS Q consumes six coins, fans three talismans, detonates early and reduces E cooldown
+PASS Q focus and burst specializations preserve marks, range and burning field
+PASS E empowerment places two stakes; third stake replaces oldest; free recast pulls and wards
+PASS DOM/AURA scale stakes and wards; lasting heals; hostile bullets slow once
+PASS R intro lasts 4.5 seconds, blocks damage, restores mid-intro and releases once
+PASS Heaven field prioritizes marked enemies, buffs all damage and might adds ten strikes
+PASS Save preserves coins, marked enemies, pending Q, ward and E recast; malformed data is bounded
+PASS All seven quest steps require correct events; completion reward survives save without duplication
+PASS Five existing heroes restore old saves without Quynh state
+PASS All 12 stats and 32 relics remain usable for Quynh Kun

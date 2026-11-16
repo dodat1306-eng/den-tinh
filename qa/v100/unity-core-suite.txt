@@ -1,0 +1,316 @@
+PASS Shared catalog has five base heroes, fourteen weapons and 32 relics
+PASS All heroes can shoot and damage an enemy
+PASS Magazine, reload and weapon switch preserve separate ammunition
+PASS HoaVi Mã Lệnh charges from hits and Debug consumes stacks
+PASS Firewall absorbs hits and destroys hostile projectiles
+PASS Overclock is bounded and drones do not recharge their own ultimate
+PASS All four ultimates including following storms never recharge themselves
+PASS Dash immunity and cooldown prevent repeated dodging
+PASS Movement collision and boundaries remain solid
+PASS Relics alter projectile count and dash damage
+PASS Three seals require three distinct challenges
+PASS Defense failure is retryable without corrupting shrine progress
+PASS Boss shield needs destructible roots, then third phase adds hazards
+PASS Save snapshot restores weapons, relics, health and activated seals
+PASS Save retains allocated point rewards and a chest opened before the tutorial step
+PASS Respawn keeps progression, resets failed challenges and charges 10 percent
+PASS New seeds vary world and New Game Plus scales enemies
+17/17 checks passed
+PASS hero=quynhkun seals=3 victory=true deaths=0 level=4 combatSeconds=70 kills=64
+PASS hero=an seals=3 victory=true deaths=0 level=4 combatSeconds=121 kills=84
+PASS hero=linh seals=3 victory=true deaths=0 level=4 combatSeconds=106 kills=75
+PASS hero=quanle seals=3 victory=true deaths=0 level=4 combatSeconds=65 kills=115
+PASS hero=hoavi seals=3 victory=true deaths=0 level=4 combatSeconds=57 kills=64
+4/4 C# combat campaigns passed. Combat only: relocation between arenas excludes travel time; normal attacks, skills, healing and respawn only.
+PASS Original catalog preserved; Thiên Vũ and seven elements exported
+PASS Diagonal movement keeps both axes; horizontal body and aim independent
+PASS Idle retains last body direction
+PASS Reversal responds within one tick
+PASS Freeze blocks movement and attacks for full two seconds
+PASS Freeze releases after two seconds
+PASS Root blocks walking and shade teleport for 2.5 seconds
+PASS Root releases movement
+PASS Boss freeze has same two second hard stop
+PASS lightning q performs combat behavior
+PASS lightning e performs combat behavior
+PASS lightning r performs combat behavior
+PASS wind q performs combat behavior
+PASS wind e performs combat behavior
+PASS wind r performs combat behavior
+PASS earth q performs combat behavior
+PASS earth e performs combat behavior
+PASS earth r performs combat behavior
+PASS fire q performs combat behavior
+PASS fire e performs combat behavior
+PASS fire r performs combat behavior
+PASS ice q performs combat behavior
+PASS ice e performs combat behavior
+PASS ice r performs combat behavior
+PASS nature q performs combat behavior
+PASS nature e performs combat behavior
+PASS nature r performs combat behavior
+PASS light q performs combat behavior
+PASS light e performs combat behavior
+PASS light r performs combat behavior
+PASS Golem 18s and treants 30s lifetimes
+PASS Golem expires before treants
+PASS Treants expire at 30s
+PASS Split waits for intro
+PASS Seven forms include player and six independent NPCs
+PASS NPCs spread targets
+PASS NPC escapes exact danger center without zero vector
+PASS NPC Q E R do not consume player mana or alter ultimate cooldown
+PASS Save keeps NPC cooldowns, drops pending casts
+PASS Teleport cancels delayed owned strikes
+PASS Respawn clears combat entities
+PASS Light backstab guarantees one critical and restores crit 0
+PASS Light backstab guarantees one critical and restores crit 1
+PASS Shrine travel clears owned combat entities
+44 elemental checks passed
+PASS fire enters 2.5-second burning
+PASS fire leaves glowing scorch
+PASS no early fire spread
+PASS fire spreads after .9 seconds within 85 pixels
+PASS charred trunk remains solid
+PASS ash persists without collision
+PASS ash footsteps create dust and scatter
+PASS ice freezes prop for five seconds
+PASS fire melts frost into steam
+PASS frozen shatter damages nearby enemy
+PASS wind slices trunk before collapse
+PASS sliced trunk falls into remains
+PASS pause freezes decals
+PASS decal memory cap
+PASS scorch expires after 90 seconds
+PASS save restores core prop state
+PASS save restores ground traces
+PASS reject non-finite damage
+18/18 world destruction checks passed
+PASS Old alias selects canonical Quân Lê and shadow weapon
+PASS Q armor and shield apply immediately
+PASS Armor reduces damage 35 percent and counterattacks
+PASS Armor tendrils damage and heal
+PASS Pause freezes shadow timers
+PASS Armor expires
+PASS Enemy leaves exactly one soul
+PASS Six tree families produce one soul each
+PASS E accepts cast
+PASS E consumes nearby tree soul at corpse location
+PASS E cap six refreshes and empowers oldest body
+PASS Legion waits for intro
+PASS R consumes souls and creates bounded 24 second legion
+PASS Legion fights autonomously without cooldown feedback
+PASS Legion expires
+PASS Idle legion independently patrols
+PASS shadow_wolf waits for anticipation
+PASS shadow_wolf attacks
+PASS shadow_bear waits for anticipation
+PASS shadow_bear attacks
+PASS shadow_eagle waits for anticipation
+PASS shadow_eagle attacks
+PASS shadow_tiger waits for anticipation
+PASS shadow_tiger attacks
+PASS shadow_panther waits for anticipation
+PASS shadow_panther attacks
+PASS shadow_lion waits for anticipation
+PASS shadow_lion attacks
+PASS shadow_gorilla waits for anticipation
+PASS shadow_gorilla attacks
+PASS shadow_rhino waits for anticipation
+PASS shadow_rhino attacks
+PASS shadow_elephant waits for anticipation
+PASS shadow_elephant attacks
+PASS shadow_stag waits for anticipation
+PASS shadow_stag attacks
+PASS shadow_boar waits for anticipation
+PASS shadow_boar attacks
+PASS shadow_cobra waits for anticipation
+PASS shadow_cobra attacks
+PASS Cobra poison corrodes armor
+PASS shadow_scorpion waits for anticipation
+PASS shadow_scorpion attacks
+PASS shadow_spider waits for anticipation
+PASS shadow_spider attacks
+PASS Spider web roots cluster
+PASS shadow_croc waits for anticipation
+PASS shadow_croc attacks
+PASS shadow_shark waits for anticipation
+PASS shadow_shark attacks
+PASS shadow_bat waits for anticipation
+PASS shadow_bat attacks
+PASS Bat siphon heals owner
+PASS shadow_falcon waits for anticipation
+PASS shadow_falcon attacks
+PASS shadow_mantis waits for anticipation
+PASS shadow_mantis attacks
+PASS shadow_crab waits for anticipation
+PASS shadow_crab attacks
+PASS shadow_treant waits for anticipation
+PASS shadow_treant attacks
+PASS shadow_dragon waits for anticipation
+PASS shadow_dragon attacks
+PASS Save restores alias, armor and valid army only
+PASS Respawn clears shadow state
+PASS lightning melee creates no gun bullets
+PASS earth melee creates no gun bullets
+PASS ice melee creates no gun bullets
+PASS nature melee creates no gun bullets
+PASS Light Q instantly backstabs within 520 pixels
+PASS Light teleport has no solar beam
+PASS Golem AI selects punch
+PASS Golem punch breaks ground
+PASS Golem AI selects smash
+PASS Golem smash breaks ground
+PASS Golem AI selects stomp
+PASS Golem stomp breaks ground
+PASS Golem AI selects throw
+PASS Golem grabs elite enemy
+PASS Throw lands, releases enemy and damages boss
+PASS Golem throw breaks ground
+81 remaster checks passed
+PASS an R ready without rage
+PASS an intro blocks other attacks
+PASS an intro immunity
+PASS an no release before 4.5s
+PASS an pause freezes intro and cooldown
+PASS an release at 4.5s
+PASS an cooldown prevents second release
+PASS linh R ready without rage
+PASS linh intro blocks other attacks
+PASS linh intro immunity
+PASS linh no release before 4.5s
+PASS linh pause freezes intro and cooldown
+PASS linh release at 4.5s
+PASS linh cooldown prevents second release
+PASS quanle R ready without rage
+PASS quanle intro blocks other attacks
+PASS quanle intro immunity
+PASS quanle no release before 4.5s
+PASS quanle pause freezes intro and cooldown
+PASS quanle release at 4.5s
+PASS Legion appears at release
+PASS quanle cooldown prevents second release
+PASS hoavi R ready without rage
+PASS hoavi intro blocks other attacks
+PASS hoavi intro immunity
+PASS hoavi no release before 4.5s
+PASS hoavi pause freezes intro and cooldown
+PASS hoavi release at 4.5s
+PASS Overclock starts at release
+PASS hoavi cooldown prevents second release
+PASS quynhkun R ready without rage
+PASS quynhkun intro blocks other attacks
+PASS quynhkun intro immunity
+PASS quynhkun no release before 4.5s
+PASS quynhkun pause freezes intro and cooldown
+PASS quynhkun release at 4.5s
+PASS quynhkun cooldown prevents second release
+PASS X starts 3-body intro
+PASS X does not release before 4.2s
+PASS Pause freezes split intro
+PASS X releases selected bodies for 18s
+PASS X recalls without resetting cooldown
+PASS X starts 5-body intro
+PASS X does not release before 4.2s
+PASS Pause freezes split intro
+PASS X releases selected bodies for 18s
+PASS X recalls without resetting cooldown
+PASS X starts 7-body intro
+PASS X does not release before 4.2s
+PASS Pause freezes split intro
+PASS X releases selected bodies for 18s
+PASS X recalls without resetting cooldown
+PASS lightning R windup is 0.28s
+PASS lightning R does not release early or split
+PASS lightning R releases alone
+PASS wind R windup is 0.28s
+PASS wind R does not release early or split
+PASS wind R releases alone
+PASS earth R windup is 0.28s
+PASS earth R does not release early or split
+PASS earth R releases alone
+PASS fire R windup is 0.28s
+PASS fire R does not release early or split
+PASS fire R releases alone
+PASS ice R windup is 0.28s
+PASS ice R does not release early or split
+PASS ice R releases alone
+PASS nature R windup is 0.28s
+PASS nature R does not release early or split
+PASS nature R releases alone
+PASS light R windup is 0.28s
+PASS light R does not release early or split
+PASS light R releases alone
+PASS Solar R crosses screen beyond 800 pixels
+PASS Ice R immediately freezes for 2.5 seconds
+PASS Legacy elemental R validates target before migration
+PASS Restored split releases exactly once
+PASS Overclock count and lifetime rank 0
+PASS Overclock count and lifetime rank 1
+PASS Overclock count and lifetime rank 2
+PASS Overclock count and lifetime rank 3
+PASS Save preserves intro and target
+PASS Restored intro does not release early
+PASS Restored intro releases once
+PASS No duplicated restored army
+PASS Intro movement is 35 percent
+PASS 520px aura slows nearby movement and attacks by 75 percent
+PASS Rank and relic reduce R cooldown
+PASS Malformed ultimate save is bounded
+89 ultimate checks passed
+PASS Shared RPG content has 32 relics, 20 pedestals, 25 portraits and six quests
+PASS XP awards two stat points and one skill point without pending choices
+PASS All twelve stats allocate, respec costs 80 and restore cannot inflate derived values
+PASS Normal attacks use STR, skills use INT and summons use DOM
+PASS Boss relic flies, lands, requires F and persists as unclaimed world item
+PASS Guarded and elemental pedestals cannot be looted before unlock
+PASS VIT regeneration, SPI recovery and living summon DOM ratios stay stable
+PASS Cuoi rescues lethal damage and clears negative statuses
+PASS Each hero completes personal quest through actual F, melody, forms and duel
+PASS Six saga chapters require three waves and boss; truth four unlocks only at end
+PASS Malformed RPG collections recover without exceptions or NaN
+11/11 RPG checks passed
+PASS Exact base stats and signature
+PASS Normal attack 0
+PASS Normal attack 1
+PASS Normal attack 2
+PASS Third attack adds piercing two-mark slash
+PASS Four marks do not explode
+PASS Five marks explode, stun and recover MP/shield/coin
+PASS Boss is weakened and slowed instead of stun
+PASS Dense chain terminates; passive shield cap preserves external shields
+PASS SPI applies once inside frame recovery and preserves passive cap
+PASS Empowered Q consumes six coins and reduces E cooldown
+PASS Pending empowered Q survives save and fires three talismans
+PASS Empowered Q can detonate three marks early
+PASS E costs 30 MP
+PASS Empowered E places two separate stakes
+PASS E recast is free, preserves cooldown, removes stakes and grants ward
+PASS Ward automatically shoots summon talismans
+PASS Rank three unlocks E specialization
+PASS DOM, AURA and lasting scale stake duration/radius
+PASS R starts with 19-second cooldown
+PASS R intro grants immunity and blocks attacks
+PASS Saved R does not release early
+PASS Saved R releases exactly once at 4.5 seconds
+PASS Malformed Quynh save is bounded
+PASS Stat str
+PASS Stat agi
+PASS Stat vit
+PASS Stat int
+PASS Stat spi
+PASS Stat dex
+PASS Stat fer
+PASS Stat def
+PASS Stat vamp
+PASS Stat dom
+PASS Stat aura
+PASS Stat lck
+PASS All 32 relics remain usable
+PASS Seven-step quest ends with temple keeper
+PASS Legacy save an
+PASS Legacy save linh
+PASS Legacy save quanle
+PASS Legacy save hoavi
+PASS Legacy save thienvu
+43 Quynh Kun checks passed

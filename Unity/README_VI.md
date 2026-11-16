@@ -1,4 +1,6 @@
-# Đèn Tinh 0.9.1 — Unity Windows
+# Đèn Tinh 1.0.0 — Unity Windows
+
+Quỳnh Kun là nhân vật thứ sáu, dùng atlas mesh Blender chung với web. Đủ dấu Chu Sa kích Phù Bạo; Q cường hóa ba đạo bùa; E cường hóa hai cọc và E lần hai Thu Phù; R có intro 4,5 giây và lưu giữa nghi thức. K mở ba cặp chuyên hóa khi chiêu đạt bậc 3. Chuỗi nhiệm vụ bảy bước kết thúc tại Ông Từ Đạo. Kiểm thử riêng: `Tests/QuynhKunTests.cs`.
 
 Runtime C# dùng camera trực giao và SpriteRenderer. Lõi mô phỏng tại `Assets/Scripts/Core`; catalog chung xuất bằng `node tools/export-unity-content.cjs`.
 

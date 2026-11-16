@@ -23,7 +23,7 @@
     saveVillageProfile(){try{root.localStorage?.setItem('den-tinh-village-v06',JSON.stringify(this.village))}catch{}}
     chooseSpecialization(key,id){if(this.skillRanks[key]!==3||this.specializations[key]||!specs[key]?.some(s=>s.id===id))return false;this.specializations[key]=id;this.emit('sound',{name:'level'});return true}
     passiveNodeText(){return this.hero.id==='thienvu'?'Mỗi bậc: Hòa Âm hồi thêm 3 linh lực và 3 khiên; nghỉ 6 giây giữa hai lần kích hoạt. Phản ứng tăng 12% sát thương.':super.passiveNodeText()}
-    canRecastE(){const a=this.player.action;return this.hero.id==='an'&&this.time<this.anRecastUntil&&this.mythicFields.some(f=>f.kind==='lantern'&&f.life>0)&&(!a||a.elapsed>=a.release+.1)||this.hero.id==='hoavi'&&!!this.checkpoint&&(!a||a.elapsed>=a.duration)}
+    canRecastE(){if(this.hero.id==='quynhkun')return root.DTQuynhKun.canRecast(this);const a=this.player.action;return this.hero.id==='an'&&this.time<this.anRecastUntil&&this.mythicFields.some(f=>f.kind==='lantern'&&f.life>0)&&(!a||a.elapsed>=a.release+.1)||this.hero.id==='hoavi'&&!!this.checkpoint&&(!a||a.elapsed>=a.duration)}
     shopOffers(){if(!this.shopState.offers?.length){const pool=C.relics.filter(r=>!r.mythic||!this.player.relics[r.id]),start=((this.world.seed>>>0)+this.shopState.roll*17)%pool.length;this.shopState.offers=[0,1,2].map(i=>pool[(start+i*7)%pool.length]?.id).filter((id,i,a)=>id&&a.indexOf(id)===i)}return this.shopState.offers.map(id=>C.relic(id))}
     rerollPrice(){return Math.min(180,30+this.shopState.roll*15)}
     buy(item){
@@ -55,6 +55,7 @@
     registerHarmony(id){if(this.harmonyCooldown>0)return;const s=this.passiveState,p=this.player;if(!s.forms.includes(id))s.forms.push(id);s.formTime=12;if(s.forms.length>=3){s.forms=[];this.harmonyCooldown=6;p.mp=Math.min(p.maxMp,p.mp+12+this.skillRanks.passive*3);p.shield=Math.max(p.shield,Math.min(60,p.shield+10+3*this.skillRanks.passive));this.emit('toast',{text:'Hòa Âm Tam Linh · hồi linh lực và khiên, nghỉ 6 giây',reward:true})}}
     skill(key){
       const p=this.player;if(this.paused||this.dead||p.ultIntro||p.dashTime>0)return false;
+      if(this.hero.id==='quynhkun'&&key==='e'&&root.DTQuynhKun.canRecast(this))return root.DTQuynhKun.recast(this);
       if(this.hero.id==='an'&&key==='e'&&this.time<this.anRecastUntil&&this.mythicFields.some(f=>f.kind==='lantern'&&f.life>0)&&(!p.action||p.action.elapsed>=p.action.release+.1)){
         const lamps=this.mythicFields.filter(f=>f.kind==='lantern'&&f.life>0);this.mythicFields=this.mythicFields.filter(f=>!lamps.includes(f));this.anRecastUntil=0;
         const center={x:lamps.reduce((v,f)=>v+f.x,0)/lamps.length,y:lamps.reduce((v,f)=>v+f.y,0)/lamps.length};for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,center)<330){const d=dist(e,center),step=Math.min(80,d*.35);if(d>1)this.moveEntity(e,(center.x-e.x)/d*step,(center.y-e.y)/d*step)}
@@ -63,12 +64,12 @@
       const ok=super.skill(key);if(ok){if(this.charmTime>0&&key!=='r')p.cd[key]*=.9;if(key==='e'&&this.specializations.e==='agile'){p.cd.e*=.75;this.agileTime=2}if(this.hero.id==='kiet'&&key==='q')p.invulnerable=Math.max(p.invulnerable,.28)}return ok;
     }
     releaseCast(c){
-      const p=this.player,spec=this.specializations[c.key],fields=this.mythicFields.length;let copy={...c};
+      const p=this.player,spec=this.specializations[c.key],fields=new Set(this.mythicFields.map(f=>f.id));let copy={...c};
       if(c.key==='q'&&spec==='focus'||c.key==='r'&&spec==='might')copy.power*=1.25;
       if(c.key==='q'&&spec==='burst'||c.key==='r'&&spec==='renewal')copy.power*=.85;
       if(this.hero.id==='linh'&&c.key==='q'&&spec){this.shoot(p.x,p.y,c.angle,1050,p.damage*copy.power*(spec==='focus'?4.5:2.8),'#c7f5b1',{kind:'arrow',pierce:spec==='focus'?9:0,life:1,charge:true,sourceSkill:'q',specialBurst:spec==='burst'});this.effect('mythic-spear',p.x,p.y,'#c7f5b1',700,.4,{angle:c.angle})}else super.releaseCast(copy);
-      if(c.key==='q'&&spec==='burst'&&this.hero.id!=='linh'){this.areaDamage(c.target.x,c.target.y,105,p.damage*1.5,50,true);this.effect('shock',c.target.x,c.target.y,this.hero.color,105,.5)}
-      if(c.key==='e'&&spec==='lasting'){for(const f of this.mythicFields.slice(fields))f.life*=1.4;p.shield=Math.min(110,p.shield+15)}
+      if(c.key==='q'&&spec==='burst'&&!['linh','quynhkun'].includes(this.hero.id)){this.areaDamage(c.target.x,c.target.y,105,p.damage*1.5,50,true);this.effect('shock',c.target.x,c.target.y,this.hero.color,105,.5)}
+      if(c.key==='e'&&spec==='lasting'){for(const f of this.mythicFields.filter(f=>!fields.has(f.id)))f.life*=1.4;p.shield=Math.min(110,p.shield+15)}
       if(c.key==='r'&&spec==='renewal'){p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.18);p.mp=Math.min(p.maxMp,p.mp+20)}
       if(this.hero.id==='an'&&c.key==='e')this.anRecastUntil=this.time+3;
       if(this.hero.id==='kiet'&&c.key==='q')for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,p)<120)e.rooted=Math.max(e.rooted||0,.25);

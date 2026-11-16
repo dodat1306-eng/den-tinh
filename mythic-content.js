@@ -25,6 +25,7 @@
   ].map((a,i)=>({id:a[0],name:a[1],origin:a[2],lore:a[3],desc:a[4],icon:String(i+1).padStart(2,'0'),motif:a[5],mythic:true,rarity:i===8?'legendary':'epic'}));
   C.relics.push(...relics);
   const passives={
+    quynhkun:{name:'Ngũ Lôi Chu Sa Ấn & Đồng Xu Phát',desc:'Đánh thường và kỹ năng khắc Chu Sa trong 6 giây; đủ 5 nét nổ vùng 110 bước và khống chế. Đòn thứ ba hoặc Phù Bạo hồi 5 linh lực, cấp 8 khiên nội tại (tối đa 65) và một Lộc Khí. Đủ 6 tầng: Q hoặc E được Thỉnh Thần, giảm 1,5 giây hồi chiêu còn lại. E Thỉnh Thần đặt đồng thời hai cọc Bát Quái.'},
     an:{name:'Đèn Nuôi Hồn',desc:'Đánh thường lên địch đang cháy tích một Tàn Lửa, tối đa sáu. Đủ sáu, Q kế tiếp tiêu thụ toàn bộ, nổ lan các mục tiêu bị đốt và kéo dài các đèn đã đặt. E đặt tối đa ba đèn, nối nhau bằng dây lửa gây sát thương; ở gần đèn hồi máu nhẹ. R giải phóng tất cả đèn thành phượng hỏa dọc đường ngắm. Tàn Lửa mất dần sau sáu giây không đánh trúng.'},
     linh:{name:'Tám Nhịp Trúc',desc:'Chạy đủ 36 bước tích một Nhịp Trúc, tối đa tám; đi càng xa cung càng mạnh. Ở tám nhịp, đòn thường kế tiếp xuyên thêm bốn mục tiêu, ghim chân và đánh dấu địch. Q ưu tiên phá dấu để bắn nối tới địch khác. E lùi người đặt bẫy, R săn các mục tiêu được đánh dấu bằng những mũi tên lần lượt từ trên cao. Bị trúng đòn mất hai nhịp.'},
     quanle:{name:'Chúa Tể Bóng Tối',desc:'Xác quái và cây gãy giữ linh hồn 20 giây. E hồi sinh bóng thú; Q tạo giáp, hút máu và phản đòn; R triệu tập binh đoàn tự tìm địch.'},
@@ -33,6 +34,7 @@
   };
   Object.assign(C.passives,passives);
   const signature={
+    quynhkun:{id:'cinnabar-brush',name:'Chu Sa Phù Bút',kind:'talisman',color:'#ffd166',desc:'Bút chu sa và xấp bùa hoàng kim; khắc đủ năm nét bùa sẽ kích nổ tà khí.'},
     an:{id:'lantern',name:'Tâm Đăng · Đèn Nuôi Hồn',kind:'staff',color:'#ffc777',desc:'Ngọn đèn riêng của An; dẫn lửa và nối đèn trấn.'},
     linh:{id:'bamboo',name:'Cung Trúc Hồi Âm',kind:'bow',color:'#b5f1a1',desc:'Cung riêng của Linh; tích nhịp theo quãng đường chạy.'},
     quanle:{id:'shadow-crescent',name:'Hắc Ảnh Đoản Kiếm',kind:'shadow',color:'#b86bff',desc:'Vung lưỡi trăng khuyết bóng tối xuyên địch, mang cánh hoa hồng đen.'},
@@ -40,6 +42,7 @@
     thienvu:{id:'prism',name:'Thất Linh Tâm Ấn',kind:'elemental',color:'#b4b2ff',desc:'Ấn riêng của Thiên Vũ; biến hình, phản ứng và phân thân.'}
   };
   const kits={
+    quynhkun:{q:{name:'Họa Phù · Thiên Cương Trảm',desc:'Đại Phù xuyên đường 680 bước, gây 340% sát thương và khắc 2 nét. Thỉnh Thần phóng ba đạo bùa, kích nổ sớm từ 3 nét. Tập Trung tăng tầm lên 780, khắc 3 nét; Bộc Phát để thảm bùa cháy 2,5 giây.',cost:24,cooldown:5},e:{name:'Trấn Trạch Bát Quái Trận',desc:'Đặt tối đa hai cọc Bát Quái, trói chân và giáng sét mỗi 0,75 giây. Nhấn E lần nữa trong 4 giây để thu phù: gom địch, nổ cọc, nhận khiên và vòng bùa tự bắn trong 4,5 giây, tăng 20% tốc chạy.',cost:30,cooldown:9},r:{name:'Cấp Cấp Như Luật Lệnh · Bách Phù Trấn Thiên',desc:'Khai Nhãn Âm Dương 4,5 giây miễn thương, rồi mở Đại Trận 250 bước. Bùa Thiên Lôi giáng mỗi 0,32 giây, địch nhận thêm 20% sát thương; Phù Bạo giáng thêm 35% sát thương chuẩn.',cost:0,cooldown:19}},
     an:{q:{name:'Hỏa Liêm Gọi Hồn',desc:'Quét lửa theo hướng ngắm; sáu Tàn Lửa làm địch đang cháy nổ lan.',cost:22,cooldown:4.5},e:{name:'Tam Đăng Kết Giới',desc:'Đặt đèn tại điểm ngắm (tối đa ba), nối dây lửa và hồi máu gần đèn. Nhấn E lần nữa trong 3 giây để giật nổ đèn, kéo nhẹ địch thường.',cost:30,cooldown:6},r:{name:'Phượng Hỏa Quy Đăng',desc:'Phượng hỏa bay dọc hướng ngắm, các đèn đáp lại bằng đường lửa.',cost:0,cooldown:0}},
     linh:{q:{name:'Xuyên Ảnh Truy Phong',desc:'Giương cung rồi xuyên một đường dài; trúng dấu Trúc sẽ bắn nối.',cost:24,cooldown:5},e:{name:'Thoái Bộ Mộc Phục',desc:'Lộn lùi 120 bước và đặt bẫy trúc; bẫy trói và đánh dấu địch.',cost:28,cooldown:7},r:{name:'Thiên Tiễn Truy Danh',desc:'Tung người, sáu mũi thiên tiễn lần lượt săn địch được đánh dấu.',cost:0,cooldown:0}},
     quanle:{q:{name:'Hắc Ảnh Chiến Giáp',desc:'Hắc Giáp 6,5 giây: giảm 35% sát thương, tăng 25% tốc chạy; bốn gai hút máu mỗi 0,4 giây và phản đòn khi bị đánh.',cost:28,cooldown:9},e:{name:'Hắc Ảnh Triệu Hồi',desc:'Hồi sinh linh hồn gần trong 260 bước hoặc mở cổng gọi ngẫu nhiên một trong 22 bóng thú. Tối đa sáu con trong 22 giây.',cost:32,cooldown:7},r:{name:'Bách Quỷ Dạ Hành',desc:'Thu toàn bộ linh hồn trong 420 bước, gọi 10–14 bóng thú và cường hóa đội quân 24 giây. Linh hồn vượt sức chứa tăng sức mạnh binh đoàn.',cost:0,cooldown:0}},
@@ -48,6 +51,7 @@
   };
   for(const id of Object.keys(kits))if(id!=='thienvu')Object.assign(D.HEROES[id],{q:kits[id].q.name,e:kits[id].e.name,r:kits[id].r.name,desc:passives[id].name+' · '+signature[id].desc});
   const nodeNames={an:['Dẫn Hồn','Đăng Mạch','Phượng Vũ','Nuôi Tàn Lửa'],linh:['Truy Phong','Mộc Phục','Thiên Tiễn','Nhịp Trúc'],quanle:['Hắc Giáp','Arise · Bóng Thú','Bách Quỷ','Linh Hồn Bóng Tối'],hoavi:['Biên Dịch','Checkpoint','Song Tinh','Tối Ưu Mã'],thienvu:['Linh Thuật','Hộ Linh','Thiên Tượng','Hòa Âm']};
+  nodeNames.quynhkun=['Họa Phù','Trấn Trạch','Thiên Mệnh','Chu Sa Tuyệt Bút'];
   C.version='0.5.0';C.kits=kits;C.signatures=signature;C.mythicRelics=relics;
   root.DTMythic={relics,signature,kits,passives,nodeNames};
 })(globalThis);

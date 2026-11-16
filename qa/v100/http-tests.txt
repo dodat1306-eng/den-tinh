@@ -1,0 +1,12 @@
+
+> den-tinh@1.0.0 test:elemental-http
+> node tools/elemental-http-test.cjs
+
+PASS Release health, v0.8 modules and local Vietnamese fonts are served
+PASS HTTP accepts and returns a real seven-body elemental save
+PASS HTTP round trip retains v0.6 purchases, village and active trial
+PASS HTTP accepts the sixth hero and preserves empowered E state
+PASS Invalid saves cannot overwrite the elemental fixture
+PASS An unrelated origin cannot overwrite the fixture
+PASS Host runtime, tools and project configuration remain private
+7/7 elemental HTTP checks passed

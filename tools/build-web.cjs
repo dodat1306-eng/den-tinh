@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const output = path.resolve(root, 'dist');
-const files = [
+const files = ['assets/quynhkun-pixel-v1.png','assets/quynhkun-pixel-v1.json','assets/quynhkun-pixel-v1.js','assets/quynhkun-vfx-pixel.png','assets/quynhkun-vfx-pixel.json','assets/quynhkun-vfx-pixel.js','quynhkun-pixel.js',
   'v09-content.js','v09.js','relic-trials.js','v09-ui.js','v09-visuals.js','assets/relics-pixel-v09.png','assets/npcs-v091.png','assets/npcs-v091.js','assets/npcs-v091.json',
   'shadow.js','quanle-pixel.js','assets/quanle-pixel-v1.png','assets/quanle-pixel-v1.js','assets/quanle-pixel-v1.json','assets/quanle-vfx-pixel.png','assets/quanle-vfx-pixel.js','assets/quanle-vfx-pixel.json',
   'world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v1.png','assets/actors-pixel-v1.js','assets/actors-pixel-v1.json',
@@ -16,7 +16,7 @@ const files = [
   'assets/environment-v03.png',
   'assets/actors-v03.png',
   'elemental.js', 'elemental-visuals.js', 'elemental-ui.js', 'elemental.css', 'assets/thien-vu-v04.png',
-  'choreography.js','assets/spirit-fx-v07.png','assets/hoavi-pixel-v08.png','assets/hoavi-pixel-v08.js','assets/hoavi-pixel-v08.json','assets/hoavi-vfx-pixel.png','assets/hoavi-vfx-pixel.js','assets/hoavi-vfx-pixel.json','hoavi-pixel.js','journey.js', 'journey-ui.js', 'journey-visuals.js', 'journey.css', 'mythic-content.js', 'ascension.js', 'endless.js', 'ascension-visuals.js', 'ascension-ui.js', 'ascension.css', 'fonts.css',
+  'choreography.js','assets/spirit-fx-v07.png','assets/hoavi-pixel-v08.png','assets/hoavi-pixel-v08.js','assets/hoavi-pixel-v08.json','assets/hoavi-vfx-pixel.png','assets/hoavi-vfx-pixel.js','assets/hoavi-vfx-pixel.json','hoavi-pixel.js','journey.js', 'journey-ui.js', 'journey-visuals.js', 'journey.css', 'mythic-content.js', 'quynhkun.js','ascension.js', 'endless.js', 'ascension-visuals.js', 'ascension-ui.js', 'ascension.css', 'fonts.css',
   'assets/fonts/NotoSans-Regular.ttf', 'assets/fonts/NotoSans-Bold.ttf', 'assets/fonts/OFL.txt',
 ];
 

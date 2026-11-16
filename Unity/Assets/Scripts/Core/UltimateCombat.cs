@@ -19,7 +19,7 @@ namespace DenTinh.Core {
             if(pulse>i.pulse){i.pulse=pulse;foreach(EnemyState e in Enemies)if(e.alive&&V2.Distance(e.position,Player.position)<=520/64f)e.position=Move(e.position,(e.position-Player.position).Unit*(12/64f),e.radius);}
             if(i.elapsed+.00001f<i.Duration){SyncUltimate();return;}
             Player.ultIntro=null;Player.action=null;
-            if(i.mode=="split"&&IsElemental){SplitTime=18;Clones.Clear();foreach(string id in elementIds)if(id!=Player.element&&Clones.Count<i.splitCount-1)Clones.Add(NewClone(id,Clones.Count));ElementFx("split_matrix",Player.position,Player.element,.55f);}else if(!IsElemental)ReleaseSkill("r");
+            if(i.mode=="split"&&IsElemental){SplitTime=18;Clones.Clear();foreach(string id in elementIds)if(id!=Player.element&&Clones.Count<i.splitCount-1)Clones.Add(NewClone(id,Clones.Count));ElementFx("split_matrix",Player.position,Player.element,.55f);}else if(IsQuynh)ReleaseQuynh("r",i.target,Mathx.Angle(i.target-Player.position),false);else if(!IsElemental)ReleaseSkill("r");
             SyncUltimate();
         }
         void RestoreUltimate(){

@@ -1,4 +1,6 @@
-# Đèn Tinh: Miền Sương Lạc — 0.9.1
+# Đèn Tinh: Miền Sương Lạc — 1.0.0
+
+**1.0.0** thêm Quỳnh Kun, nhân vật chơi được thứ sáu: Chu Sa, Lộc Khí, Q ba đạo bùa, E cường hóa đặt đồng thời hai cọc Bát Quái và R Bách Phù Trấn Thiên. Có nhiệm vụ bảy bước, atlas mesh Blender 266 frame, HUD Thu Phù trên desktop/cảm ứng và bản Unity đồng bộ. Xem [thay đổi 1.0.0](CHANGELOG-v1.0.0.md) và [kiểm chứng](qa/v100/acceptance.json).
 
 Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
 
@@ -12,7 +14,7 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 76 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v091-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 87 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v100-report.json`.
 
 ## Các thay đổi chính
 

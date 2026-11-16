@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
   const C=root.DTContent,D=root.DTWorld,TAU=Math.PI*2,cache=new Map();
-  const atlas=new Image();atlas.onload=()=>{document.querySelectorAll('#heroCards canvas').forEach((canvas,i)=>{const h=Object.values(D.HEROES)[i];if(h){const c=canvas.getContext('2d');c.clearRect(0,0,canvas.width,canvas.height);root.DTVisualHero(c,h.id==='hoavi'?{x:64,y:116,facing:Math.PI/2}:{x:28,y:67},h,0,.82)}})};atlas.src='assets/heroes.png';
+  const atlas=new Image();atlas.onload=()=>{document.querySelectorAll('#heroCards canvas').forEach((canvas,i)=>{const h=Object.values(D.HEROES).sort((a,b)=>(a.id==='quynhkun')-(b.id==='quynhkun'))[i];if(h){const c=canvas.getContext('2d');c.clearRect(0,0,canvas.width,canvas.height);root.DTVisualHero(c,['hoavi','thienvu','quynhkun'].includes(h.id)?{x:64,y:116,facing:Math.PI/2}:{x:28,y:67},h,0,.82)}})};atlas.src='assets/heroes.png';
   const poly=(c,p,color)=>{c.fillStyle=color;c.beginPath();p.forEach((v,i)=>i?c.lineTo(...v):c.moveTo(...v));c.closePath();c.fill()};
   const oval=(c,x,y,rx,ry,col)=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,rx,ry,0,0,TAU);c.fill()};
   function halo(c,x,y,r,color,alpha=.25){c.save();c.globalAlpha=alpha;const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,color);g.addColorStop(1,'transparent');c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2);c.restore()}

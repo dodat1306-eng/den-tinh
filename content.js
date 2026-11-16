@@ -31,6 +31,7 @@
     ['dom','Lời Hứa Của Đốm','✧','Đốm nhặt vật phẩm từ xa, chỉ rương bí mật và hồi 1 máu mỗi giây.']
   ].map(a=>({id:a[0],name:a[1],icon:a[2],desc:a[3]}));
   const passives={
+    quynhkun:{name:'Ngũ Lôi Chu Sa Ấn & Đồng Xu Phát',desc:'Năm nét Chu Sa kích nổ Phù Bạo. Đòn thứ ba và nổ bùa hồi linh lực, tạo khiên và tích Lộc Khí. Đủ sáu tầng cường hóa Q hoặc E.'},
     an:{name:'Ngọn Lửa Bền Bỉ',desc:'Đòn lửa đốt thêm sát thương; thức tỉnh một ấn hồi đầy máu.'},
     linh:{name:'Nhịp Lá',desc:'Di chuyển liên tục tăng 12% tốc đánh; cung có khả năng xuyên.'},
     quanle:{name:'Chúa Tể Bóng Tối',desc:'Xác quái và cây gãy hóa linh hồn; dùng E gọi bóng thú, Q khoác Hắc Giáp, R tập hợp binh đoàn.'},

@@ -1,0 +1,44 @@
+﻿PASS Exact base stats and signature
+PASS Normal attack 0
+PASS Normal attack 1
+PASS Normal attack 2
+PASS Third attack adds piercing two-mark slash
+PASS Four marks do not explode
+PASS Five marks explode, stun and recover MP/shield/coin
+PASS Boss is weakened and slowed instead of stun
+PASS Dense chain terminates; passive shield cap preserves external shields
+PASS SPI applies once inside frame recovery and preserves passive cap
+PASS Empowered Q consumes six coins and reduces E cooldown
+PASS Pending empowered Q survives save and fires three talismans
+PASS Empowered Q can detonate three marks early
+PASS E costs 30 MP
+PASS Empowered E places two separate stakes
+PASS E recast is free, preserves cooldown, removes stakes and grants ward
+PASS Ward automatically shoots summon talismans
+PASS Rank three unlocks E specialization
+PASS DOM, AURA and lasting scale stake duration/radius
+PASS R starts with 19-second cooldown
+PASS R intro grants immunity and blocks attacks
+PASS Saved R does not release early
+PASS Saved R releases exactly once at 4.5 seconds
+PASS Malformed Quynh save is bounded
+PASS Stat str
+PASS Stat agi
+PASS Stat vit
+PASS Stat int
+PASS Stat spi
+PASS Stat dex
+PASS Stat fer
+PASS Stat def
+PASS Stat vamp
+PASS Stat dom
+PASS Stat aura
+PASS Stat lck
+PASS All 32 relics remain usable
+PASS Seven-step quest ends with temple keeper
+PASS Legacy save an
+PASS Legacy save linh
+PASS Legacy save quanle
+PASS Legacy save hoavi
+PASS Legacy save thienvu
+43 Quynh Kun checks passed

@@ -14,7 +14,7 @@ namespace DenTinh.UnityRuntime {
         static Dictionary<string,Clip> clips;
         static readonly Dictionary<string,Texture2D> textures=new Dictionary<string,Texture2D>();
         static void LoadClips(string resource,string prefix){TextAsset data=Resources.Load<TextAsset>("Art/"+resource);if(data==null)return;Clips parsed=JsonUtility.FromJson<Clips>(data.text);if(parsed!=null&&parsed.clips!=null)foreach(Clip c in parsed.clips)if(c.cells!=null&&c.cells.Length>0)clips[prefix+c.key]=c;}
-        static Clip GetClip(string key){if(clips==null){clips=new Dictionary<string,Clip>();LoadClips("ThienVuClips","");LoadClips("WorldPixelClips","actors/");LoadClips("WorldTilesClips","world/");LoadClips("QuanLeClips","shadow/");LoadClips("HoaViClips","hoavi/");}Clip clip;return clips.TryGetValue(key,out clip)?clip:null;}
+        static Clip GetClip(string key){if(clips==null){clips=new Dictionary<string,Clip>();LoadClips("ThienVuClips","");LoadClips("WorldPixelClips","actors/");LoadClips("WorldTilesClips","world/");LoadClips("QuanLeClips","shadow/");LoadClips("HoaViClips","hoavi/");LoadClips("QuynhKunClips","quynhkun/");}Clip clip;return clips.TryGetValue(key,out clip)?clip:null;}
         static Texture2D AtlasTexture(string name){Texture2D texture;if(!textures.TryGetValue(name,out texture)){texture=Resources.Load<Texture2D>("Art/"+name);if(texture!=null){texture.filterMode=FilterMode.Point;texture.wrapMode=TextureWrapMode.Clamp;textures[name]=texture;}}return texture;}
         static Sprite Frame(string key,int index,bool actor,bool centered=false){Clip clip=GetClip(key);if(clip==null)return Dot();index=Mathf.Clamp(index,0,clip.cells.Length-1);string id="atlas/"+key+"/"+index+(centered?"/center":"");if(cache.ContainsKey(id))return cache[id];Texture2D texture=AtlasTexture(clip.texture);if(texture==null)return Dot();Cell c=clip.cells[index];Vector2 pivot=centered?new Vector2(.5f,.5f):c.anchorX>0||c.anchorY>0?new Vector2(c.anchorX/c.w,1-c.anchorY/c.h):actor?new Vector2(.5f,6f/64):new Vector2(.5f,.5f);return cache[id]=Sprite.Create(texture,new Rect(c.x,texture.height-c.y-c.h,c.w,c.h),pivot,32,0,SpriteMeshType.FullRect);}
         public static Sprite World(string key,float time=0,bool calm=false){key="world/"+key;Clip c=GetClip(key);return Frame(key,c==null||calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,false);}
@@ -23,9 +23,10 @@ namespace DenTinh.UnityRuntime {
         public static Sprite WorldHero(HeroDef h,PlayerState p,float time,bool calm){
             string action=p.dashTime>0?"dash":p.action!=null?(p.action.key=="q"?"q_cast":p.action.key=="e"?"e_cast":p.action.key=="r"?"r_ult":"attack"):p.moving?"run":"idle";
             string direction=h.id=="quanle"&&p.action!=null&&p.action.elapsed<p.action.duration?(Math.Abs(Math.Cos(p.action.angle))>Math.Abs(Math.Sin(p.action.angle))?(Math.Cos(p.action.angle)<0?"W":"E"):(Math.Sin(p.action.angle)>0?"N":"S")):p.moveDir;
-            string key=h.id=="quanle"?"shadow/"+direction+"/"+action:h.id=="hoavi"?"hoavi/"+p.moveDir+"/"+(action=="q_cast"?"q_debug":action=="r_ult"?"r_overclock":action):"actors/"+h.id+"_"+p.moveDir+"/"+action;
+            string key=h.id=="quynhkun"?"quynhkun/"+p.moveDir+"/"+action:h.id=="quanle"?"shadow/"+direction+"/"+action:h.id=="hoavi"?"hoavi/"+p.moveDir+"/"+(action=="q_cast"?"q_debug":action=="r_ult"?"r_overclock":action):"actors/"+h.id+"_"+p.moveDir+"/"+action;
             Clip c=GetClip(key);if(c==null)return Dot();int frame=calm?0:p.action!=null?(int)(Math.Max(0,p.action.elapsed)/Math.Max(.001f,p.action.duration)*c.cells.Length):(int)(Math.Max(0,time)*c.fps)%c.cells.Length;return Frame(key,frame,true);
         }
+        public static Sprite QuynhVfx(string key,float time,bool calm=false){key="quynhkun/"+key;Clip c=GetClip(key);return Frame(key,c==null||calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,false);}
         public static Sprite HoaViVfx(string key,int frame){return Frame("hoavi/"+key,frame,false,true);}
         public static Sprite Shadow(string key,float time,bool calm=false,bool once=false,float duration=0){bool centered=!key.Contains("/");key="shadow/"+key;Clip c=GetClip(key);return Frame(key,c==null||calm?0:once?Math.Min(c.cells.Length-1,(int)(Math.Max(0,time)/(duration>0?duration:c.cells.Length/c.fps)*c.cells.Length)):(int)(Math.Max(0,time)*c.fps)%c.cells.Length,true,centered);}
         public static Sprite Vfx(string key,float time,bool calm=false){Clip c=GetClip(key);return Frame(key,c==null||calm?0:(int)(Math.Max(0,time)*c.fps)%c.cells.Length,false);}
@@ -37,7 +38,7 @@ namespace DenTinh.UnityRuntime {
         public static Color ColorOf(string hex){Color c;return ColorUtility.TryParseHtmlString(hex,out c)?c:Color.white;}
         static Sprite GridArt(string name,int index,int columns,int w,int h,Vector2 pivot){string key=name+"/"+index;if(cache.ContainsKey(key))return cache[key];Texture2D t=AtlasTexture(name);if(t==null)throw new InvalidOperationException("Missing atlas "+name);return cache[key]=Sprite.Create(t,new Rect(index%columns*w,t.height-(index/columns+1)*h,w,h),pivot,32,0,SpriteMeshType.FullRect);}
         public static Sprite Relic(int index){return GridArt("Relics",index,8,32,32,new Vector2(.5f,.5f));}
-        public static Sprite Npc(int index){return GridArt("Npcs",index,5,40,56,new Vector2(.5f,.1f));}
+        public static Sprite Npc(int index){return GridArt("Npcs",index*6,12,64,64,new Vector2(.5f,6f/64));}
         public static Sprite Ground(int seed){
             const int width=7936,height=3200;Texture2D source=AtlasTexture("world-pixel-v08");if(source==null)throw new InvalidOperationException("Missing world-pixel-v08 atlas");
             RenderTexture previous=RenderTexture.active,copy=RenderTexture.GetTemporary(source.width,source.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);Texture2D readable=new Texture2D(source.width,source.height,TextureFormat.RGBA32,false);

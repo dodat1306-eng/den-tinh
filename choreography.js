@@ -12,7 +12,7 @@
   const hoaviTexture=root.DTHoaViPixel.character;
   function hoaviFrame(p,time=0,identity=p){return root.DTHoaViPixel.frame(p,time,time-(hurtTimes.get(identity)??-Infinity))}
   function drawHoavi(c,p,time=0,scale=1,identity=p,shadow=true){return root.DTHoaViPixel.hero(c,p,time,time-(hurtTimes.get(identity)??-Infinity),shadow,scale>=2?3:2)}
-  const profiles={an:{pull:1.9,reach:3.5,cloth:1.1,step:1},linh:{pull:2.5,reach:-1.5,cloth:1.6,step:1.15},quanle:{pull:1.4,reach:2.8,cloth:1.4,step:.95},hoavi:{pull:1,reach:1.3,cloth:1.15,step:.85},thienvu:{pull:1.9,reach:2.6,cloth:1.2,step:1}};
+  const profiles={quynhkun:{pull:2,reach:3.4,cloth:1.5,step:1},an:{pull:1.9,reach:3.5,cloth:1.1,step:1},linh:{pull:2.5,reach:-1.5,cloth:1.6,step:1.15},quanle:{pull:1.4,reach:2.8,cloth:1.4,step:.95},hoavi:{pull:1,reach:1.3,cloth:1.15,step:.85},thienvu:{pull:1.9,reach:2.6,cloth:1.2,step:1}};
   const elementalProfiles={lightning:{reach:3.6,cloth:.9},wind:{reach:1.6,cloth:2.1,step:1.1},earth:{pull:2.8,reach:2.3,cloth:.4,step:.6},fire:{reach:3.5,cloth:1.3},ice:{reach:1.9,cloth:.7},nature:{reach:1.8,cloth:1.5},light:{reach:1.4,cloth:1.6}};
   function profile(hero,form){return{...(profiles[hero]||profiles.an),...(hero==='thienvu'?elementalProfiles[form]||{}:{})}}
   function state(p,time,h){
@@ -59,9 +59,9 @@
   const sprite=A.drawSpriteHero;
   function drawHero(c,p,h,time=0,scale=1,npc=false,clone=false,identity=p){
     if(!npc&&root.DTWorldPixel?.hero(c,p,h,time)){metrics.bodies++;metrics.atlas++;return}
-    const pixel=npc?null:h.id==='quanle'?root.DTQuanLePixel:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
+    const pixel=npc?null:h.id==='quynhkun'?root.DTQuynhKunPixel:h.id==='quanle'?root.DTQuanLePixel:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
     if(pixel&&!pixel.ready())return;
-    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>h.id==='quanle'?pixel.hero(c,actor,h,time,shadow):h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,2);
+    const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>['quanle','quynhkun'].includes(h.id)?pixel.hero(c,actor,h,time,shadow):h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,2);
     if(atlasReady&&(reduced()||p.hp===0)){paint(p);metrics.bodies++;metrics.atlas++;return}
     if(npc||!profiles[h.id]||reduced()||p.hp===0)return sprite(c,p,h,time,scale,npc,clone);
     let old=history.get(identity);

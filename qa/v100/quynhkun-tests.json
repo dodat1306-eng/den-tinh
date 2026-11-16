@@ -1,0 +1,69 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "name": "Six heroes, exact base stats, signature, skill names and costs",
+      "pass": true
+    },
+    {
+      "name": "Every third shot adds a piercing 135% slash, two marks and one coin per attack",
+      "pass": true
+    },
+    {
+      "name": "Five marks burst, recover MP, grant shield, stun mobs and weaken bosses",
+      "pass": true
+    },
+    {
+      "name": "Passive caps preserve external shields; spread terminates across dense packs",
+      "pass": true
+    },
+    {
+      "name": "SPI applies once per passive shield gain inside nested recovery and respects cap",
+      "pass": true
+    },
+    {
+      "name": "Burst inside normal bullet context still uses INT, true bonus bypasses armor",
+      "pass": true
+    },
+    {
+      "name": "Q consumes six coins, fans three talismans, detonates early and reduces E cooldown",
+      "pass": true
+    },
+    {
+      "name": "Q focus and burst specializations preserve marks, range and burning field",
+      "pass": true
+    },
+    {
+      "name": "E empowerment places two stakes; third stake replaces oldest; free recast pulls and wards",
+      "pass": true
+    },
+    {
+      "name": "DOM/AURA scale stakes and wards; lasting heals; hostile bullets slow once",
+      "pass": true
+    },
+    {
+      "name": "R intro lasts 4.5 seconds, blocks damage, restores mid-intro and releases once",
+      "pass": true
+    },
+    {
+      "name": "Heaven field prioritizes marked enemies, buffs all damage and might adds ten strikes",
+      "pass": true
+    },
+    {
+      "name": "Save preserves coins, marked enemies, pending Q, ward and E recast; malformed data is bounded",
+      "pass": true
+    },
+    {
+      "name": "All seven quest steps require correct events; completion reward survives save without duplication",
+      "pass": true
+    },
+    {
+      "name": "Five existing heroes restore old saves without Quynh state",
+      "pass": true
+    },
+    {
+      "name": "All 12 stats and 32 relics remain usable for Quynh Kun",
+      "pass": true
+    }
+  ]
+}

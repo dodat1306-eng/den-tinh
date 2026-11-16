@@ -9,7 +9,7 @@ public static class UltimateTests {
     static EnemyState Enemy(Simulation g,float x){EnemyState e=g.Spawn("slime",new V2(x,20),false);e.hp=e.maxHp=100000;e.speed=1;e.damage=0;e.cooldown=10;return e;}
     public static int Main(){try{
         foreach(HeroDef h in CatalogData.Create().PlayableHeroes){if(h.id=="thienvu")continue;
-            Simulation g=Arena(h.id);g.Player.ult=0;float cooldown=h.id=="thienvu"||h.id=="quanle"?20:18;
+            Simulation g=Arena(h.id);g.Player.ult=0;float cooldown=h.rCd>0?h.rCd:h.id=="thienvu"||h.id=="quanle"?20:18;
             Check(g.Player.rCd==0&&g.Skill("r")&&g.Player.rCd==cooldown,h.id+" R ready without rage");
             Check(!g.Skill("r")&&!g.Skill("q")&&!g.Skill("e")&&!g.Fire()&&!g.Dash(),h.id+" intro blocks other attacks");
             float hp=g.Player.hp;g.DamagePlayer(100000);Check(g.Player.hp==hp,h.id+" intro immunity");

@@ -1,11 +1,11 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 global.Image=class{constructor(){this.complete=false;this.naturalWidth=0}set src(v){this._src=v}};global.document={querySelectorAll:()=>[],createElement:()=>({getContext:()=>({})})};
-const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','ascension.js','endless.js','journey.js','render.js','visuals.js','scenery.js','elemental-visuals.js','ascension-visuals.js','journey-visuals.js','choreography.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+const root=path.resolve(__dirname,'..');for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ascension.js','endless.js','journey.js','v09-content.js','world-destruction.js','shadow.js','relic-trials.js','v09.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});
 const reports=[];
 for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_HERO]:Object.keys(DTWorld.HEROES))){
   const g=new DTGame(hero,71426);g.start();g.skipTutorial();g.consumeEvents();let ticks=0,stage=0;
-  function reward(){if(g.skillPoints>0)for(const path of ['q','e','r','passive'])while(g.skillPoints>0&&g.skillRanks[path]<3)g.learnSkill(path);while(g.pendingLevels>0)g.applyTalent(g.player.hp<g.player.maxHp*.5?'vitality':'power');g.consumeEvents()}
+  function reward(){while(g.player.statPoints>0)g.allocateStat(g.player.hp<g.player.maxHp*.5?'vit':g.player.level%3===0?'int':'str');if(g.skillPoints>0)for(const path of ['q','e','r','passive'])while(g.skillPoints>0&&g.skillRanks[path]<3)g.learnSkill(path);while(g.pendingLevels>0)g.applyTalent(g.player.hp<g.player.maxHp*.5?'vitality':'power');g.consumeEvents()}
   function fight(center,done,limit=12000){
     for(let i=0;i<limit;i++){
       if(done())return true;const p=g.player;
@@ -45,6 +45,7 @@ for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_H
   g.player.x=1830;g.player.y=653;assert(g.interact());reward();
   g.player.x=2010;g.player.y=690;
   assert(fight({x:1830,y:610},()=>g.victory,18000),`${hero} cannot beat boss`);
+  g.player.x=1830;g.player.y=653;assert(g.interact());reward();assert(g.storyFlags.returnedMemories);
   const saga=[];
   for(const chapter of DTWorld.endless.chapters){
     const before=ticks;g.player.x=chapter.x;g.player.y=chapter.y+95;g.world.ensureChunks(g.player.x,g.player.y);assert(g.interact(),hero+' cannot open '+chapter.id);g.consumeEvents();
@@ -56,4 +57,4 @@ for(const hero of (process.env.DENTINH_COMBAT_HERO?[process.env.DENTINH_COMBAT_H
   assert.equal(g.saga.stage,'complete');
   const report={hero,completed:true,simulatedSeconds:Math.round(ticks/60),deaths:g.deaths,level:g.player.level,kills:g.kills,hp:Math.round(g.player.hp),seals:stage,saga};reports.push(report);console.log(JSON.stringify(report));
 }
-fs.writeFileSync(path.join(root,'qa','ascension-playthrough-report.json'),JSON.stringify({method:'Actual v0.7 full-stack combat simulation for five heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.',results:reports},null,2));
+fs.writeFileSync(path.join(root,'qa','ascension-playthrough-report.json'),JSON.stringify({method:'Actual v1.0.0 full-stack combat simulation for six heroes: miniboss, timed defense, forge cores, three-phase Coi Da and all six saga bosses with their three echoes and rewards. No invulnerability or damage cheats; relocation between arenas and death returns excludes travel time. A controller spends earned skill points, chooses existing talents and uses normal attacks, skills, potions, collision avoidance and dodges. This validates encounters, not natural travel duration or human difficulty.',results:reports},null,2));
