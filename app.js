@@ -140,7 +140,7 @@
   addEventListener('blur',()=>{keys={};mouse.down=false;if(game.started&&!game.paused&&!game.dead)pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden){save();keys={};mouse.down=false;if(game.started&&!game.paused&&!game.dead)pause()}});addEventListener('pagehide',save);
   addEventListener('error',e=>{$('fatalError').classList.remove('hidden');$('fatalError').textContent='Game gặp lỗi. Hãy đóng rồi mở lại CHOI_GAME.bat.\n\n'+(e.error?.stack||e.message);game.paused=true});
   function frame(now){
-    const dt=Math.min(.04,(now-last)/1000);last=now;const aim=renderer.screenToWorld(mouse.x,mouse.y);game.input={dx:(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy:(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),fire:mouse.down,aimX:aim.x,aimY:aim.y};
+    const dt=Math.max(0,Math.min(.04,(now-last)/1000));last=now;const aim=renderer.screenToWorld(mouse.x,mouse.y);game.input={dx:(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy:(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),fire:mouse.down,aimX:aim.x,aimY:aim.y};
     if(!game.started)game.time+=dt;game.update(dt);handleEvents();renderer.draw(dt,!game.started);audio.update();hudTime+=dt;saveTime+=dt;if(hudTime>.1){hudTime=0;if(game.started)hud()}if(saveTime>12){saveTime=0;save()}requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
