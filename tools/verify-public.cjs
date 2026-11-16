@@ -19,7 +19,7 @@ const report = {
 async function verify() {
   assert.equal(version, '0.9.1');
   const files = walk(dist).filter(file => file !== '_headers').sort();
-  assert.equal(files.length, 76, 'Build the complete 0.9.1 release with relic and NPC atlases first');
+  assert.equal(files.length, 79, 'Build the complete 0.9.1 release with relic trials and animated NPC atlases first');
   for (let offset = 0; offset < files.length; offset += 4) {
     await Promise.all(files.slice(offset, offset + 4).map(async file => {
       const response = await fetch(new URL(file, base), {

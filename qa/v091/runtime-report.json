@@ -1,10 +1,10 @@
 {
   "suite": "full-browser-runtime",
-  "passed": 24,
+  "passed": 36,
   "failed": 0,
   "results": [
     {
-      "name": "Full runtime contains 32 relics, 20 pedestals, 25 unique NPCs and four additional boss encounters",
+      "name": "Full runtime has 32 relics, 20 sealed pedestals, 25 NPCs and four dormant boss altars",
       "pass": true
     },
     {
@@ -44,7 +44,7 @@
       "pass": true
     },
     {
-      "name": "Pedestals reject guards and wrong elements, tools solve seal, claimed state persists",
+      "name": "Ordered lamps require four real inputs; elemental proximity cannot unlock; pickup persists",
       "pass": true
     },
     {
@@ -96,7 +96,55 @@
       "pass": true
     },
     {
-      "name": "Three seeds keep every core NPC, pedestal and puzzle tool on reachable walkable cells",
+      "name": "Three seeds preserve forest, 950px spacing, 900px village exclusion and reachable trials including frontier",
+      "pass": true
+    },
+    {
+      "name": "Trial attacks respect beam range, blocking terrain and command projectile kind across heroes",
+      "pass": true
+    },
+    {
+      "name": "Lamps and compass bells reset wrong order; one area hit cannot enter four ordered inputs",
+      "pass": true
+    },
+    {
+      "name": "Crystals and regenerating stone pillars take damage and regrow on their 12/10s deadlines",
+      "pass": true
+    },
+    {
+      "name": "All five heroes break ritual crystals with their real primary attack",
+      "pass": true
+    },
+    {
+      "name": "Electrical ritual accepts F or lightning/code hits; wrong element and expired charges fail",
+      "pass": true
+    },
+    {
+      "name": "Phoenix needs four lights AND four defeated nest guards; leaving resets incomplete ritual",
+      "pass": true
+    },
+    {
+      "name": "Three mirror rotations form complete beam only when every orientation matches",
+      "pass": true
+    },
+    {
+      "name": "Memory drums play four colors at 0.6s; wrong color replays; player may take time to repeat",
+      "pass": true
+    },
+    {
+      "name": "Blood altar charges current HP, enforces circle, requires two waves and full 15s survival",
+      "pass": true
+    },
+    {
+      "name": "Dodge trial counts real hostile bullet contacts, resets after third hit, and stops with pause",
+      "pass": true
+    },
+    {
+      "name": "Roots count four distinct enemy deaths inside 165px only; outside kills replenish forest enemies",
+      "pass": true
+    },
+    {
+      "name": "Discovery requires 260px or DOM 650px; valid progress and active boss HP survive reload; timed trials restart",
       "pass": true
     }
   ]

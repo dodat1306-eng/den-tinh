@@ -1,6 +1,9 @@
 # Đèn Tinh 0.9.1 — Đại tu RPG và bản Unity
 
-- Làm lại đủ 32 cổ vật: 12 món từ Boss và 20 món trên bệ, theo danh sách chi tiết của kế hoạch. Atlas 32×32 có hình riêng từng món. Boss thả vật phẩm theo quỹ đạo; chỉ nhận sau khi đáp đất và nhấn F. Bệ có đường tiếp cận, quái canh và sáu phong ấn Hỏa/Thổ/Lôi; công cụ cạnh bệ cho phép mọi nhân vật giải đố.
+- Làm lại đủ 32 cổ vật: 12 món từ Boss và 20 món trên bệ, theo danh sách chi tiết của kế hoạch. Atlas 32×32 có hình riêng từng món. Boss thả vật phẩm theo quỹ đạo; chỉ nhận sau khi đáp đất và nhấn F.
+- Bản Web bổ sung 25 NPC bake từ mô hình 3D bằng `Mesh` + `Atlas`, mỗi NPC có 6 frame idle 64×64 ở 6 fps. Giữ riêng atlas nhân vật cũ và lưu mô hình Blender, script cùng ảnh kiểm tra tại `design/blender/npcs`.
+- Phân bố lại 20 bệ và 4 đàn Boss cách nhau tối thiểu 950 px, tránh Làng Đèn 900 px, có bệ tại Biên Viễn. Bỏ đường dẫn tới bệ; chỉ dọn bán kính 55 px. Bản đồ chỉ hiện vị trí đã khám phá trong 260 px, hoặc 650 px khi có Đốm; danh mục dùng lời gợi ý địa danh.
+- Thay nút mở khóa trực tiếp bằng bốn nghi thức gọi Boss và sáu nhóm giải đố: đèn đúng thứ tự, gương, chuông ký ức, hiến máu sinh tồn, né đạn và thu linh hồn/phá trụ hồi phục. Lưu khám phá, bệ đã giải và Boss đã gọi; thử thách đang chạy bắt đầu lại khi tải save.
 - Bỏ hoàn toàn popup Thiên Phú và nhánh Mastery. Cấp 1 cần 220 EXP; cấp sau cần `floor(220 * level^1.68 + level * 110)`. Mỗi cấp nhận 2 điểm chỉ số và 1 điểm kỹ năng. I có đủ 12 chỉ số, tác dụng chiến đấu và tẩy điểm tại làng giá 80 xu; K giữ nâng kỹ năng riêng.
 - Tính lại chỉ số từ nhân vật, cấp, điểm đã cộng và nâng cấp để tránh nhân đôi khi lưu nhiều lần. Giữ HP, thời gian tồn tại và tỷ lệ Thống Lĩnh của phân thân, bóng thú, golem và treant. Save cũ thiếu lịch sử nâng cấp chỉ có thể suy ra từ dữ liệu còn lại.
 - 25 NPC có chân dung riêng và bốn tầng hội thoại, năm tuyến truyện có bước tương tác thực tế: ký ức, giai điệu tám nốt, bảy nguyên tố và đấu bản ngã. Trả ký ức tại Cội Đa mới mở sáu chương tiếp nối; tầng sự thật cuối mở sau chương sáu.

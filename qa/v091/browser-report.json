@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-15T05:10:09.883Z",
+  "checkedAt": "2026-11-15T19:16:32.287Z",
   "stagedCombatFixtures": true,
   "physicalDevice": false,
   "results": [
@@ -24,7 +24,31 @@
       "pass": true
     },
     {
-      "name": "World renders relic atlas, guarded seals, access paths and NPC atlas",
+      "name": "World paints physical relics, mirror beams and four numbered lamps",
+      "pass": true
+    },
+    {
+      "name": "All 25 NPCs use six atlas cells at 6fps; reduced motion holds first frame",
+      "pass": true
+    },
+    {
+      "name": "M draws only discovered pedestals",
+      "pass": true
+    },
+    {
+      "name": "Relic catalog gives landmark riddles without coordinates",
+      "pass": true
+    },
+    {
+      "name": "Four real F presses ring compass bells and summon hidden Boss",
+      "pass": true
+    },
+    {
+      "name": "All ritual and trial layouts render without canvas errors",
+      "pass": true
+    },
+    {
+      "name": "F starts visible spiral bullets and live dodge counter",
       "pass": true
     },
     {

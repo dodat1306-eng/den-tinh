@@ -9,19 +9,7 @@
   const makeWorld=D.makeWorld;
   D.makeWorld=function(seed){
     const w=makeWorld(seed);for(const n of V.npc.slice(0,19)){const old=w.npcs.find(x=>x.id===n.id);if(old)Object.assign(old,n);else w.npcs.push({...n})}
-    w.relicPedestals=V.pedestal.map((r,i)=>({id:'relic-'+r[0],relic:r[0],name:r[1],x:r[2],y:r[3],claimed:false,puzzle:[0,5,7,11,17,18].includes(i)?['fire','earth','lightning'][i%3]:null,unlocked:false,guards:[]}));
-    w.questObjects=V.memories.map(o=>({...o,collected:false}));w.relicPaths=[];const roads=(w.paths||[]).flat();
-    for(const o of [...w.npcs.filter(n=>!n.storyNPC),...w.relicPedestals,...w.questObjects.filter(o=>o.x<6400&&o.x>0&&o.y>0)]){
-      const point=roads.length?roads.reduce((a,b)=>Math.hypot(a[0]-o.x,a[1]-o.y)<Math.hypot(b[0]-o.x,b[1]-o.y)?a:b):[o.x,o.y+110],a={x:point[0],y:point[1]},b={x:o.x,y:o.y};w.relicPaths.push({a,b});
-      for(const p of w.props)if(dist(p,o)<140||segment(p,a,b)<40+(p.r||25)){p.r=0;p.accessCleared=true}
-    }
-    const collision=w.collision;w.collision=function(x,y,r=13){if(!Number.isFinite(x)||!Number.isFinite(y))return true;if(w.relicPaths.some(l=>segment({x,y},l.a,l.b)<Math.max(6,30-r)))return false;return collision(x,y,r)};
-    const spawn=(id,name,type,x,y,hp,extra={})=>{const e={id,name,type,x,y,homeX:x,homeY:y,r:23,hp,maxHp:hp,speed:72,damage:18,xp:500,gold:35,alive:true,cool:1.5,timer:0,phase:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,...extra};w.enemies.push(e);return e};
-    for(const [id,name,type,x,y]of [['kimquy','Huyền Quy Cổ Thạch','boar',4780,1570],['mjolnir','Cự Nhân Sắt Phế Tích','shade',5570,2990],['wukong','Hầu Ảnh Sơn Lâm','shade',1210,1220],['phoenix','Hỏa Điểu Tro Tàn','wisp',3180,420]]){
-      for(const p of w.props)if(dist(p,{x,y})<150)p.r=0;spawn('relic-boss-'+id,name,type,x,y,950,{relic:id,miniBoss:true,mythicBoss:true,v09Boss:true});
-    }
-    for(const[i,p]of w.relicPedestals.entries())if([0,4,6,8,10,14,19].includes(i))for(let j=0;j<2+i%2;j++){const a=j*TAU/(2+i%2),e=spawn(p.id+'-guard-'+j,'Hộ Vệ Bệ Cổ',['shade','archer','boar'][j],p.x+Math.cos(a)*110,p.y+Math.sin(a)*110,160,{elite:true,relicGuard:p.id,r:16,xp:45,damage:12});p.guards.push(e.id)}
-    w.rebuildStream?.();return w;
+    w.questObjects=V.memories.map(o=>({...o,collected:false}));root.DTRelicTrials.setupWorld(w);return w;
   };
   class RpgGame extends Base{
     constructor(hero,seed){super(hero,seed);this.initRpg()}
@@ -144,22 +132,23 @@
     objective(){if(this.heroQuest&&!this.heroQuest.completed){const s=this.questStep();return{title:this.hero.name+' · '+s.title,text:s.hint+' · I: nhật ký và chỉ số. M: bản đồ.',target:this.questTarget()}}if(this.victory&&!this.storyFlags.returnedMemories)return{title:'Trả ký ức cho Làng Đèn',text:'Nhấn F tại Cội Đa để dùng Đèn Tinh trả lại những tên đã mất.',target:this.world.altar};return super.objective()}
     nearby(){
       if(!this.heroQuest)return super.nearby();const p=this.player,objects=[];for(const d of this.relicDrops)if(d.landed)objects.push({...d,relicDrop:true,label:'Nhặt '+C.relic(d.relic).name});
-      for(const o of this.world.relicPedestals)if(!o.claimed){objects.push({...o,relicPedestal:true,label:o.puzzle&&!o.unlocked?'Bệ phong ấn · '+({fire:'đốt gai bằng đá lửa',earth:'phá đá nứt bằng búa',lightning:'nối điện vào cột cổ'}[o.puzzle]):'Khám phá '+o.name});if(o.puzzle&&!o.unlocked)objects.push({id:'puzzle-'+o.relic,x:o.x+66,y:o.y+45,relicPuzzle:o.relic,label:{fire:'Đá lửa · F đốt gai',earth:'Búa đá · F đập vách nứt',lightning:'Nguồn đồng · F dẫn điện'}[o.puzzle]})}
+      for(const o of this.world.relicPedestals)if(!o.claimed)objects.push({...o,relicPedestal:true,label:o.unlocked?'Nhận '+o.name:this.trialHint(o)});objects.push(...this.trialObjects());
       const step=this.questStep();for(const o of this.world.questObjects)if(o.hero===this.hero.id&&!o.collected&&(step?.target===o.id||step?.targets?.includes(o.id)))objects.push({...o,questMemory:true,label:'Ký ức · '+o.name});if(step?.kind==='notes')objects.push({id:'memory-melody',x:3100,y:2185,melody:true,label:'Ống Tiêu Trúc · F chơi tám nốt'});if(step?.kind==='duel')objects.push({id:'memory-shadow',x:1830,y:760,duel:true,label:'Đối mặt nửa bóng tối của Cội Đa'});for(const n of this.world.npcs)if(n.id!=='well'&&n.id!=='smith')objects.push({...n,v09Npc:true,label:'Trò chuyện với '+n.name});const base=super.nearby();if(base&&!objects.some(o=>o.id===base.id))objects.push(base);return objects.filter(o=>dist(o,p)<(o.relicDrop||o.relicPedestal?82:74)).sort((a,b)=>dist(a,p)-dist(b,p))[0]||null;
     }
     interact(){
       if(this.paused||this.dead||!this.started)return false;const o=this.nearby();if(!o)return false;
-      if(o.relicDrop||o.relicPedestal){const e=o.relicDrop?this.relicDrops.find(d=>d.id===o.id):this.world.relicPedestals.find(p=>p.id===o.id);if(!e)return false;if(e.puzzle&&!e.unlocked){this.emit('toast',{text:'Dùng '+({fire:'Hỏa / đá lửa',earth:'Thổ / búa đá',lightning:'Lôi / nguồn đồng'}[e.puzzle])+' cạnh bệ để phá phong ấn.'});return false}if(e.guards?.some(id=>this.world.enemies.some(e=>e.id===id&&e.alive))){this.emit('toast',{text:'Hạ hết hộ vệ để mở bệ.'});return false}if(!this.grantRelic(o.relic,e))return false;e.claimed=true;if(o.relicDrop)this.relicDrops.splice(this.relicDrops.indexOf(e),1);this.updateDialogueStage();return true}
-      if(o.relicPuzzle){const p=this.world.relicPedestals.find(p=>p.relic===o.relicPuzzle);this.reactEnvironment(p.puzzle,p.x,p.y,90);return true}if(o.questMemory){const r=this.world.questObjects.find(x=>x.id===o.id);if(r.collected)return false;if(r.element&&(!this.isElemental||this.element.id!==r.element)){this.emit('toast',{text:'Đài chỉ đáp lại dạng '+root.DTElements.byId(r.element).name+'. Đổi dạng bằng 1–7.'});return false}r.collected=true;this.heroQuest.memories.push(o.id);this.emit('dialogue',{speaker:this.hero.name,title:o.name,text:o.text});this.advanceQuest();return true}if(o.melody){this.emit('melody');return true}
+      if(o.trialNode||o.bossAltar)return this.interactTrial(o);
+      if(o.relicDrop||o.relicPedestal){const e=o.relicDrop?this.relicDrops.find(d=>d.id===o.id):this.world.relicPedestals.find(p=>p.id===o.id);if(!e)return false;if(o.relicPedestal&&!e.unlocked)return this.interactTrial(o);if(!this.grantRelic(o.relic,e))return false;e.claimed=true;if(o.relicDrop)this.relicDrops.splice(this.relicDrops.indexOf(e),1);this.updateDialogueStage();return true}
+      if(o.questMemory){const r=this.world.questObjects.find(x=>x.id===o.id);if(r.collected)return false;if(r.element&&(!this.isElemental||this.element.id!==r.element)){this.emit('toast',{text:'Đài chỉ đáp lại dạng '+root.DTElements.byId(r.element).name+'. Đổi dạng bằng 1–7.'});return false}r.collected=true;this.heroQuest.memories.push(o.id);this.emit('dialogue',{speaker:this.hero.name,title:o.name,text:o.text});this.advanceQuest();return true}if(o.melody){this.emit('melody');return true}
       if(o.duel){if(this.world.enemies.some(e=>e.questDuel&&e.alive))return false;const hp=900+this.player.level*80;this.world.enemies.push({id:'hero-shadow-duel',type:'shade',name:'Nửa Bóng Tối Cội Đa',x:1830,y:760,homeX:1830,homeY:760,r:24,hp,maxHp:hp,speed:95,damage:19,xp:450,gold:0,alive:true,cool:1,phase:0,timer:0,slow:0,hit:0,knockX:0,knockY:0,frontier:true,questDuel:true});return true}
       if(o.v09Npc){this.emit('dialogue',this.npcDialogue(o));this.storyFlags[o.type||o.id]=true;this.advanceQuest(o.type||o.id);return true}
       if(o.id==='altar'){if(this.victory){this.storyFlags.returnedMemories=true;this.addXp(this.storyFlags.returnReward?0:450);this.storyFlags.returnReward=true;this.emit('dialogue',{speaker:'CỘI ĐA · KÝ ỨC TRỞ VỀ',title:'Mười tám năm không tên',text:V.truthReturn});this.advanceQuest();return true}if(this.world.shrines.every(s=>s.active)){this.storyFlags.treeAwake=true;this.emit('dialogue',{speaker:'NĂM LINH HỒN',title:'Ba chiếc đinh cuối cùng',text:V.truthAwake});this.startBoss();this.updateDialogueStage();return true}}
       const n=this.world.shrines.filter(s=>s.active).length,ok=this.recovery(()=>super.interact());if(ok&&this.world.shrines.filter(s=>s.active).length>n){this.addXp(180);this.updateDialogueStage()}return ok;
     }
-    reactEnvironment(element,x,y,r=150){const result=super.reactEnvironment(element,x,y,r);for(const p of this.world.relicPedestals)if(!p.unlocked&&p.puzzle===element&&dist(p,{x,y})<r+35){p.unlocked=true;this.addXp(180);this.effect('ring',p.x,p.y,'#e8d89a',110,.8);this.emit('toast',{text:'Phong ấn '+p.name+' đã mở.',reward:true})}return result}
     serialize(){const d=super.serialize();d.pendingLevels=0;delete d.player.stats;d.v09={version:2,stats:{...this.player.stats},statPoints:this.player.statPoints,training:{...this.training},storyFlags:{...this.storyFlags},heroQuest:{...this.heroQuest,memories:[...this.heroQuest.memories]},killedBosses:[...this.killedBosses],pedestals:this.world.relicPedestals.filter(p=>p.claimed).map(p=>p.relic),unlocked:this.world.relicPedestals.filter(p=>p.unlocked).map(p=>p.relic),relicDrops:this.relicDrops.map(d=>({...d})),relicTimers:{...this.relicTimers},summons:this.captureSummonStats(),splitTime:this.elementSplitTime,elementSummons:this.elementSummons.map(s=>({...s,sourceProp:undefined,thrown:undefined,action:null,patrol:undefined}))};return d}
     static restore(data){const g=Base.restore(data);Object.setPrototypeOf(g,RpgGame.prototype);g.initRpg(data.v09,data);return g}
   }
   const safelyAlive=e=>e&&e.alive;
+  root.DTRelicTrials.install(RpgGame);
   root.DTV09={STAT_KEYS:keys,xpFor,Game:RpgGame};root.DTGame=RpgGame;
 })(globalThis);
