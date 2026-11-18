@@ -7,7 +7,7 @@
     constructor(hero,seed){super(hero,seed);this.initAscension()}
     initAscension(saved){
       this.skillPoints=3;this.skillRanks={q:0,e:0,r:0,passive:0};this.castQueue=[];this.mythicFields=[];this.relicCooldowns={};this.relicCounters={};this.usedRelics={};
-      this.quynhRecastUntil=0;this.quynhWardTick=0;this.player.talismanWard=0;this.passiveState={coins:0,coinShield:0,embers:0,wind:0,thunder:0,distance:0,lastHit:0,forms:[],formTime:0,attackCount:0};this.motion={vx:0,vy:0};this.checkpoint=null;this.fieldSerial=0;
+      this.quynhRecastUntil=0;this.quynhWardTick=0;this.player.talismanWard=0;this.aitRecastUntil=0;this.aitOverdriveTick=0;this.aitHelmetCd=0;this.aitSniperCd=0;this.player.inventoryOverdrive=0;this.passiveState={coins:0,coinShield:0,ammo:0,ammoShield:0,embers:0,wind:0,thunder:0,distance:0,lastHit:0,forms:[],formTime:0,attackCount:0};this.motion={vx:0,vy:0};this.checkpoint=null;this.fieldSerial=0;
       this.signature={...M.signature[this.hero.id]};this.interactedIds=new Set((saved?.interactedIds||[]).filter(id=>typeof id==='string').slice(-50000));
       if(saved){
         this.skillPoints=clamp(Number(saved.points)||0,0,999);for(const id of ['q','e','r','passive'])this.skillRanks[id]=clamp(Math.floor(Number(saved.ranks?.[id])||0),0,3);
@@ -45,7 +45,7 @@
     }
     get weaponStateActive(){return {id:this.weapon.id,level:1,ammo:0,reload:0}}
     get skillTree(){const names=M.nodeNames[this.hero.id];return ['q','e','r','passive'].map((id,i)=>({id,name:names[i],maxRank:3,desc:id==='passive'?this.passiveNodeText():this.skillDescriptions[id].desc+' Mỗi bậc tăng 18% sát thương; Q/E/R hồi nhanh hơn 6% mỗi bậc.'}))}
-    passiveNodeText(){if(this.hero.id==='quynhkun')return 'Mỗi bậc: Phù Bạo thêm 35% sát thương cơ bản, hồi thêm 1,5 linh lực và 4 khiên; mực lan tới một địch trong 220 bước, khắc 1 + phần nguyên của bậc/2 nét.';return {an:'Mỗi bậc: tích Tàn Lửa nhanh hơn; đèn hồi thêm 0,5 máu/giây.',linh:'Mỗi bậc: cần ít hơn 5 bước cho một Nhịp Trúc; dấu ghim tồn tại lâu hơn.',kiet:'Mỗi bậc: đòn cường hóa thêm 10 khiên; chiến tuyến chặn đạn hiệu quả hơn.',hoavi:'Mỗi bậc: biên dịch lại Q mạnh thêm 15%; hồi quy hồi thêm 4% máu tối đa.',thienvu:'Mỗi bậc: Hòa Âm hồi thêm 5 linh lực và 5 khiên; phản ứng tăng 12% sát thương.'}[this.hero.id]}
+    passiveNodeText(){if(this.hero.id==='ait01')return 'Mỗi bậc: Tên Lửa 5 khóa thêm 35% sát thương, hồi thêm 1,5 linh lực và 4 khiên; mũ 3 giảm thêm 5% sát thương; khóa mục tiêu lan sang địch gần đó.';if(this.hero.id==='quynhkun')return 'Mỗi bậc: Phù Bạo thêm 35% sát thương cơ bản, hồi thêm 1,5 linh lực và 4 khiên; mực lan tới một địch trong 220 bước, khắc 1 + phần nguyên của bậc/2 nét.';return {an:'Mỗi bậc: tích Tàn Lửa nhanh hơn; đèn hồi thêm 0,5 máu/giây.',linh:'Mỗi bậc: cần ít hơn 5 bước cho một Nhịp Trúc; dấu ghim tồn tại lâu hơn.',kiet:'Mỗi bậc: đòn cường hóa thêm 10 khiên; chiến tuyến chặn đạn hiệu quả hơn.',hoavi:'Mỗi bậc: biên dịch lại Q mạnh thêm 15%; hồi quy hồi thêm 4% máu tối đa.',thienvu:'Mỗi bậc: Hòa Âm hồi thêm 5 linh lực và 5 khiên; phản ứng tăng 12% sát thương.'}[this.hero.id]}
     get skillDescriptions(){
       if(!this.isElemental)return M.kits[this.hero.id];const f=this.element;
       const desc={lightning:['Lao theo đường ngắm rồi nối sét qua ba mục tiêu.','Dịch chuyển ngắn, để lại ấn sét đón các đòn sau.','Bảy sét đánh lần lượt theo mục tiêu, có báo trước.'],wind:['Ba phong liêm quay về, cắt cả lượt đi lẫn lượt về.','Phong nhãn xóa đạn và gom kẻ gần đó.','Lốc di động cuốn theo hướng ngắm và kéo địch.'],earth:['Dựng năm địa trụ lần lượt dọc một đường.','Dựng tuyến đá chắn đạn và nhận giáp.','Hai vách núi khép vào đường ngắm.'],fire:['Hỏa xà đuổi mục tiêu gần đường ngắm.','Tạo ba hạt lửa quanh thân để kích nổ bằng đòn đánh.','Một đường hỏa long thiêu đốt theo từng nhịp.'],ice:['Tia băng xuyên, vỡ vụn khi gặp địch đang đóng băng.','Đặt gương băng phản đạn tại điểm ngắm.','Băng vực nở từ tâm ra ngoài, đông cứng từng đợt.'],nature:['Dây leo bám mục tiêu, trói và hút máu nhẹ.','Gieo vườn hồi phục; địch bước vào bị rễ giữ lại.','Gọi rễ từ vị trí các địch bị độc, tạo mạng dây leo.'],light:['Dịch chuyển tức thời ra sau lưng địch trong 520 bước và chém chí mạng; không có địch thì nhảy 280 bước theo hướng ngắm.','Dựng quang kính phản các đạn chạm vào.','Tích quang rồi quét tia theo hướng ngắm.']}[f.id];
@@ -54,7 +54,7 @@
     learnSkill(id){if(!Object.hasOwn(this.skillRanks,id)||this.skillPoints<1||this.skillRanks[id]>=3)return false;this.skillPoints--;this.skillRanks[id]++;this.emit('sound',{name:'level'});this.emit('toast',{text:'Đã học '+this.skillTree.find(n=>n.id===id).name+' · bậc '+this.skillRanks[id]+'/3',reward:true});return true}
     awardSkillPoints(n,label){n=clamp(Math.floor(Number(n)||0),0,20);this.skillPoints=Math.min(999,this.skillPoints+n);if(n)this.emit('toast',{text:'+'+n+' điểm kỹ năng · '+(label||'nhấn K để học'),reward:true});return n}
     passiveDescription(){return C.passives[this.hero.id]}
-    passiveStatus(){const s=this.passiveState,p=this.player;if(this.hero.id==='quynhkun')return 'Lộc Khí Đồng Xu '+(s.coins||0)+'/6 · Trận Bát Quái '+root.DTQuynhKun.stakes(this).length+'/2'+(this.canRecastE()?' · E thu phù hộ thể':'');return {an:'Tàn Lửa '+Math.floor(s.embers)+'/6 · Đèn '+this.mythicFields.filter(f=>f.kind==='lantern').length+'/3',linh:'Nhịp Trúc '+s.wind+'/8 · chạy để tích nhịp',kiet:'Lôi Tức '+s.thunder+'/5 · chặn đạn để tích lực',hoavi:'Mã Lệnh '+p.code+'/8'+(this.checkpoint?' · E trở về trong '+Math.ceil(this.checkpoint.life)+'s':''),thienvu:'Hòa Âm '+s.forms.length+'/3 · '+(s.forms.join(' / ')||'đổi dạng rồi dùng kỹ năng')}[this.hero.id]}
+    passiveStatus(){const s=this.passiveState,p=this.player;if(this.hero.id==='ait01')return 'Đạn Hỏa Lực '+(s.ammo||0)+'/6 · Ô Kho Tác Chiến '+root.DTAit01.zones(this).length+'/2'+(this.canRecastE?.()?' · E thu hồi ô kho':'');if(this.hero.id==='quynhkun')return 'Lộc Khí Đồng Xu '+(s.coins||0)+'/6 · Trận Bát Quái '+root.DTQuynhKun.stakes(this).length+'/2'+(this.canRecastE()?' · E thu phù hộ thể':'');return {an:'Tàn Lửa '+Math.floor(s.embers)+'/6 · Đèn '+this.mythicFields.filter(f=>f.kind==='lantern').length+'/3',linh:'Nhịp Trúc '+s.wind+'/8 · chạy để tích nhịp',kiet:'Lôi Tức '+s.thunder+'/5 · chặn đạn để tích lực',hoavi:'Mã Lệnh '+p.code+'/8'+(this.checkpoint?' · E trở về trong '+Math.ceil(this.checkpoint.life)+'s':''),thienvu:'Hòa Âm '+s.forms.length+'/3 · '+(s.forms.join(' / ')||'đổi dạng rồi dùng kỹ năng')}[this.hero.id]}
     switchWeapon(){return false}
     reloadWeapon(){return false}
     dropWeapon(){return false}
@@ -67,8 +67,8 @@
     }
     readyRelic(id,cooldown){if(this.relicCooldowns[id]>0)return false;this.relicCooldowns[id]=cooldown;return true}
     addField(kind,x,y,extra={}){const f={id:'mythic-'+(++this.fieldSerial),kind,x,y,r:100,life:4,tick:0,angle:this.player.facing,...extra};this.mythicFields.push(f);if(this.mythicFields.length>28)this.mythicFields.shift();return f}
-    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?(this.isElemental?.28:4.5):this.hero.id==='linh'&&key==='q'?.25:key==='e'||this.hero.id==='quynhkun'?.14:.16,duration=key==='attack'?.32:key==='r'?(this.isElemental?.78:4.5):key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
-    shoot(x,y,a,speed,damage,color,opts={}){super.shoot(x,y,a,speed,damage,color,opts);const b=this.projectiles[this.projectiles.length-1];if(b)Object.assign(b,{signature:!!opts.signature,returning:!!opts.returning,age:0,sourceSkill:opts.sourceSkill||'',echo:!!opts.echo,quynhMarks:opts.quynhMarks||0,quynhThird:opts.quynhThird||0,quynhEmpowered:!!opts.quynhEmpowered,quynhBurst:!!opts.quynhBurst})}
+    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?(this.isElemental?.28:4.5):this.hero.id==='linh'&&key==='q'?.25:key==='e'||this.hero.id==='quynhkun'||this.hero.id==='ait01'?.14:.16,duration=key==='attack'?.32:key==='r'?(this.isElemental?.78:4.5):key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
+    shoot(x,y,a,speed,damage,color,opts={}){super.shoot(x,y,a,speed,damage,color,opts);const b=this.projectiles[this.projectiles.length-1];if(b)Object.assign(b,{signature:!!opts.signature,returning:!!opts.returning,age:0,sourceSkill:opts.sourceSkill||'',echo:!!opts.echo,quynhMarks:opts.quynhMarks||0,quynhThird:opts.quynhThird||0,quynhEmpowered:!!opts.quynhEmpowered,quynhBurst:!!opts.quynhBurst,aitLocks:opts.aitLocks||0,aitThird:opts.aitThird||0,aitEmpowered:!!opts.aitEmpowered,aitBurst:!!opts.aitBurst})}
     fire(){
       const p=this.player;if(this.paused||this.dead||p.ultIntro||p.cd.fire>0||p.dashTime>0||p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.release+.12)return false;
       const id=this.hero.id,s=this.passiveState,scale=1+(this.skillRanks.passive||0)*.035;
@@ -77,6 +77,7 @@
       if(id==='thienvu'){const start=this.projectiles.length;this.elementPrimary(p,this.element.id,p.damage*scale,true);for(const b of this.projectiles.slice(start))b.signature=true}
       else if(id==='quanle'){root.DTShadow.primary(this,p.damage*scale)}
       else if(id==='quynhkun'){root.DTQuynhKun.primary(this,p.damage*scale)}
+      else if(id==='ait01'){root.DTAit01.primary(this,p.damage*scale)}
       else if(id==='kiet'){
         this.lineHit(p,{x:p.x+Math.cos(p.facing)*135,y:p.y+Math.sin(p.facing)*135},24,p.damage*1.3*scale,'lightning',true);
         this.effect('mythic-spear',p.x,p.y,this.signature.color,135,.21,{angle:p.facing});s.thunder=Math.min(5,s.thunder+1);
@@ -102,7 +103,7 @@
       p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);const a=p.aimAngle,windup=this.beginAction(key,a,this.isElemental?this.element.id:undefined),target=this.elementTarget(p,key==='r'?600:480);
       const shards=key==='q'&&p.relics.cinderella?(this.relicCounters.cinderella||0):0,empowered=shards>0;if(empowered){this.relicCounters.cinderella=0;for(let i=0;i<shards*4;i++)this.shoot(p.x,p.y,i*TAU/(shards*4),650,p.damage*.5,'#cdefff',{sourceSkill:'q',pierce:1,r:3})}
       const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
-      const cast={type:'cast',quynhEmpowered:this.hero.id==='quynhkun'&&root.DTQuynhKun.empower(this,key),delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(1+shards*.3)};
+      const cast={type:'cast',quynhEmpowered:this.hero.id==='quynhkun'&&root.DTQuynhKun.empower(this,key),aitEmpowered:this.hero.id==='ait01'&&root.DTAit01.empower(this,key),delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(1+shards*.3)};
       if(key==='r'&&!this.isElemental){p.ultIntro={elapsed:0,duration:4.5,pulse:0,cast};Object.assign(p.action,{duration:4.5,release:4.5,windup:4.5});p.cast=4.5;p.invulnerable=Math.max(p.invulnerable,4.8);p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       else if(windup===0)this.releaseCast(cast);else this.castQueue.push(cast);
       if(pixelOrigin&&p.code>=4)this.effect('choreo-code-wait',p.x,p.y,'#1fc8db',64,windup+.35,{hero:'hoavi',angle:a});
@@ -133,7 +134,7 @@
       if(element==='fire'){e.burn=3;e.burnTick=0}if(element==='ice'){e.slow=2;e.frozen=Math.max(e.frozen||0,.65)}if(element==='nature'){e.rooted=e.type==='boss'||e.sagaBoss?.3:1.25;e.poison=3;e.poisonPower=p.damage*.17}if(element==='lightning')e.slow=Math.max(e.slow||0,1);
       if(!this.relicCast&&charge&&p.relics.hermes&&this.readyRelic('hermes',.8)){p.cd.dash=Math.max(0,p.cd.dash-.35);p.swiftTime=1}
     }
-    releaseCast(c){if(this.hero.id==='quynhkun')return root.DTQuynhKun.release(this,c);if(this.hero.id==='quanle')return root.DTShadow.release(this,c);
+    releaseCast(c){if(this.hero.id==='ait01')return root.DTAit01.release(this,c);if(this.hero.id==='quynhkun')return root.DTQuynhKun.release(this,c);if(this.hero.id==='quanle')return root.DTShadow.release(this,c);
       const p=this.player,id=this.hero.id,key=c.key,a=c.angle,power=p.damage*c.power,s=this.passiveState,t=c.target,charge=key!=='r',origin={x:p.x,y:p.y};
       if(id==='thienvu'){
         this.castElement(c.element,key,p,c.power,charge,t);
@@ -177,7 +178,7 @@
       const t=target||origin;this.reactEnvironment?.(id,t.x,t.y,key==='r'?220:130);
     }
     onBulletHit(b,e){
-      const wasBurning=e.burn>0;super.onBulletHit(b,e);if(this.hero.id==='quynhkun')root.DTQuynhKun.bulletHit(this,b,e);const p=this.player,s=this.passiveState;if(this.isElemental&&b.sourceSkill&&b.charge!==false&&!b.ally)this.registerHarmony(b.element);if(!b.signature||b.ally||b.charge===false)return;
+      const wasBurning=e.burn>0;super.onBulletHit(b,e);if(this.hero.id==='ait01')root.DTAit01.bulletHit(this,b,e);if(this.hero.id==='quynhkun')root.DTQuynhKun.bulletHit(this,b,e);const p=this.player,s=this.passiveState;if(this.isElemental&&b.sourceSkill&&b.charge!==false&&!b.ally)this.registerHarmony(b.element);if(!b.signature||b.ally||b.charge===false)return;
       s.lastHit=this.time;
       if(this.hero.id==='an'){if(wasBurning)s.embers=Math.min(6,s.embers+1+(this.skillRanks.passive>=2&&s.attackCount%3===0?1:0));e.burn=3;e.burnTick=0}
       if(b.sourceSkill==='wind-mark'){e.rooted=e.sagaBoss||e.type==='boss'?.3:1.4;e.trucMark=5+this.skillRanks.passive}
@@ -191,6 +192,7 @@
       if(this.relicCast)return super.damagePlayer(amount);
       const p=this.player;if(!this.skillRanks)return super.damagePlayer(amount);const hp=p.hp,shield=p.shield,eligible=!this.dead&&p.invulnerable<=0;
       if(p.stoneGuard&&eligible){amount*=.82;p.stoneGuard=false;this.relicCooldowns.sontinh=6;this.areaDamage(p.x,p.y,100,p.damage*.5,180,false)}
+      if(eligible&&this.hero.id==='ait01'&&!(this.aitHelmetCd>0)){amount*=.7-.05*(this.skillRanks.passive||0);this.aitHelmetCd=8}
       if(eligible&&p.relics.cuoi&&!this.usedRelics.cuoi&&amount*(1-p.armor)>=p.hp+p.shield){this.usedRelics.cuoi=true;p.hp=Math.max(p.hp,p.maxHp*.35);p.invulnerable=2;this.effect('mythic-rune',p.x,p.y,'#b8e99e',100,1);this.emit('toast',{text:'Lá Đa Chú Cuội giữ lại ngọn đèn! Đã dùng lần hồi sinh của hành trình.',reward:true});return}
       super.damagePlayer(amount);
       if(p.hp<hp||p.shield<shield){this.passiveState.wind=Math.max(0,this.passiveState.wind-2);if(this.hero.id==='kiet')this.passiveState.thunder=Math.min(5,this.passiveState.thunder+1);if(p.relics.kimquy&&this.readyRelic('kimquy',12)){p.shield=Math.min(110,p.shield+28);const e=this.world.enemies.filter(e=>e.alive&&dist(e,p)<330).sort((a,b)=>dist(a,p)-dist(b,p))[0];if(e){this.damageEnemy(e,p.damage*1.8,false);this.effect('lightning',p.x,p.y,'#eddb98',0,.3,{tx:e.x,ty:e.y})}}}
@@ -204,6 +206,7 @@
       return true;
     }
     updateProjectiles(dt){
+      if(this.hero.id==='ait01')root.DTAit01.projectiles(this,dt);
       if(this.hero.id==='quynhkun')root.DTQuynhKun.projectiles(this,dt);
       const p=this.player;
       for(const b of this.projectiles){b.age=(b.age||0)+dt;if(b.returning&&b.age>.35){const owner=b.owner&&b.owner!=='player'?this.elementClones.find(c=>c.id===b.owner&&c.alive):p;if(!owner){b.life=0;continue}const a=Math.atan2(owner.y-b.y,owner.x-b.x);b.vx=Math.cos(a)*760;b.vy=Math.sin(a)*760;b.angle=a;if(dist(b,owner)<28)b.life=0}
@@ -232,7 +235,7 @@
     }
     updateFields(dt){
       const p=this.player,lamps=this.mythicFields.filter(f=>f.kind==='lantern'&&f.life>0);
-      for(const f of this.mythicFields){f.age=(f.age||0)+dt;f.life-=dt;f.tick-=dt;if(root.DTQuynhKun?.fields.has(f.kind)){root.DTQuynhKun.updateField(this,f,dt);continue}if(f.combat){this.updateCombatField(f,dt,true);continue}if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
+      for(const f of this.mythicFields){f.age=(f.age||0)+dt;f.life-=dt;f.tick-=dt;if(root.DTAit01?.fields.has(f.kind)){root.DTAit01.updateField(this,f,dt);continue}if(root.DTQuynhKun?.fields.has(f.kind)){root.DTQuynhKun.updateField(this,f,dt);continue}if(f.combat){this.updateCombatField(f,dt,true);continue}if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
         if(f.kind==='lantern'&&dist(p,f)<95)p.hp=Math.min(p.maxHp,p.hp+dt*(1.5+this.skillRanks.passive*.5));
         if(f.kind==='garden'&&dist(p,f)<f.r)p.hp=Math.min(p.maxHp,p.hp+dt*4);
         if(f.kind==='decoy')for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,f)<f.r){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*e.speed*dt*.9,Math.sin(a)*e.speed*dt*.9);e.cool=Math.max(.3,e.cool)}
@@ -262,7 +265,7 @@
     update(dt){
       if(this.paused||this.dead||!this.started)return;dt=clamp(dt,0,.04);if(!dt)return;const touch=root.DTTouch,p=this.player,x=p.x,y=p.y,t=this.time,dx=touch?.active?touch.move.x:this.input.dx,dy=touch?.active?touch.move.y:this.input.dy,speed=p.speed;
       const blend=1-Math.exp(-dt*42);this.motion.vx=dx*this.motion.vx<=0||!dx?dx:this.motion.vx+(dx-this.motion.vx)*blend;this.motion.vy=dy*this.motion.vy<=0||!dy?dy:this.motion.vy+(dy-this.motion.vy)*blend;if(Math.abs(this.motion.vx)<.002)this.motion.vx=0;if(Math.abs(this.motion.vy)<.002)this.motion.vy=0;this.input.dx=this.motion.vx;this.input.dy=this.motion.vy;
-      if(p.talismanWard>0)p.speed*=1.2;
+      if(p.talismanWard>0||p.inventoryOverdrive>0)p.speed*=1.2;
       if(p.swiftTime>0)p.speed*=p.relics.tam?1.25:1.12;if(p.ultIntro){p.speed*=.35;p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       try{super.update(dt)}finally{this.input.dx=dx;this.input.dy=dy;p.speed=speed}if(t===this.time)return;
       if(p.action&&p.ultIntro?.mode!=='split'){p.action.elapsed+=dt;if(p.action.elapsed>=p.action.duration)p.action=null}
@@ -273,16 +276,16 @@
       if(s.formTime>0){s.formTime-=dt;if(s.formTime<=0)s.forms=[]}
       if(p.relics.sontinh&&!this.relicCast){p.stillTime=moved<.15?(p.stillTime||0)+dt:0;if(p.stillTime>.8&&!(this.relicCooldowns.sontinh>0))p.stoneGuard=true}
       if(this.checkpoint){this.checkpoint.life-=dt;if(this.checkpoint.life<=0)this.checkpoint=null}
-      this.updateCastQueue(dt);this.updateFields(dt);if(this.hero.id==='quynhkun')root.DTQuynhKun.update(this,dt);this.updateUltIntro(dt);this.syncUltimate();this.weaponDrops=[];
+      this.updateCastQueue(dt);this.updateFields(dt);if(this.hero.id==='quynhkun')root.DTQuynhKun.update(this,dt);if(this.hero.id==='ait01')root.DTAit01.update(this,dt);this.updateUltIntro(dt);this.syncUltimate();this.weaponDrops=[];
     }
     transformElement(id){const ok=super.transformElement(id);if(ok&&this.signature){this.signature.color=this.element.color}return ok}
     updateTutorial(){const before=this.tutorial.step;super.updateTutorial();if(before<5&&this.tutorialDone){this.events=this.events.filter(e=>!(e.type==='toast'&&/TAB/.test(e.text)));this.emit('toast',{text:'Đã sẵn sàng! K học kỹ năng, I xem nội tại và cổ vật.'})}}
     grantRelic(id){if(C.relic(id)?.mythic&&this.player.relics[id]){this.player.gold+=35;this.emit('toast',{text:'Cổ vật đã sở hữu · nhận 35 xu thay thế',reward:true});return true}return super.grantRelic(id)}
-    cancelActions(){this.player.talismanWard=0;this.quynhRecastUntil=0;this.elementSummons=[];this.elementActions=[];this.elementFields=[];this.player.ultIntro=null;this.player.hoverboard=0;for(const c of this.elementClones||[])c.action=null;this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
+    cancelActions(){this.player.talismanWard=0;this.quynhRecastUntil=0;this.player.inventoryOverdrive=0;this.aitRecastUntil=0;this.elementSummons=[];this.elementActions=[];this.elementFields=[];this.player.ultIntro=null;this.player.hoverboard=0;for(const c of this.elementClones||[])c.action=null;this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
     travelTo(id){const ok=super.travelTo(id);if(ok)this.cancelActions();return ok}
     respawn(){super.respawn();this.cancelActions();this.passiveState.embers=0;this.passiveState.thunder=0}
-    serialize(){const data=super.serialize();if(this.hero.id==='quynhkun')data.quynhkun=root.DTQuynhKun.save(this);data.ascensionVersion=5;data.ascension={ultimate:this.player.ultIntro&&this.player.ultIntro.mode!=='split'?{elapsed:this.player.ultIntro.elapsed,angle:this.player.ultIntro.cast.angle,target:{...this.player.ultIntro.cast.target}}:null,elementCast:this.isElemental?this.castQueue.find(c=>c.type==='cast'&&c.key==='r')||null:null,points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;delete data.player.ultIntro;data.expansion.weaponDrops=[];return data}
-    static restore(data){const g=Base.restore(data);Object.setPrototypeOf(g,AscensionGame.prototype);g.initAscension(data.ascensionVersion===5?data.ascension:null);if(g.hero.id==='quynhkun')root.DTQuynhKun.restore(g,data.quynhkun);if(data.ascensionVersion!==5){g.skillPoints=3+Math.max(0,g.player.level-1)+(data.player?.weapons||[]).reduce((n,w)=>n+Math.max(0,(Number(w.level)||1)-1),0);g.emit('toast',{text:'Bản lưu 0.5: trang bị cũ đổi thành '+g.skillPoints+' điểm kỹ năng. K để phát triển bảo khí riêng.',reward:true})}return g}
+    serialize(){const data=super.serialize();if(this.hero.id==='quynhkun')data.quynhkun=root.DTQuynhKun.save(this);if(this.hero.id==='ait01')data.ait01=root.DTAit01.save(this);data.ascensionVersion=5;data.ascension={ultimate:this.player.ultIntro&&this.player.ultIntro.mode!=='split'?{elapsed:this.player.ultIntro.elapsed,angle:this.player.ultIntro.cast.angle,target:{...this.player.ultIntro.cast.target}}:null,elementCast:this.isElemental?this.castQueue.find(c=>c.type==='cast'&&c.key==='r')||null:null,points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;delete data.player.ultIntro;data.expansion.weaponDrops=[];return data}
+    static restore(data){const g=Base.restore(data);Object.setPrototypeOf(g,AscensionGame.prototype);g.initAscension(data.ascensionVersion===5?data.ascension:null);if(g.hero.id==='quynhkun')root.DTQuynhKun.restore(g,data.quynhkun);if(g.hero.id==='ait01')root.DTAit01.restore(g,data.ait01);if(data.ascensionVersion!==5){g.skillPoints=3+Math.max(0,g.player.level-1)+(data.player?.weapons||[]).reduce((n,w)=>n+Math.max(0,(Number(w.level)||1)-1),0);g.emit('toast',{text:'Bản lưu 0.5: trang bị cũ đổi thành '+g.skillPoints+' điểm kỹ năng. K để phát triển bảo khí riêng.',reward:true})}return g}
   }
   root.DTSatellitePose=(f,p,i)=>{const inner=i%2===0,a=(f.age||0)*(inner?3.4:-2.6)+i*TAU/(f.count||6);return{x:p.x+Math.cos(a)*(inner?88:132),y:p.y+Math.sin(a)*(inner?62:94),angle:a}};
   root.DTAscension={segment,Game:AscensionGame};root.DTGame=AscensionGame;

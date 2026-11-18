@@ -78,7 +78,7 @@ namespace DenTinh.Core {
                     f.life=0;QuynhFx("talisman_burst",f.position);
                     foreach(EnemyState e in Enemies.ToArray())if(e.alive&&V2.Distance(e.position,f.position)<f.radius+e.radius)QuynhHit(e,p.damage*1.9f,1,"summon");
                 }
-                Quynh.fields.RemoveAll(f=>f.life<=0);Quynh.recast=0;Quynh.ward=4.5f*SummonDuration;Quynh.wardTick=0;p.shield+=25+6*p.eRank;
+                Quynh.fields.RemoveAll(f=>f.life<=0);Quynh.recast=0;Quynh.ward=4.5f*SummonDuration;Quynh.wardTick=0;p.shield=Math.Max(p.shield,Math.Min(110,p.shield+25+6*p.eRank));
                 if(Quynh.eSpec=="agile")Quynh.agile=2;p.action=Action("e",null,p.position,Input.aim,0);p.action.released=true;Emit("sound","skill");return true;
             }
             float cost=key=="q"?24:30;if(p.mp<cost||key=="q"&&p.qTimer>0||key=="e"&&p.eTimer>0||p.action!=null&&p.action.key!="attack")return false;

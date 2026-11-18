@@ -40,6 +40,7 @@
   // Keep the original painted sprites. Cast motion transforms the sprite as a
   // whole; it must never replace the face, outfit or elemental silhouette.
   function drawSpriteHero(c,p,h,time=0,scale=1,npc=false,clone=false){
+    if(h.id==='ait01'&&root.DTAit01Pixel)return root.DTAit01Pixel.hero(c,p,h,time);
     if(h.id==='quynhkun'&&root.DTQuynhKunPixel)return root.DTQuynhKunPixel.hero(c,p,h,time);
     if(h.id==='quanle'&&root.DTQuanLePixel)return root.DTQuanLePixel.hero(c,p,h,time);
     if(!npc&&root.DTWorldPixel?.hero(c,p,h,time))return;

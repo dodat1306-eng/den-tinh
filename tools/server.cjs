@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const projectRoot = path.resolve(__dirname, '..');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' };
-const allowed = new Set(['assets/quynhkun-pixel-v1.png','assets/quynhkun-pixel-v1.json','assets/quynhkun-pixel-v1.js','assets/quynhkun-vfx-pixel.png','assets/quynhkun-vfx-pixel.json','assets/quynhkun-vfx-pixel.js','quynhkun-pixel.js','index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','frontier.js','scenery.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png','assets/environment-v03.png','assets/actors-v03.png','elemental.js','elemental-visuals.js','elemental-ui.js','elemental.css','assets/thien-vu-v04.png']);
+const allowed = new Set(['assets/ait01-pixel-v1.png','assets/ait01-pixel-v1.json','assets/ait01-pixel-v1.js','assets/ait01-vfx-pixel.png','assets/ait01-vfx-pixel.json','assets/ait01-vfx-pixel.js','ait01-pixel.js','ait01.js','assets/quynhkun-pixel-v1.png','assets/quynhkun-pixel-v1.json','assets/quynhkun-pixel-v1.js','assets/quynhkun-vfx-pixel.png','assets/quynhkun-vfx-pixel.json','assets/quynhkun-vfx-pixel.js','quynhkun-pixel.js','index.html', 'world.js', 'engine.js', 'render.js', 'app.js', 'style.css', 'icon.svg','content.js','expansion.js','frontier.js','scenery.js','visuals.js','controls.js','expansion.css','assets/key-art.png','assets/heroes.png','assets/environment-v03.png','assets/actors-v03.png','elemental.js','elemental-visuals.js','elemental-ui.js','elemental.css','assets/thien-vu-v04.png']);
 for(const file of ['v09-content.js','v09.js','relic-trials.js','v09-ui.js','v09-visuals.js','assets/relics-pixel-v09.png','assets/npcs-v091.png','assets/npcs-v091.js','assets/npcs-v091.json'])allowed.add(file);
 for(const file of ['assets/thienvu-pixel-v08.png', 'assets/thienvu-pixel-v08.js', 'assets/thienvu-pixel-v08.json', 'assets/thienvu-vfx-pixel.png', 'assets/thienvu-vfx-pixel.js', 'assets/thienvu-vfx-pixel.json', 'thienvu-pixel.js'])allowed.add(file);
 for(const file of ['world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v1.png','assets/actors-pixel-v1.js','assets/actors-pixel-v1.json',])allowed.add(file);
@@ -45,7 +45,7 @@ function createGameServer(options = {}) {
           let save;
           try {
             save = JSON.parse(body);
-            if (save.version !== 1 || !['an', 'linh', 'kiet', 'quynhkun', 'quanle', 'hoavi','thienvu'].includes(save.hero) || !save.player || !Number.isFinite(save.player.x) || !Number.isFinite(save.player.y) || !Array.isArray(save.enemies)) throw new Error('Invalid save');
+            if (save.version !== 1 || !['an', 'linh', 'kiet', 'quynhkun', 'ait01', 'quanle', 'hoavi','thienvu'].includes(save.hero) || !save.player || !Number.isFinite(save.player.x) || !Number.isFinite(save.player.y) || !Array.isArray(save.enemies)) throw new Error('Invalid save');
           } catch { res.writeHead(400, headers); res.end('{}'); return; }
           try {
             fs.mkdirSync(path.dirname(savePath), { recursive: true }); fs.writeFileSync(savePath + '.new', JSON.stringify(save)); fs.renameSync(savePath + '.new', savePath);

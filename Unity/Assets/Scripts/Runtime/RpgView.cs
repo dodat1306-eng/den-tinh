@@ -12,14 +12,14 @@ namespace DenTinh.UnityRuntime {
             if(!smoke)yield break;var errors=new List<string>();Application.LogCallback onLog=(message,trace,type)=>{if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)errors.Add(message);};Application.logMessageReceived+=onLog;
             yield return null;yield return null;int checkedViews=0;
             foreach(HeroDef h in content.PlayableHeroes){Game=new Simulation(content,h.id,71426);Game.Paused=true;screen="";view.transform.position=new Vector3(Game.Player.position.x,Game.Player.position.y,-20);Render();yield return null;checkedViews++;}
-            if(Game.IsQuynh){
-                if(PixelArt.WorldHero(Game.Hero,Game.Player,0,false).texture.name!="QuynhKun")errors.Add("Quynh Kun atlas missing");
-                Game.Props.Clear();Game.Enemies.Clear();Game.Input=new GameInput{aim=Game.Player.position+new V2(2,0)};Game.Paused=false;Game.Quynh.coins=6;
+            if(Game.IsAit01){
+                if(PixelArt.WorldHero(Game.Hero,Game.Player,0,false).texture.name!="Ait01")errors.Add("AIT-01 atlas missing");
+                Game.Props.Clear();Game.Enemies.Clear();Game.Input=new GameInput{aim=Game.Player.position+new V2(2,0)};Game.Paused=false;Game.Ait.ammo=6;
                 Game.Skill("e");for(int i=0;i<16;i++)Game.Tick(.02f);Game.Paused=true;Render();yield return null;checkedViews++;
-                if(Game.Quynh.fields.Count!=2)errors.Add("Empowered E must place two stakes");Game.Paused=false;Game.Skill("e");for(int i=0;i<35;i++)Game.Tick(.02f);Game.Paused=true;Render();yield return null;checkedViews++;
+                if(Game.Ait.fields.Count!=2)errors.Add("Empowered E must place two zones");Game.Paused=false;Game.Skill("e");for(int i=0;i<35;i++)Game.Tick(.02f);Game.Paused=true;Render();yield return null;checkedViews++;
                 Game.Paused=false;Game.Skill("r");for(int i=0;i<150;i++)Game.Tick(.02f);Game.Paused=true;Render();yield return null;checkedViews++;
                 RunSave ritual=JsonUtility.FromJson<RunSave>(JsonUtility.ToJson(Game.Capture()));Game=Simulation.Restore(content,ritual);Game.Props.Clear();Game.Paused=false;for(int i=0;i<80;i++)Game.Tick(.02f);Game.Paused=true;Render();yield return null;checkedViews++;
-                if(Game.Player.ultIntro!=null||Game.Quynh.fields.FindAll(f=>f.kind=="heaven-seal").Count!=1)errors.Add("Restored R must release once");
+                if(Game.Player.ultIntro!=null||Game.Ait.fields.FindAll(f=>f.kind=="airdrop-zone").Count!=1)errors.Add("Restored R must release once");
             }
             foreach(string panel in new[]{"inventory","skills","journal","map","melody","relic"}){inspectedRelic="kimquy";Open(panel);yield return null;yield return null;checkedViews++;}
             screen="";Game.Paused=false;Game.Tutorial=5;Game.Tick(.02f);Save();RunSave saved=JsonUtility.FromJson<RunSave>(File.ReadAllText(SavePath));Game=Simulation.Restore(content,saved);if(Game.WorldRelics.Count!=20)errors.Add("World relic save mismatch");
@@ -69,7 +69,7 @@ namespace DenTinh.UnityRuntime {
             }
             if(screen=="skills"){
                 Label(new Rect(195,165,1100,45),"Điểm kỹ năng: "+Game.Player.skillPoints+" · Mỗi cấp +1 · Mỗi chiêu tối đa bậc 3");string[] ids={"q","e","r","passive"},names={Game.Hero.q,Game.Hero.e,Game.Hero.r,"Nội tại"};int[] ranks={Game.Player.qRank,Game.Player.eRank,Game.Player.rRank,Game.Player.passiveRank};for(int i=0;i<4;i++){float x=195+i*300;Panel(new Rect(x,240,280,360));Label(new Rect(x+20,260,240,120),ids[i].ToUpper()+" · "+names[i]+"\nBậc "+ranks[i]+" / 3");Label(new Rect(x+20,395,240,80),i==0?"Tăng sức mạnh kỹ năng Q.":i==1?"Tăng hiệu lực và thời gian kỹ năng E.":i==2?"Cường hóa tuyệt kỹ R.":"Cường hóa nội tại riêng của nhân vật.",true);GUI.enabled=Game.Player.skillPoints>0&&ranks[i]<3;if(Button(new Rect(x+20,510,240,65),"Học · 1 điểm"))Game.LearnSkill(ids[i]);GUI.enabled=true;}
-                if(Game.IsQuynh){string[][] choices={new[]{"focus","burst"},new[]{"lasting","agile"},new[]{"might","renewal"}},labels={new[]{"Tập Trung","Bộc Phát"},new[]{"Bền Vững","Ứng Biến"},new[]{"Uy Lực","Tái Sinh"}};for(int i=0;i<3;i++){GUI.enabled=ranks[i]==3;string chosen=i==0?Game.Quynh.qSpec:i==1?Game.Quynh.eSpec:Game.Quynh.rSpec;for(int j=0;j<2;j++)if(Button(new Rect(215+i*300,620+j*55,240,48),(chosen==choices[i][j]?"✓ ":"")+labels[i][j])){Game.ChooseQuynhSpecialization(ids[i],choices[i][j]);Save();}GUI.enabled=true;}}
+                if(Game.IsQuynh||Game.IsAit01){string[][] choices={new[]{"focus","burst"},new[]{"lasting","agile"},new[]{"might","renewal"}},labels={new[]{"Tập Trung","Bộc Phát"},new[]{"Bền Vững","Ứng Biến"},new[]{"Uy Lực","Tái Sinh"}};for(int i=0;i<3;i++){GUI.enabled=ranks[i]==3;string chosen=Game.IsAit01?(i==0?Game.Ait.qSpec:i==1?Game.Ait.eSpec:Game.Ait.rSpec):(i==0?Game.Quynh.qSpec:i==1?Game.Quynh.eSpec:Game.Quynh.rSpec);for(int j=0;j<2;j++)if(Button(new Rect(215+i*300,620+j*55,240,48),(chosen==choices[i][j]?"✓ ":"")+labels[i][j])){if(Game.IsAit01)Game.ChooseAitSpecialization(ids[i],choices[i][j]);else Game.ChooseQuynhSpecialization(ids[i],choices[i][j]);Save();}GUI.enabled=true;}}
                 return true;
             }
             if(screen=="journal"){

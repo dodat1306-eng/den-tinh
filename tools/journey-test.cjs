@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),tests=[];
-for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ascension.js','endless.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ait01.js','ascension.js','endless.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 const old=new DTGame('hoavi',71426);old.start();old.player.gold=489;old.skillRanks.q=3;const oldSave=JSON.parse(JSON.stringify(old.serialize()));
 vm.runInThisContext(fs.readFileSync(path.join(root,'journey.js'),'utf8'),{filename:'journey.js'});vm.runInThisContext(fs.readFileSync(path.join(root,'shadow.js'),'utf8'),{filename:'shadow.js'});
 function test(name,fn){try{fn();tests.push({name,pass:true});console.log('PASS '+name)}catch(e){tests.push({name,pass:false,error:e.stack});console.error('FAIL '+name+'\n'+e.stack)}}

@@ -4,7 +4,8 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const output = path.resolve(root, 'dist');
-const files = ['assets/quynhkun-pixel-v1.png','assets/quynhkun-pixel-v1.json','assets/quynhkun-pixel-v1.js','assets/quynhkun-vfx-pixel.png','assets/quynhkun-vfx-pixel.json','assets/quynhkun-vfx-pixel.js','quynhkun-pixel.js',
+const files = ['assets/ait01-pixel-v1.png','assets/ait01-pixel-v1.json','assets/ait01-pixel-v1.js','assets/ait01-vfx-pixel.png','assets/ait01-vfx-pixel.json','assets/ait01-vfx-pixel.js','ait01-pixel.js','ait01.js',
+  'assets/quynhkun-pixel-v1.png','assets/quynhkun-pixel-v1.json','assets/quynhkun-pixel-v1.js','assets/quynhkun-vfx-pixel.png','assets/quynhkun-vfx-pixel.json','assets/quynhkun-vfx-pixel.js','quynhkun-pixel.js',
   'v09-content.js','v09.js','relic-trials.js','v09-ui.js','v09-visuals.js','assets/relics-pixel-v09.png','assets/npcs-v091.png','assets/npcs-v091.js','assets/npcs-v091.json',
   'shadow.js','quanle-pixel.js','assets/quanle-pixel-v1.png','assets/quanle-pixel-v1.js','assets/quanle-pixel-v1.json','assets/quanle-vfx-pixel.png','assets/quanle-vfx-pixel.js','assets/quanle-vfx-pixel.json',
   'world-pixel.js','world-destruction.js','assets/world-pixel-v08.png','assets/world-pixel-v08.js','assets/world-pixel-v08.json','assets/actors-pixel-v1.png','assets/actors-pixel-v1.js','assets/actors-pixel-v1.json',

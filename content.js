@@ -31,6 +31,7 @@
     ['dom','Lời Hứa Của Đốm','✧','Đốm nhặt vật phẩm từ xa, chỉ rương bí mật và hồi 1 máu mỗi giây.']
   ].map(a=>({id:a[0],name:a[1],icon:a[2],desc:a[3]}));
   const passives={
+    ait01:{name:'Giao Thức Kho Không Gian',desc:'Sáu ô cửa sổ vũ khí bay quanh. Đòn thứ ba bắn Shotgun, đủ khóa mục tiêu phóng Tên Lửa RPG nổ vùng, hồi linh lực, tạo khiên và tích Đạn Hỏa Lực.'},
     quynhkun:{name:'Ngũ Lôi Chu Sa Ấn & Đồng Xu Phát',desc:'Năm nét Chu Sa kích nổ Phù Bạo. Đòn thứ ba và nổ bùa hồi linh lực, tạo khiên và tích Lộc Khí. Đủ sáu tầng cường hóa Q hoặc E.'},
     an:{name:'Ngọn Lửa Bền Bỉ',desc:'Đòn lửa đốt thêm sát thương; thức tỉnh một ấn hồi đầy máu.'},
     linh:{name:'Nhịp Lá',desc:'Di chuyển liên tục tăng 12% tốc đánh; cung có khả năng xuyên.'},

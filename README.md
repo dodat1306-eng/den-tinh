@@ -1,6 +1,9 @@
 # Đèn Tinh: Miền Sương Lạc — 1.0.0
 
-**1.0.0** thêm Quỳnh Kun, nhân vật chơi được thứ sáu: Chu Sa, Lộc Khí, Q ba đạo bùa, E cường hóa đặt đồng thời hai cọc Bát Quái và R Bách Phù Trấn Thiên. Có nhiệm vụ bảy bước, atlas mesh Blender 266 frame, HUD Thu Phù trên desktop/cảm ứng và bản Unity đồng bộ. Xem [thay đổi 1.0.0](CHANGELOG-v1.0.0.md) và [kiểm chứng](qa/v100/acceptance.json).
+**1.0.0** thêm Quỳnh Kun (nhân vật thứ sáu) và **AIT-01 · Kẻ Lữ Hành Kho Tàng** (nhân vật thứ bảy):
+- **Quỳnh Kun**: Chu Sa, Lộc Khí, Q ba đạo bùa, E cường hóa đặt đồng thời hai cọc Bát Quái và R Bách Phù Trấn Thiên.
+- **AIT-01**: Mũ giáp sắt K6-3 cấp 3, sơ mi trắng cà vạt, quần bò, giày thể thao; điều khiển 6 ô cửa sổ Kho Không Gian bay quanh thân, tích Đạn Hỏa Lực và Khóa Mục Tiêu kích nổ tên lửa RPG, Q Truy Xuất Hỏa Lực, E Điều Phối Ô Kho / Thu Hồi Ô Kho và R Toàn Kho Khai Hỏa · Hòm Tiếp Tế.
+Xem [thay đổi 1.0.0](CHANGELOG-v1.0.0.md) và [kiểm chứng](qa/v100/acceptance.json).
 
 Game hành động 2D tiếng Việt, một người chơi. Bản **0.8** làm lại chín quần xã, cây/đá/kiến trúc, năm quái thường, bảy boss, NPC và triệu hồi bằng mesh Blender đa diện. Toàn bộ atlas mới dùng **1 texel = 2 × 2 pixel**, viền đen và bốn bậc màu. Cây cháy lan, thành thân than rồi tro; băng vỡ, chém cây và bước qua tro đều để lại dấu vết. Trạng thái được giữ khi tải bản lưu hoặc quay lại vùng cũ.
 
@@ -42,6 +45,8 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 | Quân Lê · Hắc Ấn Đoản Kiếm | Đánh thường phóng nguyệt nhận; linh hồn xác quái/cây đổ tồn tại 20 giây | Hắc Giáp 6,5 giây / triệu hồi bóng thú, tối đa 6 / binh đoàn 14 bóng thú trong 24 giây |
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
 | Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; X phân thân 3/5/7, R riêng từng dạng |
+| Quỳnh Kun · Chu Sa Trấn Phù | Khắc Ấn Chu Sa (5 nét nổ Phù Bạo), tích Lộc Khí Đồng Xu cường hóa Q/E | Chú Phù Đoạt Mệnh / Trận Bát Quái Định Thân (E thu phù) / Bách Phù Trấn Thiên |
+| AIT-01 · Ma Trận Kho Không Gian | Khóa mục tiêu (5 khóa nổ RPG), tích Đạn Hỏa Lực cường hóa Q/E, mũ 3 giảm sát thương | Truy Xuất Hỏa Lực / Điều Phối Ô Kho (E thu kho) / Toàn Kho Khai Hỏa · Hòm Tiếp Tế |
 
 Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **X** mở trận đồ 3/5/7 trong 4,2 giây, tạo tổng cộng 3/5/7 bản thể gồm bản chính trong 18 giây; nhấn lại để thu hồi. **R** tung tuyệt kỹ riêng của dạng hiện tại sau 0,28 giây, không ép phân thân hay hợp kích. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; R Băng đóng băng hoàn toàn 2,5 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
 
@@ -119,5 +124,5 @@ Máy này có thể dùng `runtime/node.exe` thay `node`. `test:combat` nạp to
 
 Xem [thay đổi 0.7](CHANGELOG-v0.7.md), [kiểm chứng và giới hạn](VALIDATION-v0.7.md), [nguồn tham khảo hình ảnh 0.5](ART-v0.5.md). Tài liệu các bản trước được giữ làm lịch sử.
 
-Unity Windows **0.9.1** có chỉ số RPG, cổ vật, 25 NPC, năm nhiệm vụ riêng và sáu chương tiếp nối. Tải [gói Windows](https://github.com/dodat1306-eng/den-tinh/releases/tag/v0.9.1); xem [hướng dẫn Unity](Unity/README_VI.md). Tiến độ Web và Unity lưu riêng.
+Unity Windows **1.0.0** có đủ sáu nhân vật (gồm Quỳnh Kun), chỉ số RPG, cổ vật, 25 NPC, sáu nhiệm vụ riêng và sáu chương tiếp nối. Xem [hướng dẫn Unity](Unity/README_VI.md) hoặc tải các bản phát hành tại [GitHub Releases](https://github.com/dodat1306-eng/den-tinh/releases). Tiến độ Web và Unity lưu riêng.
 

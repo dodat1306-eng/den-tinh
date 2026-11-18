@@ -2,6 +2,7 @@
   'use strict';
   const W=3840,H=2880;
   const HEROES={
+    ait01:{id:'ait01',name:'AIT-01',role:'KHO VŨ KHÍ DI ĐỘNG',desc:'Điều khiển 6 ô cửa sổ Inventory bay quanh, rút súng, lựu đạn và tên lửa.',color:'#4df3ff',cloth:'#26313a',accent:'#ffe478',hp:118,speed:238,damage:15,fireRate:.22,shotSpeed:820,q:'Truy Xuất Hỏa Lực',e:'Điều Phối Ô Kho',r:'Toàn Kho Khai Hỏa · Hòm Tiếp Tế',qCd:5,eCd:8.5,rCd:19},
     quynhkun:{id:'quynhkun',name:'Quỳnh Kun',role:'THẦY CÚNG VẼ BÙA',desc:'Khắc Chu Sa, dựng Bát Quái và thu phù hộ thể.',color:'#ff6b6b',cloth:'#1c324a',accent:'#ffd166',hp:115,speed:240,damage:17,fireRate:.21,shotSpeed:760,q:'Họa Phù · Thiên Cương Trảm',e:'Trấn Trạch Bát Quái Trận',r:'Cấp Cấp Như Luật Lệnh · Bách Phù Trấn Thiên',qCd:5,eCd:9,rCd:19},
     an:{id:'an',name:'An',role:'NGƯỜI GIỮ ĐÈN',desc:'Lửa linh, vòng trấn. Cân bằng và dễ làm quen.',color:'#f1bf69',cloth:'#459c83',accent:'#e8c273',hp:120,speed:230,damage:18,fireRate:.22,shotSpeed:640,q:'Liên Hỏa',e:'Vòng Trấn',r:'Thiên Đăng',qCd:5,eCd:9,rCd:18},
     linh:{id:'linh',name:'Linh',role:'TRÚC ẢNH',desc:'Cung ngọc, mưa trúc. Nhanh và đánh từ xa.',color:'#a5e3a2',cloth:'#648f73',accent:'#d9786c',hp:100,speed:264,damage:15,fireRate:.15,shotSpeed:810,q:'Xuyên Vân',e:'Mưa Trúc',r:'Phong Linh',qCd:4,eCd:8,rCd:18},

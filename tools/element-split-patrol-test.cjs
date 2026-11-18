@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
-for(const f of ['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ascension.js','endless.js','journey.js','world-destruction.js','shadow.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+for(const f of ['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ait01.js','ascension.js','endless.js','journey.js','world-destruction.js','shadow.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 const checks=[];
 function test(name,fn){fn();checks.push(name);console.log('PASS '+name)}
 function arena(id='thienvu'){

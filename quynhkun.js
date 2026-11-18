@@ -68,7 +68,8 @@
       for(const e of g.world.enemies)if(e.alive&&dist(e,f)<f.r+(e.r||0))hit(g,e,p.damage*1.9,1,'summon');
     }
     g.mythicFields=g.mythicFields.filter(f=>f.life>0);p.talismanWard=4.5*(p.summonDuration||1);g.quynhWardTick=0;
-    p.shield+=25+g.skillRanks.e*6;if(g.specializations?.e==='agile')g.agileTime=2;
+    // Recast shield stacks only up to 110 so repeated E recasts cannot bank unlimited shield.
+    p.shield=Math.max(p.shield||0,Math.min(110,(p.shield||0)+25+g.skillRanks.e*6));if(g.specializations?.e==='agile')g.agileTime=2;
     g.beginAction('e',p.facing);g.emit('sound',{name:'skill'});return true;
   }
   function release(g,c){

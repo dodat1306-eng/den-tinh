@@ -1,6 +1,26 @@
 {
   "heroes": [
     {
+      "id": "ait01",
+      "name": "AIT-01",
+      "role": "KHO VŨ KHÍ DI ĐỘNG",
+      "desc": "Giao Thức Kho Không Gian · Sáu ô cửa sổ giao diện bay quanh thân, chứa súng trường, tiểu liên, shotgun, lựu đạn và tên lửa.",
+      "color": "#4df3ff",
+      "cloth": "#26313a",
+      "accent": "#ffe478",
+      "hp": 118,
+      "speed": 238,
+      "damage": 15,
+      "fireRate": 0.22,
+      "shotSpeed": 820,
+      "q": "Truy Xuất Hỏa Lực",
+      "e": "Điều Phối Ô Kho",
+      "r": "Toàn Kho Khai Hỏa · Hòm Tiếp Tế",
+      "qCd": 5,
+      "eCd": 8.5,
+      "rCd": 19
+    },
+    {
       "id": "quynhkun",
       "name": "Quỳnh Kun",
       "role": "THẦY CÚNG VẼ BÙA",
@@ -293,6 +313,22 @@
       "color": "#ffe1a2",
       "effect": "chain",
       "desc": "Ba rễ linh lan điện, xuyên mục tiêu."
+    },
+    {
+      "id": "inventory-matrix",
+      "name": "Ma Trận Kho Không Gian",
+      "kind": "inventory",
+      "color": "#4df3ff",
+      "desc": "Sáu ô cửa sổ giao diện bay quanh thân, chứa súng trường, tiểu liên, shotgun, lựu đạn và tên lửa.",
+      "rarity": "signature",
+      "power": 1,
+      "interval": 0.22,
+      "speed": 820,
+      "reload": 0,
+      "shots": 1,
+      "pierce": 0,
+      "clip": 1,
+      "effect": ""
     },
     {
       "id": "cinnabar-brush",

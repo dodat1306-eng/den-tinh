@@ -12,7 +12,7 @@ function canvas(){const c=context();return{width:1280,height:720,ctx:c,getContex
 global.document={createElement:()=>canvas(),querySelectorAll:()=>[]};
 global.Image=class{constructor(){this.complete=false;this.naturalWidth=0}set src(s){this._src=s;this.complete=true;const b=fs.readFileSync(path.join(root,s));this.naturalWidth=b.readUInt32BE(16);this.naturalHeight=b.readUInt32BE(20)}};
 global.DTSettings={graphics:'high',reducedMotion:false};global.DTTouch={active:false};
-for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ascension.js','endless.js','journey.js','shadow.js','render.js','visuals.js','scenery.js','assets/thienvu-pixel-v08.js','assets/thienvu-vfx-pixel.js','thienvu-pixel.js','elemental-visuals.js','ascension-visuals.js','journey-visuals.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
+for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js','elemental.js','mythic-content.js','quynhkun.js','ait01.js','ascension.js','endless.js','journey.js','shadow.js','render.js','visuals.js','scenery.js','assets/thienvu-pixel-v08.js','assets/thienvu-vfx-pixel.js','thienvu-pixel.js','elemental-visuals.js','ascension-visuals.js','journey-visuals.js'])vm.runInThisContext(fs.readFileSync(path.join(root,f),'utf8'),{filename:f});
 function game(id='an'){const g=new DTGame(id,71426);g.start();g.skipTutorial();g.consumeEvents();g.player.crit=0;g.input={dx:0,dy:0,aimX:g.player.x+220,aimY:g.player.y,fire:false};return g}
 function enemy(){return{id:'dummy',type:'slime',x:900,y:2200,hp:100000,maxHp:100000,alive:true,r:15,xp:0,gold:0,damage:0,speed:0,hit:0}}
 const prior=game(),priorSave=JSON.parse(JSON.stringify(prior.serialize())),baseline=enemy();prior.damageEnemy(baseline,25,false);const expectedDamage=100000-baseline.hp;
@@ -66,8 +66,8 @@ test('R cooldown supports ranks and relics; all summon states have ordered nonlo
   for(const kind of SHADOW_BEAST_CATALOG.map(s=>s.id))for(const[mode,n]of[['spawn',4],['idle',4],['walk',6],['attack',6]])assert.equal(DTQuanLeVFX.clips[kind+'/'+mode].frames,n);
   const s={spawnAge:0,moving:false,action:null};assert.equal(DTQuanLePixel.state(s),'spawn');s.spawnAge=.45;assert.equal(DTQuanLePixel.state(s),'idle');s.moving=true;assert.equal(DTQuanLePixel.state(s),'walk');s.action={elapsed:0,duration:.6};assert.equal(DTQuanLePixel.state(s),'attack');
 });
-test('Six distinct intro scenes and seven crests render with finite coordinates and balanced Canvas state',()=>{
-  assert.equal(Object.keys(DTUltimateIntro.words).length,6);for(let id=0;id<7;id++){const c=context();DTUltimateIntro.crest(c,id,50,50);assert.equal(c.depth(),0)}
+test('Seven distinct intro scenes and seven crests render with finite coordinates and balanced Canvas state',()=>{
+  assert.equal(Object.keys(DTUltimateIntro.words).length,7);for(let id=0;id<7;id++){const c=context();DTUltimateIntro.crest(c,id,50,50);assert.equal(c.depth(),0)}
   for(const calm of[false,true]){DTSettings.reducedMotion=calm;for(const id of Object.keys(DTUltimateIntro.words)){const g=ritualGame(id),r=new DTRenderer(canvas(),g);id==='thienvu'?g.splitElementals():g.skill('r');for(const t of[.1,1.3,2.9,3.6,4.1]){g.player.ultIntro.elapsed=t;g.player.action.elapsed=t;r.draw(.016);assert.equal(r.ctx.depth(),0)}}}DTSettings.reducedMotion=false;
 });
 fs.mkdirSync(path.join(root,'qa'),{recursive:true});fs.writeFileSync(path.join(root,'qa/choreography-report.json'),JSON.stringify({checkedAt:new Date().toISOString(),results,numericCanvas:true,actualDamageCompared:true,visualInspection:false},null,2));console.log(results.filter(r=>r.pass).length+'/'+results.length+' choreography checks passed');process.exitCode=results.every(r=>r.pass)?0:1;

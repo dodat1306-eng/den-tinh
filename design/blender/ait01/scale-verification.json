@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "texelHeights": {
+    "S": 43,
+    "E": 43,
+    "N": 40,
+    "W": 44
+  },
+  "unit": 2,
+  "anchorY": 58,
+  "mirrored": false,
+  "heroTransform": {
+    "scale": 0.8818431146992607,
+    "lift": 0.05790751317228601
+  }
+}

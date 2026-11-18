@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const ctx={console,localStorage:{getItem:()=>null,setItem:()=>{}}};ctx.globalThis=ctx;vm.createContext(ctx);
-const files=['world','content','engine','expansion','frontier','elemental','mythic-content','quynhkun','ascension','endless','journey','v09-content','world-destruction','shadow','relic-trials','v09'];
+const files=['world','content','engine','expansion','frontier','elemental','mythic-content','quynhkun','ait01','ascension','endless','journey','v09-content','world-destruction','shadow','relic-trials','v09'];
 for(const f of files)vm.runInContext(fs.readFileSync(f+'.js','utf8'),ctx,{filename:f+'.js'});
 const V=ctx.DTV09Content,Game=ctx.DTGame,results=[];
 function test(name,fn){if(process.env.TEST_FILTER&&!name.includes(process.env.TEST_FILTER))return;try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(e){results.push({name,pass:false,error:e.stack});console.error('FAIL '+name+'\n'+e.stack)}}
