@@ -105,7 +105,7 @@
   const release=G.releaseCast;
   G.releaseCast=function(c){const p=this.player,origin={x:p.x,y:p.y};const result=release.call(this,c);if(!this.dead&&this.hero.id!=='thienvu'&&['q','e','r'].includes(c.key))emit(this,'choreo-release',origin.x,origin.y,this.hero.color,this.hero.id==='an'&&c.key==='r'?660:160,c.key==='r'?1.05:.65,{hero:this.hero.id,key:c.key,angle:c.angle||0,tx:p.x,ty:p.y,element:this.hero.id==='an'?'fire':this.hero.id==='linh'?'nature':this.hero.id==='kiet'?'lightning':'light'});return result};
   const damage=G.damageEnemy;
-  G.damageEnemy=function(e,...args){const hp=e?.hp,result=damage.call(this,e,...args);if(e&&hp>e.hp&&this.time-(hitTimes.get(e)??-10)>.07){hitTimes.set(e,this.time);emit(this,'choreo-hit',e.x,e.y-12,'#ffe8b8',34,.26,{hero:this.hero.id,element:e.markElement||this.element?.id||'light',seed:e.x*.1+e.y*.2})}return result};
+  G.damageEnemy=function(e,...args){const hp=e?.hp,result=damage.call(this,e,...args);if(e&&hp>e.hp&&this.time-(hitTimes.get(e)??-10)>.07){hitTimes.set(e,this.time);emit(this,'choreo-hit',e.x,e.y-12,'#ffe8b8',34,.26,{hero:this.hero.id,element:e.markElement||this.element?.id||'light',angle:e.hitAngle||0,seed:e.x*.1+e.y*.2})}return result};
   const hurt=G.damagePlayer;
   G.damagePlayer=function(...args){const p=this.player,hp=p.hp,shield=p.shield||0,result=hurt.apply(this,args);if(p.hp<hp||(p.shield||0)<shield)hurtTimes.set(p,this.time);return result};
   const fire=G.fire;
@@ -230,7 +230,13 @@
       if(e.type==='choreo-release')drawRelease(c,e,age);
       else if(e.type==='choreo-hit'){
         if(reduced()){line(c,[[-5,0],[5,0]],'#fff0c9',2);return}
-        spray(c,e.element,age,quality()===0?2:5,18,e.seed);line(c,[[-7*(1-age),0],[7*(1-age),0]],'#fff5d3',2);
+        spray(c,e.element,age,quality()===0?2:5,18,e.seed);
+        c.save();c.rotate(e.angle||0);
+        ring(c,4,0,6+age*18,e.color||'#ffe8b8',.45);
+        line(c,[[-8*(1-age),0],[18+age*14,0]],'#ffffff',2.4);
+        line(c,[[2,-5*(1-age)],[14+age*10,-9*age]],e.color||'#ffe8b8',1.5);
+        line(c,[[2,5*(1-age)],[14+age*10,9*age]],e.color||'#ffe8b8',1.5);
+        c.restore();
       }else if(e.type==='choreo-transform'){
         c.lineWidth=1.5;ring(c,0,0,reduced()?37:22+age*65,e.color);
         if(!reduced())for(let i=0;i<7;i++){const a=i/7*TAU+age*.7;mote(c,Math.cos(a)*(23+age*35),Math.sin(a)*(14+age*19)-25,20,e.element,age,a)}

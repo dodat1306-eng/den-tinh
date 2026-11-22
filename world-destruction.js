@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
   const wood=new Set(['tree','willow','banyan','pine','bamboo','fern','reed','flower','lotus','grass','deadTree','barrel','crate','lanternPost']);
-  const stone=new Set(['rock','crystal','pillar']),statuses=new Set(['intact','burning','heated','frozen','electrified','charred','cracked','sliced','ash_pile','rubble','crystal_shards']);
+  const stone=new Set(['rock','crystal','pillar']),foliage=new Set(['grass','rice','flower','fern','reed','lotus','bamboo']),statuses=new Set(['intact','burning','heated','frozen','electrified','charred','cracked','sliced','ash_pile','rubble','crystal_shards']);
   const kinds=new Set(['scorch_mark','crater_mark','lightning_scar','frost_patch','ash_scatter']);
   const clamp=(v,a,b)=>Number.isFinite(v)?Math.max(a,Math.min(b,v)):a,dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),MAX_DECALS=384;
   const grids=new WeakMap(),steps=new WeakMap();
@@ -64,9 +64,33 @@
     else{p.damageStage=1;p.status=element==='lightning'?'electrified':'intact';p.afflictTimer=1}
     return true;
   }
+  function spawnLeaves(g,p,dir=1,count=3){
+    if(!g)return;const list=g.foliageLeaves||=([]);if(list.length>140)return;
+    const cols={bamboo:['#6ab07c','#92d198'],lotus:['#f4a7b9','#f9cdd7','#70a88c'],flower:['#f3b88c','#e5a4cb','#f5df8b','#a9c4eb'],rice:['#d9cc6b','#b8c468'],fern:['#68ad86','#91cfa4'],reed:['#d5c893','#b5bd7c'],grass:['#7bb872','#9fd68b']}[p.type]||['#8ad477','#b2e698'];
+    for(let i=0;i<count;i++){
+      const c=cols[(i+(p.variant||0))%cols.length],ang=-Math.PI/2+(dir*(.25+i*.18))+((i%2)-.5)*.3;
+      list.push({x:p.x+(i-1)*5,y:p.y-8-(p.type==='bamboo'?22:0),vx:Math.cos(ang)*(32+i*14)+dir*26,vy:-36-i*12,rot:i*1.1,vrot:(dir||1)*(4+i*1.5),color:c,petal:p.type==='flower'||p.type==='lotus',life:.68+i*.1,maxLife:.68+i*.1});
+    }
+  }
+  function bendBlast(g,x,y,r=140,force=1){
+    if(!g?.world||!Number.isFinite(x)||!Number.isFinite(y)||!Number.isFinite(r)||r<=0)return 0;
+    let count=0;const rad=Math.max(42,r);
+    for(const p of g.world.props||[]){
+      if(!foliage.has(p.type)&&!wood.has(p.type)||p.damageStage===3)continue;
+      const d=Math.hypot(p.x-x,p.y-y);if(d>rad)continue;
+      const falloff=Math.max(.22,1-d/rad),dir=p.x>=x?1:-1,amp=(foliage.has(p.type)?11:4.5)*force*falloff;
+      p.bend=(p.bend||0)+dir*.32*falloff;p.bend=clamp(p.bend,-.92,.92);
+      p.bendVel=clamp((p.bendVel||0)+dir*amp,-18,18);
+      p.sway=Math.max(p.sway||0,Math.abs(p.bend)||.22);
+      if(foliage.has(p.type)&&(p.leafCd||0)<=0){p.leafCd=.25;spawnLeaves(g,p,dir,3)}
+      count++;
+    }
+    return count;
+  }
   function react(g,element,x,y,r=150,power=45,ground=true){
     if(!g?.world||![x,y,r,power].every(Number.isFinite)||r<0||r>2500||power<0)return 0;
     let count=0;const list=g.world.groundDecals||=[];
+    if(r>=36)bendBlast(g,x,y,r,1.1);
     if(element==='fire')for(let i=list.length-1;i>=0;i--)if(list[i].type==='frost_patch'&&Math.hypot(list[i].x-x,list[i].y-y)<=r+32){fx(g,'steam_cloud',list[i].x,list[i].y);list.splice(i,1)}
     if(ground){const kind={fire:'scorch_mark',light:'scorch_mark',earth:'crater_mark',lightning:'lightning_scar',ice:'frost_patch'}[element];if(kind)decal(g,kind,x,y,r)}
     for(const p of near(g.world,x,y,r))if(hit(g,p,element,power))count++;
@@ -107,8 +131,45 @@
     }
     for(const p of spread)for(const other of near(g.world,p.x,p.y,85))if(other!==p&&wood.has(other.type)&&other.damageStage===0)hit(g,other,'fire',0);
     for(const p of heat)for(const e of g.world.enemies||[])if(e.alive&&dist(e,p)<85+(e.r||0))g.damageEnemy?.(e,Math.max(2,(g.player?.damage||12)*.16),false);
-    const actors=[g.player,...(g.elementClones||[]),...(g.elementSummons||[]),...(g.world.enemies||[]).filter(e=>e.alive&&dist(e,g.player)<1000)];
-    for(const actor of actors){if(!actor)continue;const old=steps.get(actor);steps.set(actor,{x:actor.x,y:actor.y});if(!old||dist(old,actor)<.15)continue;for(const p of near(g.world,actor.x,actor.y,54))if(dist(p,actor)<Math.max(p.baseRadius||0,16)+26)step(g,p,actor.dashTime>0?70:0)}
+    const fox=g.player?{id:'companion-fox',x:g.player.x-40+Math.sin(g.time||0)*7,y:g.player.y+25+Math.cos((g.time||0)*.8)*7}:null;
+    const actors=[g.player,fox,...(g.elementClones||[]),...(g.relicClones||[]),...(g.shadowArmy||[]),...(g.elementSummons||[]),...(g.world.enemies||[]).filter(e=>e.alive&&dist(e,g.player)<1000)];
+    for(const actor of actors){
+      if(!actor||!Number.isFinite(actor.x)||!Number.isFinite(actor.y))continue;
+      const old=steps.get(actor);steps.set(actor,{x:actor.x,y:actor.y});
+      const moved=old?dist(old,actor):(actor.moving||actor.dashTime>0?4:0);
+      if(moved<.12&&!(actor.dashTime>0))continue;
+      const vx=old?actor.x-old.x:Math.cos(actor.facing||0)*4,dashing=actor.dashTime>0;
+      for(const p of near(g.world,actor.x,actor.y,54))if(dist(p,actor)<Math.max(p.baseRadius||0,16)+26)step(g,p,dashing?70:0);
+      for(const p of g.world.props||[]){
+        if(!foliage.has(p.type)||p.damageStage===3)continue;
+        const d=Math.hypot(p.x-actor.x,p.y-actor.y);
+        if(d<=42){
+          const dir=(Math.abs(p.x-actor.x)>2?(p.x>=actor.x?1:-1):(vx>=0?1:-1))*(dashing?1.65:1);
+          const push=(1-d/44)*(dashing?11.5:7.2);
+          p.bendVel=clamp((p.bendVel||0)+dir*push,-16,16);
+          if(Math.abs(p.bend||0)<.08)p.bend=(p.bend||0)+dir*.14*(1-d/44);
+          p.sway=Math.max(p.sway||0,Math.abs(p.bend)||.18);
+          if((p.leafCd||0)<=0){p.leafCd=.28;spawnLeaves(g,p,dir>=0?1:-1,dashing?4:2+(Math.abs(Math.round(p.x))%2))}
+        }
+      }
+    }
+    for(const p of g.world.props||[]){
+      if(p.leafCd>0)p.leafCd=Math.max(0,p.leafCd-dt);
+      if(p.bend||p.bendVel){
+        const k=p.type==='bamboo'?38:48,c=p.type==='bamboo'?5.0:5.8;
+        p.bendVel+=((-k*(p.bend||0))-(c*(p.bendVel||0)))*dt;
+        p.bend=clamp((p.bend||0)+p.bendVel*dt,-.95,.95);
+        if(Math.abs(p.bend)<.002&&Math.abs(p.bendVel)<.01){p.bend=0;p.bendVel=0}
+      }
+    }
+    if(g.foliageLeaves){
+      for(let i=g.foliageLeaves.length-1;i>=0;i--){
+        const lf=g.foliageLeaves[i];lf.life-=dt;
+        lf.vx+=Math.sin((g.time||0)*3+i)*18*dt;lf.vy+=62*dt;
+        lf.x+=lf.vx*dt;lf.y+=lf.vy*dt;lf.rot+=lf.vrot*dt;
+        if(lf.life<=0)g.foliageLeaves.splice(i,1);
+      }
+    }
     const list=g.world.groundDecals||=[];for(let i=list.length-1;i>=0;i--){list[i].age+=dt;if(list[i].age>=list[i].life)list.splice(i,1)}
   }
   function state(p){
@@ -124,8 +185,10 @@
     if(p.status==='burning'&&!p.burnTimer){p.damageStage=2;p.status='charred';p.charTimer=3}
   }
   function cleanState(s){const p={type:'rock',r:1};applyState(p,s);return state(p)}
-  root.DTDestruction={wood,stone,init,near,hit,react,trace,projectile,step,update,decal,state,applyState,cleanState,MAX_DECALS};
-  const P=root.DTGame.prototype,priorReact=P.reactEnvironment,priorUpdate=P.update,priorArea=P.areaDamage,priorSerialize=P.serialize,priorRestore=root.DTGame.restore;
+  root.DTDestruction={wood,stone,foliage,init,near,hit,react,trace,projectile,step,update,decal,state,applyState,cleanState,bendBlast,spawnLeaves,MAX_DECALS};
+  const P=root.DTGame.prototype,priorReact=P.reactEnvironment,priorUpdate=P.update,priorArea=P.areaDamage,priorEffect=P.effect,priorSerialize=P.serialize,priorRestore=root.DTGame.restore;
+  P.bendFoliage=function(x,y,r=140,force=1){return bendBlast(this,x,y,r,force)};
+  if(priorEffect)P.effect=function(type,x,y,color,r,life,extra){if(['shock','ultimate','blast'].includes(type)&&Number.isFinite(r)&&r>=40)bendBlast(this,x,y,r,type==='ultimate'?1.5:1.1);return priorEffect.call(this,type,x,y,color,r,life,extra)};
   P.reactEnvironment=function(element,x,y,r=150){if(![x,y,r].every(Number.isFinite)||r<0||r>2500)return 0;return(priorReact?.call(this,element,x,y,r)||0)+react(this,element,x,y,r)};
   P.areaDamage=function(x,y,r,...args){if(!this._worldDamage)react(this,this.hero.id==='thienvu'?this.element.id:({an:'fire',linh:'wind',kiet:'earth',hoavi:'lightning'}[this.hero.id]||'physical'),x,y,r,args[0]||30);return priorArea.call(this,x,y,r,...args)};
   P.update=function(dt){const before=this.time;priorUpdate.call(this,dt);if(this.time>before)update(this,this.time-before)};

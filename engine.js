@@ -7,7 +7,7 @@
     constructor(hero='an',seed=71426){
       this.world=D.makeWorld(seed);this.rng=D.rand(seed+123);this.hero=D.HEROES[hero]||D.HEROES.an;
       this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:220,gold:0,potions:3,ult:100,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0,r:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
-      this.projectiles=[];this.effects=[];this.particles=[];this.loot=[];this.floaters=[];this.telegraphs=[];this.events=[];
+      this.projectiles=[];this.effects=[];this.particles=[];this.loot=[];this.floaters=[];this.telegraphs=[];this.events=[];this.dyingEnemies=[];this.foliageLeaves=[];this.bossCutIn=null;
       this.time=0;this.paused=true;this.started=false;this.dead=false;this.victory=false;this.storyStarted=false;this.bossStarted=false;this.kills=0;this.deaths=0;this.upgrades=0;this.pendingLevels=0;this.visited=new Set(['village']);this.zone='village';this.shake=0;this.hitFlash=0;this.activeEffects=[];this.respawnPoint={x:740,y:2200};
       this.input={dx:0,dy:0,fire:false,aimX:1000,aimY:2200};
     }
@@ -39,7 +39,9 @@
       if(this.input.fire)this.fire();
       const zone=D.zoneAt(p.x,p.y);if(zone.id!==this.zone){this.zone=zone.id;this.visited.add(zone.id);this.emit('zone',{zone})}
       this.updateEnemies(dt);this.updateProjectiles(dt);this.updateTelegraphs(dt);this.updateActiveEffects(dt);this.updateLoot(dt);
-      for(const list of[this.particles,this.effects,this.floaters])for(let i=list.length-1;i>=0;i--){const e=list[i];e.life-=dt;if(e.vx)e.x+=e.vx*dt;if(e.vy)e.y+=e.vy*dt;if(e.life<=0)list.splice(i,1)}
+      for(const list of[this.particles,this.effects,this.floaters])for(let i=list.length-1;i>=0;i--){const e=list[i];e.life-=dt;if(e.gravity)e.vy=(e.vy||0)+e.gravity*dt;if(e.vx)e.x+=e.vx*dt;if(e.vy)e.y+=e.vy*dt;if(e.life<=0)list.splice(i,1)}
+      this.updateDyingEnemies(dt);
+      if(this.bossCutIn){this.bossCutIn.timer-=dt;if(this.bossCutIn.timer<=0)this.bossCutIn=null}
       if(this.particles.length>650)this.particles.splice(0,this.particles.length-650);
       if(this.effects.length>150)this.effects.splice(0,this.effects.length-150);
       if(this.projectiles.length>500)this.projectiles.splice(0,this.projectiles.length-500);
@@ -51,8 +53,8 @@
       this.spark(p.x+Math.cos(p.facing)*20,p.y+Math.sin(p.facing)*20,4,this.hero.color,100,.12);this.emit('sound',{name:'shoot'});
     }
     shoot(x,y,angle,speed,damage,color,opts={}){
-      const friendly=opts.friendly!==false;
-      this.projectiles.push({x:x+Math.cos(angle)*20,y:y+Math.sin(angle)*20,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,angle,damage,color,friendly,r:opts.r||5,life:opts.life||2,pierce:opts.pierce||0,kind:opts.kind||'orb',charge:opts.charge!==false,hitIds:[],trail:0});
+      const friendly=opts.friendly!==false,sx=x+Math.cos(angle)*20,sy=y+Math.sin(angle)*20;
+      this.projectiles.push({x:sx,y:sy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,angle,damage,color,friendly,r:opts.r||5,life:opts.life||2,pierce:opts.pierce||0,kind:opts.kind||'orb',charge:opts.charge!==false,hitIds:[],trail:0,history:[{x:sx,y:sy}]});
     }
     dash(){
       const p=this.player;if(this.paused||this.dead||p.ultIntro||p.cd.dash>0)return false;
@@ -126,13 +128,69 @@
       this.floaters.push({x:p.x,y:p.y-38,text:`−${damage}`,color:'#ffac9b',life:.7,vy:-38});this.emit('sound',{name:'hurt'});
       if(p.hp<=0){this.dead=true;this.emit('death')}
     }
+    resolveHitElement(e){
+      const raw=e?.deathElement||this.lastHitElement||this.hitContext?.element||(this.hitContext?.kind==='code'?'code':this.hitContext?.shadow?'shadow':null);
+      if(raw){
+        if(['fire','ice','lightning','shadow','code','physical'].includes(raw))return raw;
+        if(['wind','earth','nature','light'].includes(raw))return 'physical';
+      }
+      if(e?.frozen>0||e?.frostSlow>0)return 'ice';
+      if(e?.codeFault>0)return 'code';
+      if(e?.burn>0)return 'fire';
+      const id=this.hero?.id;
+      if(id==='an')return 'fire';
+      if(id==='quanle')return 'shadow';
+      if(id==='hoavi'||id==='ait01')return 'code';
+      if(id==='quynhkun')return 'lightning';
+      if(id==='thienvu'){
+        const f=this.element?.id||this.player?.elementForm;
+        if(f==='fire'||f==='ice'||f==='lightning')return f;
+        return 'physical';
+      }
+      return 'physical';
+    }
+    pushDyingEnemy(e){
+      if(!e||!Number.isFinite(e.x)||!Number.isFinite(e.y))return;
+      const isBoss=e.type==='boss'||!!(e.sagaBoss||e.miniBoss||e.mythicBoss||e.v09Boss);
+      const maxLife=isBoss?1.3:.55,deathType=this.resolveHitElement(e);
+      const hitAngle=Number.isFinite(e.hitAngle)?e.hitAngle:Math.atan2(e.y-this.player.y,e.x-this.player.x);
+      const shards=[];
+      for(let i=0;i<10;i++){
+        const a=i/10*TAU+(i%2)*.18,sp=78+(i%4)*26;
+        shards.push({dx:0,dy:0,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*.68,size:4+(i%3)*2,rot:a,vrot:(i%2?1:-1)*6.5,char:i%2?'1':'0'});
+      }
+      this.dyingEnemies.push({id:e.id,type:e.type,name:e.name,x:e.x,y:e.y,startX:e.x,startY:e.y,r:e.r||15,isBoss,miniBoss:!!e.miniBoss,sagaBoss:!!e.sagaBoss,sagaIndex:e.sagaIndex,color:e.color,elite:e.elite,deathType,element:deathType,age:0,life:maxLife,maxLife,angle:hitAngle,vx:Math.cos(hitAngle)*(isBoss?52:138),vy:Math.sin(hitAngle)*(isBoss?52:138),z:0,vz:isBoss?72:118,bounced:false,shards});
+      if(this.dyingEnemies.length>48)this.dyingEnemies.shift();
+    }
+    updateDyingEnemies(dt){
+      if(!this.dyingEnemies)return;
+      for(let i=this.dyingEnemies.length-1;i>=0;i--){
+        const d=this.dyingEnemies[i];d.age+=dt;d.life-=dt;
+        if(d.deathType==='physical'){
+          d.x+=d.vx*dt;d.y+=d.vy*dt;d.vx*=Math.exp(-5*dt);d.vy*=Math.exp(-5*dt);
+          d.vz-=430*dt;d.z+=d.vz*dt;
+          if(d.z<=0){d.z=0;if(!d.bounced){d.bounced=true;d.vz=64}else d.vz=0}
+        }else if(d.deathType==='ice'&&d.age>.18){
+          for(const s of d.shards){s.dx+=s.vx*dt;s.dy+=s.vy*dt;s.vx*=Math.exp(-4.2*dt);s.vy*=Math.exp(-4.2*dt);s.rot+=s.vrot*dt}
+        }else if(d.deathType==='fire'||d.deathType==='code'){
+          for(const s of d.shards){s.dx+=s.vx*.24*dt;s.dy-=(54+Math.abs(s.vy))*dt}
+        }
+        if(d.life<=0)this.dyingEnemies.splice(i,1);
+      }
+    }
+    triggerBossCutIn(info){
+      if(!info)return;
+      const name=String(info.name||'BOSS').toUpperCase(),sub=String(info.subtitle||'KẺ CANH GIỮ MIỀN SƯƠNG').toUpperCase();
+      this.bossCutIn={id:info.id||'boss',type:info.type||'boss',sagaIndex:info.sagaIndex,name,subtitle:sub,fullTitle:info.fullTitle||`${name} — ${sub}`,color:info.color||'#e09f67',accent:info.accent||'#ffe6a3',timer:2.4,maxTimer:2.4};
+      this.emit('bossCutIn',this.bossCutIn);
+    }
     damageEnemy(e,amount,charge=true){
       if(!e.alive)return;const crit=this.damageContext!=='true'&&this.rng()<this.player.crit,dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));this.lastCritical=crit;e.hp-=dmg;e.hit=.12;
-
-      if(this.floaters.length<70)this.floaters.push({x:e.x+(this.rng()-.5)*15,y:e.y-e.r-15,text:String(dmg)+(crit?'!':''),color:crit?'#ffda83':'#e9ecce',life:.65,vy:-42});
+      e.hitSquash=.16;e.hitAngle=Number.isFinite(this.hitContext?.angle)?this.hitContext.angle:Math.atan2(e.y-this.player.y,e.x-this.player.x);e.lastHitElement=this.resolveHitElement(e);
+      if(this.floaters.length<70)this.floaters.push({x:e.x+(this.rng()-.5)*15,y:e.y-e.r-15,text:(crit?'✦ ':'')+String(dmg)+(crit?'!':''),color:crit?'#ffd700':'#e9ecce',crit:!!crit,scale:crit?1.45:1,life:crit?.82:.65,maxLife:crit?.82:.65,vx:(this.rng()-.5)*60,vy:crit?-128:-96,gravity:310});
       this.spark(e.x,e.y,5,e.type==='boss'?'#edb482':'#cce5c1',100,.23);
       if(e.hp<=0){
-        e.alive=false;this.kills++;this.addXp(Math.round(e.xp));
+        e.alive=false;this.pushDyingEnemy(e);this.kills++;this.addXp(Math.round(e.xp));
         this.loot.push({x:e.x,y:e.y,type:'gold',value:Math.round(e.gold),life:120});
         if(this.rng()<.14)this.loot.push({x:e.x+12,y:e.y-4,type:'potion',value:1,life:120});
         this.spark(e.x,e.y,22,e.type==='boss'?'#f3cc85':'#6bb29a',130,.55);this.emit('sound',{name:'kill'});
@@ -197,6 +255,7 @@
     updateProjectiles(dt){
       const p=this.player;
       for(let i=this.projectiles.length-1;i>=0;i--){const b=this.projectiles[i];if(!b)continue;b.life-=dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.trail+=dt;
+        (b.history||(b.history=[])).push({x:b.x,y:b.y});if(b.history.length>7)b.history.shift();
         if(b.trail>.035&&this.particles.length<580){b.trail=0;this.particles.push({x:b.x,y:b.y,color:b.color,size:b.friendly?3:2,life:.17,maxLife:.17})}
         if(b.friendly){for(const e of this.world.enemies)if(e.alive&&!b.hitIds.includes(e.id)&&Math.hypot(e.x-b.x,e.y-b.y)<e.r+b.r){this.damageEnemy(e,b.damage,b.charge!==false);b.hitIds.push(e.id);if(b.pierce>0)b.pierce--;else{b.life=0;break}}}
         else if(Math.hypot(b.x-p.x,b.y-p.y)<p.r+b.r){this.damagePlayer(b.damage);b.life=0}
@@ -253,7 +312,7 @@
     startBoss(){
       this.bossStarted=true;const hp=2100+this.player.level*180;
       this.world.enemies.push({id:'boss',type:'boss',name:'Mộc Quỷ · Cội Đa Lạc Hồn',x:1830,y:610,homeX:1830,homeY:610,r:45,hp,maxHp:hp,speed:32,damage:23,xp:250,gold:160,alive:true,cool:2,phase:1,timer:0,pattern:-1,hit:0,slow:0,knockX:0,knockY:0});
-      this.player.hp=this.player.maxHp;this.player.mp=this.player.maxMp;this.player.cd.r=0;this.player.ult=100;this.emit('boss');this.effect('ultimate',1830,610,'#dcaa8a',260,1.5);this.shake=8;
+      this.player.hp=this.player.maxHp;this.player.mp=this.player.maxMp;this.player.cd.r=0;this.player.ult=100;this.emit('boss');this.triggerBossCutIn({id:'boss',type:'boss',name:'MỘC QUỶ',subtitle:'CỘI ĐA LẠC HỒN',fullTitle:'MỘC QUỶ — CỘI ĐA LẠC HỒN',color:'#e09f67',accent:'#ffe6a3'});this.effect('ultimate',1830,610,'#dcaa8a',260,1.5);this.shake=8;
     }
     respawn(){
       this.dead=false;this.deaths++;const p=this.player;p.x=this.respawnPoint.x;p.y=this.respawnPoint.y;p.hp=p.maxHp;p.mp=p.maxMp;p.gold=Math.floor(p.gold*.9);p.potions=Math.max(3,p.potions);p.invulnerable=2;p.dashTime=0;this.projectiles=[];this.telegraphs=[];this.activeEffects=[];

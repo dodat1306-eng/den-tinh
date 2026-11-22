@@ -94,12 +94,14 @@
     }
     drawGuide(p,s){const c=this.ctx,a=Math.atan2(s.y-p.y,s.x-p.x),d=155;c.save();c.translate(p.x+Math.cos(a)*d,p.y+Math.sin(a)*d);c.rotate(a);c.globalAlpha=.75;poly(c,[[11,0],[-4,-5],[-1,0],[-4,5]],'#efd080');c.restore()}
     drawProp(o){
-      const c=this.ctx,g=this.game,x=Math.round(o.x),y=Math.round(o.y),v=o.variant;
+      const c=this.ctx,g=this.game,x=Math.round(o.x),y=Math.round(o.y),v=o.variant,bend=o.bend||0;
       if(o.type==='grass'||o.type==='rice'){
-        c.strokeStyle=o.type==='rice'?'#b3bd66':'#86a87888';c.lineWidth=2;for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(x+i*5,y);c.lineTo(x+i*5+3,y-8-i*2);c.stroke();if(o.type==='rice'){c.fillStyle='#c5ba6d';c.fillRect(x+i*5+2,y-10-i*2,3,5)}}return;
+        c.save();c.translate(x,y);if(bend)c.transform(1,0,bend,1,0,0);
+        c.strokeStyle=o.type==='rice'?'#b3bd66':'#86a87888';c.lineWidth=2;for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(i*5,0);c.lineTo(i*5+3,-8-i*2);c.stroke();if(o.type==='rice'){c.fillStyle='#c5ba6d';c.fillRect(i*5+2,-10-i*2,3,5)}}
+        c.restore();return;
       }
-      if(o.type==='flower'){c.fillStyle='#597e54';c.fillRect(x,y-7,2,8);c.fillStyle=['#d7a27b','#cf98ac','#d9c887','#acb8da'][v];c.fillRect(x-3,y-12,8,6);c.fillStyle='#e6d394';c.fillRect(x,y-10,2,2);return}
-      if(o.type==='lotus'){ellipse(c,x,y,18,7,'#51776a');poly(c,[[x,y],[x+17,y-3],[x+15,y+6]],'#2a5354');c.fillStyle='#cc90a4';c.fillRect(x-6,y-13,12,8);c.fillStyle='#efb9bc';c.fillRect(x-3,y-18,6,10);c.fillStyle='#edc881';c.fillRect(x-2,y-12,4,4);return}
+      if(o.type==='flower'){c.save();c.translate(x,y);if(bend)c.transform(1,0,bend,1,0,0);c.fillStyle='#597e54';c.fillRect(0,-7,2,8);c.fillStyle=['#d7a27b','#cf98ac','#d9c887','#acb8da'][v];c.fillRect(-3,-12,8,6);c.fillStyle='#e6d394';c.fillRect(0,-10,2,2);c.restore();return}
+      if(o.type==='lotus'){c.save();c.translate(x,y);if(bend)c.transform(1,0,bend*.6,1,0,0);ellipse(c,0,0,18,7,'#51776a');poly(c,[[0,0],[17,-3],[15,6]],'#2a5354');c.fillStyle='#cc90a4';c.fillRect(-6,-13,12,8);c.fillStyle='#efb9bc';c.fillRect(-3,-18,6,10);c.fillStyle='#edc881';c.fillRect(-2,-12,4,4);c.restore();return}
       if(o.type==='rock'){ellipse(c,x,y+2,23,8,'#152b2a55');poly(c,[[x-23,y],[x-19,y-20],[x-3,y-31],[x+17,y-24],[x+24,y],[x+7,y+7]],v%2?'#68726b':'#737b71');poly(c,[[x-19,y-20],[x-3,y-31],[x+17,y-24],[x+7,y-11]],'#8b9282');c.fillStyle='#a2a58a';c.fillRect(x-9,y-24,7,3);return}
       if(o.type==='house'||o.type==='temple'){
         const w=o.w,h=o.h,xx=x-w/2,yy=y-h;c.fillStyle='#14292455';c.fillRect(xx-8,y-14,w+24,29);

@@ -73,5 +73,204 @@
   const effect=R.drawEffect;R.drawEffect=function(e){if(e.type!=='rpg-level'&&e.type!=='rpg-soul')return effect.call(this,e);const c=this.ctx,alpha=e.life/e.maxLife;c.save();c.globalAlpha=alpha;if(e.type==='rpg-level'){const grad=c.createLinearGradient(0,e.y-220,0,e.y);grad.addColorStop(0,'#ffe8a000');grad.addColorStop(1,'#fff0bbcc');c.fillStyle=grad;c.fillRect(e.x-18,e.y-220,36,220);c.strokeStyle='#b8e4ce';c.lineWidth=3;c.beginPath();c.ellipse(e.x,e.y,60*(1-alpha)+20,16,0,0,TAU);c.stroke()}else{const f=1-alpha,x=e.x+(e.tx-e.x)*f,y=e.y+(e.ty-e.y)*f;c.fillStyle='#ffe4a6';c.fillRect(x-4,y-4,8,8)}c.restore()};
   const scenery=R.drawScenery;R.drawScenery=function(inView){scenery?.call(this,inView);const c=this.ctx,g=this.game;for(const p of [...g.world.relicPedestals,...g.world.bossAltars])if(!p.claimed&&inView(p))trialGround(this,p);if(g.domGuide){c.save();c.strokeStyle='#ffe1a0';c.lineWidth=2;c.setLineDash([3,9]);c.beginPath();c.moveTo(g.companion.x,g.companion.y);c.lineTo(g.domGuide.x,g.domGuide.y);c.stroke();c.restore()}};
   R.map=function(canvas,large=false){const c=canvas.getContext('2d'),g=this.game,p=g.player,w=canvas.width,h=canvas.height,span=large?8000:1700,scale=Math.min(w/span,h/(span*.64)),left=large?Math.max(-1200,p.x-span/2):p.x-span/2,top=p.y-h/scale/2;const point=(o,color,size=3)=>{const x=(o.x-left)*scale,y=(o.y-top)*scale;if(x<3||y<3||x>w-3||y>h-3)return;c.fillStyle=color;c.fillRect(Math.round(x-size/2),Math.round(y-size/2),size,size)};c.fillStyle='#101f2b';c.fillRect(0,0,w,h);if(this.ground.overview)c.drawImage(this.ground.overview,-left*scale,-top*scale,6400*scale,4480*scale);for(const n of g.world.npcs)if(n.id!=='well')point(n,'#8cc9d8',large?4:2);for(const o of g.world.relicPedestals||[])if(o.discovered&&!o.claimed)point(o,'#e9bf6f',large?5:3);for(const o of g.world.bossAltars||[])if(o.discovered&&o.status!=='defeated')point(o,'#d794ba',large?5:3);for(const o of g.relicDrops||[])point(o,'#ffe5aa',large?7:4);for(const e of g.world.enemies)if(e.alive&&(e.sagaBoss||e.v09Boss&&g.world.bossAltars.some(a=>a.relic===e.relic&&a.discovered)))point(e,'#e9948c',large?6:3);for(const s of g.world.shrines)point(s,s.active?'#9bd9ba':'#dc9abe',large?6:3);for(const s of g.world.sagaSites)point(s,'#c8a7e4',large?7:3);const t=g.questTarget?.();if(t)point(t,'#ffffff',large?8:4);point(p,'#fff0b6',large?7:4);if(large){c.font='12px "DenTinh Sans"';c.fillStyle='#eedfbd';c.fillText('Vàng: bệ đã khám phá · Tím: đàn đã khám phá · Lam: NPC · Trắng: nhiệm vụ',20,h-18);c.fillText('Vị trí '+Math.round(p.x)+', '+Math.round(p.y)+(t?' · Đích '+Math.round(t.x)+', '+Math.round(t.y):''),20,24)}};
-  root.DTV09Art={icon,atlas,actors,ready:()=>!!atlas.naturalWidth&&!!actors.naturalWidth&&!!root.DTNpcPixelAtlas};
+  const NPC_THEMES={
+    elder:{color:'#e5b869',accent:'#ffe8a8',bg:'#261d14',prop:'lantern'},
+    smith:{color:'#f97316',accent:'#fed7aa',bg:'#291712',prop:'hammer'},
+    temple_keeper:{color:'#d4b483',accent:'#fef08a',bg:'#231d16',prop:'scroll'},
+    weaver_woman:{color:'#f4a2b8',accent:'#fbcfe8',bg:'#281620',prop:'thread'},
+    lantern_boy:{color:'#fde047',accent:'#fef9c3',bg:'#242012',prop:'pinwheel'},
+    blind_bard:{color:'#a7f3d0',accent:'#d1fae5',bg:'#132620',prop:'lute'},
+    wandering_merchant:{color:'#fbbf24',accent:'#fef08a',bg:'#261e12',prop:'lantern'},
+    bamboo_hunter:{color:'#4ade80',accent:'#bbf7d0',bg:'#12261a',prop:'bow'},
+    bamboo_nun:{color:'#86efac',accent:'#dcfce7',bg:'#14281d',prop:'flute'},
+    cursed_woodcutter:{color:'#94a3b8',accent:'#e2e8f0',bg:'#1a222b',prop:'axe'},
+    lotus_crone:{color:'#f472b6',accent:'#fbcfe8',bg:'#261422',prop:'lotus'},
+    scholar_ghost:{color:'#67e8f9',accent:'#cffafe',bg:'#10252e',prop:'brush'},
+    firefly_girl:{color:'#bef264',accent:'#ecfccb',bg:'#192612',prop:'firefly'},
+    ash_forger:{color:'#ef4444',accent:'#fca5a5',bg:'#2b1414',prop:'hammer'},
+    ash_gravedigger:{color:'#a855f7',accent:'#e9d5ff',bg:'#1f122b',prop:'spade'},
+    exiled_pyromancer:{color:'#fb923c',accent:'#fed7aa',bg:'#2b1810',prop:'flame'},
+    waterfall_hermit:{color:'#2dd4bf',accent:'#99f6e4',bg:'#102826',prop:'gourd'},
+    windmill_keeper:{color:'#a3e635',accent:'#d9f99d',bg:'#1d2612',prop:'pinwheel'},
+    automaton_07:{color:'#22d3ee',accent:'#a5f3fc',bg:'#0e222e',prop:'core'},
+    ferryman:{color:'#38bdf8',accent:'#bae6fd',bg:'#10222e',prop:'oar'},
+    mirror_maiden:{color:'#e879f9',accent:'#f5d0fe',bg:'#26122b',prop:'mirror'},
+    bell_keeper:{color:'#facc15',accent:'#fef08a',bg:'#262112',prop:'bell'},
+    sun_child:{color:'#fde047',accent:'#fef9c3',bg:'#282210',prop:'sun'},
+    bronze_pilot:{color:'#60a5fa',accent:'#bfdbfe',bg:'#121f2e',prop:'compass'},
+    dom_avatar:{color:'#fcd34d',accent:'#fef3c7',bg:'#261f12',prop:'fox'}
+  };
+  const HERO_THEMES={
+    an:{color:'#f1bf69',accent:'#ffe7a2',bg:'#281c12',prop:'lantern'},
+    linh:{color:'#a5e3a2',accent:'#dcfce7',bg:'#14281d',prop:'flute'},
+    quanle:{color:'#b86bff',accent:'#5ce1e6',bg:'#1a102b',prop:'shadow'},
+    kiet:{color:'#b86bff',accent:'#5ce1e6',bg:'#1a102b',prop:'shadow'},
+    hoavi:{color:'#38bdf8',accent:'#f472b6',bg:'#0e212e',prop:'code'},
+    thienvu:{color:'#fbbf24',accent:'#fef08a',bg:'#22182b',prop:'element'},
+    quynhkun:{color:'#ff6b6b',accent:'#ffd166',bg:'#291318',prop:'talisman'},
+    ait01:{color:'#4df3ff',accent:'#ffe478',bg:'#0e232e',prop:'matrix'}
+  };
+  function resolveSpeaker(raw,game){
+    const text=String(raw||'').trim(),upper=text.toUpperCase(),g=game||root.denTinh?.game;
+    const heroes=root.DTWorld?.HEROES||{};
+    for(const h of Object.values(heroes)){
+      if(upper===h.id.toUpperCase()||upper===h.name.toUpperCase()||upper.startsWith(h.name.toUpperCase()+' ·')){
+        const th=HERO_THEMES[h.id]||HERO_THEMES.an;
+        const elCol=h.id==='thienvu'&&g?.element?.color?g.element.color:th.color;
+        return{kind:'hero',id:h.id,name:h.name,color:elCol,accent:th.accent,bg:th.bg,prop:th.prop};
+      }
+    }
+    const npcs=V?.npc||[];
+    for(const n of npcs){
+      const nu=n.name.toUpperCase();
+      if(upper===n.id.toUpperCase()||upper===nu||upper.startsWith(nu+' ·')||upper.includes(nu)){
+        const th=NPC_THEMES[n.id]||NPC_THEMES.elder;
+        return{kind:'npc',id:n.id,name:n.name,color:th.color,accent:th.accent,bg:th.bg,prop:th.prop};
+      }
+    }
+    if(upper.includes('NGƯỜI GIỮ MIẾU'))return{kind:'npc',id:'bell_keeper',name:'Người Giữ Miếu Chuông',...NPC_THEMES.bell_keeper};
+    if(upper.includes('ĐỐM'))return{kind:'npc',id:'dom_avatar',name:'Hóa Thân Của Đốm',...NPC_THEMES.dom_avatar};
+    if(upper.includes('CỘI ĐA')||upper.includes('LINH HỒN'))return{kind:'npc',id:'elder',name:'Cội Đa Lạc Hồn',color:'#a7f3d0',accent:'#fef08a',bg:'#132622',prop:'lotus'};
+    const near=g?.nearby?.();
+    if(near&&(near.v09Npc||near.storyNPC||NPC_THEMES[near.id||near.type])){
+      const id=near.type||near.id,th=NPC_THEMES[id]||NPC_THEMES.elder;
+      return{kind:'npc',id,name:near.name||text,color:th.color,accent:th.accent,bg:th.bg,prop:th.prop};
+    }
+    if(g?.hero){
+      const h=g.hero,th=HERO_THEMES[h.id]||HERO_THEMES.an;
+      if(upper.includes(h.name.toUpperCase()))return{kind:'hero',id:h.id,name:h.name,color:th.color,accent:th.accent,bg:th.bg,prop:th.prop};
+    }
+    return{kind:'npc',id:'elder',name:text||'Bà Năm',...NPC_THEMES.elder};
+  }
+  function drawPortrait(canvas,speakerRaw,time=0,game){
+    if(!canvas)return null;
+    const c=canvas.getContext('2d'),w=canvas.width||112,h=canvas.height||112,g=game||root.denTinh?.game;
+    const info=typeof speakerRaw==='object'&&speakerRaw?.id?speakerRaw:resolveSpeaker(speakerRaw,g);
+    const calm=!!root.DTSettings?.reducedMotion,t=calm?0:Number(time)||0;
+    const bob=calm?0:Math.round(Math.sin(t*3.2)*2),blink=!calm&&(t%3.6)>3.46;
+    c.save();
+    c.imageSmoothingEnabled=false;
+    // 1. Pixel-art dark background + speaker aura radial glow
+    c.fillStyle=info.bg||'#182228';
+    c.fillRect(0,0,w,h);
+    const grad=c.createRadialGradient(w*.5,h*.48,6,w*.5,h*.48,w*.52);
+    grad.addColorStop(0,(info.color||'#e5b869')+'66');
+    grad.addColorStop(1,'transparent');
+    c.fillStyle=grad;c.fillRect(0,0,w,h);
+    // Floating background pixel aura particles
+    for(let i=0;i<8;i++){
+      const px=Math.round((14+(i*37)+Math.sin(t*1.8+i)*8)%92)/2*2;
+      const py=Math.round((96-((i*23+t*18)%84)))/2*2;
+      c.fillStyle=i%2?info.accent:info.color;
+      c.globalAlpha=.35+.35*Math.sin(t*3+i);
+      c.fillRect(px,py,i%3===0?4:2,i%3===0?4:2);
+    }
+    c.globalAlpha=1;
+    // 2. Close-up Head, Shoulders & Signature Prop
+    let drawn=false;
+    if(info.kind==='npc'){
+      const clip=root.DTNpcPixelAtlas?.clips?.[info.id+'/idle'];
+      if(clip&&actors.complete&&actors.naturalWidth>0){
+        const idx=calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames,f=clip.cells[idx];
+        // Zoomed upper body (head, shoulders & held prop) at crisp 3x pixel scale
+        c.drawImage(actors,f.x+10,f.y+4,44,40,-10,8+bob,132,120);
+        drawn=true;
+      }
+    }else if(info.kind==='hero'){
+      const id=info.id;
+      if((id==='an'||id==='linh')&&root.DTWorldPixel?.ready()){
+        const clip=root.DTActorsPixelAtlas?.clips?.[id+'_S/idle'];
+        if(clip){
+          const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
+          c.drawImage(root.DTWorldPixel.actors,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+          drawn=true;
+        }
+      }else if((id==='quanle'||id==='kiet')&&root.DTQuanLePixel?.ready()){
+        const clip=root.DTQuanLeAtlas?.clips?.['S/idle'];
+        if(clip){
+          const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
+          c.drawImage(root.DTQuanLePixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+          drawn=true;
+        }
+      }else if(id==='hoavi'&&root.DTHoaViPixel?.ready()){
+        const cells=root.DTHoaViAtlas?.actions?.idle?.directions?.S;
+        if(cells){
+          const f=cells[calm?0:Math.floor(Math.max(0,t)*6)%cells.length];
+          c.drawImage(root.DTHoaViPixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+          drawn=true;
+        }
+      }else if(id==='thienvu'&&root.DTThienVuPixel?.ready()){
+        const form=g?.element?.id||g?.player?.elementForm||'lightning';
+        const cells=root.DTThienVuAtlas?.forms?.[form]?.actions?.idle?.directions?.S;
+        if(cells){
+          const f=cells[calm?0:Math.floor(Math.max(0,t)*6)%cells.length];
+          c.drawImage(root.DTThienVuPixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+          drawn=true;
+        }
+      }else if(id==='quynhkun'&&root.DTQuynhKunPixel?.ready()){
+        const clip=root.DTQuynhKunAtlas?.clips?.['S/idle'];
+        if(clip){
+          const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
+          c.drawImage(root.DTQuynhKunPixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+          drawn=true;
+        }
+      }else if(id==='ait01'&&root.DTAit01Pixel?.ready()){
+        const clip=root.DTAit01Atlas?.clips?.['S/idle'];
+        if(clip){
+          const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
+          c.drawImage(root.DTAit01Pixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+          drawn=true;
+        }
+      }
+    }
+    // Procedural Pixel-Art Bust Fallback (and signature prop/eye overlay)
+    if(!drawn){
+      // Shoulders & Robe
+      c.fillStyle=info.color;c.fillRect(24,66+bob,64,46);
+      c.fillStyle='#1b2832';c.fillRect(32,68+bob,48,44);
+      c.fillStyle=info.accent;c.fillRect(48,68+bob,16,44);
+      // Head & Hair/Hat
+      c.fillStyle='#e8c39e';c.fillRect(36,30+bob,40,36);
+      c.fillStyle=info.kind==='npc'?'#d6cfc2':'#222c38';
+      c.fillRect(32,20+bob,48,16);
+      // Eyes (with blink animation)
+      c.fillStyle='#141c24';
+      if(blink){
+        c.fillRect(42,46+bob,8,2);c.fillRect(62,46+bob,8,2);
+      }else{
+        c.fillRect(42,44+bob,6,6);c.fillRect(64,44+bob,6,6);
+        c.fillStyle='#ffffff';c.fillRect(44,44+bob,2,2);c.fillRect(66,44+bob,2,2);
+      }
+    }else if(blink){
+      // Subtle eye-blink shimmer on atlas portrait
+      c.fillStyle=info.bg;c.globalAlpha=.45;c.fillRect(44,46+bob,24,3);c.globalAlpha=1;
+    }
+    // 3. Signature Prop Overlay & Animated Foreground Details
+    const pBob=calm?0:Math.round(Math.sin(t*4.5)*3);
+    if(info.prop==='lantern'){
+      c.fillStyle='#785438';c.fillRect(84,48+pBob,14,4);
+      c.fillStyle='#ffb84d';c.fillRect(86,52+pBob,10,14);
+      c.fillStyle='#fff6cc';c.fillRect(88,54+pBob,6,10);
+    }else if(info.prop==='code'||info.prop==='core'){
+      c.fillStyle='#22d3ee';c.font='bold 10px monospace';
+      c.fillText(Math.floor(t*4)%2?'01':'<>',82,32+pBob);
+    }else if(info.prop==='talisman'){
+      c.fillStyle='#ff6b6b';c.fillRect(84,36+pBob,12,20);
+      c.fillStyle='#ffd166';c.fillRect(86,38+pBob,8,16);
+    }else if(info.prop==='matrix'){
+      c.strokeStyle='#4df3ff';c.lineWidth=2;c.strokeRect(80,34+pBob,18,18);
+      c.fillStyle='#ffe478';c.fillRect(85,39+pBob,8,8);
+    }else if(info.prop==='shadow'){
+      c.fillStyle='#a855f7';c.fillRect(84,42+pBob,8,14);
+      c.fillStyle='#5ce1e6';c.fillRect(86,44+pBob,4,8);
+    }
+    // 4. Inner Wood-and-Bronze Pixel Frame Border
+    c.strokeStyle='#5c4028';c.lineWidth=4;c.strokeRect(2,2,w-4,h-4);
+    c.strokeStyle=info.color||'#d8b068';c.lineWidth=2;c.strokeRect(5,5,w-10,h-10);
+    c.fillStyle='#f3d58d';
+    for(const [cx,cy]of[[4,4],[w-8,4],[4,h-8],[w-8,h-8]])c.fillRect(cx,cy,4,4);
+    c.restore();
+    return info;
+  }
+  root.DTV09Art={icon,atlas,actors,resolveSpeaker,drawPortrait,ready:()=>!!atlas.naturalWidth&&!!actors.naturalWidth&&!!root.DTNpcPixelAtlas};
 })(globalThis);

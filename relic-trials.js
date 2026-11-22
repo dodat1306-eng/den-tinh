@@ -41,6 +41,8 @@
   function summon(g,p,hp=950){
     if(g.world.enemies.some(e=>e.alive&&e.v09Boss&&e.relic===p.relic))return;
     const e=spawn(g,p,0,p.name,p.enemyType,950,{id:'relic-boss-'+p.relic,relic:p.relic,miniBoss:true,mythicBoss:true,v09Boss:true});e.hp=hp;p.status='summoned';p.unlocked=true;
+    const titles={kimquy:['HUYỀN QUY','CỔ THẠCH LINH QUY','#76e5c8'],mjolnir:['CỰ NHÂN SẮT','PHẾ TÍCH THIÊN CƠ','#93c5fd'],wukong:['HẦU ẢNH','SƠN LÂM HỘ PHÁP','#fcd34d'],phoenix:['HỎA ĐIỂU','PHƯỢNG HOÀNG TRO TÀN','#fb923c']}[p.relic]||[p.name,'THÁNH VẬT HỘ VỆ','#ffd892'];
+    g.triggerBossCutIn?.({id:e.id,type:e.type,relic:p.relic,name:titles[0],subtitle:titles[1],fullTitle:`${titles[0]} — ${titles[1]}`,color:titles[2],accent:'#fff3c4'});
     g.effect('mythic-rune',p.x,p.y,'#ffd892',180,1.2);
   }
   function complete(g,p){

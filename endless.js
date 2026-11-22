@@ -190,7 +190,7 @@
     startSagaBoss(saved){
       const c=CHAPTERS[this.saga.chapter];if(!c)return;this.sagaTelegraphs=[];
       const level=this.player.level,hp=2100+this.saga.chapter*680+level*85,e={id:'saga-boss-'+c.id,type:['boss_haba','boss_hotinh','boss_thantrung','boss_cuukhucxa','boss_thietdieu','boss_kedetsuong'][this.saga.chapter],sagaBoss:true,sagaIndex:this.saga.chapter,name:c.boss,x:c.x,y:c.y,homeX:c.x,homeY:c.y,r:40,hp,maxHp:hp,speed:48,damage:17+this.saga.chapter*2,xp:130+this.saga.chapter*30,gold:90,alive:true,cool:1.8,timer:0,phase:1,pattern:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:c.color,anchorsSpawned:false,...saved};
-      this.world.enemies=this.world.enemies.filter(x=>!x.sagaBoss&&!x.sagaAnchor&&!x.sagaSummon);this.world.enemies.push(e);this.player.mp=this.player.maxMp;this.player.ult=100;this.player.invulnerable=1.3;this.emit('toast',{text:c.boss+' · '+c.tip});this.effect('ultimate',c.x,c.y,c.color,300,1.2);
+      this.world.enemies=this.world.enemies.filter(x=>!x.sagaBoss&&!x.sagaAnchor&&!x.sagaSummon);this.world.enemies.push(e);this.player.mp=this.player.maxMp;this.player.ult=100;this.player.invulnerable=1.3;this.emit('toast',{text:c.boss+' · '+c.tip});const [bName,bSub]=String(c.boss||'Boss · Miền Sương').split('·').map(s=>s.trim());this.triggerBossCutIn?.({id:e.id,type:e.type,sagaIndex:this.saga.chapter,name:bName,subtitle:bSub||c.name,fullTitle:`${bName.toUpperCase()} — ${(bSub||c.name).toUpperCase()}`,color:c.color,accent:'#fff3cf'});this.effect('ultimate',c.x,c.y,c.color,300,1.2);
     }
     spawnSagaAnchors(e,count){
       e.anchorsSpawned=true;
