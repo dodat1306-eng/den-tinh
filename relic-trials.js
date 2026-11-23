@@ -136,6 +136,7 @@
         p.unlocked=p.claimed===true||!p.ritual&&s.solved===true;p.status=p.unlocked?'solved':'waiting';p.progress=p.elapsed=p.hits=0;p.counted=new Set();
         if(p.ritual){if(this.player.relics[p.relic]||this.killedBosses.has(p.relic)){p.unlocked=true;p.status='defeated'}else if(s.summoned===true&&Number.isFinite(s.hp)&&s.hp>0)summon(this,p,Math.min(950,s.hp))}
       }
+      root.DTWorldEvents?.restorePosture(this);
     };
     P.trialHint=hint;
     P.trialObjects=function(){return sites(this).filter(p=>!p.unlocked&&!p.claimed&&dist(p,this.player)<430).flatMap(p=>[...(p.ritual?[{...p,bossAltar:true,label:hint(p)}]:[]),...p.nodes.filter(n=>n.hp>0||!['stone','crystal'].includes(n.kind)).map(n=>({...n,trialNode:p.id,label:n.kind==='stone'||n.kind==='crystal'?'Đánh phá '+(n.kind==='stone'?'trụ đá':'tinh thể'):n.kind==='mirror'?'Xoay gương · F':n.kind==='drum'?'Gõ trống '+colors[n.index]+' · F':n.kind==='bell'?'Chuông '+['Bắc','Đông','Nam','Tây'][n.index]+' · F':n.kind==='pylon'?'Nạp trụ điện · F':'Thắp đèn '+roman[n.index]+' · F'}))])};

@@ -64,8 +64,12 @@
     const stats={slime:{hp:38,speed:75,damage:8,xp:11,gold:4,r:14},wisp:{hp:32,speed:105,damage:8,xp:13,gold:5,r:13},boar:{hp:85,speed:93,damage:13,xp:20,gold:9,r:20},archer:{hp:52,speed:62,damage:10,xp:18,gold:7,r:14},shade:{hp:66,speed:115,damage:12,xp:20,gold:8,r:15}};
     function spawn(type,x,y,guard=null){
       for(let n=0;n<12&&collision(x,y,25);n++){x+=rng()*80-40;y+=rng()*80-40}
-      const st=stats[type],enemy={id:`e${enemies.length}`,type,x,y,homeX:x,homeY:y,...st,maxHp:st.hp,guard,alive:true,cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,elite:!!guard};
+      const st=stats[type]||{xp:18,gold:8,...root.DTBiome.stats(type)},enemy={id:`e${enemies.length}`,type,x,y,homeX:x,homeY:y,...st,maxHp:st.hp,guard,alive:true,cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,elite:!!guard};
       if(guard){enemy.hp*=1.5;enemy.maxHp=enemy.hp;enemy.xp*=1.4;enemy.gold*=1.5}
+      if(type==='mantis_blade'){
+        const stalk=props.find(o=>o.type==='bamboo'&&Math.hypot(o.x-x,o.y-y)<94&&!collision(o.x+33,o.y,enemy.r));
+        if(stalk){enemy.x=enemy.homeX=stalk.x+33;enemy.y=enemy.homeY=stalk.y;}
+      }
       enemies.push(enemy);return enemy.id;
     }
     for(const s of shrines){for(let i=0;i<7;i++){const a=i/7*Math.PI*2,d=94+(i%2)*48;const types=s.id==='truc'?['boar','shade','archer']:s.id==='sen'?['wisp','slime','archer']:['shade','boar','wisp'];s.guardians.push(spawn(types[i%3],s.x+Math.cos(a)*d,s.y+Math.sin(a)*d,s.id))}}
@@ -73,7 +77,10 @@
       let x=170+rng()*(W-340),y=170+rng()*(H-340),zone=zoneAt(x,y);
       if(zone.id==='village'||zone.id==='ancient'||shrines.some(s=>Math.hypot(s.x-x,s.y-y)<370)){i--;continue}
       const types=zone.id==='forest'?['slime','shade','boar']:zone.id==='lotus'?['wisp','slime','archer']:zone.id==='ash'?['shade','archer','boar']:['slime','archer','wisp'];
-      for(let n=0;n<3;n++)spawn(types[n],x+Math.cos(n*2.1)*50,y+Math.sin(n*2.1)*50);
+      for(let n=0;n<3;n++){
+        const enemyType=n===0?types[n]:root.DTBiome?.pick(zone.id,n-1)||types[n];
+        spawn(enemyType,x+Math.cos(n*2.1)*50,y+Math.sin(n*2.1)*50);
+      }
     }
     for(let i=0;i<14;i++){
       let x=210+rng()*(W-420),y=220+rng()*(H-440);

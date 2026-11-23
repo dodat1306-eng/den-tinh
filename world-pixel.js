@@ -153,6 +153,7 @@
     if(!calm()){c.fillStyle=colors[1];for(let i=0;i<3;i++)c.fillRect(Math.round(e.x+Math.sin(time*9+i)*22),Math.round(e.y-16-(time*20+i*8)%30),2,2)}c.restore();
   }
   function enemy(renderer,e){
+    if(root.DTBiomeArt?.enemy(renderer,e))return true;
     const meta=root.DTActorsPixelAtlas;if(!ready()||!meta.clips[e.type+'/idle'])return false;
     const g=renderer.game,c=renderer.ctx,t=g.time;let old=actorHistory.get(e);if(!old)old={x:e.x,y:e.y,cool:e.cool||0,attack:-100};
     const moving=!!e.visualMoving||Math.hypot(old.x-e.x,old.y-e.y)>.05;

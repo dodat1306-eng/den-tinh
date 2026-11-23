@@ -82,17 +82,18 @@
     }
     elementPrimary(origin,id,power,charge=true,aim){
       const f=byId(id),a=aim?Math.atan2(aim.y-origin.y,aim.x-origin.x):origin.aimAngle??origin.facing??0;
+      const evolved=origin===this.player&&root.DTCombat?.tier(this)>=2;
       if(['lightning','earth','ice','nature'].includes(id)){
-        origin.comboIndex=((origin.comboIndex??-1)+1)%3;const combo=origin.comboIndex,reach={lightning:115,earth:95,ice:130,nature:175}[id],half={lightning:135,earth:120,ice:155,nature:85}[id]*Math.PI/360;
+        origin.comboIndex=((origin.comboIndex??-1)+1)%3;const combo=origin.comboIndex,reach={lightning:115,earth:95,ice:130,nature:175}[id]*(evolved?1.25:1),half={lightning:135,earth:120,ice:155,nature:85}[id]*Math.PI/360;
         if(!origin.moving)this.moveEntity(origin,Math.cos(a)*18,Math.sin(a)*18);
         const inside=e=>{const d=dist(e,origin),delta=Math.atan2(Math.sin(Math.atan2(e.y-origin.y,e.x-origin.x)-a),Math.cos(Math.atan2(e.y-origin.y,e.x-origin.x)-a));return d<=reach+(e.r||0)&&Math.abs(delta)<=half};
-        const hits=[];for(const e of this.world.enemies)if(e.alive&&inside(e)){hits.push(e);this.damageEnemy(e,power*(id==='earth'?1.6:id==='ice'?1.45:1.2),charge);this.applyElementStatus(e,id,power,id==='ice'&&combo===2);if(id==='earth'){e.knockX=Math.cos(a)*170;e.knockY=Math.sin(a)*170}if(id==='nature'){e.knockX=-Math.cos(a)*65;e.knockY=-Math.sin(a)*65}}
+        const hits=[];for(const e of this.world.enemies)if(e.alive&&inside(e)){hits.push(e);this.damageEnemy(e,power*(id==='earth'?1.6:id==='ice'?1.45:1.2),charge);this.applyElementStatus(e,id,power,id==='ice'&&combo===2);if(evolved&&this.passiveState.attackCount%3===0)root.DTCombat.elementalMark(this,e,id,power);if(id==='earth'){e.knockX=Math.cos(a)*170;e.knockY=Math.sin(a)*170}if(id==='nature'){e.knockX=-Math.cos(a)*65;e.knockY=-Math.sin(a)*65}}
         if(id==='lightning'&&hits.length){let from=hits[0];for(const e of this.world.enemies.filter(e=>e.alive&&!hits.includes(e)&&dist(e,from)<175).sort((x,y)=>dist(x,from)-dist(y,from)).slice(0,2)){this.damageEnemy(e,power*.65,charge);this.effect('lightning',from.x,from.y,f.color,0,.22,{tx:e.x,ty:e.y});from=e}}
         const destruction=root.DTDestruction;if(destruction){for(const prop of destruction.near(this.world,origin.x,origin.y,reach))if(inside(prop))destruction.hit(this,prop,id==='lightning'||id==='nature'?'wind':id,Math.max(45,power));if(id==='earth'&&combo===2)destruction.react(this,'earth',origin.x+Math.cos(a)*65,origin.y+Math.sin(a)*65,125,110);if(id==='ice'&&combo===2)destruction.react(this,'ice',origin.x+Math.cos(a)*65,origin.y+Math.sin(a)*65,145,power)}
         if(combo===2&&id==='earth')this.elementArea(origin.x,origin.y,125,power*1.25,'earth',charge,true,150);
         this.effect('element-weapon',origin.x,origin.y,f.color,reach,.28,{element:id,angle:a,combo,clip:'weapon_swing_'+id});return;
       }
-      const count=(id==='wind'?3:id==='fire'?2:1)+(charge&&this.player.relics.split?1:0),opts={element:id,kind:'element-'+id,owner:origin.id||'player',charge,pierce:id==='light'?2:0,life:1.25,r:id==='light'?4:6};
+      const count=(id==='wind'?3:id==='fire'?2:1)+(charge&&this.player.relics.split?1:0),opts={element:id,kind:'element-'+id,owner:origin.id||'player',charge,pierce:id==='light'?2:0,life:1.25*(evolved?1.25:1),r:id==='light'?4:6};
       for(let i=0;i<count;i++)this.shoot(origin.x,origin.y,a+(i-(count-1)/2)*.12,id==='light'?1150:810,power*(count>1?.58:1.05),f.color,opts);
       this.effect('element-muzzle',origin.x,origin.y-22,f.color,28,.16,{element:id,angle:a});
       if(id==='fire')this.shoot(origin.x,origin.y,a,650,power*.65,f.color,{...opts,returning:false,sourceSkill:'fireball',r:7});
@@ -234,7 +235,7 @@
       const u=clamp((b.elapsed-.25)/.55,0,1),x=b.x+(b.tx-b.x)*u,y=b.y+(b.ty-b.y)*u;
       b.currentX=x;b.currentY=y;b.height=(1-u)*75+Math.sin(u*Math.PI)*95;
       if(enemy?.alive){enemy.x=x;enemy.y=y;enemy.throwLift=b.height;enemy.stunned=Math.max(enemy.stunned||0,.2)}
-      if(u>=1){if(enemy){enemy.throwLift=0;enemy.shadowHeld=false;enemy.stunned=Math.max(enemy.stunned||0,1)}this.elementArea(b.tx,b.ty,120,s.power*3.8,'earth',false,true,150);root.DTDestruction?.react(this,'earth',b.tx,b.ty,120,250);this.effect('element-mesh',b.tx,b.ty,byId('earth').color,120,.65,{element:'earth',clip:'meteor_burst'});delete s.thrown}
+      if(u>=1){if(enemy){enemy.throwLift=0;enemy.shadowHeld=false;enemy.stunned=Math.max(enemy.stunned||0,1)}const impact=()=>this.elementArea(b.tx,b.ty,120,s.power*3.8,'earth',false,true,150);if(root.DTCombat)root.DTCombat.withStrike(this,12,impact);else impact();root.DTDestruction?.react(this,'earth',b.tx,b.ty,120,250);this.effect('element-mesh',b.tx,b.ty,byId('earth').color,120,.65,{element:'earth',clip:'meteor_burst'});delete s.thrown}
     }
     releaseGolem(s,key,enemy){
       const d=root.DTDestruction,angle=s.aimAngle||0,forward={x:s.x+Math.cos(angle)*60,y:s.y+Math.sin(angle)*60};
@@ -242,7 +243,7 @@
       if(key==='smash'){this.elementArea(forward.x,forward.y,135,s.power*3.4,'earth',false,true,170);d?.react(this,'earth',forward.x,forward.y,135,250);this.effect('element-mesh',forward.x,forward.y,byId('earth').color,135,.65,{element:'earth',clip:'meteor_burst'})}
       if(key==='stomp'){this.elementArea(s.x,s.y,195,s.power*1.8,'earth',false,true,120);for(const e of this.world.enemies)if(e.alive&&dist(s,e)<=195+e.r)e.stunned=Math.max(e.stunned||0,1.5);d?.react(this,'earth',s.x,s.y,220,110);for(let i=1;i<=3;i++)this.effect('element-mesh',s.x,s.y,byId('earth').color,65*i,.25+i*.12,{element:'earth',clip:'earth_tremor'});this.shake=root.DTSettings?.reducedMotion?0:4}
       if(key==='throw'){
-        const grabbed=this.world.enemies.filter(e=>e.alive&&!e.sagaBoss&&!e.type.startsWith('boss')&&dist(e,s)<95).sort((a,b)=>dist(a,s)-dist(b,s))[0];
+        const grabbed=this.world.enemies.filter(e=>e.alive&&!e.sagaBoss&&!e.miniBoss&&e.type!=='laser_turret'&&!e.type.startsWith('boss')&&dist(e,s)<95).sort((a,b)=>dist(a,s)-dist(b,s))[0];
         const targets=this.world.enemies.filter(e=>e.alive&&e!==grabbed&&dist(e,s)>=160&&dist(e,s)<=340).sort((a,b)=>(b.sagaBoss||b.type.startsWith('boss')?100:0)+this.world.enemies.filter(e=>e.alive&&dist(e,b)<120).length-(a.sagaBoss||a.type.startsWith('boss')?100:0)-this.world.enemies.filter(e=>e.alive&&dist(e,a)<120).length);
         const target=targets[0]||enemy,desired=grabbed&&!targets.length?{x:s.x+Math.cos(angle)*240,y:s.y+Math.sin(angle)*240}:target||forward,spot=this.elementSafeSpot(desired.x,desired.y)||desired;
         s.thrown={elapsed:0,x:s.x,y:s.y-18,tx:spot.x,ty:spot.y,currentX:s.x,currentY:s.y-18,height:0,enemy:grabbed||null};if(grabbed){grabbed.shadowHeld=true;grabbed.stunned=Math.max(grabbed.stunned||0,.8)}else d?.decal(this,'crater_mark',s.x,s.y,80);
@@ -263,7 +264,11 @@
     updateGolem(s,dt,assigned=new Map()){
       this.finishGolemThrow(s,dt);s.golemCooldowns||={punch:0,smash:0,stomp:0,throw:0};for(const k in s.golemCooldowns)s.golemCooldowns[k]=Math.max(0,s.golemCooldowns[k]-dt);
       const enemies=this.world.enemies.filter(e=>e.alive&&dist(e,s)<2500),enemy=this.allyTarget(s,assigned);s.moving=false;
-      if(s.action?.golem&&!s.action.released&&s.action.elapsed>=s.action.release){s.action.released=true;this.releaseGolem(s,s.action.golem,enemy)}
+      if(s.action?.golem&&!s.action.released&&s.action.elapsed>=s.action.release){
+        s.action.released=true;
+        if(root.DTCombat)root.DTCombat.withStrike(this,12,()=>this.releaseGolem(s,s.action.golem,enemy));
+        else this.releaseGolem(s,s.action.golem,enemy);
+      }
       if(!s.action&&!s.thrown&&enemy){
         const d=dist(enemy,s),close=enemies.filter(e=>dist(e,s)<160),cd=s.golemCooldowns;let key=null;
         if(cd.stomp<=0&&(close.length>=2||close.some(e=>e.sagaBoss||e.type.startsWith('boss'))))key='stomp';

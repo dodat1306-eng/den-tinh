@@ -60,8 +60,8 @@
       }
       const tier=Math.min(6,Math.floor(Math.max(Math.abs(cx),Math.abs(cy))/5)),count=5;
       for(let i=0;i<count;i++){
-        const p=point(150);if(!allowed(p)||!free(p)||D.nearPath(p.x,p.y,40))continue;const type=['shade','archer','wisp','boar','slime'][(i+hash(world.seed,cx,cy))%5],elite=hash(world.seed+607,cx*7+i,cy)%100<5?['fire','ice','lightning'][hash(world.seed+13,cx*7+i,cy)%3]:null,hp=Math.round((64+tier*28+(type==='boar'?35:0))*(elite?1.65:1));
-        chunk.enemies.push({id:'stream-enemy-'+key+'-'+i,streamKey:key,streamIndex:i,type,elite,...p,homeX:p.x,homeY:p.y,r:type==='boar'?20:15,hp:delta.damaged[i]||hp,maxHp:hp,speed:type==='archer'?65:88+tier*4,damage:(9+tier*2)*(elite?1.2:1),xp:(16+tier*3)*(elite?2:1),gold:(5+tier)*(elite?2:1),alive:!delta.dead.includes(i),cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true});
+        const p=point(150);if(!allowed(p)||!free(p)||D.nearPath(p.x,p.y,40))continue;const type=(i%3!==0&&root.DTBiome?.pick(biome.id,i%3-1))||['shade','archer','wisp','boar','slime'][(i+hash(world.seed,cx,cy))%5],elite=hash(world.seed+607,cx*7+i,cy)%100<5?['fire','ice','lightning'][hash(world.seed+13,cx*7+i,cy)%3]:null,spec=root.DTBiome?.stats(type,(1+tier*.20)*(elite?1.65:1))||{},hp=spec.hp||Math.round((64+tier*28+(type==='boar'?35:0))*(elite?1.65:1));
+        chunk.enemies.push({id:'stream-enemy-'+key+'-'+i,streamKey:key,streamIndex:i,type,elite,...spec,...p,homeX:p.x,homeY:p.y,r:spec.r||(type==='boar'?20:15),hp:Math.min(hp,delta.damaged[i]||hp),maxHp:hp,speed:spec.speed??(type==='archer'?65:88+tier*4),damage:((spec.damage??9)+tier*2)*(elite?1.2:1),xp:(16+tier*3)*(elite?2:1),gold:(5+tier)*(elite?2:1),alive:!delta.dead.includes(i),cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true});
       }
       for(let i=0;i<2;i++){const p=point(150);if(!allowed(p)||!free(p))continue;chunk.chests.push({id:'stream-chest-'+key+'-'+i,streamKey:key,streamIndex:i,...p,open:delta.open.includes(i)})}
       const kinds=['campfire','barrel','ore','spiritTree','shrine'];
@@ -189,15 +189,15 @@
     }
     startSagaBoss(saved){
       const c=CHAPTERS[this.saga.chapter];if(!c)return;this.sagaTelegraphs=[];
-      const level=this.player.level,hp=2100+this.saga.chapter*680+level*85,e={id:'saga-boss-'+c.id,type:['boss_haba','boss_hotinh','boss_thantrung','boss_cuukhucxa','boss_thietdieu','boss_kedetsuong'][this.saga.chapter],sagaBoss:true,sagaIndex:this.saga.chapter,name:c.boss,x:c.x,y:c.y,homeX:c.x,homeY:c.y,r:40,hp,maxHp:hp,speed:48,damage:17+this.saga.chapter*2,xp:130+this.saga.chapter*30,gold:90,alive:true,cool:1.8,timer:0,phase:1,pattern:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:c.color,anchorsSpawned:false,...saved};
+      const level=this.player.level,hp=2100+this.saga.chapter*680+level*85,e={id:'saga-boss-'+c.id,type:['boss_haba','boss_hotinh','boss_thantrung','boss_cuukhucxa','boss_thietdieu','boss_kedetsuong'][this.saga.chapter],sagaBoss:true,maxPosture:100,posture:0,staggered:0,sagaIndex:this.saga.chapter,name:c.boss,x:c.x,y:c.y,homeX:c.x,homeY:c.y,r:40,hp,maxHp:hp,speed:48,damage:17+this.saga.chapter*2,xp:130+this.saga.chapter*30,gold:90,alive:true,cool:1.8,timer:0,phase:1,pattern:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:c.color,anchorsSpawned:false,...saved};
       this.world.enemies=this.world.enemies.filter(x=>!x.sagaBoss&&!x.sagaAnchor&&!x.sagaSummon);this.world.enemies.push(e);this.player.mp=this.player.maxMp;this.player.ult=100;this.player.invulnerable=1.3;this.emit('toast',{text:c.boss+' · '+c.tip});const [bName,bSub]=String(c.boss||'Boss · Miền Sương').split('·').map(s=>s.trim());this.triggerBossCutIn?.({id:e.id,type:e.type,sagaIndex:this.saga.chapter,name:bName,subtitle:bSub||c.name,fullTitle:`${bName.toUpperCase()} — ${(bSub||c.name).toUpperCase()}`,color:c.color,accent:'#fff3cf'});this.effect('ultimate',c.x,c.y,c.color,300,1.2);
     }
     spawnSagaAnchors(e,count){
       e.anchorsSpawned=true;
-      for(let i=0;i<count;i++){const a=i/count*TAU,hp=140+this.saga.chapter*35;this.world.enemies.push({id:'saga-anchor-'+this.saga.chapter+'-'+i,type:'core',sagaAnchor:true,sagaIndex:this.saga.chapter,name:'Neo Ký Ức',x:e.homeX+Math.cos(a)*210,y:e.homeY+Math.sin(a)*185,homeX:e.homeX,homeY:e.homeY,r:22,hp,maxHp:hp,speed:0,damage:0,xp:10,gold:3,alive:true,cool:99,timer:0,phase:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:e.color})}
+      for(let i=0;i<count;i++){const a=i/count*TAU,hp=140+e.sagaIndex*35;this.world.enemies.push({id:'saga-anchor-'+e.id+'-'+i,type:'core',sagaAnchor:true,memoryRematchOwner:e.memoryRematch?e.id:undefined,sagaIndex:e.sagaIndex,name:'Neo Ký Ức',x:e.homeX+Math.cos(a)*210,y:e.homeY+Math.sin(a)*185,homeX:e.homeX,homeY:e.homeY,r:22,hp,maxHp:hp,speed:0,damage:0,xp:10,gold:3,alive:true,cool:99,timer:0,phase:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,color:e.color})}
       this.emit('toast',{text:'Phá '+count+' neo ký ức để gỡ khiên người canh!'});
     }
-    sagaWarn(kind,data,delay=.9){this.sagaTelegraphs.push({kind,timer:delay,maxTimer:delay,color:'#ffab91',damage:18+this.saga.chapter*2,...data})}
+    sagaWarn(kind,data,delay=.9){this.sagaTelegraphs.push({kind,sourceId:this.sagaAttackSource,timer:delay,maxTimer:delay,color:'#ffab91',damage:18+this.saga.chapter*2,...data})}
     updateSagaBoss(e,dt){
       if(dist(e,this.player)>1100)return;e.hit=Math.max(0,e.hit-dt);e.cool-=dt;e.timer+=dt;e.phase=e.hp<e.maxHp*.5?2:1;
       const p=this.player,a=Math.atan2(p.y-e.y,p.x-e.x),index=e.sagaIndex;
@@ -224,7 +224,7 @@
       }
       if(index===4){
         const angle=e.pattern*.54;for(let j=0;j<(e.phase===2?4:3);j++){const b=angle+j*TAU/(e.phase===2?4:3);this.sagaWarn('line',{x:e.x,y:e.y,x2:e.x+Math.cos(b)*650,y2:e.y+Math.sin(b)*650,r:22,color},1.15)}
-        if(e.pattern%3===0&&this.world.enemies.filter(x=>x.sagaSummon&&x.alive).length<4)for(let j=0;j<2;j++){const b=angle+j*Math.PI;this.spawnEnemy('wisp',e.homeX+Math.cos(b)*240,e.homeY+Math.sin(b)*220,{sagaSummon:true,sagaIndex:index,frontier:true,hp:85,maxHp:85,damage:12,xp:5,gold:2})}
+        if(e.pattern%3===0&&this.world.enemies.filter(x=>x.sagaSummon&&x.alive).length<4)for(let j=0;j<2;j++){const b=angle+j*Math.PI;this.spawnEnemy('wisp',e.homeX+Math.cos(b)*240,e.homeY+Math.sin(b)*220,{sagaSummon:true,memoryRematchOwner:e.memoryRematch?e.id:undefined,sagaIndex:index,frontier:true,hp:85,maxHp:85,damage:12,xp:5,gold:2})}
       }
       if(index===5){
         const gap=(e.pattern*.73)%TAU,count=e.phase===2?12:10;
@@ -235,19 +235,19 @@
     updateEnemies(dt){
       const custom=this.world.enemies.filter(e=>(e.sagaBoss||e.sagaAnchor)&&e.alive);for(const e of custom)e.alive=false;
       try{super.updateEnemies(dt)}finally{for(const e of custom)e.alive=true}
-      for(const e of custom)if(e.sagaBoss){const held=e.rooted>0||e.frozen>0,disabled=e.frozen>0||e.stunned>0;e.rootHeld=e.rooted>0;e.rooted=Math.max(0,(e.rooted||0)-dt);e.frozen=Math.max(0,(e.frozen||0)-dt);e.slow=Math.max(0,(e.slow||0)-dt);if(disabled){e.stunned=Math.max(0,(e.stunned||0)-dt);continue}if(held)e.cool+=dt*.35;this.updateSagaBoss(e,dt);e.rootHeld=false}else e.hit=Math.max(0,e.hit-dt);
+      for(const e of custom)if(e.sagaBoss){if(e.staggered>0)continue;const held=e.rooted>0||e.frozen>0,disabled=e.frozen>0||e.stunned>0;e.rootHeld=e.rooted>0;e.rooted=Math.max(0,(e.rooted||0)-dt);e.frozen=Math.max(0,(e.frozen||0)-dt);e.slow=Math.max(0,(e.slow||0)-dt);if(disabled){e.stunned=Math.max(0,(e.stunned||0)-dt);continue}if(held)e.cool+=dt*.35;this.sagaAttackSource=e.id;try{this.updateSagaBoss(e,dt*(root.DTCombat?.enemyRate(this,e)||1))}finally{this.sagaAttackSource=null;e.rootHeld=false}}else e.hit=Math.max(0,e.hit-dt);
     }
     damageEnemy(e,amount,charge=true){
-      if(e.sagaBoss&&this.world.enemies.some(a=>a.sagaAnchor&&a.alive&&a.sagaIndex===e.sagaIndex))amount*=.15;
+      if(e.sagaBoss&&this.world.enemies.some(a=>a.sagaAnchor&&a.alive&&a.sagaIndex===e.sagaIndex&&a.memoryRematchOwner===(e.memoryRematch?e.id:undefined)))amount*=.15;
       const alive=e.alive;super.damageEnemy(e,amount,charge);
-      if(alive&&!e.alive&&e.sagaBoss){this.saga.stage='claim';this.sagaTelegraphs=[];for(const x of this.world.enemies)if(x.sagaAnchor||x.sagaSummon)x.alive=false;this.projectiles=this.projectiles.filter(b=>b.friendly);this.emit('toast',{text:'Người canh đã yên. Trở lại ngọn đèn và nhấn F để nối câu chuyện.',reward:true});this.refreshSagaEnvironment()}
+      if(alive&&!e.alive&&e.sagaBoss&&!e.memoryRematch){this.saga.stage='claim';this.sagaTelegraphs=[];for(const x of this.world.enemies)if(x.sagaAnchor||x.sagaSummon)x.alive=false;this.projectiles=this.projectiles.filter(b=>b.friendly);this.emit('toast',{text:'Người canh đã yên. Trở lại ngọn đèn và nhấn F để nối câu chuyện.',reward:true});this.refreshSagaEnvironment()}
     }
     damagePlayer(amount){
       const before=this.frontierCombat;if(outside(this.player.x,this.player.y)||this.world.enemies.some(e=>e.sagaBoss&&e.alive&&dist(e,this.player)<1000))this.frontierCombat=true;
       try{return super.damagePlayer(amount)}finally{this.frontierCombat=before}
     }
     updateSagaTelegraphs(dt){
-      for(let i=this.sagaTelegraphs.length-1;i>=0;i--){const t=this.sagaTelegraphs[i];t.timer-=dt;if(t.timer>0)continue;let hit=false;
+      for(let i=this.sagaTelegraphs.length-1;i>=0;i--){const t=this.sagaTelegraphs[i];t.timer-=dt*(root.DTCombat?.enemyRate(this,t)||1);if(t.timer>0)continue;let hit=false;
         const p=this.player,d=dist(t,p);
         if(t.kind==='disc')hit=d<t.r+p.r;
         if(t.kind==='ring')hit=d<t.r+p.r&&d>Math.max(0,t.inner-p.r);

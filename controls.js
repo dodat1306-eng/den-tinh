@@ -36,7 +36,10 @@
   document.addEventListener('keydown',e=>{if(e.key!=='Tab'||$('modal').classList.contains('hidden'))return;const focus=[...$('modalContent').querySelectorAll('button:not(:disabled),input,select')];if(!focus.length)return;const idx=focus.indexOf(document.activeElement),next=e.shiftKey?(idx<=0?focus.length-1:idx-1):(idx+1)%focus.length;e.preventDefault();focus[next].focus()},true);
   setInterval(()=>{
     const g=denTinh.game,show=touch.active&&g.started&&!g.paused&&!g.dead;$('touchControls').classList.toggle('hidden',!show);mobile.classList.toggle('hidden',!touch.active||!g.started);
-    if(touch.active&&g.started){const p=g.player;$('mobileHero').textContent=g.hero.name+' · Cấp '+p.level;$('mobileStats').textContent='♥ '+Math.ceil(p.hp)+'/'+p.maxHp+' · Linh lực '+Math.floor(p.mp)+'/'+p.maxMp+' · '+(g.signature?.name||'Pháp khí riêng');$('mobileQuest').textContent=g.objective().text}
+    if(touch.active&&g.started){const p=g.player;$('mobileHero').textContent=g.hero.name+' · Cấp '+p.level;const ready=p.perfectCounter>0?' · Phản kích '+p.perfectCounter.toFixed(1)+'s':'';
+      const rank=window.DTCombat?' · Bậc '+['','I','II','III'][DTCombat.tier(g)]:'';
+      $('mobileStats').textContent='♥ '+Math.ceil(p.hp)+'/'+p.maxHp+' · MP '+Math.floor(p.mp)+'/'+p.maxMp+rank+ready;
+      $('mobileQuest').textContent=window.DTWorldEvents?.hud(g)||g.objective().text}
     if(touch.active&&g.started){for(const key of['q','e','r','dash']){const b=document.querySelector('[data-touch="'+key+'"]'),p=g.player,cd=p.cd[key];const recast=key==='e'&&g.canRecastE?.(),cost=g.skillDescriptions?.[key]?.cost??(key==='q'?24:key==='e'?38:0);b.disabled=recast?false:key==='r'?cd>0||!!p.ultIntro:cd>0||p.mp<cost;b.textContent=recast?(g.hero.id==='ait01'?'E · THU KHO':g.hero.id==='quynhkun'?'E · THU PHÙ':g.hero.id==='an'?'E · NỔ':'E · VỀ'):key==='r'?('R'+(cd>0?' '+cd.toFixed(1)+'s':'')):key==='dash'?cd>0?cd.toFixed(1):'↝':key.toUpperCase()+(cd>0?' '+cd.toFixed(1):'')}}
     document.body.classList.toggle('game-active',g.started);
   },150);

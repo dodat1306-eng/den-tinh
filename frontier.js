@@ -75,8 +75,8 @@
       if(!center)continue;
       for(let j=0;j<3;j++){
         const pos=clearSpot(center.x+Math.cos(j*2.1)*45,center.y+Math.sin(j*2.1)*45);if(!pos)continue;
-        const type=['shade','archer','wisp'][(i+j)%3],hp=type==='shade'?92:70;
-        world.enemies.push({id:'frontier-roam-'+i+'-'+j,type,...pos,homeX:pos.x,homeY:pos.y,r:15,hp,maxHp:hp,speed:type==='archer'?70:105,damage:12,xp:18,gold:7,alive:true,cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true});
+        const type=j?root.DTBiome?.pick(D.zoneAt(pos.x,pos.y).id,j-1)||['shade','archer','wisp'][(i+j)%3]:['shade','archer','wisp'][i%3],hp=type==='shade'?92:70;
+        world.enemies.push({id:'frontier-roam-'+i+'-'+j,type,...pos,homeX:pos.x,homeY:pos.y,r:15,hp,maxHp:hp,speed:type==='archer'?70:105,damage:12,xp:18,gold:7,alive:true,cool:1+rng()*2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,frontier:true,...root.DTBiome?.stats(type)});
       }
     }
     return world;

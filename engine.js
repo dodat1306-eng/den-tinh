@@ -19,6 +19,7 @@
     }
     start(){this.started=true;this.paused=false;this.storyStarted=true;this.emit('dialogue',{id:'intro'})}
     moveEntity(obj,dx,dy){
+      if(obj.staggered>0||obj.type==='laser_turret')return;
       const parts=Math.max(1,Math.ceil(Math.hypot(dx,dy)/7));
       for(let i=0;i<parts;i++){
         const nx=obj.x+dx/parts,ny=obj.y+dy/parts;
@@ -29,6 +30,7 @@
     update(dt){
       if(this.paused||this.dead||!this.started)return;
       dt=clamp(dt,0,.04);this.time+=dt;const p=this.player;
+      root.DTCombat?.update(this,dt);
       for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);this.syncUltimate();
       p.invulnerable=Math.max(0,p.invulnerable-dt);p.mp=Math.min(p.maxMp,p.mp+13*dt);p.hp=Math.min(p.maxHp,p.hp+p.regen*dt);
       this.shake=Math.max(0,this.shake-dt*22);this.hitFlash=Math.max(0,this.hitFlash-dt*3);
@@ -36,9 +38,10 @@
       this.faceMovement(p,dx,dy);p.aimAngle=p.facing=Math.atan2(this.input.aimY-p.y,this.input.aimX-p.x);
       if(p.dashTime>0){p.dashTime-=dt;this.moveEntity(p,p.dashX*850*dt,p.dashY*850*dt);this.spark(p.x,p.y,2,this.hero.color,45,.2)}
       else this.moveEntity(p,dx*p.speed*dt,dy*p.speed*dt);
+      root.DTCombat?.checkDodge(this);
       if(this.input.fire)this.fire();
       const zone=D.zoneAt(p.x,p.y);if(zone.id!==this.zone){this.zone=zone.id;this.visited.add(zone.id);this.emit('zone',{zone})}
-      this.updateEnemies(dt);this.updateProjectiles(dt);this.updateTelegraphs(dt);this.updateActiveEffects(dt);this.updateLoot(dt);
+      this.updateEnemies(dt);this.updateProjectiles(dt);this.updateTelegraphs(dt);root.DTBiome?.updateHazards(this,dt);this.updateActiveEffects(dt);this.updateLoot(dt);
       for(const list of[this.particles,this.effects,this.floaters])for(let i=list.length-1;i>=0;i--){const e=list[i];e.life-=dt;if(e.gravity)e.vy=(e.vy||0)+e.gravity*dt;if(e.vx)e.x+=e.vx*dt;if(e.vy)e.y+=e.vy*dt;if(e.life<=0)list.splice(i,1)}
       this.updateDyingEnemies(dt);
       if(this.bossCutIn){this.bossCutIn.timer-=dt;if(this.bossCutIn.timer<=0)this.bossCutIn=null}
@@ -119,8 +122,8 @@
     heal(){
       const p=this.player;if(this.paused||this.dead)return false;
       if(p.potions<1){this.emit('toast',{text:'Hết bình máu. Về Giếng Ngọc để nghỉ chân.'});return false}
-      if(p.hp>=p.maxHp){this.emit('toast',{text:'Máu đang đầy.'});return false}
-      p.potions--;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.55);this.effect('ring',p.x,p.y,'#b6e9ad',55,.55);this.spark(p.x,p.y,24,'#b6e9ad',75,.8);this.emit('sound',{name:'heal'});return true;
+      if(p.hp>=p.maxHp&&!root.DTSynergy?.has(this,'blood')){this.emit('toast',{text:'Máu đang đầy.'});return false}
+      p.potions--;if(!root.DTSynergy?.heal(this,p.maxHp*.55))p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.55);this.effect('ring',p.x,p.y,'#b6e9ad',55,.55);this.spark(p.x,p.y,24,'#b6e9ad',75,.8);this.emit('sound',{name:'heal'});return true;
     }
     damagePlayer(amount){
       const p=this.player;if(this.dead||p.invulnerable>0||(this.victory&&!this.frontierCombat))return;
@@ -185,16 +188,18 @@
       this.emit('bossCutIn',this.bossCutIn);
     }
     damageEnemy(e,amount,charge=true){
-      if(!e.alive)return;const crit=this.damageContext!=='true'&&this.rng()<this.player.crit,dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));this.lastCritical=crit;e.hp-=dmg;e.hit=.12;
+      if(!e.alive)return;const crit=this.damageContext!=='true'&&(!!this.hitContext?.counter||this.rng()<this.player.crit),dmg=Math.round(amount*(crit?(this.critMultiplier?.()||1.7):1));this.lastCritical=crit;e.hp-=dmg;e.hit=.12;
       e.hitSquash=.16;e.hitAngle=Number.isFinite(this.hitContext?.angle)?this.hitContext.angle:Math.atan2(e.y-this.player.y,e.x-this.player.x);e.lastHitElement=this.resolveHitElement(e);
       if(this.floaters.length<70)this.floaters.push({x:e.x+(this.rng()-.5)*15,y:e.y-e.r-15,text:(crit?'✦ ':'')+String(dmg)+(crit?'!':''),color:crit?'#ffd700':'#e9ecce',crit:!!crit,scale:crit?1.45:1,life:crit?.82:.65,maxLife:crit?.82:.65,vx:(this.rng()-.5)*60,vy:crit?-128:-96,gravity:310});
       this.spark(e.x,e.y,5,e.type==='boss'?'#edb482':'#cce5c1',100,.23);
       if(e.hp<=0){
-        e.alive=false;this.pushDyingEnemy(e);this.kills++;this.addXp(Math.round(e.xp));
-        this.loot.push({x:e.x,y:e.y,type:'gold',value:Math.round(e.gold),life:120});
+        e.alive=false;this.pushDyingEnemy(e);this.kills++;
+        const rewards=root.DTWorldEvents?.killRewards(this,e);
+        this.addXp(Math.round(e.xp*(rewards?.xp||1)));
+        this.loot.push({x:e.x,y:e.y,type:'gold',value:Math.round(e.gold*(rewards?.gold||1)),life:120});
         if(this.rng()<.14)this.loot.push({x:e.x+12,y:e.y-4,type:'potion',value:1,life:120});
         this.spark(e.x,e.y,22,e.type==='boss'?'#f3cc85':'#6bb29a',130,.55);this.emit('sound',{name:'kill'});
-        if(e.type==='boss'){this.victory=true;this.player.gold+=180;this.player.hp=this.player.maxHp;this.projectiles=[];this.telegraphs=[];this.emit('victory')}
+        if(e.type==='boss'&&!e.memoryRematch){this.victory=true;this.player.gold+=180;this.player.hp=this.player.maxHp;this.projectiles=[];this.telegraphs=[];this.emit('victory')}
         if(e.guard){const s=this.world.shrines.find(s=>s.id===e.guard);if(s&&!s.guardians.some(id=>this.world.enemies.find(e=>e.id===id&&e.alive)))this.emit('toast',{text:`${s.name} đã yên. Đến gần và nhấn F để thức tỉnh.`,reward:true})}
       }
     }
@@ -205,12 +210,13 @@
     updateEnemies(dt){
       const p=this.player;
       for(const e of this.world.enemies){
-        const stepDt=dt*(p.ultIntro&&distance(e,p)<=520?.25:1);
-        if(!e.alive)continue;e.hit=Math.max(0,e.hit-stepDt);e.slow=Math.max(0,e.slow-stepDt);e.cool-=stepDt;
+        if(!e.alive||e.staggered>0)continue;
+        const stepDt=dt*Math.min(p.ultIntro&&distance(e,p)<=520?.25:1,root.DTCombat?.enemyRate(this,e)||1);e.hit=Math.max(0,e.hit-stepDt);e.slow=Math.max(0,e.slow-stepDt);e.cool-=stepDt;
         if(Math.hypot(e.knockX,e.knockY)>4){this.moveEntity(e,e.knockX*stepDt*(p.knockMultiplier||1),e.knockY*stepDt*(p.knockMultiplier||1));e.knockX*=Math.exp(-8*stepDt);e.knockY*=Math.exp(-8*stepDt)}
         const dist=distance(e,p);if(dist>900)continue;
         if(e.type==='boss'){this.updateBoss(e,stepDt);continue}
         if(this.victory&&!e.frontier)continue;
+        if(root.DTWorldEvents?.updateEnemy(this,e,stepDt)||root.DTBiome?.update(this,e,stepDt,dist,Math.atan2(p.y-e.y,p.x-e.x)))continue;
         const homeDist=Math.hypot(e.x-e.homeX,e.y-e.homeY),a=Math.atan2(p.y-e.y,p.x-e.x),slow=e.slow>0?.48:1;
         let mx=0,my=0;
         if(dist>530||homeDist>600){const back=Math.atan2(e.homeY-e.y,e.homeX-e.x);if(homeDist>20){mx=Math.cos(back)*e.speed*.55;my=Math.sin(back)*e.speed*.55}}
@@ -244,7 +250,7 @@
         e.pattern=(e.pattern+1)%4;e.cool=e.phase===2?1.9:2.7;
         if(e.pattern===0){for(let j=-3;j<=3;j++)this.shoot(e.x,e.y,a+j*.14,280,17,'#eaba80',{friendly:false,life:3,r:7});this.effect('shock',e.x,e.y,'#d89083',85,.55)}
         if(e.pattern===1){const n=e.phase===2?24:18;for(let j=0;j<n;j++)this.shoot(e.x,e.y,j/n*TAU+this.time*.24,190,13,'#db9b94',{friendly:false,life:3.8,r:6});this.effect('ring',e.x,e.y,'#dc998e',110,.7)}
-        if(e.pattern===2){for(let j=0;j<5;j++){const x=p.x+(j?Math.cos(j*1.7)*100:0),y=p.y+(j?Math.sin(j*1.7)*100:0);this.telegraphs.push({x,y,r:62,timer:.95,maxTimer:.95,damage:22,color:'#e7aa85'})}}
+        if(e.pattern===2){for(let j=0;j<5;j++){const x=p.x+(j?Math.cos(j*1.7)*100:0),y=p.y+(j?Math.sin(j*1.7)*100:0);this.telegraphs.push({x,y,r:62,timer:.95,maxTimer:.95,damage:22,color:'#e7aa85',sourceId:e.id})}}
         if(e.pattern===3){
           for(let j=0;j<9;j++)this.shoot(e.x,e.y,a+(j-4)*.22,360,15,'#c1c7ad',{friendly:false,life:2,r:5,kind:'arrow'});
           if(this.world.enemies.filter(x=>x.alive&&x.summon).length<6){for(let j=0;j<2;j++){const ang=this.rng()*TAU;const x=e.x+Math.cos(ang)*135,y=e.y+Math.sin(ang)*135;if(!this.world.collision(x,y,15))this.world.enemies.push({id:`s${this.time}-${j}`,type:'shade',x,y,homeX:x,homeY:y,r:15,hp:40,maxHp:40,speed:98,damage:9,xp:5,gold:1,alive:true,summon:true,cool:3,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0})}}
@@ -263,7 +269,7 @@
       }
     }
     updateTelegraphs(dt){
-      for(let i=this.telegraphs.length-1;i>=0;i--){const t=this.telegraphs[i];t.timer-=dt;if(t.timer<=0){globalThis.DTDestruction?.react(this,'earth',t.x,t.y,t.r,30);this.effect('roots',t.x,t.y,'#d0ac85',t.r,.55);this.spark(t.x,t.y,20,'#e6bd83',140,.5);if(Math.hypot(t.x-this.player.x,t.y-this.player.y)<t.r+this.player.r)this.damagePlayer(t.damage);this.telegraphs.splice(i,1)}}
+      for(let i=this.telegraphs.length-1;i>=0;i--){const t=this.telegraphs[i];t.timer-=dt*(root.DTCombat?.enemyRate(this,t)||1);if(t.timer<=0){if(t.kind?.startsWith('biome-')){root.DTBiome?.release(this,t);this.telegraphs.splice(i,1);continue}globalThis.DTDestruction?.react(this,'earth',t.x,t.y,t.r,30);this.effect('roots',t.x,t.y,'#d0ac85',t.r,.55);this.spark(t.x,t.y,20,'#e6bd83',140,.5);if(Math.hypot(t.x-this.player.x,t.y-this.player.y)<t.r+this.player.r)this.damagePlayer(t.damage);this.telegraphs.splice(i,1)}}
     }
     updateActiveEffects(dt){
       for(let i=this.activeEffects.length-1;i>=0;i--){const e=this.activeEffects[i];e.life-=dt;e.tick-=dt;if(e.follow){e.x=this.player.x;e.y=this.player.y}
@@ -311,7 +317,7 @@
     }
     startBoss(){
       this.bossStarted=true;const hp=2100+this.player.level*180;
-      this.world.enemies.push({id:'boss',type:'boss',name:'Mộc Quỷ · Cội Đa Lạc Hồn',x:1830,y:610,homeX:1830,homeY:610,r:45,hp,maxHp:hp,speed:32,damage:23,xp:250,gold:160,alive:true,cool:2,phase:1,timer:0,pattern:-1,hit:0,slow:0,knockX:0,knockY:0});
+      this.world.enemies.push({id:'boss',type:'boss',maxPosture:100,posture:0,staggered:0,name:'Mộc Quỷ · Cội Đa Lạc Hồn',x:1830,y:610,homeX:1830,homeY:610,r:45,hp,maxHp:hp,speed:32,damage:23,xp:250,gold:160,alive:true,cool:2,phase:1,timer:0,pattern:-1,hit:0,slow:0,knockX:0,knockY:0});
       this.player.hp=this.player.maxHp;this.player.mp=this.player.maxMp;this.player.cd.r=0;this.player.ult=100;this.emit('boss');this.triggerBossCutIn({id:'boss',type:'boss',name:'MỘC QUỶ',subtitle:'CỘI ĐA LẠC HỒN',fullTitle:'MỘC QUỶ — CỘI ĐA LẠC HỒN',color:'#e09f67',accent:'#ffe6a3'});this.effect('ultimate',1830,610,'#dcaa8a',260,1.5);this.shake=8;
     }
     respawn(){
@@ -346,7 +352,8 @@
       if(g.world.collision(g.player.x,g.player.y,g.player.r)){g.player.x=740;g.player.y=2200}
       for(const s of g.world.shrines)s.active=data.shrines.includes(s.id);
       for(const c of g.world.chests)c.open=data.chests.includes(c.id);
-      for(const e of g.world.enemies){const saved=data.enemies.find(s=>s.id===e.id);if(saved){e.alive=saved.alive===true;e.hp=clamp(saved.hp||0,0,e.maxHp)}}
+      const enemySaves=new Map(data.enemies.filter(Boolean).map(e=>[e.id,e]));
+      for(const e of g.world.enemies){const saved=enemySaves.get(e.id);if(saved){e.alive=saved.alive===true;e.hp=clamp(saved.hp||0,0,e.maxHp)}}
       g.time=data.time||0;g.kills=data.kills||0;g.deaths=data.deaths||0;g.upgrades=data.upgrades||0;g.pendingLevels=clamp(data.pendingLevels||0,0,50);g.visited=new Set(data.visited||['village']);g.storyStarted=true;
       if(Array.isArray(data.loot))g.loot=data.loot.filter(l=>Number.isFinite(l.x)&&Number.isFinite(l.y)&&Number.isFinite(l.value)&&['gold','potion'].includes(l.type)).slice(0,200);
       if(data.bossStarted&&!data.victory){g.startBoss();const b=g.world.enemies.find(e=>e.id==='boss'),s=data.enemies.find(e=>e.id==='boss');if(s)b.hp=Math.max(1,Math.min(b.maxHp,s.hp));g.player.hp=clamp(p.hp,1,g.player.maxHp);g.player.mp=clamp(p.mp,0,g.player.maxMp);g.player.cd.r=Number.isFinite(p.cd?.r)?clamp(p.cd.r,0,20):0;g.syncUltimate();g.events=[]}

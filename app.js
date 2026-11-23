@@ -18,6 +18,8 @@
       if(name==='reload'||name==='switch'){this.tone(720,t,.05,.07,'square');this.tone(980,t+.1,.05,.06,'triangle')}
       if(name==='challenge'||name==='overclock'){for(let i=0;i<7;i++)this.tone(220*Math.pow(1.18,i),t+i*.06,.3,.1,'triangle')}
       if(name==='dash')this.tone(380,t,.14,.11,'sine',85);
+      if(name==='perfect'){this.tone(880,t,.48,.13,'triangle');this.tone(1760,t+.04,.54,.07,'sine');this.tone(1320,t+.11,.44,.06,'sine')}
+      if(name==='steel')this.tone(1630,t,.24,.10,'triangle',420);
       if(name==='hurt')this.tone(130,t,.13,.16,'triangle',65);
       if(name==='kill')this.tone(190,t,.1,.08,'sine',65);
       if(name==='pickup'){this.tone(900,t,.09,.09);this.tone(1200,t+.07,.11,.06)}
@@ -116,6 +118,8 @@
   }
   function handleEvents(){
     const events=game.consumeEvents();for(const e of events){
+      if(e.type==='resonanceForge')window.DTV09UI?.showResonances();
+      if(e.type==='memoryMonument')window.DTV09UI?.showMonument();
       if(e.type==='level')audio.sfx('level');if(e.type==='relic')window.DTV09UI?.showRelic(e.id);if(e.type==='melody')window.DTV09UI?.showMelody();if(e.type==='sound')audio.sfx(e.name);if(e.type==='toast')toast(e.text,e.reward);if(e.type==='dialogue')dialogue(e.text?e:e.id);if(e.type==='zone')toast(e.zone.name);if(e.type==='shop')shop();if(e.type==='skills'||e.type==='skillTree')window.DTAscensionUI?.showSkills();if(e.type==='travel')travel();
       if(e.type==='shrine'){toast(`${game.world.shrines.find(s=>s.id===e.id).name} đã thức tỉnh. +45 xu.`,true);save()}
       if(e.type==='boss'){toast('Mộc Quỷ thức tỉnh. Tuyệt kỹ đã sẵn sàng!');save()}
@@ -128,11 +132,22 @@
     const cds={dash:[p.cd.dash,1.2],q:[p.cd.q,game.hero.qCd],e:[p.cd.e,game.hero.eCd],r:[p.cd.r,game.effectiveRCd()],heal:[0,1]};
     for(const [key,[val,max]]of Object.entries(cds)){const node=$('skill-'+key);node.querySelector('i').style.transform=`scaleY(${val/max})`;node.dataset.time=val>.05?val.toFixed(1)+'s':'';node.classList.toggle('cooling',val>.05);node.classList.toggle('ready',key==='r'&&p.cd.r<=0&&!p.ultIntro)}
     const o=game.nearby();$('interactHint').classList.toggle('hidden',!o||game.paused);if(o)$('interactHint').querySelector('span').textContent=o.label;
-    const boss=game.world.enemies.filter(e=>(e.type==='boss'||e.sagaBoss||e.mythicBoss)&&e.alive).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];$('bossHud').classList.toggle('hidden',!boss||Math.hypot(boss.x-p.x,boss.y-p.y)>1000);if(boss){$('bossName').textContent=boss.name+(boss.phase===3?' · KÝ ỨC VỠ':boss.phase===2?' · CUỒNG SƯƠNG':'');$('bossBar').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%'}renderer.map($('minimap'));
+    const boss=game.world.enemies.filter(e=>(e.type==='boss'||e.sagaBoss||e.mythicBoss)&&e.alive).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];$('bossHud').classList.toggle('hidden',!boss||Math.hypot(boss.x-p.x,boss.y-p.y)>1000);if(boss){$('bossName').textContent=boss.name+(boss.phase===3?' · KÝ ỨC VỠ':boss.phase===2?' · CUỒNG SƯƠNG':'');$('bossBar').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%';
+      const posture=boss.staggered>0?boss.staggered/3.5*100:boss.posture||0;
+      $('bossPostureBar').style.width=posture+'%';$('bossPosture').setAttribute('aria-valuenow',Math.round(posture));
+      $('bossPosture').classList.toggle('staggered',boss.staggered>0);
+      if(boss.staggered>0)$('bossName').textContent=boss.name+' · PHÁ THẾ';
+    }renderer.map($('minimap'));
     window.DTAscensionUI?.sync(game);
     const activeShrine=game.world.shrines.find(s=>game.challenge[s.id].started&&!game.challenge[s.id].complete&&!s.active);$('challengeHud').classList.toggle('hidden',!activeShrine);if(activeShrine){const st=game.challenge[activeShrine.id];$('challengeHud').textContent=activeShrine.id==='sen'?'ĐÈN SEN '+Math.ceil(st.hp)+'% · '+Math.max(0,Math.ceil(36-st.timer))+' GIÂY':'LÒ TRO · '+st.ids.filter(id=>game.world.enemies.some(e=>e.id===id&&e.alive)).length+' LÕI CÒN LẠI';}
     const outpost=game.world.beacons.find(b=>game.outposts[b.id].started&&!game.outposts[b.id].complete&&Math.hypot(b.x-p.x,b.y-p.y)<850);if(!activeShrine&&outpost){const st=game.outposts[outpost.id];$('challengeHud').classList.remove('hidden');$('challengeHud').textContent=outpost.name.toUpperCase()+' · ĐỢT '+st.wave+'/2 · '+st.ids.filter(id=>game.world.enemies.some(e=>e.id===id&&e.alive)).length+' HỘ VỆ';}
-
+    const worldEvent=window.DTWorldEvents?.hud(game);
+    $('challengeHud').classList.toggle('world-event',!!worldEvent);
+    if(worldEvent){
+      const hud=$('challengeHud');
+      hud.textContent=activeShrine||outpost?hud.textContent+' · '+worldEvent:worldEvent;
+      hud.classList.remove('hidden');
+    }
   }
   $('startButton').onclick=()=>begin(false);$('continueButton').onclick=()=>begin(true);$('helpButton').onclick=help;$('creditsButton').onclick=credits;$('pauseButton').onclick=pause;$('soundButton').onclick=()=>audio.toggle();$('mapButton').onclick=toggleMap;$('closeMap').onclick=toggleMap;$('fullscreenButton').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.()};
   addEventListener('keydown',e=>{

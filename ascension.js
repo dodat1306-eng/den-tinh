@@ -74,7 +74,9 @@
       const id=this.hero.id,s=this.passiveState,scale=1+(this.skillRanks.passive||0)*.035;
       p.cd.fire=p.fireRate*(p.overclock>0?.72:1);this.tutorial.shots++;p.recoil=.12;s.attackCount++;
       if(!p.action||p.action.key==='attack')this.beginAction('attack',p.facing,this.isElemental?this.element.id:undefined);
-      if(id==='thienvu'){const start=this.projectiles.length;this.elementPrimary(p,this.element.id,p.damage*scale,true);for(const b of this.projectiles.slice(start))b.signature=true}
+      const counter=root.DTCombat?.counter(this);
+      if(!counter){
+        if(id==='thienvu'){const start=this.projectiles.length;this.elementPrimary(p,this.element.id,p.damage*scale,true);for(const b of this.projectiles.slice(start))b.signature=true}
       else if(id==='quanle'){root.DTShadow.primary(this,p.damage*scale)}
       else if(id==='quynhkun'){root.DTQuynhKun.primary(this,p.damage*scale)}
       else if(id==='ait01'){root.DTAit01.primary(this,p.damage*scale)}
@@ -86,8 +88,10 @@
         const empowered=id==='linh'&&s.wind>=8;if(empowered)s.wind=0;
         this.shoot(p.x,p.y,p.facing,id==='linh'?980:id==='hoavi'?860:650,p.damage*scale*(empowered?1.8:1),this.signature.color,{kind:id==='linh'?'arrow':id==='hoavi'?'code':'orb',pierce:(id==='linh'?1:0)+(empowered?4:0),r:id==='an'?6:4,life:1.15,signature:true,sourceSkill:empowered?'wind-mark':''});
       }
-      if(p.relics.giong&&s.attackCount%4===0){const end={x:p.x+Math.cos(p.facing)*340,y:p.y+Math.sin(p.facing)*340};this.lineHit(p,end,20,p.damage*2.2,'nature',false);for(const e of this.world.enemies)if(e.alive&&segment(e,p,end)<20+e.r){e.lift=.6;e.stunned=.6}this.effect('mythic-tether',p.x,p.y,'#a4d477',340,.6,{tx:end.x,ty:end.y})}
-      if(p.relics.mjolnir&&s.attackCount%5===0){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,p)<460).sort((a,b)=>dist(a,p)-dist(b,p)),first=targets[0];if(first){this.areaDamage(first.x,first.y,120,p.damage*1.3,50,false);this.effect('bolt',first.x,first.y,'#b6bfff',120,.5);let from=first;for(const e of targets.filter(e=>e!==first).slice(0,4)){this.damageEnemy(e,p.damage*1.3,false);this.effect('lightning',from.x,from.y,'#b6bfff',0,.3,{tx:e.x,ty:e.y});from=e}}}
+      }
+      root.DTCombat?.afterFire(this,counter);root.DTSynergy?.afterAttack(this);
+      if(p.relics.giong&&s.attackCount%4===0){const end={x:p.x+Math.cos(p.facing)*340,y:p.y+Math.sin(p.facing)*340};this.lineHit(p,end,20,p.damage*2.2,'nature',false);for(const e of this.world.enemies)if(e.alive&&segment(e,p,end)<20+e.r){e.lift=.6;e.stunned=.6}this.effect('mythic-tether',p.x,p.y,'#a4d477',340,.6,{tx:end.x,ty:end.y});root.DTSynergy?.fireWall(this,p,end)}
+      if(p.relics.mjolnir&&s.attackCount%5===0){const targets=this.world.enemies.filter(e=>e.alive&&dist(e,p)<460).sort((a,b)=>dist(a,p)-dist(b,p)),first=targets[0];if(first){this.areaDamage(first.x,first.y,120,p.damage*1.3,50,false);this.effect('bolt',first.x,first.y,'#b6bfff',120,.5);root.DTSynergy?.arc(this,first);let from=first;for(const e of targets.filter(e=>e!==first).slice(0,4+(root.DTSynergy?.lightningBonus(this)||0))){this.damageEnemy(e,p.damage*1.3,false);this.effect('lightning',from.x,from.y,'#b6bfff',0,.3,{tx:e.x,ty:e.y});from=e}}}
       this.emit('sound',{name:id==='hoavi'?'codeShot':'shoot'});return true;
     }
     skill(key){
@@ -182,7 +186,10 @@
       s.lastHit=this.time;
       if(this.hero.id==='an'){if(wasBurning)s.embers=Math.min(6,s.embers+1+(this.skillRanks.passive>=2&&s.attackCount%3===0?1:0));e.burn=3;e.burnTick=0}
       if(b.sourceSkill==='wind-mark'){e.rooted=e.sagaBoss||e.type==='boss'?.3:1.4;e.trucMark=5+this.skillRanks.passive}
-      if(this.isElemental&&b.element){const prior=e.markElement;if(prior&&prior!==b.element&&this.time-(e.markTime||0)<6)this.mythicHit(e,p.damage*.3,b.element,false);else{e.markElement=b.element;e.markTime=this.time}}
+      if(this.isElemental&&b.element){const prior=e.markElement;if(prior&&prior!==b.element&&this.time-(e.markTime||0)<6){
+        if(root.DTCombat){const previous=this.hitContext;this.hitContext=null;try{root.DTCombat.withStrike(this,12,()=>this.mythicHit(e,p.damage*.3,b.element,false))}finally{this.hitContext=previous}}
+        else this.mythicHit(e,p.damage*.3,b.element,false);
+      }else{e.markElement=b.element;e.markTime=this.time}}
     }
     damageEnemy(e,amount,charge=true){
       if(!e?.alive||!Number.isFinite(amount)||amount<=0)return;const before=e.alive,controlled=e.rooted>0||e.frozen>0||e.slow>0;super.damageEnemy(e,amount,charge);
@@ -209,7 +216,7 @@
       if(this.hero.id==='ait01')root.DTAit01.projectiles(this,dt);
       if(this.hero.id==='quynhkun')root.DTQuynhKun.projectiles(this,dt);
       const p=this.player;
-      for(const b of this.projectiles){b.age=(b.age||0)+dt;if(b.returning&&b.age>.35){const owner=b.owner&&b.owner!=='player'?this.elementClones.find(c=>c.id===b.owner&&c.alive):p;if(!owner){b.life=0;continue}const a=Math.atan2(owner.y-b.y,owner.x-b.x);b.vx=Math.cos(a)*760;b.vy=Math.sin(a)*760;b.angle=a;if(dist(b,owner)<28)b.life=0}
+      for(const b of this.projectiles){b.age=(b.age||0)+dt;if(b.returning&&b.age>.35){const owner=b.owner&&b.owner!=='player'?this.elementClones.find(c=>c.id===b.owner&&c.alive):p;if(!owner){b.life=0;continue}const a=Math.atan2(owner.y-b.y,owner.x-b.x);b.vx=Math.cos(a)*760;b.vy=Math.sin(a)*760;b.angle=a;if(b.counter!=='quynhkun'&&dist(b,owner)<28)b.life=0}
         if(b.friendly)continue;
         if(p.relics.cinderella&&p.dashTime>0&&!b.dodgeCounted&&dist(b,p)<p.r+b.r+20){b.dodgeCounted=true;this.relicCounters.cinderella=Math.min(3,(this.relicCounters.cinderella||0)+1);this.effect('mythic-orbit',p.x,p.y,'#cdefff',34,.3)}
         for(const f of this.mythicFields){
@@ -227,7 +234,8 @@
       let count=0;
       for(const f of this.mythicFields){if(f.kind!=='water'||f.life<=0||f.reacted||Math.hypot(f.x-x,f.y-y)>f.r+r)continue;
         if(!['fire','ice','lightning'].includes(element))continue;f.reacted=true;count++;
-        for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r+e.r){this.mythicHit(e,this.player.damage*(element==='fire'?1.7:element==='lightning'?1.3:.8),element,false);if(element==='ice')e.frozen=e.sagaBoss||e.type==='boss'?.25:1.7}
+        for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r+e.r){const hit=()=>this.mythicHit(e,this.player.damage*(element==='fire'?1.7:element==='lightning'?1.3:.8),element,false);
+          if(root.DTCombat)root.DTCombat.withStrike(this,12,hit);else hit();if(element==='ice')e.frozen=e.sagaBoss||e.type==='boss'?.25:1.7}
         if(element==='fire'){f.life=.4;this.effect('element-impact',f.x,f.y,'#d8e5e0',f.r,.8,{element:'wind'})}
         if(element==='ice'){f.element='ice';this.effect('element-impact',f.x,f.y,'#a6e8ff',f.r,.8,{element:'ice'})}
         if(element==='lightning'){this.effect('lightning',f.x-f.r*.7,f.y,'#c4c9ff',0,.6,{tx:f.x+f.r*.7,ty:f.y});f.life=Math.min(f.life,2)}
@@ -235,7 +243,13 @@
     }
     updateFields(dt){
       const p=this.player,lamps=this.mythicFields.filter(f=>f.kind==='lantern'&&f.life>0);
-      for(const f of this.mythicFields){f.age=(f.age||0)+dt;f.life-=dt;f.tick-=dt;if(root.DTAit01?.fields.has(f.kind)){root.DTAit01.updateField(this,f,dt);continue}if(root.DTQuynhKun?.fields.has(f.kind)){root.DTQuynhKun.updateField(this,f,dt);continue}if(f.combat){this.updateCombatField(f,dt,true);continue}if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
+      for(const f of this.mythicFields){f.age=(f.age||0)+dt;f.life-=dt;f.tick-=dt;
+        const previousStrike=this.postureStrike;
+        if(f.strike)this.postureStrike=f.strike;
+        try{
+        if(root.DTSynergy?.field(this,f,dt))continue;
+        if(f.kind==='signature-ember'){if(f.tick<=0&&f.life>0){f.tick=.32;for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r+e.r)this.mythicHit(e,f.power,'fire',false)}continue;}
+        if(root.DTAit01?.fields.has(f.kind)){root.DTAit01.updateField(this,f,dt);continue}if(root.DTQuynhKun?.fields.has(f.kind)){root.DTQuynhKun.updateField(this,f,dt);continue}if(f.combat){this.updateCombatField(f,dt,true);continue}if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
         if(f.kind==='lantern'&&dist(p,f)<95)p.hp=Math.min(p.maxHp,p.hp+dt*(1.5+this.skillRanks.passive*.5));
         if(f.kind==='garden'&&dist(p,f)<f.r)p.hp=Math.min(p.maxHp,p.hp+dt*4);
         if(f.kind==='decoy')for(const e of this.world.enemies)if(e.alive&&!e.sagaBoss&&e.type!=='boss'&&dist(e,f)<f.r){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*e.speed*dt*.9,Math.sin(a)*e.speed*dt*.9);e.cool=Math.max(.3,e.cool)}
@@ -248,11 +262,12 @@
         else if(['vine','garden','vortex','orbs','sigil','tornado'].includes(f.kind)){for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r){this.mythicHit(e,f.power,f.element,false);if(['vortex','tornado'].includes(f.kind)){const a=Math.atan2(f.y-e.y,f.x-e.x);this.moveEntity(e,Math.cos(a)*20,Math.sin(a)*20)}}this.effect('element-pulse',f.x,f.y,root.DTElements.byId(f.element).color,f.r,.5,{element:f.element})}
         else if(f.kind==='water')for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r)e.slow=1;
         this.effect('mythic-rune',f.x,f.y,f.element==='fire'?'#ffb06b':f.element==='water'?'#6fbccc':this.hero.color,f.r,.5,{kind:f.kind,angle:f.angle});
+        }finally{this.postureStrike=previousStrike}
       }
       this.mythicFields=this.mythicFields.filter(f=>f.life>0);
     }
     updateCastQueue(dt){const due=[];for(const c of this.castQueue){c.delay-=dt;if(c.delay<=0)due.push(c)}this.castQueue=this.castQueue.filter(c=>c.delay>0);
-      for(const c of due){if(this.dead)break;
+      for(const c of due){if(this.dead)break;const previousStrike=this.postureStrike;if(c.strike)this.postureStrike=c.strike;try{
         if(c.type==='cast')this.releaseCast(c);
         else if(c.type==='code-echo'){const end=this.lineHit(c,{x:c.tx,y:c.ty},23,c.power,'light',false,{hero:'hoavi',key:'q',echo:true});this.effects=this.effects.filter(e=>e.type!=='choreo-code-wait');this.effect('choreo-code-echo',c.x,c.y,'#1fc8db',650,.35,{hero:'hoavi',angle:Math.atan2(c.ty-c.y,c.tx-c.x),tx:end.x,ty:end.y})}
         else if(c.type==='echo'){const e=this.world.enemies.filter(e=>e.alive&&dist(e,c)<570).sort((a,b)=>dist(a,c)-dist(b,c))[0];if(e){this.shoot(c.x,c.y,Math.atan2(e.y-c.y,e.x-c.x),820,c.power,'#d8e8ff',{charge:false,echo:true});this.effect('afterimage',c.x,c.y,'#d8e8ff',35,.35,{hero:this.hero.id,facing:0})}}
@@ -260,6 +275,7 @@
         else if(c.type==='light-sweep')this.lineHit(c,{x:c.x+Math.cos(c.angle)*850,y:c.y+Math.sin(c.angle)*850},40,c.power,'light',false);
         else if(c.type==='ice-ring'){for(const e of this.world.enemies)if(e.alive&&Math.abs(dist(e,c)-c.r)<60)this.mythicHit(e,c.power,'ice',false);this.effect('element-impact',c.x,c.y,'#9ce0ff',c.r,.6,{element:'ice'});this.reactEnvironment?.('ice',c.x,c.y,c.r)}
         else if(c.type==='eruption'){for(const e of this.world.enemies)if(e.alive&&dist(e,c)<c.r+e.r)this.mythicHit(e,c.power,c.element,c.charge===true);this.effect('element-impact',c.x,c.y,root.DTElements.byId(c.element).color,c.r,.6,{element:c.element});this.reactEnvironment?.(c.element,c.x,c.y,c.r)}
+        }finally{this.postureStrike=previousStrike}
       }
     }
     update(dt){

@@ -1,4 +1,10 @@
-# Đèn Tinh: Miền Sương Lạc — 1.0.0
+# Đèn Tinh: Miền Sương Lạc — 1.1.0
+
+Game hành động RPG 2D fantasy Việt Nam với 7 nhân vật chơi được và thế giới mở rộng theo vùng. Bản web **1.1.0 · Miền Sương Chuyển Động** thêm 8 loài quái 3D-to-Pixel, Lướt Hoàn Hảo với phản kích riêng từng nhân vật và thanh Định Lực của boss.
+
+- Nhấn **Space** hoặc nút lướt khi đòn địch sắp chạm. Lướt Hoàn Hảo làm chậm khu vực trong 0,5 giây và cho 3 giây để đánh phản kích. Khi thanh Định Lực đầy, boss bị Phá Thế trong 3,5 giây.
+- Mở **I → Cổ vật & truyền thuyết** để xem 10 bộ cộng hưởng. Bảo Khí tiến hóa ở cấp 5, rồi cấp 10 hoặc sau khi hoàn thành truyện riêng.
+- Theo dõi **Sương Đỏ**, **Giải Cứu Lữ Khách** và **Khe Nứt Thời Không** trên bản đồ. Làng Đèn mở Lò Cộng Hưởng, Đài Chúc Phúc và Bia Hồi Ức theo tiến độ.
 
 **1.0.0** thêm Quỳnh Kun (nhân vật thứ sáu) và **AIT-01 · Kẻ Lữ Hành Kho Tàng** (nhân vật thứ bảy):
 - **Quỳnh Kun**: Chu Sa, Lộc Khí, Q ba đạo bùa, E cường hóa đặt đồng thời hai cọc Bát Quái và R Bách Phù Trấn Thiên.
@@ -17,7 +23,7 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 87 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v100-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 103 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v110-report.json`.
 
 ## Các thay đổi chính
 

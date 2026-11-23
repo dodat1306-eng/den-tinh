@@ -37,7 +37,7 @@
       <section class="quest glass"><span class="eyebrow">NGỌN ĐÈN DẪN LỐI</span><strong id="questTitle"></strong><p id="questText"></p></section>
       <section id="weaponHud" class="weapon-hud glass"><span class="eyebrow">BẢO KHÍ RIÊNG · K KỸ NĂNG</span><strong id="weaponName"></strong><span id="weaponAmmo"></span><small id="passiveHud"></small></section>
       <div id="challengeHud" class="challenge-hud hidden"></div>
-      <div id="bossHud" class="hidden"><strong id="bossName"></strong><div class="bar"><i id="bossBar"></i></div></div>
+      <div id="bossHud" class="hidden"><strong id="bossName"></strong><div class="bar"><i id="bossBar"></i></div><div id="bossPosture" class="bar posture-bar" role="meter" aria-label="Định Lực" aria-valuemin="0" aria-valuemax="100"><i id="bossPostureBar"></i></div></div>
       <section class="skill-tray">
         <div class="skill" id="skill-dash"><kbd>SPACE</kbd><b>↝</b><span>Lướt né</span><i></i></div>
         <div class="skill" id="skill-q"><kbd>Q</kbd><b>✦</b><span id="qName"></span><i></i></div>
@@ -59,15 +59,19 @@
         <div id="heroCards" class="hero-cards"></div>
         <div class="menu-actions"><button id="startButton" class="primary">Bắt đầu hành trình <span>→</span></button><button id="continueButton" class="secondary hidden">Tiếp tục</button></div>
         <div class="menu-links"><button id="helpButton">Cách chơi</button><button id="fullscreenButton">Toàn màn hình</button><button id="settingsMenu">Cài đặt</button><button id="creditsButton">Về thế giới này</button></div>
-        <div class="edition-tag">BẢN 1.0 · CHU SA TRẢ TÊN</div>
+        <div class="edition-tag">BẢN 1.1 · MIỀN SƯƠNG CHUYỂN ĐỘNG</div>
       </div>
-      <div class="menu-footer"><span>THẾ GIỚI VÔ HẠN · 7 NHÂN VẬT · 20 CỔ VẬT MỚI</span><span>ĐÈN TINH / 1.0</span></div>
+      <div class="menu-footer"><span>THẾ GIỚI VÔ HẠN · 7 NHÂN VẬT · 8 LOÀI QUÁI MỚI</span><span>ĐÈN TINH / 1.1</span></div>
     </section>
     <section id="modal" class="modal-layer hidden" role="dialog" aria-modal="true" aria-label="Hội thoại và bảng thông tin game"><div id="modalContent" class="modal-card"></div></section>
     <section id="mapOverlay" class="modal-layer hidden"><div class="world-map-card"><div class="world-map-head"><div><p class="eyebrow">NHỮNG MIỀN ĐẤT KHÔNG CÙNG</p><h2>Miền Sương Lạc</h2></div><button id="closeMap">Đóng · M</button></div><canvas id="worldMap" width="850" height="520"></canvas><p>Bản đồ quanh người · Vàng: ngươi · Hồng: ấn linh · Ngọc: trạm · Tím: chương truyện. F ở lửa trại để hồi sức và đặt điểm hồi sinh.</p></div></section>
     <div id="fatalError" class="hidden"></div>
     <div id="touchControls" class="hidden" aria-label="Điều khiển cảm ứng"><div class="touch-stick move-stick" id="moveStick"><span></span><b>DI CHUYỂN</b></div><div class="touch-stick aim-stick" id="aimStick"><span></span><b>NGẮM / ĐÁNH</b></div><div class="touch-actions"><button data-touch="dash" aria-label="Lướt né">↝</button><button data-touch="q">Q</button><button data-touch="e">E</button><button data-touch="r">R</button><button data-touch="heal" aria-label="Hồi máu">✚</button><button data-touch="interact" aria-label="Tương tác">F</button><button data-touch="skills" aria-label="Học kỹ năng">K</button></div></div>
   </main>
+  <script src="biome-monsters.js"></script>
+  <script src="combat-rework.js"></script>
+  <script src="relic-synergies.js"></script>
+  <script src="world-events.js"></script>
   <script src="world.js"></script>
   <script src="content.js"></script>
   <script src="engine.js"></script>
@@ -112,6 +116,8 @@
 <script src="assets/ait01-pixel-v1.js"></script>
 <script src="assets/ait01-vfx-pixel.js"></script>
 <script src="ait01-pixel.js"></script>
+<script src="assets/biome-monsters-v1.js"></script>
+<script src="biome-visuals.js"></script>
 <script src="ultimate-intro.js"></script>
 <script src="app.js"></script>
   <script src="controls.js"></script>

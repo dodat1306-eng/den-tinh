@@ -316,7 +316,9 @@
       for(const remain of g.shadowRemains||[])if(inView(remain))root.DTQuanLePixel?.remain(this,remain);
       const shadowGround=['shadow-portal','shadow-legion','shadow-web','shadow-roots'];
       for(const e of g.effects||[])if(shadowGround.includes(e.type))this.drawEffect(e);
+      root.DTBiomeArt?.drawHazards(this,inView);
       const objects=this.rpgObjects?.(inView)||[];
+      if(root.DTBiomeArt)objects.push(...root.DTBiomeArt.objects(this,inView));
       for(const unit of g.shadowArmy||[])if(unit.life>0&&inView(unit))objects.push({y:unit.y,draw:()=>root.DTQuanLePixel?.beast(this,unit)});
       for(const a of g.elementClones||[])if(a.alive&&inView(a))objects.push({y:a.y,draw:()=>this.drawElementClone(a)});
       for(const b of g.world.beacons||[])if(inView(b))objects.push({y:b.y,draw:()=>this.drawBeacon(b)});
@@ -327,7 +329,7 @@
       for(const o of g.world.chests||[])if(inView(o))objects.push({y:o.y,draw:()=>this.drawChest(o)});
       for(const e of g.world.enemies||[])if(e.alive&&inView(e))objects.push({y:e.y,draw:()=>this.drawEnemy(e)});
       for(const d of g.dyingEnemies||[])if(inView(d))objects.push({y:d.y,draw:()=>this.drawDyingEnemy?.(d)});
-      objects.push({y:p.y,draw:()=>{this.drawCastShadow?.(p.x,p.y,26,48,p);root.DTVisualHero(c,p,g.hero,g.time)}});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
+      objects.push({y:p.y,draw:()=>{this.drawCastShadow?.(p.x,p.y,26,48,p);root.DTVisualHero(c,p,g.hero,g.time);root.DTBiomeArt?.drawCounterAura(this,p)}});objects.sort((a,b)=>a.y-b.y);for(const o of objects)o.draw();this.drawCompanion();
       for(const b of g.projectiles||[])if(inView(b)){this.drawRibbonTrail?.(b);this.drawProjectile(b)}for(const e of g.effects||[])if(e.type!=='choreo-code-wait'&&!shadowGround.includes(e.type))this.drawEffect(e);
       for(const lf of g.foliageLeaves||[])if(inView(lf)){c.save();c.translate(lf.x,lf.y);c.rotate(lf.rot||0);c.globalAlpha=clamp(lf.life/(lf.maxLife||.7),0,1);if(lf.petal)oval(c,0,0,3.2,2,lf.color);else poly(c,[[-3.5,0],[0,-1.8],[4,0],[0,1.8]],lf.color);c.restore()}
       c.save();c.globalCompositeOperation='lighter';for(const pt of g.particles||[])if(inView(pt)){c.globalAlpha=clamp(pt.life/pt.maxLife,0,1);c.fillStyle=pt.color;c.fillRect(pt.x,pt.y,pt.size,pt.size)}c.restore();
@@ -337,6 +339,9 @@
       if(!menu){const target=g.objective?.().target;if(target&&Math.hypot(target.x-p.x,target.y-p.y)>390)this.drawGuide(p,target)}c.restore();
       this.renderLighting?.(delta,menu);
       this.renderBiomeWeather?.(delta,menu);
+      if(!menu&&g.worldEvent?.id==='blood_mist'){
+        c.fillStyle=root.DTSettings?.graphics==='low'?'#980c262c':'#a4092b3d';c.fillRect(0,0,1280,720);
+      }
       if(g.hitFlash>0){c.fillStyle='rgba(165,47,49,'+g.hitFlash+')';c.fillRect(0,0,1280,720)}
       if(!menu&&g.started){const x=(g.input.aimX-this.camera.x)*z,y=(g.input.aimY-this.camera.y)*z;c.strokeStyle='#f6e8bfaa';c.lineWidth=1;c.beginPath();c.arc(x,y,6.5,0,TAU);c.stroke();for(const a of[0,Math.PI/2,Math.PI,Math.PI*1.5])line(c,[[x+Math.cos(a)*10,y+Math.sin(a)*10],[x+Math.cos(a)*13,y+Math.sin(a)*13]],'#e6d7a2',1)}
       if(g.elementCinema&&!menu){const cin=g.elementCinema,f=root.DTElements?.byId(cin.element),fade=clamp(Math.min(cin.life*2,(cin.maxLife-cin.life)*5),0,1);c.save();c.globalAlpha=fade;c.fillStyle='#0a2032cc';c.fillRect(310,532,660,42);line(c,[[340,574],[940,574]],f?.color||'#d4dbff',1);c.font='700 15px "DenTinh Sans"';c.textAlign='center';c.fillStyle=f?.accent||'#fff1cf';c.fillText(cin.name,640,559);c.restore()}

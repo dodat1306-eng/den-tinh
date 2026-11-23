@@ -85,7 +85,7 @@
     }
     damageEnemy(e,amount,charge=true){
       if(!e.alive)return;
-      if(e.type==='boss'&&this.world.enemies.some(x=>x.root&&x.alive))amount*=.25;
+      if(e.type==='boss'&&this.world.enemies.some(x=>x.root&&x.alive&&x.memoryRematchOwner===(e.memoryRematch?e.id:undefined)))amount*=.25;
       const alive=e.alive;super.damageEnemy(e,amount,charge);
       if(charge&&this.hero.id==='hoavi')this.player.code=Math.min(8,this.player.code+1);
       if(alive&&!e.alive){
@@ -102,7 +102,8 @@
       if(effect==='burn'||p.relics.wildfire||this.hero.id==='an'){e.burn=2.3;e.burnTick=0}
       if(effect==='shock'){e.slow=Math.max(e.slow,.7)}
       if((effect==='chain'||p.relics.chain)&&this.rng()<(this.procChance?.(.35)||.35)){
-        const targets=this.world.enemies.filter(x=>x.alive&&x.id!==e.id&&dist(x,e)<220).slice(0,3);
+        const targets=this.world.enemies.filter(x=>x.alive&&x.id!==e.id&&dist(x,e)<220).slice(0,3+(root.DTSynergy?.lightningBonus(this)||0));
+        root.DTSynergy?.arc(this,e);
         for(const x of targets){this.damageEnemy(x,b.damage*.65,b.charge!==false);this.effect('lightning',e.x,e.y,'#c4c0ff',0,.3,{tx:x.x,ty:x.y})}
       }
       if(effect==='explode'){for(const x of this.world.enemies)if(x.alive&&x.id!==e.id&&dist(x,e)<95)this.damageEnemy(x,b.damage*.55,b.charge!==false);this.effect('circuit',e.x,e.y,b.color,95,.4)}
@@ -111,20 +112,23 @@
     updateProjectiles(dt){
       const p=this.player;
       for(let i=this.projectiles.length-1;i>=0;i--){
-        const b=this.projectiles[i];if(!b)continue;b.life-=dt;
-        const steps=Math.max(1,Math.ceil(Math.hypot(b.vx*dt,b.vy*dt)/10));
+        const b=this.projectiles[i];if(!b)continue;
+        const stepDt=b.friendly?dt:dt*(root.DTCombat?.enemyRate(this,b)||1);
+        root.DTCombat?.beforeProjectile(this,b,stepDt);
+        b.life-=stepDt;
+        const steps=Math.max(1,Math.ceil(Math.hypot(b.vx*stepDt,b.vy*stepDt)/10));
         for(let s=0;s<steps&&b.life>0;s++){
-          b.x+=b.vx*dt/steps;b.y+=b.vy*dt/steps;
-          if(root.DTDestruction?.projectile(this,b))break;
+          b.x+=b.vx*stepDt/steps;b.y+=b.vy*stepDt/steps;
+          if(root.DTSynergy?.blockShot(this,b)||root.DTDestruction?.projectile(this,b))break;
           if(this.world.collision(b.x,b.y,2)){b.life=0;break}
           if(b.friendly){
-            for(const e of this.world.enemies)if(e.alive&&!b.hitIds.includes(e.id)&&dist(e,b)<e.r+b.r){const prior=this.hitContext;this.hitContext=b;try{this.damageEnemy(e,b.damage,b.charge!==false);this.onBulletHit(b,e)}finally{this.hitContext=prior}b.hitIds.push(e.id);if(this.player.relics.pierce)b.damage*=1.12;if(b.pierce>0)b.pierce--;else{b.life=0;break}}
+            for(const e of this.world.enemies)if(e.alive&&!b.hitIds.includes(e.id)&&dist(e,b)<e.r+b.r){if(root.DTBiome?.block(this,e,b))break;const prior=this.hitContext;this.hitContext=b;try{this.damageEnemy(e,b.damage,b.charge!==false);this.onBulletHit(b,e)}finally{this.hitContext=prior}b.hitIds.push(e.id);if(this.player.relics.pierce)b.damage*=1.12;if(b.pierce>0)b.pierce--;else{b.life=0;break}}
           }else if(dist(b,p)<p.r+b.r){const before=p.hp+(p.shield||0);this.incomingAttacker=this.world.enemies.find(e=>e.id===b.sourceAttacker)||null;this.damagePlayer(b.damage);this.incomingAttacker=null;this.onHostileBulletHit?.(b,p.hp+(p.shield||0)<before);b.life=0}
           if(!b.friendly&&p.firewall>0&&dist(b,p)<155){b.life=0;this.spark(b.x,b.y,5,'#f0a4eb',80,.25)}
         }
         (b.history||(b.history=[])).push({x:b.x,y:b.y});if(b.history.length>7)b.history.shift();
         b.trail+=dt;if(b.trail>.04&&this.particles.length<580){b.trail=0;this.particles.push({x:b.x,y:b.y-18,color:b.color,size:b.friendly?3:3.5,life:.18,maxLife:.18})}
-        if(b.life<=0){const idx=this.projectiles.indexOf(b);if(idx>=0)this.projectiles.splice(idx,1)}
+        if(b.life<=0){if(b.counter==='ait01')root.DTCombat?.barrage(this,b);const idx=this.projectiles[i]===b?i:this.projectiles.indexOf(b);if(idx>=0)this.projectiles.splice(idx,1)}
       }
     }
     update(dt){
@@ -156,18 +160,19 @@
         for(const e of this.world.enemies)if(e.alive&&dist(e,this.player)<650){const a=Math.atan2(e.homeY-e.y,e.homeX-e.x);if(dist(e,{x:e.homeX,y:e.homeY})>20)this.moveEntity(e,Math.cos(a)*e.speed*dt,Math.sin(a)*e.speed*dt)}return;
       }
       super.updateEnemies(dt);
-      for(const e of this.world.enemies)if(e.alive&&e.miniBoss&&dist(e,this.player)<600){e.extraCd=(e.extraCd||2)-dt*(this.player.ultIntro&&dist(e,this.player)<=520?.25:1);if(e.extraCd<=0){e.extraCd=e.hp<e.maxHp*.5?2.3:3.3;const a=Math.atan2(this.player.y-e.y,this.player.x-e.x);for(let i=-2;i<=2;i++)this.shoot(e.x,e.y,a+i*.23,250,13,'#ffc18e',{friendly:false,life:2.1});this.effect('warning',e.x,e.y,'#ffb575',45,.65)}}
+      for(const e of this.world.enemies)if(e.alive&&e.miniBoss&&!(e.staggered>0)&&dist(e,this.player)<600){e.extraCd=(e.extraCd||2)-dt*Math.min(this.player.ultIntro&&dist(e,this.player)<=520?.25:1,root.DTCombat?.enemyRate(this,e)||1);if(e.extraCd<=0){e.extraCd=e.hp<e.maxHp*.5?2.3:3.3;const a=Math.atan2(this.player.y-e.y,this.player.x-e.x);for(let i=-2;i<=2;i++)this.shoot(e.x,e.y,a+i*.23,250,13,'#ffc18e',{friendly:false,life:2.1});this.effect('warning',e.x,e.y,'#ffb575',45,.65)}}
     }
     updateBoss(e,dt){
       super.updateBoss(e,dt);
       if(!e.rootPhase&&e.hp<e.maxHp*.65){
-        e.rootPhase=true;for(let i=0;i<3;i++){const a=i/3*TAU;const x=e.homeX+Math.cos(a)*150,y=e.homeY+Math.sin(a)*140;this.spawnEnemy('core',x,y,{root:true,hp:115+this.run*25,maxHp:115+this.run*25,r:20,speed:0,damage:0,color:'#ed99c9'})}
+        e.rootPhase=true;for(let i=0;i<3;i++){const a=i/3*TAU;const x=e.homeX+Math.cos(a)*150,y=e.homeY+Math.sin(a)*140;this.spawnEnemy('core',x,y,{root:true,memoryRematchOwner:e.memoryRematch?e.id:undefined,hp:115+this.run*25,maxHp:115+this.run*25,r:20,speed:0,damage:0,color:'#ed99c9'})}
         this.emit('toast',{text:'Rễ Ký Ức bảo vệ Mộc Quỷ! Phá ba rễ hồng để gỡ khiên.'});this.effect('overclock',e.x,e.y,'#f7a4cb',220,1);
       }
-      if(e.hp<e.maxHp*.3){e.phase=3;e.novaCd=(e.novaCd??0)-dt;if(e.novaCd<=0){e.novaCd=3;for(let j=0;j<5;j++){const a=j/5*TAU+this.time*.4;this.telegraphs.push({x:e.x+Math.cos(a)*180,y:e.y+Math.sin(a)*155,r:58,timer:1.2,maxTimer:1.2,damage:23,color:'#ff8d8e'})}}}
+      if(e.hp<e.maxHp*.3){e.phase=3;e.novaCd=(e.novaCd??0)-dt;if(e.novaCd<=0){e.novaCd=3;for(let j=0;j<5;j++){const a=j/5*TAU+this.time*.4;this.telegraphs.push({x:e.x+Math.cos(a)*180,y:e.y+Math.sin(a)*155,r:58,timer:1.2,maxTimer:1.2,damage:23,color:'#ff8d8e',sourceId:e.id})}}}
     }
     spawnEnemy(type,x,y,extra={}){
-      const e={id:'v2-'+(++this.challengeSerial),type,x,y,homeX:x,homeY:y,r:15,hp:60,maxHp:60,speed:90,damage:9,xp:0,gold:0,alive:true,cool:2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,summon:true,...extra};
+      const e={id:'v2-'+(++this.challengeSerial),type,x,y,homeX:x,homeY:y,r:15,hp:60,maxHp:60,speed:90,damage:9,xp:0,gold:0,alive:true,cool:2,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0,summon:true,...root.DTBiome?.stats(type),...extra};
+      if(root.DTCombat?.boss(e)){e.maxPosture=100;e.posture=e.posture||0;e.staggered=e.staggered||0}
       if(this.world.collision(x,y,e.r)){for(let i=0;i<16;i++){const a=i/16*TAU,nx=x+Math.cos(a)*65,ny=y+Math.sin(a)*65;if(!this.world.collision(nx,ny,e.r)){e.x=e.homeX=nx;e.y=e.homeY=ny;break}}}
       this.world.enemies.push(e);return e;
     }
@@ -230,7 +235,7 @@
       if(state.complete)text='Thử thách hoàn tất! Đến gần '+s.name+' và nhấn F.';return{title:q.title,text,target:s};
     }
     respawn(){super.respawn();this.player.shield=0;this.player.overclock=0;this.player.firewall=0;for(const s of this.world.shrines){const state=this.challenge[s.id];if(state.started&&!state.complete){this.clearChallengeEnemies(state);state.started=false;state.timer=0;state.hp=100}}}
-    serialize(){const data=super.serialize(),boss=this.world.enemies.find(e=>e.type==='boss');data.expansionVersion=2;data.expansion={run:this.run,challenge:this.challenge,weaponDrops:this.weaponDrops,memories:this.memories,achievements:this.achievements,tutorial:this.tutorial,serial:this.challengeSerial,droppedWeapons:this.droppedWeapons,bossState:boss?{rootPhase:!!boss.rootPhase,novaCd:boss.novaCd||0,pattern:boss.pattern||0}:null};data.dynamicEnemies=this.world.enemies.filter(e=>e.id.startsWith('v2-')&&e.alive).map(e=>({...e}));return data}
+    serialize(){const data=super.serialize(),boss=this.world.enemies.find(e=>e.type==='boss');data.expansionVersion=2;data.expansion={run:this.run,challenge:this.challenge,weaponDrops:this.weaponDrops,memories:this.memories,achievements:this.achievements,tutorial:this.tutorial,serial:this.challengeSerial,droppedWeapons:this.droppedWeapons,bossState:boss?{rootPhase:!!boss.rootPhase,novaCd:boss.novaCd||0,pattern:boss.pattern||0}:null};data.dynamicEnemies=this.world.enemies.filter(e=>e.id.startsWith('v2-')&&e.alive&&!e.worldEventUnit&&!e.memoryRematch&&!e.memoryRematchOwner).map(e=>({...e}));return data}
     static restore(data){
       if(!data?.player||!Number.isFinite(data.player.y))throw new Error('Bản lưu không có tọa độ hợp lệ');
       const g=Base.restore(data);Object.setPrototypeOf(g,ExpandedGame.prototype);const baseEnemies=data.enemies;

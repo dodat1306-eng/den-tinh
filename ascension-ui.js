@@ -39,7 +39,7 @@
   function tabs(current){return '<nav class="ascension-tabs" aria-label="Bảng nhân vật">'+[['skills','Kỹ năng · K'],['inventory','Nhân vật · I'],['relics','Cổ vật & truyền thuyết']].map(([id,label])=>'<button data-asc-tab="'+id+'" class="'+(current===id?'selected':'')+'" aria-current="'+(current===id?'page':'false')+'">'+label+'</button>').join('')+'</nav>'}
   function shell(tab,title,body){
     const g=game();
-    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH 1.0.0 · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
+    app().showModal(tab==='skills'?'skills':'inventory','<section class="ascension-panel"><span class="eyebrow">ĐÈN TINH '+esc(root.DTContent.version)+' · '+esc(g.hero.role)+'</span><h2>'+esc(title)+'</h2>'+tabs(tab)+body+'<div class="buttons ascension-footer"><button id="ascensionClose" class="primary">Tiếp tục hành trình</button><small>K học kỹ năng · I xem nhân vật · Esc đóng</small></div></section>');
     $('ascensionClose').onclick=()=>app().closeAndContinue();
     $('modalContent').querySelectorAll('[data-asc-tab]').forEach(b=>b.onclick=()=>root.DTAscensionUI[b.dataset.ascTab==='skills'?'showSkills':b.dataset.ascTab==='relics'?'showRelics':'showInventory']());
   }
@@ -66,7 +66,7 @@
     $('trainerSkills').onclick=showSkills;$('trainerClose').onclick=()=>app().closeAndContinue();$('modalContent').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{if(g.buy(b.dataset.buy)){app().save();showTrainer()}});
   }
   function sync(g){
-    const s=signature(g),p=passive(g);$('weaponName').textContent=s.name;$('weaponName').style.color=s.color||g.hero.color;$('weaponAmmo').textContent='K · Kỹ năng · '+points(g)+' điểm';$('passiveHud').textContent=status(g);$('passiveHud').title=p.desc;
+    const s=signature(g),p=passive(g);$('weaponName').textContent=s.name;$('weaponName').style.color=s.color||g.hero.color;$('weaponAmmo').textContent=root.DTCombat?'Bậc '+['','I','II','III'][root.DTCombat.tier(g)]+' · '+root.DTCombat.ranks[root.DTCombat.tier(g)]:'K · Kỹ năng · '+points(g)+' điểm';$('passiveHud').textContent=g.player.perfectCounter>0?'✦ Sẵn sàng phản kích · '+g.player.perfectCounter.toFixed(1)+'s':status(g);$('passiveHud').title=p.desc;
     for(const key of['q','e','r']){const el=$('skill-'+key),k=skill(g,key);el.title=key.toUpperCase()+' · '+k.name+'\n'+k.desc;el.setAttribute('aria-label',key.toUpperCase()+' · '+k.name+'. '+k.desc)}
     if(g.hero.id==='quynhkun'){const recast=g.canRecastE();$('eName').textContent=recast?'Thu Phù Hộ Thể':g.hero.e;const button=$('skill-e');button.classList.toggle('ready',recast);if(recast){button.querySelector('i').style.transform='scaleY(0)';button.dataset.time='E · THU PHÙ';button.classList.remove('cooling');button.setAttribute('aria-label','E · Thu Phù Hộ Thể. Thu cọc và bật vòng bùa, không tốn linh lực.')}}
     if(g.hero.id==='ait01'){const recast=g.canRecastE();$('eName').textContent=recast?'Thu Hồi Ô Kho':g.hero.e;const button=$('skill-e');button.classList.toggle('ready',recast);if(recast){button.querySelector('i').style.transform='scaleY(0)';button.dataset.time='E · THU KHO';button.classList.remove('cooling');button.setAttribute('aria-label','E · Thu Hồi Ô Kho. Thu ô kho và bật Quá Tải Kho Vũ Khí, không tốn linh lực.')}}
@@ -76,11 +76,9 @@
   root.DTAscensionUI={shell,showSkills,showInventory,showRelics,showTrainer,sync,passive,status};
   $('weaponHud').classList.add('signature-hud');$('weaponHud').querySelector('.eyebrow').textContent='BẢO KHÍ RIÊNG · NỘI TẠI';
   const skillButton=document.createElement('button');skillButton.id='openSkillTree';skillButton.textContent='K · Kỹ năng';skillButton.onclick=showSkills;document.querySelector('.bottom-info').insertBefore(skillButton,$('pauseButton'));
-  document.querySelector('.bottom-info>span').textContent='WASD di chuyển · Chuột đánh · F tương tác · K kỹ năng · I cổ vật';
+  document.querySelector('.bottom-info>span').textContent='WASD di chuyển · Chuột đánh · Space lướt · F tương tác · K kỹ năng · I cổ vật';
   document.querySelectorAll('[data-touch="swap"],[data-touch="reload"]').forEach(b=>b.remove());
   const touch=document.querySelector('[data-touch="skills"]')||document.createElement('button');touch.dataset.touch='skills';touch.textContent='K';touch.setAttribute('aria-label','Học kỹ năng và xem nội tại');touch.onclick=showSkills;if(!touch.parentNode)document.querySelector('.touch-actions').appendChild(touch);
-  const edition=document.querySelector('.edition-tag');if(edition)edition.textContent='BẢN 0.7 · NHỊP CHIÊU · THẤT LINH';
-  const footer=document.querySelectorAll('.menu-footer span');if(footer[0])footer[0].textContent='THẾ GIỚI VÔ HẠN · 5 BỘ KỸ NĂNG · 20 CỔ VẬT MỚI';if(footer[1])footer[1].textContent='ĐÈN TINH / 05';
   const mapLabel=document.querySelector('.world-map-head .eyebrow');if(mapLabel)mapLabel.textContent='MIỀN ĐẤT CŨ · NHỮNG CHÂN TRỜI MỚI';
   $('mobileInventory')?.setAttribute('aria-label','Nhân vật, kỹ năng và cổ vật');
 })(globalThis);
