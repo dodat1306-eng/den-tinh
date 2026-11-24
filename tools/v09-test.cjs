@@ -32,8 +32,96 @@ test('Phoenix aura ticks damage and charmed contact enemies cannot attack',()=>{
 test('Golems and treants survive repeated JSON saves with exact HP, duration and DOM',()=>{let g=arena('thienvu');points(g,'dom',2);g.summonElement('golem',g.player,g.player,10,18);g.summonElement('treant',g.player,{x:g.player.x+100,y:g.player.y},12,30);g.scaleSummons(0);for(const s of g.elementSummons)s.hp*=.55;const expected=JSON.stringify(g.elementSummons.map(s=>[s.kind,s.hp,s.maxHp,s.life,s.maxLife,s.power]));for(let i=0;i<10;i++){g=Game.restore(JSON.parse(JSON.stringify(g.serialize())));g.scaleSummons(0);assert.equal(JSON.stringify(g.elementSummons.map(s=>[s.kind,s.hp,s.maxHp,s.life,s.maxLife,s.power])),expected)}const save=g.serialize();save.v09.elementSummons.push({kind:'golem',x:Infinity,y:2,hp:10,life:2,power:1});assert.equal(Game.restore(save).elementSummons.length,2)});
 test('Third-hit relic snapshots attack number while bullets are in flight',()=>{const g=arena();relic(g,'power');const p=g.player;g.passiveState.attackCount=3;g.shoot(p.x,p.y,0,50,10,'#fff',{life:5});const third=g.projectiles[0];g.passiveState.attackCount=4;g.onBulletHit(third,enemy(g));assert(third.powerBurst);g.shoot(p.x,p.y,0,50,10,'#fff',{life:5});const fourth=g.projectiles.at(-1);g.passiveState.attackCount=6;g.onBulletHit(fourth,enemy(g));assert(!fourth.powerBurst)});
 test('Cuoi ignores a shielded hit and prevents actual lethal damage after armor',()=>{const g=arena('quanle');relic(g,'cuoi');const p=g.player;p.hp=1;p.shield=500;p.shadowArmor=3;g.damagePlayer(100);assert(!g.relicTimers.cuoi);assert.equal(p.hp,1);p.shield=0;p.invulnerable=0;g.damagePlayer(100);assert.equal(g.relicTimers.cuoi,180);assert(!g.dead)});
-test('Truth layer four requires final saga, gate waits for returning village memories',()=>{const g=game();g.victory=true;g.world.shrines.forEach(s=>s.active=true);g.storyFlags.treeAwake=true;assert.equal(g.updateDialogueStage(),3);assert(!g.interactSagaGate());assert(!g.npcDialogue(g.world.npcs.find(n=>n.id==='elder')).text.includes('trái tim hy vọng'));g.storyFlags.returnedMemories=true;assert(g.interactSagaGate());g.saga.cleared.push('weaver');assert.equal(g.updateDialogueStage(),4);assert(g.npcDialogue(g.world.npcs.find(n=>n.id==='dom_avatar')).text.includes('trái tim hy vọng'))});
-test('All hero stories complete through actual NPC, memory and battle interactions',()=>{for(const hero of Object.keys(V.stories)){const g=game(hero);let count=0;while(g.questStep()&&count++<90){const s=g.questStep();g.paused=false;if(s.kind==='npc'){const n=g.world.npcs.find(n=>(n.type||n.id)===s.target);assert(n,s.target);g.player.x=n.x;g.player.y=n.y;assert(g.interact(),hero+' '+s.title)}else if(s.kind==='memory'||s.kind==='memories'){const ids=s.targets||[s.target];for(const id of ids){const o=g.world.questObjects.find(o=>o.id===id);if(o.collected)continue;g.player.x=o.x;g.player.y=o.y;if(o.element)g.transformElement(o.element);assert(g.interact(),hero+' '+id)}}else if(s.kind==='kill'){const e=g.world.enemies.find(e=>e.name?.includes('Trúc Vệ'));g.damageEnemy(e,1e8)}else if(s.kind==='truth'){g.world.shrines.forEach(s=>s.active=true);g.startBoss();const e=g.world.enemies.find(e=>e.type==='boss');g.world.enemies=g.world.enemies.filter(x=>!x.root);g.damageEnemy(e,1e8);g.player.x=1830;g.player.y=590;assert(g.interact())}else if(s.kind==='duel'){g.player.x=1830;g.player.y=760;assert(g.interact());g.damageEnemy(g.world.enemies.find(e=>e.questDuel),1e8)}g.consumeEvents()}assert(g.heroQuest.completed,hero);assert.equal(g.heroQuest.stage,V.quests[hero].steps.length);const r=Game.restore(JSON.parse(JSON.stringify(g.serialize())));assert(r.heroQuest.completed);assert.equal(r.heroQuest.stage,g.heroQuest.stage)}});
+function interactAt(g,o){
+  g.paused=false;
+  Object.assign(g.player,{x:o.x,y:o.y});
+  return g.interact();
+}
+function returnVillage(g){
+  if(g.storyFlags.returnedMemories)return;
+  g.world.shrines.forEach(s=>s.active=true);
+  g.startBoss();
+  const boss=g.world.enemies.find(e=>e.type==='boss');
+  g.world.enemies=g.world.enemies.filter(e=>!e.root);
+  g.damageEnemy(boss,1e8);
+  assert(g.victory);
+  assert(interactAt(g,g.world.altar));
+}
+function reachStoryChapter(g,id){
+  const chapters=ctx.DTWorld.endless.chapters;
+  const target=chapters.findIndex(c=>c.id===id);
+  assert(target>=0);
+  returnVillage(g);
+  while(g.saga.chapter<target){
+    g.saga.stage='claim';
+    assert(interactAt(g,g.world.storyEnvironment.find(o=>o.sagaGate)));
+  }
+}
+
+test('Village memories unlock the frontier and its last claim resolves the shared story',()=>{
+  const g=game();
+  g.victory=true;
+  g.world.shrines.forEach(s=>s.active=true);
+  g.storyFlags.treeAwake=true;
+  assert.equal(g.updateDialogueStage(),3);
+  const gate=g.world.storyEnvironment.find(o=>o.sagaGate);
+  assert(!interactAt(g,gate));
+  assert(!g.npcDialogue(g.world.npcs.find(n=>n.id==='elder')).text.includes('trái tim hy vọng'));
+  assert(interactAt(g,g.world.altar));
+  assert(interactAt(g,gate));
+  assert.equal(g.saga.stage,'echoes');
+
+  reachStoryChapter(g,'weaver');
+  g.saga.stage='claim';
+  g.consumeEvents();
+  assert(interactAt(g,g.world.storyEnvironment.find(o=>o.sagaGate)));
+  assert.equal(g.saga.stage,'complete');
+  const ending=g.consumeEvents().find(e=>e.type==='dialogue').text;
+  assert.match(ending,/An của vòng đê vỡ/);
+  for(const name of ['HoaVi','AIT-01','Thiên Vũ','Quỳnh Kun','Hạc','Huyền Kha']){
+    assert(ending.includes(name),name);
+  }
+  assert.match(ending,/Con nghe mẹ kể từ đầu/);
+  assert.equal(g.updateDialogueStage(),4);
+  assert(g.npcDialogue(g.world.npcs.find(n=>n.id==='dom_avatar')).text.includes('trái tim hy vọng'));
+});
+test('All hero stories complete through actual NPC, memory and battle interactions',()=>{
+  for(const hero of Object.keys(V.stories)){
+    const g=game(hero);
+    let count=0;
+    while(g.questStep()&&count++<90){
+      const step=g.questStep();
+      g.paused=false;
+      if(step.kind==='npc'){
+        const npc=g.world.npcs.find(n=>(n.type||n.id)===step.target);
+        assert(npc,step.target);
+        assert(interactAt(g,npc),hero+' '+step.title);
+      }else if(step.kind==='memory'||step.kind==='memories'){
+        for(const id of step.targets||[step.target]){
+          const memory=g.world.questObjects.find(o=>o.id===id);
+          if(memory.collected)continue;
+          if(memory.chapter)reachStoryChapter(g,memory.chapter);
+          if(memory.element)g.transformElement(memory.element);
+          assert(interactAt(g,memory),hero+' '+id);
+        }
+      }else if(step.kind==='kill'){
+        const enemy=g.world.enemies.find(e=>e.name?.includes('Trúc Vệ'));
+        g.damageEnemy(enemy,1e8);
+      }else if(step.kind==='truth'){
+        returnVillage(g);
+      }else if(step.kind==='duel'){
+        assert(interactAt(g,{x:1830,y:760}));
+        g.damageEnemy(g.world.enemies.find(e=>e.questDuel),1e8);
+      }
+      g.consumeEvents();
+    }
+    assert(g.heroQuest.completed,hero);
+    assert.equal(g.heroQuest.stage,V.quests[hero].steps.length);
+    const restored=Game.restore(JSON.parse(JSON.stringify(g.serialize())));
+    assert(restored.heroQuest.completed,hero);
+    assert.equal(restored.heroQuest.stage,g.heroQuest.stage);
+  }
+});
 test('Three seeds preserve forest, 950px spacing, 900px village exclusion and reachable trials including frontier',()=>{
   for(const seed of [71426,19,2026]){
     const w=new Game('an',seed).world,all=[...w.relicPedestals,...w.bossAltars],props=new Map();assert.equal(w.relicPaths,undefined);

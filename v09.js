@@ -168,7 +168,7 @@
     start(){super.start();this.events=this.events.filter(e=>!(e.type==='dialogue'&&e.id==='intro'));this.emit('dialogue',{speaker:'BÀ NĂM',title:'Lời nhờ cậy giữa sương',text:V.dialogues.elder[0]+'\n\n'+V.stories[this.hero.id].intro})}
     npcDialogue(n){this.updateDialogueStage();const id=n.type||n.id,lines=V.dialogues[id]||V.dialogues.elder;let text=lines[this.dialogueStage-1];if(n.chapter!=null)text=this.saga.cleared.includes('weaver')?lines[3]:this.saga.chapter<n.chapter?'Ngọn đèn trước chưa nối. Hãy trở lại sau khi hoàn thành chương '+(n.chapter+1)+'.':D.endless.chapters[n.chapter].intro;const step=this.questStep();if(step?.kind==='npc'&&step.target===id)return{speaker:n.name,title:step.title,text:text+'\n\n'+step.text};return{speaker:n.name,title:this.dialogueStage===1?'Một lời kể bên đường':'Những tên còn thiếu · Tầng '+this.dialogueStage,text}}
     questStep(){return V.quests[this.hero.id].steps[this.heroQuest.stage]}
-    advanceQuest(event){
+    advanceQuest(event,scene){
       const q=this.heroQuest;
       if(!q)return;
       const current=this.questStep();
@@ -186,24 +186,48 @@
         this.awardSkillPoints(2,'Hoàn thành truyện '+this.hero.name);
         this.player.gold+=200;
       }
-      this.emit('dialogue',{speaker:this.hero.name,title:story.reward,text:V.stories[this.hero.id].ending+'\n\n'+story.ending+(first?'\n\nThưởng: +10% sát thương, 200 xu và 2 điểm kỹ năng.':'')});
+      const ending=V.stories[this.hero.id].ending+'\n\n'+story.ending+(first?'\n\nThưởng: +10% sát thương, 200 xu và 2 điểm kỹ năng.':'');
+      if(scene){
+        scene.title=story.reward;
+        scene.text+='\n\n'+ending;
+      }else this.emit('dialogue',{speaker:this.hero.name,title:story.reward,text:ending});
     }
-    questTarget(){const s=this.questStep();if(!s)return null;if(s.kind==='npc')return this.world.npcs.find(n=>(n.type||n.id)===s.target);if(s.kind==='memory')return this.world.questObjects.find(o=>o.id===s.target);if(s.kind==='memories')return this.world.questObjects.find(o=>s.targets.includes(o.id)&&!o.collected);if(s.kind==='duel')return{x:1830,y:760};if(s.kind==='truth')return this.world.altar;return this.world.enemies.find(e=>e.id===s.target)||this.world.shrines[0]}
-    objective(){const s=this.heroQuest&&this.questStep();if(s){return{title:this.hero.name+' · '+s.title,text:s.hint+' · I: nhật ký và chỉ số. M: bản đồ.',target:this.questTarget()}}if(this.victory&&!this.storyFlags.returnedMemories)return{title:'Trả ký ức cho Làng Đèn',text:'Nhấn F tại Cội Đa để dùng Đèn Tinh trả lại những tên đã mất.',target:this.world.altar};return super.objective()}
+    questMemories(step=this.questStep()){
+      if(step?.kind!=='memory'&&step?.kind!=='memories')return [];
+      const here=D.endless.chapters[this.saga.chapter]?.id;
+      return this.world.questObjects.filter(o=>o.hero===this.hero.id&&!o.collected&&
+        (step.target===o.id||step.targets?.includes(o.id))&&
+        (!o.chapter||this.storyFlags.returnedMemories&&(o.chapter===here||this.saga.cleared.includes(o.chapter))));
+    }
+    questTarget(){
+      const s=this.questStep();
+      if(!s)return null;
+      if(s.kind==='npc')return this.world.npcs.find(n=>(n.type||n.id)===s.target);
+      if(s.kind==='memory'||s.kind==='memories')return this.questMemories(s)[0];
+      if(s.kind==='duel')return{x:1830,y:760};
+      if(s.kind==='truth')return this.world.altar;
+      return this.world.enemies.find(e=>e.id===s.target)||this.world.shrines[0];
+    }
+    objective(){
+      const s=this.heroQuest&&this.questStep(),target=s&&this.questTarget();
+      if(target)return{title:this.hero.name+' · '+s.title,text:s.hint+' · I: nhật ký và chỉ số. M: bản đồ.',target};
+      if(this.victory&&!this.storyFlags.returnedMemories)return{title:'Trả ký ức cho Làng Đèn',text:'Nhấn F tại Cội Đa để dùng Đèn Tinh trả lại những tên đã mất.',target:this.world.altar};
+      return super.objective();
+    }
     nearby(){
       if(!this.heroQuest)return super.nearby();const p=this.player,objects=root.DTWorldEvents?.nearby(this)||[];for(const d of this.relicDrops)if(d.landed)objects.push({...d,relicDrop:true,label:'Nhặt '+C.relic(d.relic).name});
       for(const o of this.world.relicPedestals)if(!o.claimed)objects.push({...o,relicPedestal:true,label:o.unlocked?'Nhận '+o.name:this.trialHint(o)});objects.push(...this.trialObjects());
-      const step=this.questStep();for(const o of this.world.questObjects)if(o.hero===this.hero.id&&!o.collected&&(step?.target===o.id||step?.targets?.includes(o.id)))objects.push({...o,questMemory:true,label:'Ký ức · '+o.name});if(step?.kind==='duel')objects.push({id:'memory-shadow',x:1830,y:760,duel:true,label:'Đối mặt nửa bóng tối của Cội Đa'});for(const n of this.world.npcs)if(n.id!=='well'&&n.id!=='smith')objects.push({...n,v09Npc:true,label:'Trò chuyện với '+n.name});const base=super.nearby();if(base&&!objects.some(o=>o.id===base.id))objects.push(base);return objects.filter(o=>dist(o,p)<(o.relicDrop||o.relicPedestal?82:74)).sort((a,b)=>dist(a,p)-dist(b,p))[0]||null;
+      const step=this.questStep();for(const o of this.questMemories(step))objects.push({...o,questMemory:true,label:'Ký ức · '+o.name});if(step?.kind==='duel')objects.push({id:'memory-shadow',x:1830,y:760,duel:true,label:'Đối mặt thần danh đã niêm'});for(const n of this.world.npcs)if(n.id!=='well'&&n.id!=='smith')objects.push({...n,v09Npc:true,label:'Trò chuyện với '+n.name});const base=super.nearby();if(base&&!objects.some(o=>o.id===base.id))objects.push(base);return objects.filter(o=>dist(o,p)<(o.relicDrop||o.relicPedestal?82:74)).sort((a,b)=>dist(a,p)-dist(b,p))[0]||null;
     }
     interact(){
       if(this.paused||this.dead||!this.started)return false;const o=this.nearby();if(!o)return false;
       if(o.worldFeature)return root.DTWorldEvents.interact(this,o);
       if(o.trialNode||o.bossAltar)return this.interactTrial(o);
       if(o.relicDrop||o.relicPedestal){const e=o.relicDrop?this.relicDrops.find(d=>d.id===o.id):this.world.relicPedestals.find(p=>p.id===o.id);if(!e)return false;if(o.relicPedestal&&!e.unlocked)return this.interactTrial(o);if(!this.grantRelic(o.relic,e))return false;e.claimed=true;if(o.relicDrop)this.relicDrops.splice(this.relicDrops.indexOf(e),1);this.updateDialogueStage();return true}
-      if(o.questMemory){const r=this.world.questObjects.find(x=>x.id===o.id);if(r.collected)return false;if(r.element&&(!this.isElemental||this.element.id!==r.element)){this.emit('toast',{text:'Đài chỉ đáp lại dạng '+root.DTElements.byId(r.element).name+'. Đổi dạng bằng 1–7.'});return false}r.collected=true;this.heroQuest.memories.push(o.id);this.emit('dialogue',{speaker:this.hero.name,title:o.name,text:o.text});this.advanceQuest();return true}
-      if(o.duel){if(this.world.enemies.some(e=>e.questDuel&&e.alive))return false;const hp=900+this.player.level*80;this.world.enemies.push({id:'hero-shadow-duel',type:'shade',name:'Nửa Bóng Tối Cội Đa',x:1830,y:760,homeX:1830,homeY:760,r:24,hp,maxHp:hp,speed:95,damage:19,xp:450,gold:0,alive:true,cool:1,phase:0,timer:0,slow:0,hit:0,knockX:0,knockY:0,frontier:true,questDuel:true});return true}
-      if(o.v09Npc){this.emit('dialogue',this.npcDialogue(o));this.storyFlags[o.type||o.id]=true;this.advanceQuest(o.type||o.id);return true}
-      if(o.id==='altar'){if(this.victory){this.storyFlags.returnedMemories=true;this.addXp(this.storyFlags.returnReward?0:450);this.storyFlags.returnReward=true;this.emit('dialogue',{speaker:'CỘI ĐA · KÝ ỨC TRỞ VỀ',title:'Mười tám năm không tên',text:V.truthReturn});this.advanceQuest();return true}if(this.world.shrines.every(s=>s.active)){this.storyFlags.treeAwake=true;this.emit('dialogue',{speaker:'BỐN LINH HỒN',title:'Ba chiếc đinh cuối cùng',text:V.truthAwake});this.startBoss();this.updateDialogueStage();return true}}
+      if(o.questMemory){const r=this.world.questObjects.find(x=>x.id===o.id);if(r.collected)return false;if(r.element&&(!this.isElemental||this.element.id!==r.element)){this.emit('toast',{text:'Đài chỉ đáp lại dạng '+root.DTElements.byId(r.element).name+'. Đổi dạng bằng 1–7.'});return false}r.collected=true;this.heroQuest.memories.push(o.id);const scene={speaker:this.hero.name,title:o.name,text:o.text};this.advanceQuest(null,scene);this.emit('dialogue',scene);return true}
+      if(o.duel){if(this.world.enemies.some(e=>e.questDuel&&e.alive))return false;const hp=900+this.player.level*80;this.world.enemies.push({id:'hero-shadow-duel',type:'shade',name:'Thần Danh Đã Niêm',x:1830,y:760,homeX:1830,homeY:760,r:24,hp,maxHp:hp,speed:95,damage:19,xp:450,gold:0,alive:true,cool:1,phase:0,timer:0,slow:0,hit:0,knockX:0,knockY:0,frontier:true,questDuel:true});return true}
+      if(o.v09Npc){const id=o.type||o.id,scene=this.npcDialogue(o);this.storyFlags[id]=true;this.advanceQuest(id,scene);this.emit('dialogue',scene);return true}
+      if(o.id==='altar'){if(this.victory){this.storyFlags.returnedMemories=true;this.addXp(this.storyFlags.returnReward?0:450);this.storyFlags.returnReward=true;const scene={speaker:'CỘI ĐA · KÝ ỨC TRỞ VỀ',title:'Mười tám năm không tên',text:V.truthReturn};this.advanceQuest(null,scene);this.emit('dialogue',scene);return true}if(this.world.shrines.every(s=>s.active)){this.storyFlags.treeAwake=true;this.emit('dialogue',{speaker:'BỐN LINH HỒN',title:'Ba chiếc đinh cuối cùng',text:V.truthAwake});this.startBoss();this.updateDialogueStage();return true}}
       const n=this.world.shrines.filter(s=>s.active).length,ok=this.recovery(()=>super.interact());if(ok&&this.world.shrines.filter(s=>s.active).length>n){this.addXp(180);this.updateDialogueStage()}if(ok&&o.id==='well')root.DTWorldEvents?.bless(this);return ok;
     }
     respawn(){super.respawn();root.DTWorldEvents?.clearCombat(this)}
