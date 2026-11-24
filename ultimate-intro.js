@@ -2,7 +2,7 @@
   'use strict';
   const TAU=Math.PI*2,clamp=n=>Math.max(0,Math.min(1,n));
   const colors=['#EF4444','#38BDF8','#D97706','#F97316','#06B6D4','#22C55E','#FDE047'];
-  const words={ait01:['TOÀN KHO KHAI HỎA — HÒM TIẾP TẾ!','MỞ KHÓA MA TRẬN KHO KHÔNG GIAN','ĐỊNH VỊ TỌA ĐỘ HÒM TIẾP TẾ','VẠN PHÁO QUY TÂM · BÃO TÊN LỬA','TOÀN KHO KHAI HỎA'],quynhkun:['CẤP CẤP NHƯ LUẬT LỆNH — BÁCH PHÙ TRẤN THIÊN!','KHAI NHÃN ÂM DƯƠNG · ĐỊNH MẠCH CHU SA','BÁT QUÁI THÁI CỰC TRẬN KHAI MỞ','VẠN PHÙ QUY TÔNG · TRẤN YỂM TÀ MA','CẤP CẤP NHƯ LUẬT LỆNH'],thienvu:['THIÊN VŨ PHÂN THÂN — THẤT NGUYÊN TỐ!','KHAI MỞ TRẬN ĐỒ','THẤT LINH HIỂN ẤN','TÁCH BÓNG · TRIỆU KHÍ','KUASA TUJUH'],quanle:['BÁCH QUỶ DẠ HÀNH','DẠ VỰC BUÔNG XUỐNG','HUYẾT ẤN KHAI MÔN','TRỖI DẬY (ARISE)','QUÂN ĐOÀN XUNG PHONG'],hoavi:['OVERCLOCK: MA TRẬN BIÊN DỊCH TỐI THƯỢNG','TERMINAL ONLINE','ASSEMBLING TWIN CYBER-LOTUS','COMPILE 100%','OVERCLOCK'],an:['THIÊN ĐĂNG PHƯỢNG HOÀNG KHAI HỎA','THIÊN ĐĂNG THỨC TỈNH','BÁT ĐĂNG QUY VỊ','PHƯỢNG HOÀNG KHAI HỎA','THIÊN ĐĂNG'],linh:['PHONG LINH VẠN TIỄN TRẬN','TRÚC LÂM HIỆN ẢNH','ĐẠI CUNG PHONG LINH','VẠN TIỄN QUY TÂM','PHONG LINH']};
+  const words={ait01:['TOÀN KHO KHAI HỎA — HÒM TIẾP TẾ!','MỞ KHÓA MA TRẬN KHO KHÔNG GIAN','ĐỊNH VỊ TỌA ĐỘ HÒM TIẾP TẾ','VẠN PHÁO QUY TÂM · BÃO TÊN LỬA','TOÀN KHO KHAI HỎA'],quynhkun:['CẤP CẤP NHƯ LUẬT LỆNH — BÁCH PHÙ TRẤN THIÊN!','KHAI NHÃN ÂM DƯƠNG · ĐỊNH MẠCH CHU SA','BÁT QUÁI THÁI CỰC TRẬN KHAI MỞ','VẠN PHÙ QUY TÔNG · TRẤN YỂM TÀ MA','CẤP CẤP NHƯ LUẬT LỆNH'],thienvu:['THIÊN VŨ PHÂN THÂN — THẤT NGUYÊN TỐ!','KHAI MỞ TRẬN ĐỒ','THẤT LINH HIỂN ẤN','TÁCH BÓNG · TRIỆU KHÍ','KUASA TUJUH'],quanle:['BÁCH QUỶ DẠ HÀNH','DẠ VỰC BUÔNG XUỐNG','HUYẾT ẤN KHAI MÔN','TRỖI DẬY (ARISE)','QUÂN ĐOÀN XUNG PHONG'],hoavi:['OVERCLOCK: MA TRẬN BIÊN DỊCH TỐI THƯỢNG','TERMINAL ONLINE','ASSEMBLING TWIN CYBER-LOTUS','COMPILE 100%','OVERCLOCK'],an:['THIÊN ĐĂNG PHƯỢNG HOÀNG KHAI HỎA','THIÊN ĐĂNG THỨC TỈNH','BÁT ĐĂNG QUY VỊ','PHƯỢNG HOÀNG KHAI HỎA','THIÊN ĐĂNG'],huyenkha:['THIÊN TRẢM NỨT ĐẤT','TỤ TINH QUANG','HIỆN KIẾM · GỒNG LỰC','MỞ VẾT NỨT','KIẾM HÓA BỤI SAO']};
   function line(c,pts,col,width=2){c.strokeStyle=col;c.lineWidth=width;c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(Math.round(x),Math.round(y)):c.moveTo(Math.round(x),Math.round(y)));c.stroke()}
   function poly(c,pts,col){c.fillStyle=col;c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(Math.round(x),Math.round(y)):c.moveTo(Math.round(x),Math.round(y)));c.closePath();c.fill()}
   function ring(c,x,y,r,col,ys=.44,spin=0,n=56){line(c,Array.from({length:n+1},(_,i)=>{const a=i/n*TAU+spin;return[x+Math.cos(a)*r,y+Math.sin(a)*r*ys]}),col)}
@@ -63,11 +63,6 @@
     if(t>=1.5)for(const side of[-1,1])for(let i=0;i<9;i++){const spread=clamp((t-1.5)/1.7),xx=x+side*(25+i*14)*spread;poly(c,[[x+side*15,y-70],[xx,y-165+i*7],[xx+side*10,y-95+i*8],[x+side*12,y-40]],i%2?'#F97316':'#FDE047')}
     if(t>=3.2)ring(c,x,y,100+(t-3.2)*220,'#F97316');
   }
-  function linh(c,x,y,t,calm){
-    for(let i=0;i<9;i++){const cx=x+(i-4)*40,h=(80+(i%3)*24)*clamp(t/1.5);line(c,[[cx,y+20],[cx,y+20-h]],'#166534',7);for(let j=0;j<3;j++){line(c,[[cx,y-j*25],[cx+24,y-18-j*25]],'#22C55E');poly(c,[[cx,y-j*25],[cx+31,y-25-j*25],[cx+16,y-7-j*25]],'#52de9b')}}
-    for(let i=0;i<24;i++){const a=i*2.4+(calm?0:t*1.4),r=40+(i%5)*18,cx=x+Math.cos(a)*r,cy=y+Math.sin(a)*r*.44;poly(c,[[cx-6,cy],[cx+5,cy-5],[cx+2,cy+3]],'#52de9b')}
-    if(t>=1.5){line(c,[[x-70,y-150],[x+35,y-190],[x+65,y-90],[x+35,y-20],[x-70,y-30]],'#52de9b',6);line(c,[[x-70,y-150],[x-20,y-90],[x-70,y-30]],'#dcfff0');for(let i=0;i<21;i++){const yy=y-160+i*6,xx=x-40+(t>=3.2?(t-3.2)*320:0);line(c,[[xx-35,yy],[xx+85,yy-5]],'#8ad477');poly(c,[[xx+85,yy-5],[xx+72,yy-10],[xx+74,yy+2]],'#dcfff0')}}
-  }
   function quynhkun(c,x,y,t,calm){
     const art=root.DTQuynhKunPixel;if(!art?.ready())return;const n=calm?0:Math.floor(t*12)%6,spin=calm?0:-t*.18;
     art.draw(c,'heaven_seal_array',n,x,y,spin);
@@ -88,9 +83,10 @@
   }
   function paint(renderer){
     const g=renderer.game,p=g.player,i=p.ultIntro;if(!i)return;
+    if(g.hero.id==='huyenkha')return;
     const c=renderer.ctx,t=i.elapsed,id=g.hero.id,calm=!!root.DTSettings?.reducedMotion,z=renderer.zoom,x=(p.x-renderer.camera.x)*z,y=(p.y-renderer.camera.y)*z;
     c.save();try{c.setTransform(1,0,0,1,0,0);c.fillStyle='rgba(6,8,18,0.45)';c.fillRect(0,0,1280,720);c.textAlign='left';
-      if(id==='thienvu')thienvu(c,x,y,t,calm,i,g);else if(id==='ait01')ait01(c,x,y,t,calm);else if(id==='quynhkun')quynhkun(c,x,y,t,calm);else if(id==='quanle')quanle(c,x,y,t,calm);else if(id==='hoavi')hoavi(c,x,y,t,calm);else if(id==='an')an(c,x,y,t);else linh(c,x,y,t,calm);
+      if(id==='thienvu')thienvu(c,x,y,t,calm,i,g);else if(id==='ait01')ait01(c,x,y,t,calm);else if(id==='quynhkun')quynhkun(c,x,y,t,calm);else if(id==='quanle')quanle(c,x,y,t,calm);else if(id==='hoavi')hoavi(c,x,y,t,calm);else if(id==='an')an(c,x,y,t);
       c.save();c.scale(z,z);c.translate(-renderer.camera.x,-renderer.camera.y);root.DTVisualHero(c,{...p,invulnerable:0,y:p.y-(id==='thienvu'&&t>=3?24:0)},g.hero,g.time);c.restore();
       const h=28*clamp(t/.25),text=id==='thienvu'?[{3:'TAM LINH · TAM GIÁC KÉP',5:'NGŨ LINH · NGÔI SAO NĂM CÁNH',7:'THẤT LINH · THẤT TINH KÉP'}[i.splitCount||7],'KHAI MỞ TRẬN ĐỒ','HUY HIỆU NGUYÊN TỐ','TÁCH BÓNG · TRIỆU KHÍ','PHÂN THÂN']:words[id]||words.an,stage=t<1.2?1:t<3?2:t<4.1?3:4;c.fillStyle='#03040b';c.fillRect(0,0,1280,h);c.fillRect(0,720-h,1280,h);c.font='bold 16px Segoe UI';c.textAlign='center';c.fillStyle=g.hero.color;c.fillText(text[0],640,21);c.font='13px Segoe UI';c.fillText(text[stage]+' · '+Math.max(0,i.duration-t).toFixed(1)+'s',640,711);
     }finally{c.restore()}

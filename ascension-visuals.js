@@ -40,6 +40,7 @@
   // Keep the original painted sprites. Cast motion transforms the sprite as a
   // whole; it must never replace the face, outfit or elemental silhouette.
   function drawSpriteHero(c,p,h,time=0,scale=1,npc=false,clone=false){
+    if(!npc&&h.id==='huyenkha'&&root.DTHuyenKhaPixel?.ready())return root.DTHuyenKhaPixel.hero(c,p,time,scale);
     if(h.id==='ait01'&&root.DTAit01Pixel)return root.DTAit01Pixel.hero(c,p,h,time);
     if(h.id==='quynhkun'&&root.DTQuynhKunPixel)return root.DTQuynhKunPixel.hero(c,p,h,time);
     if(h.id==='quanle'&&root.DTQuanLePixel)return root.DTQuanLePixel.hero(c,p,h,time);
@@ -308,6 +309,9 @@
       for(const s of g.world.shrines||[])if(inView(s))this.drawShrine(s);if(inView(g.world.altar))this.drawAltar(g.world.altar);
       for(const a of g.activeEffects||[])if(inView(a)){c.save();c.globalAlpha=.1;oval(c,a.x,a.y,a.r,a.r,a.color);c.globalAlpha=.65;c.strokeStyle=a.color;c.lineWidth=1.5;c.setLineDash([9,9]);c.beginPath();c.arc(a.x,a.y,a.r*.95,0,TAU);c.stroke();c.restore()}
       for(const f of g.elementFields||[])if(inView(f)){const color=root.DTElements?.byId(f.element).color||'#a9e6d4';c.save();c.globalAlpha=f.owner==='player'?.16:.07;oval(c,f.x,f.y,f.r,f.r,color);c.globalAlpha=f.owner==='player'?.58:.22;c.strokeStyle=color;c.lineWidth=2;c.beginPath();c.arc(f.x,f.y,f.r,0,TAU);c.stroke();c.restore()}
+      if(g.hero.id==='huyenkha'&&p.ultIntro?.rift)root.DTHuyenKhaPixel?.drawRift(c,p.ultIntro);
+      const sword=g.greatswordAnchor?.();
+      if(sword&&(sword.phase==='anchored'?(sword.linked||inView(sword)):inView(sword.blade)))root.DTHuyenKhaPixel?.drawAnchor(c,sword,p);
       for(const f of g.mythicFields||[])if(f.x+(f.r||100)>left&&f.x-(f.r||100)<right&&f.y+(f.r||100)>top&&f.y-(f.r||100)<bottom)this.drawMythicField(f);
       for(const t of g.telegraphs||[])this.drawSagaTelegraph({...t,kind:t.kind||'disc'});for(const t of g.sagaTelegraphs||[])this.drawSagaTelegraph(t);
       for(const l of g.loot||[])if(inView(l)){const bob=reduced()?0:Math.sin(g.time*5+l.x)*2.5;oval(c,l.x,l.y-5+bob,4,4,l.type==='gold'?'#f2d48b':'#e3adb4');}

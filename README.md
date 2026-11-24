@@ -23,7 +23,7 @@ Dùng **Tiếp tục** để giữ tiến độ. **Bắt đầu hành trình** t
 
 Chơi trực tuyến tại **[den-tinh.dodat1306.workers.dev](https://den-tinh.dodat1306.workers.dev/)**. Mã nguồn: **[dodat1306-eng/den-tinh](https://github.com/dodat1306-eng/den-tinh)**. Bản web lưu tiến độ riêng trong từng trình duyệt; dùng **Tiếp tục** để đọc lại tiến độ. Nếu trang còn hiện giao diện cũ sau cập nhật, nhấn **Ctrl + F5**.
 
-Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 103 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v110-report.json`.
+Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để tạo lại `dist/` và triển khai. Thay đổi ở máy chỉ lên web sau khi được đẩy lên GitHub và bản build thành công. Lệnh `node tools/verify-public.cjs` đối chiếu SHA-256 của toàn bộ 107 tệp công khai với `dist/`, kiểm tra cache và các đường dẫn riêng tư trả 404; báo cáo tại `runtime/cloudflare-v110-report.json`.
 
 ## Các thay đổi chính
 
@@ -42,12 +42,12 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 - Font Noto Sans tiếng Việt được đóng gói tại máy cho DOM và chữ trên canvas; không thay font hệ điều hành.
 - Vẫn có đồ họa **Tự động / Chi tiết cao / Nhẹ**, giảm rung/chớp, âm lượng và điều khiển cảm ứng trong Cài đặt.
 
-## Năm lối chơi
+## Bảy lối chơi
 
 | Nhân vật | Nội tại và cách phối hợp | Q / E / R |
 | --- | --- | --- |
 | An · Tâm Đăng | Đánh địch đang cháy để tích sáu Tàn Lửa; đặt tối đa ba đèn có dây nối, hồi máu khi đứng gần | Quét lửa hình quạt / đặt đèn, nhấn E lại trong 3 giây để nổ / phượng hỏa dọc hướng ngắm |
-| Linh · Cung Trúc Hồi Âm | Chạy tích tám Nhịp Trúc, đòn cường hóa xuyên và ghim dấu; Q bắn nối dấu | Giương cung xuyên tuyến / lộn lùi đặt bẫy / thiên tiễn lần lượt săn mục tiêu |
+| Huyền Kha · Hoàng Kim Cự Kiếm | Liên trảm ba nhịp, đòn thứ ba trúng địch hồi linh lực và tạo khiên; né hoàn hảo để phản trảm | Phi cự kiếm, thu về từ xa / gồng sét ba nhịp và tạo khiên / chém nứt đất, hút quái khi khép |
 | Quân Lê · Hắc Ấn Đoản Kiếm | Đánh thường phóng nguyệt nhận; linh hồn xác quái/cây đổ tồn tại 20 giây | Hắc Giáp 6,5 giây / triệu hồi bóng thú, tối đa 6 / binh đoàn 14 bóng thú trong 24 giây |
 | HoaVi · Ấn Biên Dịch | Tích tám Mã Lệnh, tiêu mã để lặp Q; E có thể nhấn lần hai trong năm giây để trở về điểm lưu | Debug tuyến mã / Checkpoint hồi quy / hai vệ tinh quét tia |
 | Thiên Vũ · Thất Linh Tâm Ấn | Ba nguyên tố khác nhau tạo Hòa Âm, hoàn linh lực và khiên; hồi nội tại 6 giây; đổi dạng tạo phản ứng | 21 kỹ năng của bảy dạng; X phân thân 3/5/7, R riêng từng dạng |
@@ -56,7 +56,9 @@ Cloudflare Workers Builds theo dõi nhánh `main`, chạy `npm run deploy` để
 
 Thiên Vũ giữ bảy dạng Lôi, Phong, Thổ, Hỏa, Băng, Mộc, Quang. **C** mở chọn dạng, **1–7** đổi nhanh, **G** chọn tổng số bản thể, **X** tách/hợp. **X** mở trận đồ 3/5/7 trong 4,2 giây, tạo tổng cộng 3/5/7 bản thể gồm bản chính trong 18 giây; nhấn lại để thu hồi. **R** tung tuyệt kỹ riêng của dạng hiện tại sau 0,28 giây, không ép phân thân hay hợp kích. Phân thân cận chiến áp sát, tầm trung chạy vòng, tầm xa thả diều; có HP, vật lý và động tác riêng. Golem tồn tại 18 giây, cây chiến đấu 30 giây; R Băng đóng băng hoàn toàn 2,5 giây, Mộc trói chân 2,5 giây. Chưa có co-op.
 
-R hồi sau 18 giây với HoaVi, An, Linh; 20 giây với Thiên Vũ, Quân Lê, giảm theo bậc kỹ năng và cổ vật. Hồi chiêu tính từ lúc bắt đầu intro. Trong intro, nhân vật miễn sát thương và khống chế, di chuyển còn 35%; địch trong 520 px di chuyển và ra đòn còn 25% tốc độ, bị đẩy nhẹ mỗi 0,8 giây. HUD hiển thị số giây còn lại.
+R hồi sau 18 giây với HoaVi, An; 20 giây với Thiên Vũ, Quân Lê, Huyền Kha, giảm theo bậc kỹ năng và cổ vật. Hồi chiêu tính từ lúc bắt đầu intro. Trong intro, nhân vật miễn sát thương và khống chế, di chuyển còn 35%; địch trong 520 px di chuyển và ra đòn còn 25% tốc độ, bị đẩy nhẹ mỗi 0,8 giây. HUD hiển thị số giây còn lại. Huyền Kha di chuyển được trong R. Chuỗi 300 khung chạy ở 60 khung/giây, mở vết nứt tại khung 150, khép sau 0,72 giây. Cự kiếm Q đang neo có thể bẻ hướng vết nứt.
+
+**Huyền Kha · Dấu Búa Thứ Ba** có chín mốc nhiệm vụ, bắt đầu từ tiếng gõ sau mặt nạ Trúc Vệ. Lần theo mảnh chắn kiếm và bản khắc đến Sổ Đinh. Tuyến riêng nối với trận Mộc Quỷ và nghi lễ trả ký ức tại Cội Đa. Bản lưu đã xong sáu mốc cũ tiếp tục ở lời chứng của Ông Từ Đạo.
 
 ## Thế giới và môi trường
 

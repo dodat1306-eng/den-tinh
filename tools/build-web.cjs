@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const output = path.resolve(root, 'dist');
-const files = ['biome-monsters.js', 'combat-rework.js', 'relic-synergies.js', 'world-events.js', 'biome-visuals.js',
+const files = ['biome-monsters.js', 'combat-rework.js', 'relic-synergies.js', 'world-events.js', 'biome-visuals.js', 'huyenkha-pixel.js', 'assets/huyenkha-r.png', 'assets/huyenkha-moves.png', 'assets/huyenkha-e.png',
   'assets/biome-monsters-v1.png', 'assets/biome-monsters-v1.json', 'assets/biome-monsters-v1.js',
   'assets/ait01-pixel-v1.png','assets/ait01-pixel-v1.json','assets/ait01-pixel-v1.js','assets/ait01-vfx-pixel.png','assets/ait01-vfx-pixel.json','assets/ait01-vfx-pixel.js','ait01-pixel.js','ait01.js',
   'assets/quynhkun-pixel-v1.png','assets/quynhkun-pixel-v1.json','assets/quynhkun-pixel-v1.js','assets/quynhkun-vfx-pixel.png','assets/quynhkun-vfx-pixel.json','assets/quynhkun-vfx-pixel.js','quynhkun-pixel.js',

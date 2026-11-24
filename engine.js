@@ -5,7 +5,7 @@
   const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
   class Game{
     constructor(hero='an',seed=71426){
-      this.world=D.makeWorld(seed);this.rng=D.rand(seed+123);this.hero=D.HEROES[hero]||D.HEROES.an;
+      this.world=D.makeWorld(seed);this.rng=D.rand(seed+123);this.hero=D.HEROES[D.heroId(hero)]||D.HEROES.an;
       this.player={x:740,y:2200,r:13,hp:this.hero.hp,maxHp:this.hero.hp,mp:100,maxMp:100,speed:this.hero.speed,damage:this.hero.damage,fireRate:this.hero.fireRate,level:1,xp:0,nextXp:220,gold:0,potions:3,ult:100,invulnerable:0,cd:{fire:0,dash:0,q:0,e:0,r:0},dashTime:0,dashX:0,dashY:0,facing:0,aimAngle:0,moveFacing:Math.PI/2,moveDir:'S',moving:false,armor:0,bonusShots:0,crit:.06,regen:0};
       this.projectiles=[];this.effects=[];this.particles=[];this.loot=[];this.floaters=[];this.telegraphs=[];this.events=[];this.dyingEnemies=[];this.foliageLeaves=[];this.bossCutIn=null;
       this.time=0;this.paused=true;this.started=false;this.dead=false;this.victory=false;this.storyStarted=false;this.bossStarted=false;this.kills=0;this.deaths=0;this.upgrades=0;this.pendingLevels=0;this.visited=new Set(['village']);this.zone='village';this.shake=0;this.hitFlash=0;this.activeEffects=[];this.respawnPoint={x:740,y:2200};
@@ -344,7 +344,7 @@
       return{version:1,seed:this.world.seed,hero:this.hero.id,player:JSON.parse(JSON.stringify(this.player)),time:this.time,storyStarted:this.storyStarted,kills:this.kills,deaths:this.deaths,upgrades:this.upgrades,visited:[...this.visited],pendingLevels:this.pendingLevels,shrines:this.world.shrines.filter(s=>s.active).map(s=>s.id),chests:this.world.chests.filter(c=>c.open).map(c=>c.id),enemies:this.world.enemies.map(e=>({id:e.id,alive:e.alive,hp:e.hp})),loot:this.loot,bossStarted:this.bossStarted,victory:this.victory};
     }
     static restore(data){
-      if(!data||data.version!==1||!D.HEROES[data.hero]||!data.player||!Number.isFinite(data.player.x)||!Number.isFinite(data.player.maxHp)||!Array.isArray(data.shrines)||!Array.isArray(data.chests)||!Array.isArray(data.enemies))throw new Error('Bản lưu không hợp lệ');
+      if(!data||data.version!==1||!Object.hasOwn(D.HEROES,D.heroId(data.hero))||!data.player||!Number.isFinite(data.player.x)||!Number.isFinite(data.player.maxHp)||!Array.isArray(data.shrines)||!Array.isArray(data.chests)||!Array.isArray(data.enemies))throw new Error('Bản lưu không hợp lệ');
       const g=new Game(data.hero,data.seed),p=data.player;
       const numerics=['x','y','maxHp','hp','mp','maxMp','speed','damage','fireRate','level','xp','nextXp','gold','potions','ult','armor','bonusShots','crit','regen'];
       for(const k of numerics)if(Number.isFinite(p[k]))g.player[k]=p[k];

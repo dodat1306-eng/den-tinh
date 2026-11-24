@@ -10,7 +10,7 @@ const pass=(name,data={})=>{results.push({name,pass:true,...data});console.log('
   const p=await context.newPage();p.on('pageerror',e=>errors.push(e.stack));p.on('response',r=>{if(r.status()>=400&&['script','image','font','stylesheet'].includes(r.request().resourceType()))errors.push(r.status()+' '+r.url())});
   await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));
   await p.goto(url);await p.waitForFunction(()=>window.DTUltimateIntro&&window.DTQuanLePixel?.ready()&&DTWorldPixel.ready()&&DTThienVuPixel.ready()&&DTHoaViPixel?.ready());
-  const names={an:'An',linh:'Linh',quanle:'Quân Lê',hoavi:'HoaVi',thienvu:'Thiên Vũ'};
+  const names={an:'An',huyenkha:'Huyền Kha',quanle:'Quân Lê',hoavi:'HoaVi',thienvu:'Thiên Vũ'};
   await p.getByRole('button',{name:new RegExp('^Chọn '+names[id]+',')}).click();await p.locator('#startButton').click();await p.locator('#dialogueNext').click();
   await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.world.ensureChunks=()=>{};g.world.collision=()=>false;g.player.crit=0;g.input.aimX=g.player.x+180;g.input.aimY=g.player.y;g.paused=true});return p;
  }
@@ -19,15 +19,15 @@ const pass=(name,data={})=>{results.push({name,pass:true,...data});console.log('
   return{elapsed:g.player.ultIntro?.elapsed,cd:g.player.cd.r,army:g.shadowArmy?.length||0,clones:g.elementClones?.length||0};
  },until)}
  try{
-  for(const id of['an','linh','quanle','hoavi']){
+  for(const id of['an','huyenkha','quanle','hoavi']){
    const context=await browser.newContext({viewport:{width:1280,height:720}}),p=await open(context,id);
    assert.equal(await p.evaluate(()=>denTinh.game.player.cd.r),0);
    const cast=await p.evaluate(()=>{const g=denTinh.game;g.player.ult=0;g.paused=false;const ok=g.skill('r');g.paused=true;return{ok,cd:g.player.cd.r,elapsed:g.player.ultIntro?.elapsed}});
    assert(cast.ok&&cast.cd>=18&&cast.elapsed===0);pass(id+' R starts immediately without rage',cast);
    for(const t of[.5,2.5,3.5,4.3]){const s=await advance(p,t);assert(Math.abs(s.elapsed-t)<1e-6);assert.equal(s.army,0);assert.equal(s.clones,0);await p.screenshot({path:path.join(out,id+'-intro-'+t+'.png')})}
    await p.waitForFunction(()=>/^\d+\.\ds$/.test(document.querySelector('#skill-r').dataset.time));
-   const release=await advance(p,4.5);assert.equal(release.elapsed,undefined);if(id==='quanle')assert.equal(release.army,14);if(id==='thienvu')assert.equal(release.clones,6);
-   await p.screenshot({path:path.join(out,id+'-release.png')});pass(id+' four intro stages defer gameplay until 4.5 seconds',release);
+   const release=await advance(p,await p.evaluate(()=>denTinh.game.ultimateDuration()));assert.equal(release.elapsed,undefined);if(id==='quanle')assert.equal(release.army,14);if(id==='thienvu')assert.equal(release.clones,6);
+   await p.screenshot({path:path.join(out,id+'-release.png')});pass(id+' completes its ultimate timeline',release);
    const bounds=await p.locator('#skill-r').evaluate(e=>({text:e.dataset.time,cooling:e.classList.contains('cooling'),sweep:e.querySelector('i').style.transform}));assert(bounds.cooling&&bounds.sweep.startsWith('scaleY'));pass(id+' HUD shows seconds and cooldown sweep',bounds);
    if(id==='quanle')for(const[view,angle]of Object.entries({S:Math.PI/2,E:0,N:-Math.PI/2,W:Math.PI})){
     await p.evaluate(angle=>{const g=denTinh.game;g.cancelActions();g.shadowArmy=[];g.effects=[];g.player.shadowArmor=6;g.player.moveFacing=angle;g.player.facing=angle;g.player.invulnerable=0;denTinh.renderer.draw(.016)},angle);await p.screenshot({path:path.join(out,'quanle-q-'+view+'.png')});

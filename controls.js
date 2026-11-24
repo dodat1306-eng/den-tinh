@@ -9,7 +9,7 @@
   function applySettings(){
     document.documentElement.style.setProperty('--ui-scale',Number(DTSettings.ui)||1);
     document.body.classList.toggle('reduced-motion',!!DTSettings.reducedMotion);
-    touch.active=DTSettings.touch==='on'||DTSettings.touch==='auto'&&(matchMedia('(pointer:coarse)').matches||Math.min(innerWidth,innerHeight)<600);
+    touch.active=DTSettings.touch==='on'||DTSettings.touch==='auto'&&matchMedia('(any-pointer:coarse)').matches;
     document.body.classList.toggle('touch-mode',touch.active);
     if(!touch.active){touch.move.x=touch.move.y=0;touch.aim.fire=false}
   }
@@ -40,7 +40,7 @@
       const rank=window.DTCombat?' · Bậc '+['','I','II','III'][DTCombat.tier(g)]:'';
       $('mobileStats').textContent='♥ '+Math.ceil(p.hp)+'/'+p.maxHp+' · MP '+Math.floor(p.mp)+'/'+p.maxMp+rank+ready;
       $('mobileQuest').textContent=window.DTWorldEvents?.hud(g)||g.objective().text}
-    if(touch.active&&g.started){for(const key of['q','e','r','dash']){const b=document.querySelector('[data-touch="'+key+'"]'),p=g.player,cd=p.cd[key];const recast=key==='e'&&g.canRecastE?.(),cost=g.skillDescriptions?.[key]?.cost??(key==='q'?24:key==='e'?38:0);b.disabled=recast?false:key==='r'?cd>0||!!p.ultIntro:cd>0||p.mp<cost;b.textContent=recast?(g.hero.id==='ait01'?'E · THU KHO':g.hero.id==='quynhkun'?'E · THU PHÙ':g.hero.id==='an'?'E · NỔ':'E · VỀ'):key==='r'?('R'+(cd>0?' '+cd.toFixed(1)+'s':'')):key==='dash'?cd>0?cd.toFixed(1):'↝':key.toUpperCase()+(cd>0?' '+cd.toFixed(1):'')}}
+    if(touch.active&&g.started){for(const key of['q','e','r','dash']){const b=document.querySelector('[data-touch="'+key+'"]'),p=g.player,cd=p.cd[key];const recall=key==='q'&&g.canRecastQ?.(),recast=key==='e'&&g.canRecastE?.(),cost=g.skillDescriptions?.[key]?.cost??(key==='q'?24:key==='e'?38:0);b.disabled=recall||recast?false:key==='r'?cd>0||!!p.ultIntro:cd>0||p.mp<cost;b.textContent=recall?'THU':recast?(g.hero.id==='ait01'?'E · THU KHO':g.hero.id==='quynhkun'?'E · THU PHÙ':g.hero.id==='an'?'E · NỔ':'E · VỀ'):key==='r'?('R'+(cd>0?' '+cd.toFixed(1)+'s':'')):key==='dash'?cd>0?cd.toFixed(1):'↝':key.toUpperCase()+(cd>0?' '+cd.toFixed(1):'')}}
     document.body.classList.toggle('game-active',g.started);
   },150);
   // The browser release and Unity project use the same checked-in key art.

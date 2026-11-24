@@ -20,6 +20,11 @@
       if(name==='dash')this.tone(380,t,.14,.11,'sine',85);
       if(name==='perfect'){this.tone(880,t,.48,.13,'triangle');this.tone(1760,t+.04,.54,.07,'sine');this.tone(1320,t+.11,.44,.06,'sine')}
       if(name==='steel')this.tone(1630,t,.24,.10,'triangle',420);
+      if(name==='swordRecall'){
+        this.tone(1380,t,.045,.1,'triangle',840);
+        this.tone(1380,t+.14,.045,.1,'triangle',840);
+        this.tone(1570,t+.21,.07,.12,'triangle',780);
+      }
       if(name==='hurt')this.tone(130,t,.13,.16,'triangle',65);
       if(name==='kill')this.tone(190,t,.1,.08,'sine',65);
       if(name==='pickup'){this.tone(900,t,.09,.09);this.tone(1200,t+.07,.11,.06)}
@@ -39,21 +44,36 @@
   const audio=new Audio();
   function resize(){const viewport=document.documentElement,s=Math.min(viewport.clientWidth/1280,viewport.clientHeight/720);$('stage').style.transform=`translate(-50%, -50%) scale(${s})`}
   addEventListener('resize',resize);resize();
+  function selectHero(id){
+    selected=id;
+    const hero=H[id];
+    for(const card of $('heroCards').children){
+      const active=card.dataset.hero===id;
+      card.classList.toggle('selected',active);
+      card.setAttribute('aria-pressed',String(active));
+    }
+    $('heroSummary').textContent=hero.role+' · '+(window.DTMythic.signature[hero.id]?.name||hero.q);
+    DTArt.titleArt($('titleArt'),hero);
+  }
   function heroCards(){
     const order=h=>h.id==='ait01'?2:h.id==='quynhkun'?1:0;
-    $('heroCards').innerHTML='';for(const hero of Object.values(H).sort((a,b)=>order(a)-order(b))){
-      const b=document.createElement('button'),pixel=['hoavi','thienvu','quynhkun','ait01'].includes(hero.id);b.className='hero-card'+(hero.id===selected?' selected':'');b.setAttribute('aria-label',`Chọn ${hero.name}, ${hero.role}`);b.innerHTML=`<canvas width="${pixel?128:56}" height="${pixel?128:70}" ${pixel?'data-'+hero.id+' style="width:64px;height:64px;image-rendering:pixelated"':''}></canvas><span class="name">${hero.name}</span><span class="role">${hero.role}</span><span class="desc">${hero.desc}</span>`;
-      b.onclick=()=>{selected=hero.id;heroCards();DTArt.titleArt($('titleArt'),hero)};
-      $('heroCards').appendChild(b);DTArt.drawHero(b.querySelector('canvas').getContext('2d'),pixel?{x:64,y:116,facing:Math.PI/2}:{x:28,y:67},hero,0,.82);
+    for(const hero of Object.values(H).sort((a,b)=>order(a)-order(b))){
+      const b=document.createElement('button'),pixel=['hoavi','thienvu','quynhkun','ait01','huyenkha'].includes(hero.id);
+      b.className='hero-card';b.dataset.hero=hero.id;b.setAttribute('aria-label','Chọn '+hero.name+', '+hero.role);
+      b.innerHTML='<canvas width="'+(pixel?128:56)+'" height="'+(pixel?128:70)+'" '+(pixel?'data-'+hero.id:'')+' aria-hidden="true"></canvas><span class="name">'+hero.name+'</span>';
+      b.onclick=()=>selectHero(hero.id);
+      $('heroCards').appendChild(b);
+      DTArt.drawHero(b.querySelector('canvas').getContext('2d'),pixel?{x:64,y:116,facing:Math.PI/2}:{x:28,y:67},hero,0,.82);
     }
+    selectHero(selected);
   }
-  heroCards();DTArt.titleArt($('titleArt'),H[selected]);
-  function hasSave(){return !!(cachedSave&&cachedSave.version===1&&H[cachedSave.hero])}
+  heroCards();
+  function hasSave(){return !!(cachedSave&&cachedSave.version===1&&Object.hasOwn(H,DTWorld.heroId(cachedSave.hero)))}
   let cachedSave=null;
   try{cachedSave=JSON.parse(localStorage.getItem(SAVE))}catch(e){}
   $('continueButton').classList.toggle('hidden',!hasSave());
   if(SAVE_URL)fetch(SAVE_URL,{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    if(data&&data.version===1&&H[data.hero]&&data.player){cachedSave=data;$('continueButton').classList.remove('hidden')}
+    if(data&&data.version===1&&Object.hasOwn(H,DTWorld.heroId(data.hero))&&data.player){cachedSave=data;$('continueButton').classList.remove('hidden')}
     else if(hasSave())fetch(SAVE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cachedSave)}).catch(()=>{});
   }).catch(()=>{});
   function toast(text,reward=false){const e=document.createElement('div');e.className='toast'+(reward?' reward':'');e.textContent=text;$('toastBox').appendChild(e);setTimeout(()=>e.remove(),3900);while($('toastBox').children.length>4)$('toastBox').firstChild.remove()}
@@ -99,7 +119,7 @@
   function help(){
     showModal('help',`<span class="eyebrow">GIỮ LỬA, GIỮ NHỊP</span><h2>Cách chơi</h2><div class="help-grid"><kbd>W A S D / ↑ ↓ ← →</kbd><span>Di chuyển tự do. Chuột quyết định hướng ngắm.</span><kbd>Chuột trái</kbd><span>Giữ để tấn công liên tục.</span><kbd>Space</kbd><span>Lướt theo hướng di chuyển; khi đứng yên, lướt theo hướng ngắm. Miễn sát thương trong lúc lướt.</span><kbd>Q / E</kbd><span>Hai kỹ năng riêng của nhân vật, dùng linh lực tự hồi.</span><kbd>R</kbd><span>Tuyệt kỹ: cần 100% lực từ chiến đấu. Mỗi nhân vật có cách giải phóng khác nhau; xem chi tiết trong bảng K.</span><kbd>F</kbd><span>Mở rương, nói chuyện, dùng giếng hoặc thức tỉnh ấn.</span><kbd>H</kbd><span>Dùng một bình để hồi 55% máu tối đa.</span><kbd>B</kbd><span>Dùng bình linh lực, hồi 60 linh lực (mua tại Chú Bảy, tối đa 6 bình).</span><kbd>E lần hai</kbd><span>An nổ đèn, HoaVi trở về điểm lưu, Quỳnh Kun thu phù hộ thể.</span><kbd>K / I</kbd><span>Học kỹ năng / xem nội tại, pháp khí riêng và bộ sưu tập cổ vật. Mỗi nhân vật gắn với một pháp khí, đòn thường không cần nạp.</span><kbd>M / I / Esc</kbd><span>Bản đồ / thuộc tính / tạm dừng.</span><kbd>C / 1–7</kbd><span>Thiên Vũ: mở bảng nguyên tố / đổi nhanh bảy dạng.</span><kbd>G / X</kbd><span>Thiên Vũ: chọn tổng 3/5/7 bản thể / phân thân hoặc hợp thể. R tung tuyệt kỹ riêng của dạng hiện tại.</span></div><p>Săn Trúc Vệ, bảo vệ Đèn Sen và phá ba lõi Tro theo thứ tự tùy ý, rồi đánh thức Cội Đa phía bắc. Trên điện thoại dùng hai cần cảm ứng và các nút kỹ năng; xoay ngang để nhìn rộng. Trò chơi tự lưu; dùng “Lưu và về màn đầu” trước khi thoát.</p><div class="buttons"><button id="helpClose" class="primary">Đã hiểu</button></div>`);$('helpClose').onclick=closeAndContinue;
   }
-  function credits(){showModal('credits',`<span class="eyebrow">CHUYỆN KỂ CỦA MIỀN SƯƠNG</span><h2>Đèn Tinh</h2><p>Cốt truyện và nhân vật hư cấu, lấy chất liệu từ mái đình, cây đa, giếng cổ, rừng trúc và đầm sen Việt Nam.</p><p><b>An</b> giữ một ngọn đèn không bao giờ quên tên người.<br><b>Linh</b> nghe ký ức trong tiếng lá.<br><b>Quân Lê</b> khoác Hắc Giáp, gọi 22 bóng thú canh giữ miền sương.<br><b>HoaVi</b> viết những Mã Lệnh để vá lại ký ức, dựng Firewall và vượt giới hạn bằng Overclock.<br><b>Thiên Vũ</b> mang Thất Linh Tâm Ấn, đổi giữa bảy dạng nguyên tố và tách thành nhiều bản thể.<br><b>Quỳnh Kun</b> khắc Chu Sa, dựng Bát Quái và gọi Bách Phù Trấn Thiên.<br><b>Đốm</b> là một linh thú nhỏ, nhớ đường về nhà và dẫn bạn tới các khám phá.</p><div class="buttons"><button id="creditsClose" class="primary">Trở lại</button></div>`);$('creditsClose').onclick=closeAndContinue}
+  function credits(){showModal('credits',`<span class="eyebrow">CHUYỆN KỂ CỦA MIỀN SƯƠNG</span><h2>Đèn Tinh</h2><p>Cốt truyện và nhân vật hư cấu, lấy chất liệu từ mái đình, cây đa, giếng cổ, rừng trúc và đầm sen Việt Nam.</p><p><b>An</b> giữ một ngọn đèn không bao giờ quên tên người.<br><b>Huyền Kha</b> lần theo ba tiếng gõ sau mặt nạ Trúc Vệ để tìm người đã đóng chiếc đinh cuối cùng vào Cội Đa.<br><b>Quân Lê</b> khoác Hắc Giáp, gọi 22 bóng thú canh giữ miền sương.<br><b>HoaVi</b> viết những Mã Lệnh để vá lại ký ức, dựng Firewall và vượt giới hạn bằng Overclock.<br><b>Thiên Vũ</b> mang Thất Linh Tâm Ấn, đổi giữa bảy dạng nguyên tố và tách thành nhiều bản thể.<br><b>Quỳnh Kun</b> khắc Chu Sa, dựng Bát Quái và gọi Bách Phù Trấn Thiên.<br><b>Đốm</b> là một linh thú nhỏ, nhớ đường về nhà và dẫn bạn tới các khám phá.</p><div class="buttons"><button id="creditsClose" class="primary">Trở lại</button></div>`);$('creditsClose').onclick=closeAndContinue}
   function pause(){if(!game.started||game.dead||mapOpen)return;showModal('pause',`<span class="eyebrow">NGỌN ĐÈN VẪN SÁNG</span><h2>Nghỉ một nhịp.</h2><p>${game.hero.name} · Cấp ${game.player.level}<br>Đã thức tỉnh ${game.world.shrines.filter(s=>s.active).length}/3 ấn · Đánh bại ${game.kills} quái · ${game.player.gold} xu</p><div class="buttons"><button id="resumeButton" class="primary">Tiếp tục</button><button id="pauseHelp">Cách chơi</button><button id="manualSave">Lưu tiến độ</button><button id="toMenu">Lưu và về màn đầu</button></div>`);$('resumeButton').onclick=closeAndContinue;$('pauseHelp').onclick=help;$('manualSave').onclick=async()=>{if(await save())toast('Đã lưu hành trình.',true)};$('toMenu').onclick=()=>{save();closeModal(false);game.started=false;game.paused=true;$('hud').classList.add('hidden');$('mainMenu').classList.remove('hidden');$('continueButton').classList.toggle('hidden',!hasSave())}}
   function shop(){
     if(window.DTAscensionUI){DTAscensionUI.showTrainer();return}
@@ -107,7 +127,7 @@
   }
   function inventory(){if(window.DTAscensionUI)DTAscensionUI.showInventory()}
   function death(){showModal('death',`<span class="eyebrow">MỘT ĐỐM LỬA CÒN LẠI</span><h2>Đèn chưa tắt.</h2><p>Ngươi sẽ tỉnh lại ở điểm nghỉ đã đặt với đầy máu. Giữ cấp độ, kỹ năng và những ấn đã thức tỉnh; mất 10% xu đang mang.</p><div class="buttons"><button id="respawnButton" class="primary">Trở về điểm nghỉ →</button></div>`);$('respawnButton').onclick=()=>{game.respawn();closeAndContinue()}}
-  function victory(){audio.sfx('ultimate');save();showModal('victory',`<span class="eyebrow">MIỀN SƯƠNG ĐÃ NHỚ</span><h2>Ngọn đèn tìm được đường về.</h2><p>Cội đa không gục xuống. Nó cúi những cành già, như một người vừa được gọi đúng tên sau rất nhiều năm.<br><br>Sương tan. Trong làng, tiếng chuông lại ngân. Xa hơn miền đất cũ, sáu ngọn đèn chưa sáng đang đợi người kể tiếp câu chuyện.</p><p>Chương mở đầu hoàn thành với ${game.hero.name} · Cấp ${game.player.level}<br>${game.kills} quái đã hạ · ${game.deaths} lần trở về · ${Math.floor(game.time/60)} phút hành trình</p><div class="buttons"><button id="victoryContinue" class="primary">Tiếp tục khám phá →</button><button id="victoryStory">Đọc đoạn kết</button><button id="newCycle">Hành trình + · thế giới mới</button></div>`);$('victoryContinue').onclick=closeAndContinue;$('victoryStory').onclick=()=>dialogue({speaker:'CỘI ĐA',title:'Ký ức chờ trở về',text:game.storyFlags?.returnedMemories?DTV09Content.truthReturn:'Nhấn F tại Cội Đa để trả lại ký ức cho Làng Đèn.'});$('newCycle').onclick=()=>{window.DTRunOptions={cycle:game.run+1};selected=game.hero.id;heroCards();begin(false)}}
+  function victory(){audio.sfx('ultimate');save();showModal('victory',`<span class="eyebrow">MIỀN SƯƠNG ĐÃ NHỚ</span><h2>Ngọn đèn tìm được đường về.</h2><p>Cội đa không gục xuống. Nó cúi những cành già, như một người vừa được gọi đúng tên sau rất nhiều năm.<br><br>Sương tan. Trong làng, tiếng chuông lại ngân. Xa hơn miền đất cũ, sáu ngọn đèn chưa sáng đang đợi người kể tiếp câu chuyện.</p><p>Chương mở đầu hoàn thành với ${game.hero.name} · Cấp ${game.player.level}<br>${game.kills} quái đã hạ · ${game.deaths} lần trở về · ${Math.floor(game.time/60)} phút hành trình</p><div class="buttons"><button id="victoryContinue" class="primary">Tiếp tục khám phá →</button><button id="victoryStory">Đọc đoạn kết</button><button id="newCycle">Hành trình + · thế giới mới</button></div>`);$('victoryContinue').onclick=closeAndContinue;$('victoryStory').onclick=()=>dialogue({speaker:'CỘI ĐA',title:'Ký ức chờ trở về',text:game.storyFlags?.returnedMemories?DTV09Content.truthReturn:'Nhấn F tại Cội Đa để trả lại ký ức cho Làng Đèn.'});$('newCycle').onclick=()=>{window.DTRunOptions={cycle:game.run+1};selectHero(game.hero.id);begin(false)}}
   function toggleMap(){
     if(!game.started||game.dead||(modalType&&!mapOpen))return;mapOpen=!mapOpen;$('mapOverlay').classList.toggle('hidden',!mapOpen);game.paused=mapOpen;keys={};mouse.down=false;if(mapOpen)renderer.map($('worldMap'),true);
   }
@@ -120,7 +140,7 @@
     const events=game.consumeEvents();for(const e of events){
       if(e.type==='resonanceForge')window.DTV09UI?.showResonances();
       if(e.type==='memoryMonument')window.DTV09UI?.showMonument();
-      if(e.type==='level')audio.sfx('level');if(e.type==='relic')window.DTV09UI?.showRelic(e.id);if(e.type==='melody')window.DTV09UI?.showMelody();if(e.type==='sound')audio.sfx(e.name);if(e.type==='toast')toast(e.text,e.reward);if(e.type==='dialogue')dialogue(e.text?e:e.id);if(e.type==='zone')toast(e.zone.name);if(e.type==='shop')shop();if(e.type==='skills'||e.type==='skillTree')window.DTAscensionUI?.showSkills();if(e.type==='travel')travel();
+      if(e.type==='level')audio.sfx('level');if(e.type==='relic')window.DTV09UI?.showRelic(e.id);if(e.type==='sound')audio.sfx(e.name);if(e.type==='toast')toast(e.text,e.reward);if(e.type==='dialogue')dialogue(e.text?e:e.id);if(e.type==='zone')toast(e.zone.name);if(e.type==='shop')shop();if(e.type==='skills'||e.type==='skillTree')window.DTAscensionUI?.showSkills();if(e.type==='travel')travel();
       if(e.type==='shrine'){toast(`${game.world.shrines.find(s=>s.id===e.id).name} đã thức tỉnh. +45 xu.`,true);save()}
       if(e.type==='boss'){toast('Mộc Quỷ thức tỉnh. Tuyệt kỹ đã sẵn sàng!');save()}
     }
@@ -151,7 +171,9 @@
   }
   $('startButton').onclick=()=>begin(false);$('continueButton').onclick=()=>begin(true);$('helpButton').onclick=help;$('creditsButton').onclick=credits;$('pauseButton').onclick=pause;$('soundButton').onclick=()=>audio.toggle();$('mapButton').onclick=toggleMap;$('closeMap').onclick=toggleMap;$('fullscreenButton').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.()};
   addEventListener('keydown',e=>{
-    const key=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(key))e.preventDefault();if(e.repeat){keys[key]=true;return}
+    const key=e.key.toLowerCase(),playing=game.started&&!game.paused&&!game.dead;
+    if(playing&&[' ','arrowup','arrowdown','arrowleft','arrowright'].includes(key))e.preventDefault();
+    if(e.repeat){if(playing)keys[key]=true;return}
     if(key==='escape'){if(mapOpen){toggleMap();return}if(modalType){if(!['talent','death','victory'].includes(modalType))closeAndContinue();return}pause();return}
     if(key==='enter'&&modalType==='dialogue'){$('dialogueNext').click();return}if(!game.started||game.dead)return;
     if(key==='m'){toggleMap();return}if(modalType||mapOpen)return;keys[key]=true;
@@ -163,7 +185,12 @@
   addEventListener('blur',()=>{keys={};mouse.down=false;if(game.started&&!game.paused&&!game.dead)pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden){save();keys={};mouse.down=false;if(game.started&&!game.paused&&!game.dead)pause()}});addEventListener('pagehide',save);
   addEventListener('error',e=>{$('fatalError').classList.remove('hidden');$('fatalError').textContent='Game gặp lỗi. Hãy đóng rồi mở lại CHOI_GAME.bat.\n\n'+(e.error?.stack||e.message);game.paused=true});
   function frame(now){
-    const dt=Math.max(0,Math.min(.04,(now-last)/1000));last=now;const aim=renderer.screenToWorld(mouse.x,mouse.y);game.input={dx:(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy:(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),fire:mouse.down,aimX:aim.x,aimY:aim.y};
+    const dt=Math.max(0,Math.min(.04,(now-last)/1000));last=now;
+    const aim=renderer.screenToWorld(mouse.x,mouse.y),touch=window.DTTouch;
+    const stick=touch?.active&&(touch.move.x||touch.move.y)?touch.move:null;
+    const dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);
+    const dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);
+    game.input={dx:stick?.x??dx,dy:stick?.y??dy,fire:mouse.down,aimX:aim.x,aimY:aim.y};
     if(!game.started)game.time+=dt;game.update(dt);handleEvents();renderer.draw(dt,!game.started);
     if(modalType==='dialogue'){const cv=$('dialoguePortrait');if(cv&&window.DTV09Art?.drawPortrait)window.DTV09Art.drawPortrait(cv,cv.dataset.speaker||'',now/1000,game)}
     audio.update();hudTime+=dt;saveTime+=dt;if(hudTime>.1){hudTime=0;if(game.started)hud()}if(saveTime>12){saveTime=0;save()}requestAnimationFrame(frame);

@@ -5,7 +5,7 @@
     ait01:{id:'ait01',name:'AIT-01',role:'KHO VŨ KHÍ DI ĐỘNG',desc:'Điều khiển 6 ô cửa sổ Inventory bay quanh, rút súng, lựu đạn và tên lửa.',color:'#4df3ff',cloth:'#26313a',accent:'#ffe478',hp:118,speed:238,damage:15,fireRate:.22,shotSpeed:820,q:'Truy Xuất Hỏa Lực',e:'Điều Phối Ô Kho',r:'Toàn Kho Khai Hỏa · Hòm Tiếp Tế',qCd:5,eCd:8.5,rCd:19},
     quynhkun:{id:'quynhkun',name:'Quỳnh Kun',role:'THẦY CÚNG VẼ BÙA',desc:'Khắc Chu Sa, dựng Bát Quái và thu phù hộ thể.',color:'#ff6b6b',cloth:'#1c324a',accent:'#ffd166',hp:115,speed:240,damage:17,fireRate:.21,shotSpeed:760,q:'Họa Phù · Thiên Cương Trảm',e:'Trấn Trạch Bát Quái Trận',r:'Cấp Cấp Như Luật Lệnh · Bách Phù Trấn Thiên',qCd:5,eCd:9,rCd:19},
     an:{id:'an',name:'An',role:'NGƯỜI GIỮ ĐÈN',desc:'Lửa linh, vòng trấn. Cân bằng và dễ làm quen.',color:'#f1bf69',cloth:'#459c83',accent:'#e8c273',hp:120,speed:230,damage:18,fireRate:.22,shotSpeed:640,q:'Liên Hỏa',e:'Vòng Trấn',r:'Thiên Đăng',qCd:5,eCd:9,rCd:18},
-    linh:{id:'linh',name:'Linh',role:'TRÚC ẢNH',desc:'Cung ngọc, mưa trúc. Nhanh và đánh từ xa.',color:'#a5e3a2',cloth:'#648f73',accent:'#d9786c',hp:100,speed:264,damage:15,fireRate:.15,shotSpeed:810,q:'Xuyên Vân',e:'Mưa Trúc',r:'Phong Linh',qCd:4,eCd:8,rCd:18},
+    huyenkha:{id:'huyenkha',name:'Huyền Kha',role:'CHIẾN BINH HOÀNG KIM',desc:'Ném cự kiếm nối dây sáng, chém nứt đất và phá thế quái trùm.',color:'#ffd24c',cloth:'#e6d6c3',accent:'#62bbff',hp:132,speed:236,damage:21,fireRate:.36,shotSpeed:780,q:'Cự Kiếm Neo Sao',e:'Lôi Giáp Ngà',r:'Thiên Trảm Nứt Đất',qCd:5.5,eCd:8.5,rCd:20},
     quanle:{id:'quanle',name:'Quân Lê',role:'MA QUÂN BÓNG TỐI',desc:'Điều khiển bóng tối, khoác Hắc Giáp và triệu hồi binh đoàn quái vật bóng tối.',color:'#b86bff',cloth:'#1a132b',accent:'#5ce1e6',hp:135,speed:232,damage:18,fireRate:.3,shotSpeed:680,q:'Hắc Ảnh Chiến Giáp',e:'Hắc Ảnh Triệu Hồi',r:'Bách Quỷ Dạ Hành',qCd:9,eCd:7,rCd:20}
   };
   Object.defineProperty(HEROES,'kiet',{value:HEROES.quanle,enumerable:false});
@@ -90,5 +90,5 @@
     chests.push({id:'welcome',x:825,y:2230,open:false});
     return{seed,width:W,height:H,props,enemies,chests,shrines,npcs,altar,collision,paths:PATHS,zones:ZONES};
   }
-  root.DTWorld={W,H,HEROES,ZONES,makeWorld,zoneAt,rand,nearPath};
+  root.DTWorld={W,H,HEROES,ZONES,makeWorld,zoneAt,rand,nearPath,heroId:id=>id==='linh'?'huyenkha':id};
 })(globalThis);

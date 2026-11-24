@@ -11,7 +11,7 @@ fs.mkdirSync(out,{recursive:true});const pass=name=>{results.push({name,pass:tru
   await p.goto(url);await p.waitForFunction(()=>window.DTChoreography?.texture.naturalWidth===1024&&window.DTElementArt?.art.naturalWidth>0);
   if(id==='thienvu')await p.waitForFunction(()=>DTThienVuPixel.ready());
   if(id==='hoavi')await p.waitForFunction(()=>DTChoreography.hoaviTexture.naturalWidth===DTHoaViAtlas.width);
-  const names={an:'An',linh:'Linh',quanle:'Quân Lê',hoavi:'HoaVi',thienvu:'Thiên Vũ'};
+  const names={an:'An',huyenkha:'Huyền Kha',quanle:'Quân Lê',hoavi:'HoaVi',thienvu:'Thiên Vũ'};
   await p.getByRole('button',{name:new RegExp('^Chọn '+names[id]+',')}).click();await p.locator('#startButton').click();await p.locator('#dialogueNext').click();
   await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.player.crit=0;g.input.aimX=g.player.x+160;g.input.aimY=g.player.y+40});
   return p;
@@ -22,17 +22,24 @@ fs.mkdirSync(out,{recursive:true});const pass=name=>{results.push({name,pass:tru
   if(!g.skill(key))throw Error('Skill rejected '+key);
   for(let i=0;i<frames;i++)g.update(1/60);
   g.paused=true;g.consumeEvents();denTinh.renderer.draw(.016);
-  return{action:g.player.action?.key,elapsed:g.player.action?.elapsed,pose:DTChoreography.state(g.player,g.time,g.hero),triangles:DTChoreography.metrics.triangles,effects:g.effects.filter(e=>e.type==='choreo-release').length};
+  return{action:g.player.action?.key,elapsed:g.player.action?.elapsed,pose:DTChoreography.state(g.player,g.time,g.hero),triangles:DTChoreography.metrics.triangles,effects:g.hero.id==='huyenkha'&&key==='q'?Number(!!g.greatswordAnchor()):g.hero.id==='huyenkha'&&key==='r'?Number(!!g.player.ultIntro?.rift):g.effects.filter(e=>e.type==='choreo-release').length};
  },{key,frames})}
  try{
-  for(const id of['an','linh','quanle','hoavi','thienvu']){
+  for(const id of['an','huyenkha','quanle','hoavi','thienvu']){
    const ctx=await browser.newContext({viewport:{width:1280,height:720},recordVideo:id==='an'?{dir:out,size:{width:1280,height:720}}:undefined}),p=await prepare(ctx,id);
-   const start=await p.evaluate(()=>denTinh.game.player.x);await p.keyboard.down('d');await p.waitForTimeout(320);await p.keyboard.up('d');
-   assert(await p.evaluate(x=>denTinh.game.player.x>x+10,start));assert(await p.evaluate(()=>['an','linh','quanle','hoavi','thienvu'].includes(denTinh.game.hero.id)?DTChoreography.metrics.atlas===1&&DTChoreography.metrics.triangles===0:DTChoreography.metrics.triangles>0));pass(id+' walking uses its animated atlas or sprite mesh');
-   const wind=await stage(p,'q',5);assert.equal(wind.action,'q');if(id==='quanle')assert(await p.evaluate(()=>denTinh.game.player.shadowArmor>0));else assert(wind.pose.wind>0);const release=await stage(p,'q',22);assert(release.effects>0);assert(['an','linh','quanle','hoavi','thienvu'].includes(id)?release.triangles===0:release.triangles>0);pass(id+' Q uses real windup and release timing');
+   const start=await p.evaluate(()=>denTinh.game.player.x);await p.keyboard.down('d');await p.waitForFunction(x=>denTinh.game.player.x>x+10,start);await p.keyboard.up('d');
+   assert(await p.evaluate(x=>denTinh.game.player.x>x+10,start));assert(await p.evaluate(()=>['an','huyenkha','quanle','hoavi','thienvu'].includes(denTinh.game.hero.id)?DTChoreography.metrics.atlas===1&&DTChoreography.metrics.triangles===0:DTChoreography.metrics.triangles>0));pass(id+' walking uses its animated atlas or sprite mesh');
+   const wind=await stage(p,'q',5);assert.equal(wind.action,'q');if(id==='quanle')assert(await p.evaluate(()=>denTinh.game.player.shadowArmor>0));else assert(wind.pose.wind>0);const release=await stage(p,'q',22);assert(release.effects>0);assert(['an','huyenkha','quanle','hoavi','thienvu'].includes(id)?release.triangles===0:release.triangles>0);pass(id+' Q uses real windup and release timing');
    await stage(p,'e',18);assert(await p.evaluate(()=>denTinh.game.effects.some(e=>e.type==='choreo-release')));pass(id+' E renders its signature release effect');
-   if(id==='thienvu')await p.evaluate(()=>{const g=denTinh.game;g.paused=false;g.player.mp=100;g.elementSplitCd=0;g.selectSplitCount(7);if(!g.splitElementals())throw Error('Split rejected');g.paused=true;g.consumeEvents()});
-   const ultimate=await stage(p,'r',275);assert(ultimate.effects>0);await p.screenshot({path:path.join(out,'v07-'+id+'-r.png')});pass(id+' R renders with its own visual language');
+   if(id==='thienvu')await p.evaluate(()=>{
+    const g=denTinh.game,p=g.player,x=p.x+250,y=p.y;
+    g.cancelActions();g.paused=false;p.mp=100;g.elementSplitCd=0;g.selectSplitCount(7);
+    if(!g.splitElementals())throw Error('Split rejected');
+    g.updateElementSplitIntro(4.2);
+    g.world.enemies=[{id:'qa-clone-target',type:'slime',x,y,homeX:x,homeY:y,hp:1e6,maxHp:1e6,r:15,alive:true,speed:0,damage:0,cool:1000}];
+    g.paused=true;g.consumeEvents();
+   });
+   const ultimate=await stage(p,'r',{huyenkha:154,thienvu:45}[id]??275);assert(ultimate.effects>0);await p.screenshot({path:path.join(out,'v07-'+id+'-r.png')});pass(id+' R renders with its own visual language');
    if(id==='hoavi'){
     const review=path.join(__dirname,'../design/blender/hoavi');
     await p.evaluate(()=>{const g=denTinh.game,p=g.player;g.cancelActions();g.effects=[];g.projectiles=[];g.paused=false;p.x=1500;p.y=1000;p.mp=p.maxMp;p.code=4;p.cd.q=0;p.invulnerable=0;g.world.collision=()=>false;g.world.ensureChunks=()=>{};g.world.enemies=[{id:'qa-code-target',type:'slime',x:p.x+190,y:p.y+30,hp:100000,maxHp:100000,r:15,alive:true,speed:0,damage:0,xp:0,gold:0,hit:0}];g.input={dx:0,dy:0,fire:false,aimX:p.x+650,aimY:p.y+100};if(!g.skill('q'))throw Error('Q rejected');for(let i=0;i<5;i++)g.update(1/60);g.paused=true;g.consumeEvents();const r=denTinh.renderer;r.camera.x=p.x-640/r.zoom;r.camera.y=p.y-360/r.zoom;r.draw(.016)});

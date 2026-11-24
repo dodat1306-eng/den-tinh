@@ -102,7 +102,7 @@
   };
   const HERO_THEMES={
     an:{color:'#f1bf69',accent:'#ffe7a2',bg:'#281c12',prop:'lantern'},
-    linh:{color:'#a5e3a2',accent:'#dcfce7',bg:'#14281d',prop:'flute'},
+    huyenkha:{color:'#ffd24c',accent:'#62bbff',bg:'#292020',prop:'sword'},
     quanle:{color:'#b86bff',accent:'#5ce1e6',bg:'#1a102b',prop:'shadow'},
     kiet:{color:'#b86bff',accent:'#5ce1e6',bg:'#1a102b',prop:'shadow'},
     hoavi:{color:'#38bdf8',accent:'#f472b6',bg:'#0e212e',prop:'code'},
@@ -178,7 +178,10 @@
       }
     }else if(info.kind==='hero'){
       const id=info.id;
-      if((id==='an'||id==='linh')&&root.DTWorldPixel?.ready()){
+      if(id==='huyenkha'&&root.DTHuyenKhaPixel?.ready()){
+        root.DTHuyenKhaPixel.portrait(c,w,h,bob);
+        drawn=true;
+      }else if(id==='an'&&root.DTWorldPixel?.ready()){
         const clip=root.DTActorsPixelAtlas?.clips?.[id+'_S/idle'];
         if(clip){
           const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
@@ -186,11 +189,15 @@
           drawn=true;
         }
       }else if((id==='quanle'||id==='kiet')&&root.DTQuanLePixel?.ready()){
-        const clip=root.DTQuanLeAtlas?.clips?.['S/idle'];
-        if(clip){
-          const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
-          c.drawImage(root.DTQuanLePixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+        if(root.DTQuanLePixel.portrait?.(c,w,h,bob)){
           drawn=true;
+        }else{
+          const clip=root.DTQuanLeAtlas?.clips?.['S/idle'];
+          if(clip){
+            const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
+            c.drawImage(root.DTQuanLePixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+            drawn=true;
+          }
         }
       }else if(id==='hoavi'&&root.DTHoaViPixel?.ready()){
         const cells=root.DTHoaViAtlas?.actions?.idle?.directions?.S;

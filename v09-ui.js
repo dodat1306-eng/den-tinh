@@ -43,7 +43,6 @@
       }
     });
   }
-  function showMelody(){const app=root.denTinh,g=app.game;app.showModal('melody','<span class="eyebrow">LINH · KHÚC TIỄN BỜ SEN</span><h2>Tám nốt còn nhớ.</h2><p>1 · 3 · 2 · 5 · 4 · 6 · 5 · 8. Sai một nốt, khúc tiêu bắt đầu lại.</p><p id="melodyProgress">'+g.heroQuest.notes+' / 8 nốt</p><div class="rpg-notes">'+Array.from({length:8},(_,i)=>'<button data-note="'+(i+1)+'" aria-label="Nốt '+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button id="melodyClose">Để gió nghỉ một nhịp</button>');document.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>{g.playMemoryNote(Number(b.dataset.note));if(g.questStep()?.kind!=='notes'){app.save();app.closeAndContinue()}else $('melodyProgress').textContent=g.heroQuest.notes+' / 8 nốt'});$('melodyClose').onclick=()=>app.closeAndContinue()}
   function renderDialoguePortrait(canvas,speaker,time){return root.DTV09Art?.drawPortrait?.(canvas,speaker,time,root.denTinh?.game)}
-  ui.showInventory=showInventory;ui.showRelics=showRelics;root.DTV09UI={showInventory,showRelic,showMelody,showResonances,showMonument,renderDialoguePortrait};
+  ui.showInventory=showInventory;ui.showRelics=showRelics;root.DTV09UI={showInventory,showRelic,showResonances,showMonument,renderDialoguePortrait};
 })(globalThis);

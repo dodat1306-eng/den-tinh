@@ -59,6 +59,9 @@
   const sprite=A.drawSpriteHero;
   function drawHero(c,p,h,time=0,scale=1,npc=false,clone=false,identity=p){
     if(!npc&&root.DTWorldPixel?.hero(c,p,h,time)){metrics.bodies++;metrics.atlas++;return}
+    if(!npc&&h.id==='huyenkha'&&root.DTHuyenKhaPixel?.ready()){
+      sprite(c,p,h,time,scale);metrics.bodies++;metrics.atlas++;return;
+    }
     const pixel=npc?null:h.id==='ait01'?root.DTAit01Pixel:h.id==='quynhkun'?root.DTQuynhKunPixel:h.id==='quanle'?root.DTQuanLePixel:h.id==='hoavi'?root.DTHoaViPixel:h.id==='thienvu'?root.DTThienVuPixel:null;
     if(pixel&&!pixel.ready())return;
     const atlasReady=!!pixel?.ready(),paint=(actor,shadow=true)=>['quanle','quynhkun','ait01'].includes(h.id)?pixel.hero(c,actor,h,time,shadow):h.id==='hoavi'?drawHoavi(c,actor,time,scale,identity,shadow):shadow?pixel.hero(c,actor,time,time-(hurtTimes.get(identity)??-Infinity),clone):pixel.ghost(c,actor,time,actor.elementForm||actor.element,2);
@@ -103,7 +106,7 @@
   const primary=G.elementPrimary;
   G.elementPrimary=function(origin,id,...args){const result=primary.call(this,origin,id,...args);clonePose(this,origin,'attack',id);return result};
   const release=G.releaseCast;
-  G.releaseCast=function(c){const p=this.player,origin={x:p.x,y:p.y};const result=release.call(this,c);if(!this.dead&&this.hero.id!=='thienvu'&&['q','e','r'].includes(c.key))emit(this,'choreo-release',origin.x,origin.y,this.hero.color,this.hero.id==='an'&&c.key==='r'?660:160,c.key==='r'?1.05:.65,{hero:this.hero.id,key:c.key,angle:c.angle||0,tx:p.x,ty:p.y,element:this.hero.id==='an'?'fire':this.hero.id==='linh'?'nature':this.hero.id==='kiet'?'lightning':'light'});return result};
+  G.releaseCast=function(c){const p=this.player,origin={x:p.x,y:p.y};const result=release.call(this,c);if(!this.dead&&this.hero.id!=='thienvu'&&!(this.hero.id==='huyenkha'&&c.key!=='e')&&['q','e','r'].includes(c.key))emit(this,'choreo-release',origin.x,origin.y,this.hero.color,this.hero.id==='an'&&c.key==='r'?660:160,c.key==='r'?1.05:.65,{hero:this.hero.id,key:c.key,angle:c.angle||0,tx:p.x,ty:p.y,element:this.hero.id==='an'?'fire':this.hero.id==='linh'?'nature':this.hero.id==='kiet'?'lightning':'light'});return result};
   const damage=G.damageEnemy;
   G.damageEnemy=function(e,...args){const hp=e?.hp,result=damage.call(this,e,...args);if(e&&hp>e.hp&&this.time-(hitTimes.get(e)??-10)>.07){hitTimes.set(e,this.time);emit(this,'choreo-hit',e.x,e.y-12,'#ffe8b8',34,.26,{hero:this.hero.id,element:e.markElement||this.element?.id||'light',angle:e.hitAngle||0,seed:e.x*.1+e.y*.2})}return result};
   const hurt=G.damagePlayer;

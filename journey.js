@@ -2,7 +2,7 @@
   'use strict';
   const Base=root.DTGame,D=root.DTWorld,C=root.DTContent,TAU=Math.PI*2;
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,Number.isFinite(Number(n))?Number(n):a)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-  const specs={q:[{id:'focus',name:'Tập Trung',desc:'Sát thương chính +25%. Linh bắn tên xuyên tối đa 10 mục tiêu.'},{id:'burst',name:'Bộc Phát',desc:'Sát thương chính −15%, thêm nổ vùng. Linh dùng tên găm nổ khi trúng.'}],e:[{id:'lasting',name:'Bền Vững',desc:'Trường E tồn tại lâu hơn 40%; nhận thêm 15 khiên.'},{id:'agile',name:'Ứng Biến',desc:'E hồi nhanh hơn 25% và tăng 15% tốc độ chạy trong 2 giây.'}],r:[{id:'might',name:'Uy Lực',desc:'Sát thương tuyệt kỹ +25%.'},{id:'renewal',name:'Tái Sinh',desc:'Sát thương −15%; hồi 18% máu tối đa và 20 linh lực khi chiêu được nhả.'}]};
+  const specs={q:[{id:'focus',name:'Tập Trung',desc:'Sát thương chính +25%.'},{id:'burst',name:'Bộc Phát',desc:'Sát thương chính −15%, thêm nổ vùng.'}],e:[{id:'lasting',name:'Bền Vững',desc:'Trường E tồn tại lâu hơn 40%; nhận thêm 15 khiên.'},{id:'agile',name:'Ứng Biến',desc:'E hồi nhanh hơn 25% và tăng 15% tốc độ chạy trong 2 giây.'}],r:[{id:'might',name:'Uy Lực',desc:'Sát thương tuyệt kỹ +25%.'},{id:'renewal',name:'Tái Sinh',desc:'Sát thương −15%; hồi 18% máu tối đa và 20 linh lực khi chiêu được nhả.'}]};
   class JourneyGame extends Base{
     constructor(hero,seed){super(hero,seed);this.initJourney()}
     initJourney(saved){
@@ -55,6 +55,7 @@
     registerHarmony(id){if(this.harmonyCooldown>0)return;const s=this.passiveState,p=this.player;if(!s.forms.includes(id))s.forms.push(id);s.formTime=12;if(s.forms.length>=3){s.forms=[];this.harmonyCooldown=6;p.mp=Math.min(p.maxMp,p.mp+12+this.skillRanks.passive*3);p.shield=Math.max(p.shield,Math.min(60,p.shield+10+3*this.skillRanks.passive));this.emit('toast',{text:'Hòa Âm Tam Linh · hồi linh lực và khiên, nghỉ 6 giây',reward:true})}}
     skill(key){
       const p=this.player;if(this.paused||this.dead||p.ultIntro||p.dashTime>0)return false;
+      if(key==='q'&&this.canRecastQ())return super.skill(key);
       if(this.hero.id==='ait01'&&key==='e'&&root.DTAit01.canRecast(this))return root.DTAit01.recast(this);
       if(this.hero.id==='quynhkun'&&key==='e'&&root.DTQuynhKun.canRecast(this))return root.DTQuynhKun.recast(this);
       if(this.hero.id==='an'&&key==='e'&&this.time<this.anRecastUntil&&this.mythicFields.some(f=>f.kind==='lantern'&&f.life>0)&&(!p.action||p.action.elapsed>=p.action.release+.1)){
@@ -68,8 +69,8 @@
       const p=this.player,spec=this.specializations[c.key],fields=new Set(this.mythicFields.map(f=>f.id));let copy={...c};
       if(c.key==='q'&&spec==='focus'||c.key==='r'&&spec==='might')copy.power*=1.25;
       if(c.key==='q'&&spec==='burst'||c.key==='r'&&spec==='renewal')copy.power*=.85;
-      if(this.hero.id==='linh'&&c.key==='q'&&spec){this.shoot(p.x,p.y,c.angle,1050,p.damage*copy.power*(spec==='focus'?4.5:2.8),'#c7f5b1',{kind:'arrow',pierce:spec==='focus'?9:0,life:1,charge:true,sourceSkill:'q',specialBurst:spec==='burst'});this.effect('mythic-spear',p.x,p.y,'#c7f5b1',700,.4,{angle:c.angle})}else super.releaseCast(copy);
-      if(c.key==='q'&&spec==='burst'&&!['linh','quynhkun','ait01'].includes(this.hero.id)){this.areaDamage(c.target.x,c.target.y,105,p.damage*1.5,50,true);this.effect('shock',c.target.x,c.target.y,this.hero.color,105,.5)}
+      super.releaseCast(copy);
+      if(c.key==='q'&&spec==='burst'&&!['huyenkha','quynhkun','ait01'].includes(this.hero.id)){this.areaDamage(c.target.x,c.target.y,105,p.damage*1.5,50,true);this.effect('shock',c.target.x,c.target.y,this.hero.color,105,.5)}
       if(c.key==='e'&&spec==='lasting'){for(const f of this.mythicFields.filter(f=>!fields.has(f.id)))f.life*=1.4;p.shield=Math.min(110,p.shield+15)}
       if(c.key==='r'&&spec==='renewal'){p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.18);p.mp=Math.min(p.maxMp,p.mp+20)}
       if(this.hero.id==='an'&&c.key==='e')this.anRecastUntil=this.time+3;

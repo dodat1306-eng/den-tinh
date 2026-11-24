@@ -4,7 +4,7 @@
   const gold='#ffe29a';
   const counters={
     an:{name:'Hỏa Phượng Xung Kích', power:2.8, color:'#ffab64'},
-    linh:{name:'Thiên Tiễn Truy Hồn', power:2.4, color:'#c6f0a0'},
+    huyenkha:{name:'Tinh Luân Phản Trảm', power:3.15, color:'#ffe28b'},
     quanle:{name:'Thập Tự Hắc Nguyệt', power:3, color:'#ca9df1'},
     hoavi:{name:'SUDO OVERRIDE', power:2.9, color:'#8fffe4'},
     thienvu:{name:'Cộng Hưởng Thất Tinh', power:2.9},
@@ -157,14 +157,7 @@
     game.effect('counter-flare',p.x,p.y,color,66,.36,{angle:a,counter:id});
     game.emit('sound',{name:'ultimate'});
     if (id==='an') shootCounter(game,id,a,875,power,color,{element:'fire',r:20,life:1.2});
-    if (id==='linh') {
-      const targets=game.world.enemies.filter(e=>e.alive&&distance(e,p)<870)
-        .sort((x,y)=>distance(x,p)-distance(y,p)).slice(0,3);
-      for (let i=0;i<3;i++) {
-        const target=targets[i];
-        shootCounter(game,id,a+(i-1)*.31,930,power,color,{homingId:target?.id,r:8,pierce:0,life:1.25});
-      }
-    }
+    if (id==='huyenkha') game.greatswordCounter(power);
     if (id==='quanle') {
       const end=safeEnd(game,p,a,740);
       let spawnAt=end;
@@ -202,7 +195,6 @@
         counterHit(game,other,b.damage*.32,'fire',b.strike);
       }
     }
-    if (b.counter==='linh') e.trucMark=Math.max(e.trucMark||0,6+(game.skillRanks.passive||0));
     if (b.counter==='thienvu') {
       game.applyElementStatus(e,b.element,b.damage,true);
       withStrike(game,12,()=>{
@@ -281,10 +273,7 @@
     if (!b.evolved||b.evolved!=='quanle'&&b.evolveProc) return;
     b.evolveProc=true;
     const p=game.player;
-    if (b.evolved==='linh') for (const offset of [-.38,.38]) {
-      game.shoot(e.x,e.y,b.angle+offset,680,b.damage*.37,'#b7ed9a',
-        {kind:'arrow',life:.48,pierce:1,charge:false,secondary:true,excludeIds:[e.id]});
-    }
+
     if (b.evolved==='hoavi') {
       const target=closest(game,e,260,e);
       if (target) game.shoot(e.x,e.y,angleTo(e,target),900,b.damage*.67,'#9cfce4',
@@ -303,7 +292,7 @@
 
   function afterFire(game,usedCounter) {
     const rank=tier(game),p=game.player,id=game.hero.id,n=game.passiveState.attackCount;
-    if (rank<2) return;
+    if (rank<2||id==='huyenkha') return;
     if (!usedCounter&&n%3===0&&(id==='quynhkun'||id==='ait01')) {
       game.shoot(p.x,p.y,p.facing+.12,970,p.damage*.48,'#ffe496',
         {kind:id==='quynhkun'?'talisman_bolt':'code',life:.92,r:4,secondary:true,quynhMarks:id==='quynhkun'?1:0,aitLocks:id==='ait01'?1:0});
@@ -312,11 +301,10 @@
       const end=safeEnd(game,p,p.facing,276);
       const target=game.world.enemies.find(e=>e.alive&&segment(e,p,end)<24+e.r)||end;
       const color=counters[id]?.color||game.element?.color||gold;
-      const element=({an:'fire',linh:'nature',quanle:'shadow',hoavi:'light',thienvu:game.element?.id,quynhkun:'lightning',ait01:'earth'})[id]||'lightning';
+      const element=({an:'fire',quanle:'shadow',hoavi:'light',thienvu:game.element?.id,quynhkun:'lightning',ait01:'earth'})[id]||'lightning';
       for (const e of game.world.enemies) if (e.alive&&distance(e,target)<120+e.r) game.mythicHit(e,p.damage*1.8,element,false);
       game.effect('signature-wave',target.x,target.y,color,120,.56,{counter:id,element,angle:p.facing});
       if(id==='an'||id==='ait01')game.effect('counter-column',target.x,target.y,color,120,.53);
-      if(id==='linh')game.effect('leaves',target.x,target.y,color,120,.62);
       if(id==='quanle')for(const turn of [-.58,.58])game.effect('mythic-slash',target.x,target.y,color,133,.48,{angle:p.facing+turn});
       if(id==='hoavi')game.effect('circuit',target.x,target.y,color,120,.58);
       if(id==='thienvu')game.effect('element-impact',target.x,target.y,color,120,.53,{element});

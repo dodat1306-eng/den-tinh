@@ -33,7 +33,6 @@
     buttons.x.disabled=!ready;buttons.x.textContent=intro?'KHAI TRẬN':active?'HỢP':g.elementSplitCd>0?Math.ceil(g.elementSplitCd)+'s':'TÁCH '+p.splitCount;buttons.g.textContent=p.splitCount+' DẠNG';paintForms();
   }
   const audio=denTinh.audio,oldSfx=audio.sfx;audio.sfx=function(name){if(!name.startsWith('element-')){oldSfx.call(this,name);return}if(!this.ctx||!this.enabled)return;const i=E.forms.findIndex(f=>f.id===name.slice(8)),frequencies=[740,540,180,260,960,440,1150],t=this.ctx.currentTime;if(t-(this.lastElementSound||0)<.12)return;this.lastElementSound=t;this.tone(frequencies[i]||600,t,.16,.085,i===2?'triangle':'sine',(frequencies[i]||600)*.55)};
-  setInterval(sync,100);rootHelp();
-  function rootHelp(){document.querySelector('.menu-footer span').textContent='5 NHÂN VẬT · 9 VÙNG ĐẤT · THẤT LINH PHÂN THÂN'}
+  setInterval(sync,100);
   window.DTElementUI={openWheel,closeWheel,sync};
 })();

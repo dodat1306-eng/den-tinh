@@ -2,7 +2,27 @@
   'use strict';
   const Base=root.DTGame,D=root.DTWorld,C=root.DTContent,M=root.DTMythic,TAU=Math.PI*2;
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-  const segment=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((p.x-a.x)*dx+(p.y-a.y)*dy)/Math.max(1,dx*dx+dy*dy),0,1);return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t)};
+  const nearest=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((p.x-a.x)*dx+(p.y-a.y)*dy)/Math.max(1,dx*dx+dy*dy),0,1);return {x:a.x+dx*t,y:a.y+dy*t}};
+  const segment=(p,a,b)=>dist(p,nearest(p,a,b));
+  const frames=300,fps=60,strikeFrame=150;
+  const chargeFrames=150;
+  const greatsword={frames,fps,strikeFrame,release:(strikeFrame-1)/fps,duration:frames/fps,throwTime:.32,
+    returnTime:.36,throwRange:520,collapseDelay:.72,chargeFrames,chargeTime:chargeFrames/fps};
+  const swordLinkRange=540,chargePulses=[.64,1.29,1.94];
+  const forward=(p,angle,d)=>({x:p.x+Math.cos(angle)*d,y:p.y+Math.sin(angle)*d});
+  const lerpPoint=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+  const finitePoint=p=>p&&[p.x,p.y].every(v=>Number.isFinite(v)&&Math.abs(v)<=2e7);
+  function migrateGreatswordSave(data){
+    if(data?.hero!=='linh')return data;
+    const memories={'brother-mask':'astral-guard','broken-flute':'astral-rune'};
+    const oldQuest=data.v09?.heroQuest;
+    const heroQuest=oldQuest&&{...oldQuest,stage:oldQuest.completed?6:clamp(Number(oldQuest.stage)||0,0,5),
+      memories:(Array.isArray(oldQuest.memories)?oldQuest.memories:[]).map(id=>memories[id]).filter(Boolean)};
+    return {...data,hero:'huyenkha',
+      player:data.player&&{...data.player,maxHp:data.player.maxHp+32,damage:data.player.damage+6,speed:D.HEROES.huyenkha.speed,fireRate:D.HEROES.huyenkha.fireRate,ultIntro:null,action:null},
+      ascension:data.ascension&&{...data.ascension,ultimate:null,elementCast:null},
+      v09:data.v09&&{...data.v09,heroQuest}};
+  }
   class AscensionGame extends Base{
     constructor(hero,seed){super(hero,seed);this.initAscension()}
     initAscension(saved){
@@ -19,24 +39,47 @@
       delete this.player.weapons;delete this.player.weaponSlot;this.weaponDrops=[];this.player.action=this.player.ultIntro?.mode==='split'?this.player.action:null;
       this.player.velocityX=0;this.player.velocityY=0;
       this.player.ultIntro=this.player.ultIntro||null;this.syncUltimate();
-      const ritual=saved?.ultimate;
-      if(!this.isElemental&&ritual&&Number.isFinite(ritual.elapsed)&&ritual.elapsed>=0&&ritual.elapsed<4.5&&Number.isFinite(ritual.angle)){
+      const ritual=saved?.ultimate,duration=this.ultimateDuration();
+      if(!this.isElemental&&ritual&&Number.isFinite(ritual.elapsed)&&ritual.elapsed>=0&&ritual.elapsed<duration&&Number.isFinite(ritual.angle)){
         const p=this.player,angle=ritual.angle,target=ritual.target;
-        p.ultIntro={elapsed:ritual.elapsed,duration:4.5,pulse:Math.floor(ritual.elapsed/.8),cast:{key:'r',angle,target:{x:clamp(Number.isFinite(target?.x)?target.x:p.x+Math.cos(angle)*600,40,D.W-40),y:clamp(Number.isFinite(target?.y)?target.y:p.y+Math.sin(angle)*600,40,D.H-40)},element:this.isElemental?this.element.id:undefined,power:1+.18*this.skillRanks.r}};
-        this.beginAction('r',angle);p.action.elapsed=ritual.elapsed;p.invulnerable=Math.max(p.invulnerable,4.8-ritual.elapsed);
+        p.ultIntro={elapsed:ritual.elapsed,duration,pulse:Math.floor(ritual.elapsed/.8),released:ritual.released===true,cast:{key:'r',angle,target:{x:clamp(Number.isFinite(target?.x)?target.x:p.x+Math.cos(angle)*600,40,D.W-40),y:clamp(Number.isFinite(target?.y)?target.y:p.y+Math.sin(angle)*600,40,D.H-40)},power:1+.18*this.skillRanks.r}};
+        const rift=ritual.rift;
+        if(this.hero.id==='huyenkha'&&p.ultIntro.released&&Array.isArray(rift?.points)&&rift.points.length>=2&&rift.points.length<=3&&rift.points.every(finitePoint)&&Number.isFinite(rift.width)&&Number.isFinite(rift.power)){
+          p.ultIntro.rift={points:rift.points.map(({x,y})=>({x,y})),width:clamp(rift.width,20,800),power:clamp(rift.power,1,1e5),closed:rift.closed===true};
+        }
+        this.beginAction('r',angle);p.action.elapsed=ritual.elapsed;p.invulnerable=Math.max(p.invulnerable,duration+.3-ritual.elapsed);
       }
       const pending=saved?.elementCast||(this.isElemental&&!this.player.ultIntro&&ritual&&Number.isFinite(ritual.elapsed)&&ritual.elapsed>=0&&ritual.elapsed<4.5&&Number.isFinite(ritual.angle)?{delay:.28,angle:ritual.angle,target:ritual.target||{x:this.player.x+Math.cos(ritual.angle)*600,y:this.player.y+Math.sin(ritual.angle)*600},element:this.element.id}:null);
       if(this.isElemental&&!this.player.ultIntro&&pending&&Number.isFinite(pending.delay)&&pending.delay>=0&&pending.delay<=.28&&Number.isFinite(pending.angle)&&[pending.target?.x,pending.target?.y].every(v=>Number.isFinite(v)&&Math.abs(v)<=2e7)&&root.DTElements.forms.some(f=>f.id===pending.element)){
         const cast={type:'cast',key:'r',delay:pending.delay,angle:pending.angle,target:{x:pending.target.x,y:pending.target.y},element:pending.element,power:1+.18*this.skillRanks.r};this.castQueue.push(cast);this.beginAction('r',cast.angle,cast.element);this.player.action.elapsed=.28-pending.delay;
       }
+      this.thrownGreatsword=undefined;
+      if(this.hero.id==='huyenkha')this.restoreGreatsword(saved?.greatswordAnchor);
       for(const chest of this.world.chests)delete chest.weaponId;
     }
     get weapon(){return {...(this.signature||M.signature[this.hero.id]),power:1,interval:this.hero.fireRate,clip:0,reload:0,speed:this.hero.shotSpeed,pierce:0,effect:'signature'}}
     effectiveRCd(){const p=this.player;return (this.hero.rCd||18)*(1-.06*(this.skillRanks?.r||0))*(p.relics?.cooling?.78:1)*(this.charmTime>0?.9:1)}
+    ultimateDuration(){return this.hero.id==='huyenkha'?greatsword.duration:this.isElemental?.28:4.5}
+    ultimateRelease(){return this.hero.id==='huyenkha'?greatsword.release:this.ultimateDuration()}
     syncUltimate(){const p=this.player;p.cd.r=Math.max(0,Number.isFinite(p.cd.r)?p.cd.r:0);p.ult=p.cd.r<=0?100:clamp(Math.floor(100*(1-p.cd.r/Math.max(1,this.effectiveRCd()))),0,100)}
     updateUltIntro(dt){
       const p=this.player,i=p.ultIntro;if(!i||i.mode==='split')return;
       i.elapsed=Math.min(i.duration,i.elapsed+dt);
+      if(this.hero.id==='huyenkha'){
+        if(!i.released&&i.elapsed+1e-9>=greatsword.release){
+          i.released=true;
+          this.onRelicCast('r',0,i.cast.target);
+          this.releaseCast(i.cast);
+        }
+        if(i.rift&&!i.rift.closed&&i.elapsed+1e-9>=greatsword.release+greatsword.collapseDelay){
+          i.rift.closed=true;
+          const hit=()=>this.strikeGreatswordRift(i.rift,true);
+          if(root.DTCombat)root.DTCombat.withStrike(this,18,hit);else hit();
+        }
+        if(i.elapsed+1e-9<i.duration)return;
+        p.ultIntro=null;p.action=null;p.cast=0;
+        return;
+      }
       const pulse=Math.floor((i.elapsed+1e-9)/.8);
       if(pulse>i.pulse){i.pulse=pulse;for(const e of this.world.enemies)if(e.alive&&dist(e,p)<=520){const a=Math.atan2(e.y-p.y,e.x-p.x);this.moveEntity(e,Math.cos(a)*12,Math.sin(a)*12)}}
       if(i.elapsed+1e-9<i.duration)return;
@@ -45,7 +88,7 @@
     }
     get weaponStateActive(){return {id:this.weapon.id,level:1,ammo:0,reload:0}}
     get skillTree(){const names=M.nodeNames[this.hero.id];return ['q','e','r','passive'].map((id,i)=>({id,name:names[i],maxRank:3,desc:id==='passive'?this.passiveNodeText():this.skillDescriptions[id].desc+' Mỗi bậc tăng 18% sát thương; Q/E/R hồi nhanh hơn 6% mỗi bậc.'}))}
-    passiveNodeText(){if(this.hero.id==='ait01')return 'Mỗi bậc: Tên Lửa 5 khóa thêm 35% sát thương, hồi thêm 1,5 linh lực và 4 khiên; mũ 3 giảm thêm 5% sát thương; khóa mục tiêu lan sang địch gần đó.';if(this.hero.id==='quynhkun')return 'Mỗi bậc: Phù Bạo thêm 35% sát thương cơ bản, hồi thêm 1,5 linh lực và 4 khiên; mực lan tới một địch trong 220 bước, khắc 1 + phần nguyên của bậc/2 nét.';return {an:'Mỗi bậc: tích Tàn Lửa nhanh hơn; đèn hồi thêm 0,5 máu/giây.',linh:'Mỗi bậc: cần ít hơn 5 bước cho một Nhịp Trúc; dấu ghim tồn tại lâu hơn.',kiet:'Mỗi bậc: đòn cường hóa thêm 10 khiên; chiến tuyến chặn đạn hiệu quả hơn.',hoavi:'Mỗi bậc: biên dịch lại Q mạnh thêm 15%; hồi quy hồi thêm 4% máu tối đa.',thienvu:'Mỗi bậc: Hòa Âm hồi thêm 5 linh lực và 5 khiên; phản ứng tăng 12% sát thương.'}[this.hero.id]}
+    passiveNodeText(){if(this.hero.id==='ait01')return 'Mỗi bậc: Tên Lửa 5 khóa thêm 35% sát thương, hồi thêm 1,5 linh lực và 4 khiên; mũ 3 giảm thêm 5% sát thương; khóa mục tiêu lan sang địch gần đó.';if(this.hero.id==='quynhkun')return 'Mỗi bậc: Phù Bạo thêm 35% sát thương cơ bản, hồi thêm 1,5 linh lực và 4 khiên; mực lan tới một địch trong 220 bước, khắc 1 + phần nguyên của bậc/2 nét.';return {an:'Mỗi bậc: tích Tàn Lửa nhanh hơn; đèn hồi thêm 0,5 máu/giây.',huyenkha:'Mỗi bậc: đòn thứ ba trúng địch hồi thêm 2 linh lực và tạo thêm 3 khiên.',kiet:'Mỗi bậc: đòn cường hóa thêm 10 khiên; chiến tuyến chặn đạn hiệu quả hơn.',hoavi:'Mỗi bậc: biên dịch lại Q mạnh thêm 15%; hồi quy hồi thêm 4% máu tối đa.',thienvu:'Mỗi bậc: Hòa Âm hồi thêm 5 linh lực và 5 khiên; phản ứng tăng 12% sát thương.'}[this.hero.id]}
     get skillDescriptions(){
       if(!this.isElemental)return M.kits[this.hero.id];const f=this.element;
       const desc={lightning:['Lao theo đường ngắm rồi nối sét qua ba mục tiêu.','Dịch chuyển ngắn, để lại ấn sét đón các đòn sau.','Bảy sét đánh lần lượt theo mục tiêu, có báo trước.'],wind:['Ba phong liêm quay về, cắt cả lượt đi lẫn lượt về.','Phong nhãn xóa đạn và gom kẻ gần đó.','Lốc di động cuốn theo hướng ngắm và kéo địch.'],earth:['Dựng năm địa trụ lần lượt dọc một đường.','Dựng tuyến đá chắn đạn và nhận giáp.','Hai vách núi khép vào đường ngắm.'],fire:['Hỏa xà đuổi mục tiêu gần đường ngắm.','Tạo ba hạt lửa quanh thân để kích nổ bằng đòn đánh.','Một đường hỏa long thiêu đốt theo từng nhịp.'],ice:['Tia băng xuyên, vỡ vụn khi gặp địch đang đóng băng.','Đặt gương băng phản đạn tại điểm ngắm.','Băng vực nở từ tâm ra ngoài, đông cứng từng đợt.'],nature:['Dây leo bám mục tiêu, trói và hút máu nhẹ.','Gieo vườn hồi phục; địch bước vào bị rễ giữ lại.','Gọi rễ từ vị trí các địch bị độc, tạo mạng dây leo.'],light:['Dịch chuyển tức thời ra sau lưng địch trong 520 bước và chém chí mạng; không có địch thì nhảy 280 bước theo hướng ngắm.','Dựng quang kính phản các đạn chạm vào.','Tích quang rồi quét tia theo hướng ngắm.']}[f.id];
@@ -54,7 +97,7 @@
     learnSkill(id){if(!Object.hasOwn(this.skillRanks,id)||this.skillPoints<1||this.skillRanks[id]>=3)return false;this.skillPoints--;this.skillRanks[id]++;this.emit('sound',{name:'level'});this.emit('toast',{text:'Đã học '+this.skillTree.find(n=>n.id===id).name+' · bậc '+this.skillRanks[id]+'/3',reward:true});return true}
     awardSkillPoints(n,label){n=clamp(Math.floor(Number(n)||0),0,20);this.skillPoints=Math.min(999,this.skillPoints+n);if(n)this.emit('toast',{text:'+'+n+' điểm kỹ năng · '+(label||'nhấn K để học'),reward:true});return n}
     passiveDescription(){return C.passives[this.hero.id]}
-    passiveStatus(){const s=this.passiveState,p=this.player;if(this.hero.id==='ait01')return 'Đạn Hỏa Lực '+(s.ammo||0)+'/6 · Ô Kho Tác Chiến '+root.DTAit01.zones(this).length+'/2'+(this.canRecastE?.()?' · E thu hồi ô kho':'');if(this.hero.id==='quynhkun')return 'Lộc Khí Đồng Xu '+(s.coins||0)+'/6 · Trận Bát Quái '+root.DTQuynhKun.stakes(this).length+'/2'+(this.canRecastE()?' · E thu phù hộ thể':'');return {an:'Tàn Lửa '+Math.floor(s.embers)+'/6 · Đèn '+this.mythicFields.filter(f=>f.kind==='lantern').length+'/3',linh:'Nhịp Trúc '+s.wind+'/8 · chạy để tích nhịp',kiet:'Lôi Tức '+s.thunder+'/5 · chặn đạn để tích lực',hoavi:'Mã Lệnh '+p.code+'/8'+(this.checkpoint?' · E trở về trong '+Math.ceil(this.checkpoint.life)+'s':''),thienvu:'Hòa Âm '+s.forms.length+'/3 · '+(s.forms.join(' / ')||'đổi dạng rồi dùng kỹ năng')}[this.hero.id]}
+    passiveStatus(){const s=this.passiveState,p=this.player;if(this.hero.id==='ait01')return 'Đạn Hỏa Lực '+(s.ammo||0)+'/6 · Ô Kho Tác Chiến '+root.DTAit01.zones(this).length+'/2'+(this.canRecastE?.()?' · E thu hồi ô kho':'');if(this.hero.id==='quynhkun')return 'Lộc Khí Đồng Xu '+(s.coins||0)+'/6 · Trận Bát Quái '+root.DTQuynhKun.stakes(this).length+'/2'+(this.canRecastE()?' · E thu phù hộ thể':'');return {an:'Tàn Lửa '+Math.floor(s.embers)+'/6 · Đèn '+this.mythicFields.filter(f=>f.kind==='lantern').length+'/3',huyenkha:'Liên trảm '+(this.time-(this.greatswordComboAt??-Infinity)<1.2?this.greatswordCombo:0)+'/3'+(this.mythicFields.some(f=>f.kind==='greatsword-ward'&&f.life>0&&!f.spent)?' · Lôi Giáp Ngà sẵn sàng hoàn linh lực':''),kiet:'Lôi Tức '+s.thunder+'/5 · chặn đạn để tích lực',hoavi:'Mã Lệnh '+p.code+'/8'+(this.checkpoint?' · E trở về trong '+Math.ceil(this.checkpoint.life)+'s':''),thienvu:'Hòa Âm '+s.forms.length+'/3 · '+(s.forms.join(' / ')||'đổi dạng rồi dùng kỹ năng')}[this.hero.id]}
     switchWeapon(){return false}
     reloadWeapon(){return false}
     dropWeapon(){return false}
@@ -67,10 +110,228 @@
     }
     readyRelic(id,cooldown){if(this.relicCooldowns[id]>0)return false;this.relicCooldowns[id]=cooldown;return true}
     addField(kind,x,y,extra={}){const f={id:'mythic-'+(++this.fieldSerial),kind,x,y,r:100,life:4,tick:0,angle:this.player.facing,...extra};this.mythicFields.push(f);if(this.mythicFields.length>28)this.mythicFields.shift();return f}
-    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?(this.isElemental?.28:4.5):this.hero.id==='linh'&&key==='q'?.25:key==='e'||this.hero.id==='quynhkun'||this.hero.id==='ait01'?.14:.16,duration=key==='attack'?.32:key==='r'?(this.isElemental?.78:4.5):key==='q'?.65:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
+    beginAction(key,angle,element){const windup=key==='q'&&(this.hero.id==='quanle'||this.isElemental&&(element||this.element?.id)==='light')?0:key==='attack'?.03:key==='r'?this.ultimateRelease():key==='q'&&this.hero.id==='huyenkha'?.24:key==='e'||this.hero.id==='quynhkun'||this.hero.id==='ait01'?.14:.16,duration=key==='attack'?.32:key==='r'?(this.isElemental?.78:this.ultimateDuration()):key==='q'?(this.hero.id==='huyenkha'?.58:.65):this.hero.id==='huyenkha'?greatsword.chargeTime:.56;this.player.action={key,hero:this.hero.id,element:element||this.element?.id,angle,elapsed:0,duration,windup,release:windup,recovery:duration-windup-.14};this.player.cast=duration;this.player.castKey=key;return windup}
+    greatswordSweep(angle,range,arc,power,charge,kind,stagger=0){
+      const p=this.player,color=this.hero.color,r=range*(p.areaMultiplier||1);
+      const reaches=target=>{
+        const distance=dist(p,target);
+        if(distance>r+target.r)return false;
+        const heading=Math.atan2(target.y-p.y,target.x-p.x),delta=heading-angle;
+        if(distance>target.r&&Math.abs(Math.atan2(Math.sin(delta),Math.cos(delta)))>arc)return false;
+        for(let d=14;d<distance-target.r;d+=14){
+          const at=forward(p,heading,d);
+          if(this.world.collision(at.x,at.y,2))return false;
+        }
+        return true;
+      };
+      let hits=0;
+      for(const e of this.world.enemies){
+        if(!e.alive||!reaches(e))continue;
+        this.mythicHit(e,power,undefined,charge);
+        if(e.alive&&stagger&&!root.DTCombat?.boss(e))e.stunned=Math.max(e.stunned||0,stagger);
+        hits++;
+      }
+      this.hitTrials?.(reaches,power,null,p);
+      this.effect('huyenkha-sweep',p.x,p.y,color,r,.32,{angle,arc,kind});
+      const center=forward(p,angle,r*.66);
+      this.reactEnvironment?.('physical',center.x,center.y,r*.54,power);
+      return hits;
+    }
+    greatswordAttack(scale){
+      const p=this.player,action=p.action;
+      const combo=this.time-(this.greatswordComboAt??-Infinity)<1.2?(this.greatswordCombo%3)+1:1;
+      this.greatswordCombo=combo;this.greatswordComboAt=this.time;
+      const duration=p.cd.fire*[1,1.16,1.46][combo-1],delay=duration*.44;
+      Object.assign(action,{combo,duration,windup:delay,release:delay,recovery:duration-delay});
+      p.cast=p.cd.fire=duration;
+      this.castQueue.push({type:'greatsword-attack',action,delay,scale});
+    }
+    greatswordAttackHit({action,scale}){
+      const p=this.player;
+      if(p.action!==action||p.dashTime>0)return;
+      const i=action.combo-1,tier=root.DTCombat?.tier(this)||1;
+      const hit=()=>this.greatswordSweep(action.angle,[126,144,211][i]+(tier-1)*18,[.92,.57,1.08][i],
+        p.damage*scale*[1,1.28,1.62+(tier-1)*.14][i],true,'attack',[0,.18,.38][i]);
+      const normal=()=>{
+        const previous=this.hitContext;
+        this.hitContext={...previous,signatureHit:true};
+        try{return this.withDamage?this.withDamage('normal',hit):hit()}
+        finally{this.hitContext=previous}
+      };
+      const hits=root.DTCombat?root.DTCombat.withStrike(this,[3,7,13][i],normal):normal();
+      if(i===2&&hits){
+        const rank=this.skillRanks.passive;
+        p.mp=Math.min(p.maxMp,p.mp+6+rank*2);
+        p.shield=Math.max(p.shield,Math.min(36,p.shield+5+rank*3));
+        this.spark(p.x,p.y,9,'#fff0ad',70,.36);
+      }
+    }
+    greatswordCounter(power){
+      const p=this.player;
+      this.beginAction('attack',p.facing);
+      Object.assign(p.action,{combo:'counter',duration:.46,windup:0,release:0});
+      p.cd.fire=Math.max(p.cd.fire,.46);
+      this.greatswordSweep(p.facing,252,1.07,power,false,'counter',.48);
+    }
+    greatswordEnd(from,to){
+      const steps=Math.max(1,Math.ceil(dist(from,to)/12));
+      let end=from;
+      for(let i=1;i<=steps;i++){
+        const x=from.x+(to.x-from.x)*i/steps,y=from.y+(to.y-from.y)*i/steps;
+        if(this.world.collision(x,y,5))break;
+        end={x,y};
+      }
+      return end;
+    }
+    greatswordAnchor(){return this.thrownGreatsword}
+    canRecastQ(){
+      const p=this.player;
+      return this.hero.id==='huyenkha'&&!this.paused&&!this.dead&&!p.ultIntro&&p.dashTime<=0
+        &&(!p.action||p.action.key==='attack')&&this.greatswordAnchor()?.phase==='anchored';
+    }
+    restoreGreatsword(saved){
+      if(!finitePoint(saved)||!finitePoint(saved.from)||!['outbound','anchored','returning'].includes(saved.phase)||
+        ![saved.angle,saved.power,saved.flight].every(Number.isFinite)||saved.power<=0||
+        saved.phase==='outbound'&&dist(saved.from,saved)>greatsword.throwRange+1)return;
+      const p=this.player,{x,y,angle,phase}=saved,from={x:saved.from.x,y:saved.from.y};
+      const flight=clamp(saved.flight,0,1);
+      const hitIds=Array.isArray(saved.hitIds)?saved.hitIds.slice(0,240).filter(id=>typeof id==='string'&&id.length<=200):[];
+      const blade=phase==='returning'&&finitePoint(saved.blade)?{x:saved.blade.x,y:saved.blade.y}:lerpPoint(from,saved,flight);
+      this.thrownGreatsword={x,y,angle,phase,from,flight,blade,hitIds:new Set(hitIds),power:clamp(saved.power,1,1e5),
+        age:0,tick:0,linked:false,burst:saved.burst===true};
+      if(phase==='returning'&&!p.ultIntro)this.greatswordRecallAction(Math.atan2(from.y-p.y,from.x-p.x),flight*greatsword.returnTime);
+    }
+    greatswordRecallAction(angle,elapsed=0){
+      const p=this.player;
+      this.beginAction('q',angle);
+      Object.assign(p.action,{recall:true,elapsed,duration:greatsword.returnTime,windup:0,release:0});
+      p.cast=greatsword.returnTime-elapsed;
+    }
+    recallGreatsword(){
+      const p=this.player,f=this.thrownGreatsword;
+      const angle=Math.atan2(f.y-p.y,f.x-p.x);
+      // ponytail: Trace the final 540 steps. Stream more of the path if distant hits become gameplay.
+      const from=forward(p,angle,Math.min(dist(f,p),swordLinkRange));
+      this.greatswordRecallAction(angle);
+      Object.assign(f,{phase:'returning',flight:0,from,blade:from,angle,hitIds:new Set(),strike:this.postureStrike});
+      this.emit('sound',{name:'skill'});
+      return true;
+    }
+    greatswordFlightHit(f,from,to,scale){
+      const radius=30*(this.player.areaMultiplier||1);
+      for(const e of this.world.enemies)if(e.alive&&!f.hitIds.has(e.id)&&segment(e,from,to)<radius+e.r){
+        f.hitIds.add(e.id);
+        this.mythicHit(e,f.power*scale,'light',true);
+      }
+    }
+    updateGreatsword(dt){
+      const f=this.thrownGreatsword;
+      if(!f||this.dead)return;
+      const previousStrike=this.postureStrike;
+      if(f.strike)this.postureStrike=f.strike;
+      try{this.updateGreatswordFlight(f,dt)}finally{this.postureStrike=previousStrike}
+    }
+    updateGreatswordFlight(f,dt){
+      const p=this.player;
+      f.age+=dt;
+      if(f.phase==='returning'){
+        if(dist(f.from,p)>swordLinkRange+160){
+          const angle=Math.atan2(f.y-p.y,f.x-p.x);
+          const from=forward(p,angle,swordLinkRange);
+          Object.assign(f,{from,blade:from,angle,flight:0});
+        }
+        f.flight=Math.min(1,f.flight+dt/greatsword.returnTime);
+        const t=f.flight,bend=Math.sin(t*Math.PI)*.15,last=f.blade;
+        f.blade={x:f.from.x+(p.x-f.from.x)*t-(p.y-f.from.y)*bend,y:f.from.y+(p.y-f.from.y)*t+(p.x-f.from.x)*bend};
+        if(dist(last,f.blade)<=128)this.greatswordFlightHit(f,last,this.greatswordEnd(last,f.blade),1.9);
+        if(t>=1){
+          this.thrownGreatsword=undefined;
+          p.mp=Math.min(p.maxMp,p.mp+5);
+          this.spark(p.x,p.y,9,'#ffdf80',95,.28);
+          this.emit('sound',{name:'swordRecall'});
+        }
+        return;
+      }
+      if(f.phase==='outbound'){
+        const last=f.blade;
+        f.flight=Math.min(1,f.flight+dt/greatsword.throwTime);
+        f.blade=lerpPoint(f.from,f,f.flight);
+        this.greatswordFlightHit(f,last,f.blade,1.1);
+        if(f.flight<1)return;
+        f.phase='anchored';f.tick=0;f.hitIds.clear();
+        this.areaDamage(f.x,f.y,70,f.power*2.25,110,true);
+        if(f.burst)this.areaDamage(f.x,f.y,108,f.power*1.25,100,false);
+        this.effect('huyenkha-anchor-impact',f.x,f.y,'#ffe7a3',f.burst?108:70,.5);
+        this.emit('sound',{name:'steel'});
+      }
+      if(dist(f,p)>swordLinkRange){f.linked=false;f.tick=0;return}
+      f.tick-=dt;
+      if(f.tick>0)return;
+      f.tick=.42;
+      const end=this.greatswordEnd(p,f);
+      f.linked=dist(end,f)<2;
+      if(f.linked)for(const e of this.world.enemies)if(e.alive&&segment(e,p,f)<18*(p.areaMultiplier||1)+e.r){
+        this.mythicHit(e,f.power*.43,'light',false);
+        if(e.alive)e.slow=Math.max(e.slow||0,.55);
+      }
+    }
+    strikeGreatswordRift(rift,collapse){
+      const {points,width,power}=rift;
+      const path=target=>{
+        const first=nearest(target,points[0],points[1]);
+        if(points.length===2)return first;
+        const second=nearest(target,points[1],points[2]);
+        return dist(target,first)<dist(target,second)?first:second;
+      };
+      const damage=power*(collapse?2.6:5.2),radius=width*(collapse?1.2:1);
+      for(const e of this.world.enemies){
+        if(!e.alive)continue;
+        const at=path(e);
+        if(dist(e,at)>radius+e.r||dist(this.greatswordEnd(at,e),e)>2)continue;
+        if(collapse&&!root.DTCombat?.boss(e)&&e.type!=='boss'&&!e.sagaBoss){
+          this.moveEntity(e,(at.x-e.x)*.65,(at.y-e.y)*.65);
+          e.stunned=Math.max(e.stunned||0,.48);
+        }
+        this.mythicHit(e,damage,'light',false);
+      }
+      this.hitTrials?.(n=>dist(n,path(n))<radius+n.r,damage,'light',points[0]);
+      this.shake=Math.max(this.shake,collapse?6:9);
+      this.emit('sound',{name:'steel'});
+    }
+    releaseGreatsword(c){
+      const p=this.player;
+      if(c.key==='q'){
+        const origin={x:p.x,y:p.y};
+        const end=this.greatswordEnd(origin,forward(origin,c.angle,greatsword.throwRange));
+        this.thrownGreatsword={...end,power:p.damage*c.power,phase:'outbound',flight:0,from:origin,blade:origin,
+          age:0,tick:0,angle:c.angle,burst:this.specializations?.q==='burst',hitIds:new Set(),strike:this.postureStrike};
+      }else if(c.key==='e'){
+        p.shield=Math.max(p.shield,Math.min(130,p.shield+38*c.power));
+        this.addField('greatsword-ward',p.x,p.y,{life:4,r:46,power:p.damage*c.power,pulses:0});
+        this.effect('ring',p.x,p.y,'#fff0d2',75,.48);
+      }else{
+        const scale=p.areaMultiplier||1,origin={x:p.x,y:p.y};
+        const end=forward(origin,c.angle,445*scale),anchor=this.greatswordAnchor();
+        const points=[origin];
+        if(anchor?.phase==='anchored'&&dist(origin,anchor)>20&&dist(origin,anchor)<=greatsword.throwRange+1&&dist(this.greatswordEnd(origin,anchor),anchor)<2){
+          points.push({x:anchor.x,y:anchor.y});
+        }
+        points.push(this.greatswordEnd(points.at(-1),end));
+        const rift={points,width:80*scale,power:p.damage*c.power,closed:false};
+        if(p.ultIntro)p.ultIntro.rift=rift;
+        this.strikeGreatswordRift(rift,false);
+      }
+    }
+    greatswordWardHit(){
+      const ward=this.mythicFields.find(f=>f.kind==='greatsword-ward'&&f.life>0&&!f.spent);
+      if(!ward)return;
+      const p=this.player;
+      ward.spent=true;p.mp=Math.min(p.maxMp,p.mp+16);
+      this.effect('huyenkha-ward-burst',p.x,p.y,'#fff0d2',80,.53);
+    }
     shoot(x,y,a,speed,damage,color,opts={}){super.shoot(x,y,a,speed,damage,color,opts);const b=this.projectiles[this.projectiles.length-1];if(b)Object.assign(b,{signature:!!opts.signature,returning:!!opts.returning,age:0,sourceSkill:opts.sourceSkill||'',echo:!!opts.echo,quynhMarks:opts.quynhMarks||0,quynhThird:opts.quynhThird||0,quynhEmpowered:!!opts.quynhEmpowered,quynhBurst:!!opts.quynhBurst,aitLocks:opts.aitLocks||0,aitThird:opts.aitThird||0,aitEmpowered:!!opts.aitEmpowered,aitBurst:!!opts.aitBurst})}
     fire(){
-      const p=this.player;if(this.paused||this.dead||p.ultIntro||p.cd.fire>0||p.dashTime>0||p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.release+.12)return false;
+      const p=this.player;if(this.paused||this.dead||p.ultIntro||p.cd.fire>0||p.dashTime>0||p.action&&p.action.key!=='attack'&&(this.hero.id==='huyenkha'||p.action.elapsed<p.action.release+.12))return false;
       const id=this.hero.id,s=this.passiveState,scale=1+(this.skillRanks.passive||0)*.035;
       p.cd.fire=p.fireRate*(p.overclock>0?.72:1);this.tutorial.shots++;p.recoil=.12;s.attackCount++;
       if(!p.action||p.action.key==='attack')this.beginAction('attack',p.facing,this.isElemental?this.element.id:undefined);
@@ -80,13 +341,13 @@
       else if(id==='quanle'){root.DTShadow.primary(this,p.damage*scale)}
       else if(id==='quynhkun'){root.DTQuynhKun.primary(this,p.damage*scale)}
       else if(id==='ait01'){root.DTAit01.primary(this,p.damage*scale)}
+      else if(id==='huyenkha'){this.greatswordAttack(scale)}
       else if(id==='kiet'){
         this.lineHit(p,{x:p.x+Math.cos(p.facing)*135,y:p.y+Math.sin(p.facing)*135},24,p.damage*1.3*scale,'lightning',true);
         this.effect('mythic-spear',p.x,p.y,this.signature.color,135,.21,{angle:p.facing});s.thunder=Math.min(5,s.thunder+1);
         this.shoot(p.x,p.y,p.facing,590,p.damage*.45,this.signature.color,{r:4,life:.38,pierce:1,signature:true});
       }else{
-        const empowered=id==='linh'&&s.wind>=8;if(empowered)s.wind=0;
-        this.shoot(p.x,p.y,p.facing,id==='linh'?980:id==='hoavi'?860:650,p.damage*scale*(empowered?1.8:1),this.signature.color,{kind:id==='linh'?'arrow':id==='hoavi'?'code':'orb',pierce:(id==='linh'?1:0)+(empowered?4:0),r:id==='an'?6:4,life:1.15,signature:true,sourceSkill:empowered?'wind-mark':''});
+        this.shoot(p.x,p.y,p.facing,id==='hoavi'?860:650,p.damage*scale,this.signature.color,{kind:id==='hoavi'?'code':'orb',r:id==='an'?6:4,life:1.15,signature:true});
       }
       }
       root.DTCombat?.afterFire(this,counter);root.DTSynergy?.afterAttack(this);
@@ -97,6 +358,7 @@
     skill(key){
       if(!['q','e','r'].includes(key)||this.paused||this.dead||this.player.ultIntro)return false;const p=this.player;
       if(p.action&&p.action.key!=='attack'&&p.action.elapsed<p.action.duration)return false;
+      if(key==='q'&&this.thrownGreatsword)return this.canRecastQ()&&this.recallGreatsword();
       if(this.hero.id==='hoavi'&&key==='e'&&this.checkpoint){
         const c=this.checkpoint;this.checkpoint=null;const spot=this.elementSafeSpot(c.x,c.y);if(!spot)return false;
         this.effect('choreo-pixel-blink',p.x,p.y,'#1fc8db',20,.5,{hero:'hoavi',tx:spot.x,ty:spot.y,angle:p.facing});this.lineHit(p,spot,46,p.damage*2,'light',true,{hero:'hoavi',key:'blink'});
@@ -108,7 +370,7 @@
       const shards=key==='q'&&p.relics.cinderella?(this.relicCounters.cinderella||0):0,empowered=shards>0;if(empowered){this.relicCounters.cinderella=0;for(let i=0;i<shards*4;i++)this.shoot(p.x,p.y,i*TAU/(shards*4),650,p.damage*.5,'#cdefff',{sourceSkill:'q',pierce:1,r:3})}
       const pixelOrigin=this.hero.id==='hoavi'&&key==='q'?{x:p.x,y:p.y}:undefined;
       const cast={type:'cast',quynhEmpowered:this.hero.id==='quynhkun'&&root.DTQuynhKun.empower(this,key),aitEmpowered:this.hero.id==='ait01'&&root.DTAit01.empower(this,key),delay:windup,key,angle:a,target,origin:pixelOrigin,element:this.isElemental?this.element.id:undefined,power:(1+.18*this.skillRanks[key])*(1+shards*.3)};
-      if(key==='r'&&!this.isElemental){p.ultIntro={elapsed:0,duration:4.5,pulse:0,cast};Object.assign(p.action,{duration:4.5,release:4.5,windup:4.5});p.cast=4.5;p.invulnerable=Math.max(p.invulnerable,4.8);p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
+      if(key==='r'&&!this.isElemental){const duration=this.ultimateDuration();p.ultIntro={elapsed:0,duration,pulse:0,released:false,cast};p.invulnerable=Math.max(p.invulnerable,duration+.3);p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       else if(windup===0)this.releaseCast(cast);else this.castQueue.push(cast);
       if(pixelOrigin&&p.code>=4)this.effect('choreo-code-wait',p.x,p.y,'#1fc8db',64,windup+.35,{hero:'hoavi',angle:a});
       this.tutorial.skills++;if(key!=='r')this.onRelicCast(key,cost,target);this.emit('sound',{name:key==='r'?'ultimate':'skill'});if(key!=='r')this.effect('mythic-rune',p.x,p.y,this.hero.color,48,windup+.1,{key,angle:a});return true;
@@ -138,7 +400,7 @@
       if(element==='fire'){e.burn=3;e.burnTick=0}if(element==='ice'){e.slow=2;e.frozen=Math.max(e.frozen||0,.65)}if(element==='nature'){e.rooted=e.type==='boss'||e.sagaBoss?.3:1.25;e.poison=3;e.poisonPower=p.damage*.17}if(element==='lightning')e.slow=Math.max(e.slow||0,1);
       if(!this.relicCast&&charge&&p.relics.hermes&&this.readyRelic('hermes',.8)){p.cd.dash=Math.max(0,p.cd.dash-.35);p.swiftTime=1}
     }
-    releaseCast(c){if(this.hero.id==='ait01')return root.DTAit01.release(this,c);if(this.hero.id==='quynhkun')return root.DTQuynhKun.release(this,c);if(this.hero.id==='quanle')return root.DTShadow.release(this,c);
+    releaseCast(c){if(this.hero.id==='huyenkha')return this.releaseGreatsword(c);if(this.hero.id==='ait01')return root.DTAit01.release(this,c);if(this.hero.id==='quynhkun')return root.DTQuynhKun.release(this,c);if(this.hero.id==='quanle')return root.DTShadow.release(this,c);
       const p=this.player,id=this.hero.id,key=c.key,a=c.angle,power=p.damage*c.power,s=this.passiveState,t=c.target,charge=key!=='r',origin={x:p.x,y:p.y};
       if(id==='thienvu'){
         this.castElement(c.element,key,p,c.power,charge,t);
@@ -155,11 +417,6 @@
           const end={x:p.x+Math.cos(a)*620,y:p.y+Math.sin(a)*620};for(let i=0;i<8;i++)this.castQueue.push({type:'eruption',delay:i*.1,x:p.x+Math.cos(a)*i*78,y:p.y+Math.sin(a)*i*78,r:85,power:power*2.5,element:'fire'});
           for(const f of this.mythicFields.filter(f=>f.kind==='lantern')){this.lineHit(f,end,30,power*3,'fire',false);f.life=Math.max(f.life,6)}this.effect('mythic-ember',p.x,p.y,'#ffc46e',620,1,{angle:a,tx:end.x,ty:end.y});p.invulnerable=Math.max(.75,p.invulnerable);
         }
-      }
-      if(id==='linh'){
-        if(key==='q'){const end={x:p.x+Math.cos(a)*760,y:p.y+Math.sin(a)*760};for(const e of this.world.enemies.filter(e=>e.alive&&e.trucMark>0&&segment(e,p,end)<25+e.r)){const other=this.world.enemies.filter(x=>x.alive&&x.id!==e.id&&dist(x,e)<290).sort((x,y)=>dist(x,e)-dist(y,e))[0];if(other)this.lineHit(e,other,16,power*2,'nature',true);e.trucMark=0}this.lineHit(p,end,19,power*4.5,'wind',true)}
-        if(key==='e'){this.moveEntity(p,-Math.cos(a)*125,-Math.sin(a)*125);p.invulnerable=Math.max(.35,p.invulnerable);this.addField('trap',origin.x,origin.y,{r:115,life:8,power:power*2.4,element:'nature'});this.effect('dashwake',origin.x,origin.y,this.hero.color,100,.4,{angle:a+Math.PI})}
-        if(key==='r'){for(let i=0;i<6+this.skillRanks.r;i++)this.castQueue.push({type:'arrow-rain',delay:i*.19,power:power*2.6,target:{...t}});p.invulnerable=Math.max(.9,p.invulnerable);this.effect('mythic-orbit',p.x,p.y,'#b9f1a2',140,1,{angle:a})}
       }
       if(id==='kiet'){
         if(key==='q'){const full=s.thunder>=5;if(full){s.thunder=0;this.moveEntity(p,Math.cos(a)*210,Math.sin(a)*210);p.mp=Math.min(p.maxMp,p.mp+12);p.shield=Math.min(110,p.shield+20+10*this.skillRanks.passive)}this.lineHit(origin,{x:p.x+Math.cos(a)*255,y:p.y+Math.sin(a)*255},full?42:25,power*(full?5:3.7),'lightning',true);if(full){this.areaDamage(p.x,p.y,110,power*2,160,true);this.effect('bolt',p.x,p.y,'#c3cdff',85,.6)}this.reactEnvironment?.('earth',p.x,p.y,135);this.effect('mythic-spear',origin.x,origin.y,'#c6d2ff',full?440:260,.5,{angle:a})}
@@ -202,6 +459,7 @@
       if(eligible&&this.hero.id==='ait01'&&!(this.aitHelmetCd>0)){amount*=.7-.05*(this.skillRanks.passive||0);this.aitHelmetCd=8}
       if(eligible&&p.relics.cuoi&&!this.usedRelics.cuoi&&amount*(1-p.armor)>=p.hp+p.shield){this.usedRelics.cuoi=true;p.hp=Math.max(p.hp,p.maxHp*.35);p.invulnerable=2;this.effect('mythic-rune',p.x,p.y,'#b8e99e',100,1);this.emit('toast',{text:'Lá Đa Chú Cuội giữ lại ngọn đèn! Đã dùng lần hồi sinh của hành trình.',reward:true});return}
       super.damagePlayer(amount);
+      if(this.hero.id==='huyenkha'&&p.shield<shield&&!this.dead)this.greatswordWardHit();
       if(p.hp<hp||p.shield<shield){this.passiveState.wind=Math.max(0,this.passiveState.wind-2);if(this.hero.id==='kiet')this.passiveState.thunder=Math.min(5,this.passiveState.thunder+1);if(p.relics.kimquy&&this.readyRelic('kimquy',12)){p.shield=Math.min(110,p.shield+28);const e=this.world.enemies.filter(e=>e.alive&&dist(e,p)<330).sort((a,b)=>dist(a,p)-dist(b,p))[0];if(e){this.damageEnemy(e,p.damage*1.8,false);this.effect('lightning',p.x,p.y,'#eddb98',0,.3,{tx:e.x,ty:e.y})}}}
       if(this.dead)this.cancelActions();
     }
@@ -248,6 +506,16 @@
         if(f.strike)this.postureStrike=f.strike;
         try{
         if(root.DTSynergy?.field(this,f,dt))continue;
+        if(f.kind==='greatsword-ward'){
+          f.x=p.x;f.y=p.y;
+          if(f.life>0&&p.action?.key==='e'&&p.action.elapsed+1e-9>=chargePulses[f.pulses]){
+            f.pulses++;
+            this.areaDamage(p.x,p.y,108,f.power*.85,80,true);
+            this.effect('huyenkha-electric-ring',p.x,p.y,'#92eaff',108*(p.areaMultiplier||1),.34,{pulse:f.pulses});
+            this.emit('sound',{name:'skill'});
+          }
+          continue;
+        }
         if(f.kind==='signature-ember'){if(f.tick<=0&&f.life>0){f.tick=.32;for(const e of this.world.enemies)if(e.alive&&dist(e,f)<f.r+e.r)this.mythicHit(e,f.power,'fire',false)}continue;}
         if(root.DTAit01?.fields.has(f.kind)){root.DTAit01.updateField(this,f,dt);continue}if(root.DTQuynhKun?.fields.has(f.kind)){root.DTQuynhKun.updateField(this,f,dt);continue}if(f.combat){this.updateCombatField(f,dt,true);continue}if(f.follow){f.x=p.x;f.y=p.y}if(f.kind==='tornado'){f.x+=Math.cos(f.angle)*110*dt;f.y+=Math.sin(f.angle)*110*dt}
         if(f.kind==='lantern'&&dist(p,f)<95)p.hp=Math.min(p.maxHp,p.hp+dt*(1.5+this.skillRanks.passive*.5));
@@ -269,6 +537,7 @@
     updateCastQueue(dt){const due=[];for(const c of this.castQueue){c.delay-=dt;if(c.delay<=0)due.push(c)}this.castQueue=this.castQueue.filter(c=>c.delay>0);
       for(const c of due){if(this.dead)break;const previousStrike=this.postureStrike;if(c.strike)this.postureStrike=c.strike;try{
         if(c.type==='cast')this.releaseCast(c);
+        else if(c.type==='greatsword-attack')this.greatswordAttackHit(c);
         else if(c.type==='code-echo'){const end=this.lineHit(c,{x:c.tx,y:c.ty},23,c.power,'light',false,{hero:'hoavi',key:'q',echo:true});this.effects=this.effects.filter(e=>e.type!=='choreo-code-wait');this.effect('choreo-code-echo',c.x,c.y,'#1fc8db',650,.35,{hero:'hoavi',angle:Math.atan2(c.ty-c.y,c.tx-c.x),tx:end.x,ty:end.y})}
         else if(c.type==='echo'){const e=this.world.enemies.filter(e=>e.alive&&dist(e,c)<570).sort((a,b)=>dist(a,c)-dist(b,c))[0];if(e){this.shoot(c.x,c.y,Math.atan2(e.y-c.y,e.x-c.x),820,c.power,'#d8e8ff',{charge:false,echo:true});this.effect('afterimage',c.x,c.y,'#d8e8ff',35,.35,{hero:this.hero.id,facing:0})}}
         else if(c.type==='arrow-rain'||c.type==='thunder-hunt'){const e=this.world.enemies.filter(e=>e.alive&&dist(e,this.player)<800).sort((a,b)=>(b.trucMark>0)-(a.trucMark>0)||dist(a,c.target)-dist(b,c.target))[0],t=e||c.target;if(e)this.mythicHit(e,c.power,c.element||'nature',false);this.effect(c.type==='arrow-rain'?'mythic-spear':'bolt',t.x,t.y,c.type==='arrow-rain'?'#b5edaa':'#bec5ff',95,.5,{angle:Math.PI/2,tx:t.x,ty:t.y})}
@@ -279,20 +548,19 @@
       }
     }
     update(dt){
-      if(this.paused||this.dead||!this.started)return;dt=clamp(dt,0,.04);if(!dt)return;const touch=root.DTTouch,p=this.player,x=p.x,y=p.y,t=this.time,dx=touch?.active?touch.move.x:this.input.dx,dy=touch?.active?touch.move.y:this.input.dy,speed=p.speed;
+      if(this.paused||this.dead||!this.started)return;dt=clamp(dt,0,.04);if(!dt)return;const p=this.player,x=p.x,y=p.y,t=this.time,dx=this.input.dx,dy=this.input.dy,speed=p.speed;
       const blend=1-Math.exp(-dt*42);this.motion.vx=dx*this.motion.vx<=0||!dx?dx:this.motion.vx+(dx-this.motion.vx)*blend;this.motion.vy=dy*this.motion.vy<=0||!dy?dy:this.motion.vy+(dy-this.motion.vy)*blend;if(Math.abs(this.motion.vx)<.002)this.motion.vx=0;if(Math.abs(this.motion.vy)<.002)this.motion.vy=0;this.input.dx=this.motion.vx;this.input.dy=this.motion.vy;
       if(p.talismanWard>0||p.inventoryOverdrive>0)p.speed*=1.2;
-      if(p.swiftTime>0)p.speed*=p.relics.tam?1.25:1.12;if(p.ultIntro){p.speed*=.35;p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
+      if(p.swiftTime>0)p.speed*=p.relics.tam?1.25:1.12;if(p.ultIntro){p.speed*=this.hero.id==='huyenkha'?.85:.35;p.frostSlow=0;p.rooted=0;p.frozen=0;p.stunned=0}
       try{super.update(dt)}finally{this.input.dx=dx;this.input.dy=dy;p.speed=speed}if(t===this.time)return;
       if(p.action&&p.ultIntro?.mode!=='split'){p.action.elapsed+=dt;if(p.action.elapsed>=p.action.duration)p.action=null}
       for(const id in this.relicCooldowns)this.relicCooldowns[id]=Math.max(0,this.relicCooldowns[id]-dt);
       p.swiftTime=Math.max(0,(p.swiftTime||0)-dt);const moved=Math.hypot(p.x-x,p.y-y),s=this.passiveState;
-      if(this.hero.id==='linh'){s.distance+=moved;const step=36-this.skillRanks.passive*5;while(s.distance>=step){s.distance-=step;s.wind=Math.min(8,s.wind+1)}}
       if(this.hero.id==='an'&&this.time-s.lastHit>6)s.embers=Math.max(0,s.embers-dt*.8);
       if(s.formTime>0){s.formTime-=dt;if(s.formTime<=0)s.forms=[]}
       if(p.relics.sontinh&&!this.relicCast){p.stillTime=moved<.15?(p.stillTime||0)+dt:0;if(p.stillTime>.8&&!(this.relicCooldowns.sontinh>0))p.stoneGuard=true}
       if(this.checkpoint){this.checkpoint.life-=dt;if(this.checkpoint.life<=0)this.checkpoint=null}
-      this.updateCastQueue(dt);this.updateFields(dt);if(this.hero.id==='quynhkun')root.DTQuynhKun.update(this,dt);if(this.hero.id==='ait01')root.DTAit01.update(this,dt);this.updateUltIntro(dt);this.syncUltimate();this.weaponDrops=[];
+      this.updateCastQueue(dt);this.updateFields(dt);this.updateGreatsword(dt);if(this.hero.id==='quynhkun')root.DTQuynhKun.update(this,dt);if(this.hero.id==='ait01')root.DTAit01.update(this,dt);this.updateUltIntro(dt);this.syncUltimate();this.weaponDrops=[];
     }
     transformElement(id){const ok=super.transformElement(id);if(ok&&this.signature){this.signature.color=this.element.color}return ok}
     updateTutorial(){const before=this.tutorial.step;super.updateTutorial();if(before<5&&this.tutorialDone){this.events=this.events.filter(e=>!(e.type==='toast'&&/TAB/.test(e.text)));this.emit('toast',{text:'Đã sẵn sàng! K học kỹ năng, I xem nội tại và cổ vật.'})}}
@@ -300,9 +568,16 @@
     cancelActions(){this.player.talismanWard=0;this.quynhRecastUntil=0;this.player.inventoryOverdrive=0;this.aitRecastUntil=0;this.elementSummons=[];this.elementActions=[];this.elementFields=[];this.player.ultIntro=null;this.player.hoverboard=0;for(const c of this.elementClones||[])c.action=null;this.castQueue=[];this.mythicFields=[];this.checkpoint=null;this.player.action=null;this.motion={vx:0,vy:0}}
     travelTo(id){const ok=super.travelTo(id);if(ok)this.cancelActions();return ok}
     respawn(){super.respawn();this.cancelActions();this.passiveState.embers=0;this.passiveState.thunder=0}
-    serialize(){const data=super.serialize();if(this.hero.id==='quynhkun')data.quynhkun=root.DTQuynhKun.save(this);if(this.hero.id==='ait01')data.ait01=root.DTAit01.save(this);data.ascensionVersion=5;data.ascension={ultimate:this.player.ultIntro&&this.player.ultIntro.mode!=='split'?{elapsed:this.player.ultIntro.elapsed,angle:this.player.ultIntro.cast.angle,target:{...this.player.ultIntro.cast.target}}:null,elementCast:this.isElemental?this.castQueue.find(c=>c.type==='cast'&&c.key==='r')||null:null,points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;delete data.player.ultIntro;data.expansion.weaponDrops=[];return data}
-    static restore(data){const g=Base.restore(data);Object.setPrototypeOf(g,AscensionGame.prototype);g.initAscension(data.ascensionVersion===5?data.ascension:null);if(g.hero.id==='quynhkun')root.DTQuynhKun.restore(g,data.quynhkun);if(g.hero.id==='ait01')root.DTAit01.restore(g,data.ait01);if(data.ascensionVersion!==5){g.skillPoints=3+Math.max(0,g.player.level-1)+(data.player?.weapons||[]).reduce((n,w)=>n+Math.max(0,(Number(w.level)||1)-1),0);g.emit('toast',{text:'Bản lưu 0.5: trang bị cũ đổi thành '+g.skillPoints+' điểm kỹ năng. K để phát triển bảo khí riêng.',reward:true})}return g}
+    serialize(){const data=super.serialize();if(this.hero.id==='quynhkun')data.quynhkun=root.DTQuynhKun.save(this);if(this.hero.id==='ait01')data.ait01=root.DTAit01.save(this);data.ascensionVersion=5;data.ascension={ultimate:this.player.ultIntro&&this.player.ultIntro.mode!=='split'?{elapsed:this.player.ultIntro.elapsed,angle:this.player.ultIntro.cast.angle,target:{...this.player.ultIntro.cast.target},released:this.player.ultIntro.released===true,rift:this.player.ultIntro.rift}:null,elementCast:this.isElemental?this.castQueue.find(c=>c.type==='cast'&&c.key==='r')||null:null,points:this.skillPoints,ranks:{...this.skillRanks},usedRelics:{...this.usedRelics},relicCooldowns:{...this.relicCooldowns},relicCounters:{...this.relicCounters},interactedIds:[...this.interactedIds]};
+      const sword=this.thrownGreatsword;
+      if(sword){
+        const {x,y,angle,power,phase,flight,from,blade,burst,hitIds}=sword;
+        data.ascension.greatswordAnchor={x,y,angle,power,phase,flight,from:{...from},blade:{...blade},burst,hitIds:[...hitIds].slice(0,240)};
+      }
+      delete data.player.weapons;delete data.player.weaponSlot;delete data.player.action;delete data.player.ultIntro;data.expansion.weaponDrops=[];return data}
+    static restore(data){data=migrateGreatswordSave(data);const g=Base.restore(data);Object.setPrototypeOf(g,AscensionGame.prototype);g.initAscension(data.ascensionVersion===5?data.ascension:null);if(g.hero.id==='quynhkun')root.DTQuynhKun.restore(g,data.quynhkun);if(g.hero.id==='ait01')root.DTAit01.restore(g,data.ait01);if(data.ascensionVersion!==5){g.skillPoints=3+Math.max(0,g.player.level-1)+(data.player?.weapons||[]).reduce((n,w)=>n+Math.max(0,(Number(w.level)||1)-1),0);g.emit('toast',{text:'Bản lưu 0.5: trang bị cũ đổi thành '+g.skillPoints+' điểm kỹ năng. K để phát triển bảo khí riêng.',reward:true})}return g}
   }
   root.DTSatellitePose=(f,p,i)=>{const inner=i%2===0,a=(f.age||0)*(inner?3.4:-2.6)+i*TAU/(f.count||6);return{x:p.x+Math.cos(a)*(inner?88:132),y:p.y+Math.sin(a)*(inner?62:94),angle:a}};
+  root.DTHuyenKha={...greatsword,migrate:migrateGreatswordSave};
   root.DTAscension={segment,Game:AscensionGame};root.DTGame=AscensionGame;
 })(globalThis);

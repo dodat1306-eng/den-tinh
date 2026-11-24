@@ -34,13 +34,13 @@
     ait01:{name:'Giao Thức Kho Không Gian',desc:'Sáu ô cửa sổ vũ khí bay quanh. Đòn thứ ba bắn Shotgun, đủ khóa mục tiêu phóng Tên Lửa RPG nổ vùng, hồi linh lực, tạo khiên và tích Đạn Hỏa Lực.'},
     quynhkun:{name:'Ngũ Lôi Chu Sa Ấn & Đồng Xu Phát',desc:'Năm nét Chu Sa kích nổ Phù Bạo. Đòn thứ ba và nổ bùa hồi linh lực, tạo khiên và tích Lộc Khí. Đủ sáu tầng cường hóa Q hoặc E.'},
     an:{name:'Ngọn Lửa Bền Bỉ',desc:'Đòn lửa đốt thêm sát thương; thức tỉnh một ấn hồi đầy máu.'},
-    linh:{name:'Nhịp Lá',desc:'Di chuyển liên tục tăng 12% tốc đánh; cung có khả năng xuyên.'},
+    huyenkha:{name:'Khắc Tinh Quang',desc:'Đòn thứ ba trúng địch hồi linh lực và tạo khiên. Né hoàn hảo rồi đánh để tung Tinh Luân Phản Trảm.'},
     quanle:{name:'Chúa Tể Bóng Tối',desc:'Xác quái và cây gãy hóa linh hồn; dùng E gọi bóng thú, Q khoác Hắc Giáp, R tập hợp binh đoàn.'},
     hoavi:{name:'Mã Lệnh',desc:'Mỗi lần đánh trúng tích một Mã Lệnh (tối đa 8). Q tiêu thụ mã để tăng sát thương và rút hồi chiêu; E dựng Firewall, hồi máu và cấp khiên. R Overclock tăng tốc bắn và triển khai drone.'}
   };
   const lore=[
     {id:'bell',x:430,y:1950,title:'Tiếng chuông bị giấu',text:'Chuông đình không mất tiếng. Nó đang đợi một người còn nhớ tên làng.',reward:'wildfire'},
-    {id:'letter',x:1220,y:470,title:'Lá thư trong ống trúc',text:'Linh từng gửi một lời hẹn vào gió. Đốm vẫn nhận ra mùi mực cũ.',reward:'pierce'},
+    {id:'letter',x:1220,y:470,title:'Lá thư trong ống trúc',text:'Một thợ rèn gửi lời hẹn tới người mang ánh vàng. Đốm vẫn nhận ra mùi mực cũ.',reward:'pierce'},
     {id:'lotus-memory',x:3430,y:2420,title:'Người giữ đầm',text:'Một đốm sáng dưới lá sen nhắc HoaVi rằng ký ức cũng có thể được sao lưu.',reward:'vampire'}
   ];
   root.DTContent={version:'0.2.0',weapons,relics,passives,lore,weapon:id=>weapons.find(w=>w.id===id)||weapons[0],relic:id=>relics.find(r=>r.id===id),rarity:{common:'THƯỜNG',rare:'HIẾM',epic:'SỬ THI',legendary:'HUYỀN THOẠI'}};
