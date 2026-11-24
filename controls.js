@@ -4,12 +4,14 @@
   try{window.DTSettings={...defaults,...JSON.parse(localStorage.getItem('den-tinh-settings-v2')||'{}')}}catch(e){window.DTSettings={...defaults}}
   window.DTTouch={active:false,move:{x:0,y:0},aim:{x:1,y:0,fire:false}};
   const touch=window.DTTouch;document.body.appendChild($('touchControls'));
+  const desktopLaunch=new URLSearchParams(location.search).get('input')==='desktop';
+  const coarsePointer=matchMedia('(any-pointer:coarse)'),hoverPointer=matchMedia('(any-hover:hover)');
   const mobile=document.createElement('div');mobile.id='mobileStatus';mobile.className='hidden';mobile.innerHTML='<div><strong id="mobileHero"></strong><button id="mobileInventory" aria-label="Kỹ năng, nội tại và cổ vật">I</button><button id="mobileSettings" aria-label="Cài đặt">⚙</button><button id="mobilePause" aria-label="Tạm dừng">Ⅱ</button><button id="mobileMap" aria-label="Bản đồ">M</button></div><span id="mobileStats"></span><small id="mobileQuest"></small>';document.body.appendChild(mobile);
   const saveSettings=()=>{try{localStorage.setItem('den-tinh-settings-v2',JSON.stringify(DTSettings))}catch(e){}applySettings()};
   function applySettings(){
     document.documentElement.style.setProperty('--ui-scale',Number(DTSettings.ui)||1);
     document.body.classList.toggle('reduced-motion',!!DTSettings.reducedMotion);
-    touch.active=DTSettings.touch==='on'||DTSettings.touch==='auto'&&matchMedia('(any-pointer:coarse)').matches;
+    touch.active=DTSettings.touch==='on'||DTSettings.touch==='auto'&&!desktopLaunch&&coarsePointer.matches&&!hoverPointer.matches;
     document.body.classList.toggle('touch-mode',touch.active);
     if(!touch.active){touch.move.x=touch.move.y=0;touch.aim.fire=false}
   }
@@ -31,7 +33,10 @@
     const end=e=>{if(e.pointerId!==pointer)return;pointer=null;target.x=0;target.y=0;if(isAim)target.fire=false;knob.style.transform='translate(0,0)'};node.onpointerup=end;node.onpointercancel=end;node.onlostpointercapture=end;
   }
   stick($('moveStick'),touch.move,false);stick($('aimStick'),touch.aim,true);
-  addEventListener('blur',()=>{touch.move.x=touch.move.y=0;touch.aim.fire=false});addEventListener('resize',applySettings);applySettings();
+  addEventListener('blur',()=>{touch.move.x=touch.move.y=0;touch.aim.fire=false});
+  coarsePointer.addEventListener?.('change',applySettings);
+  hoverPointer.addEventListener?.('change',applySettings);
+  applySettings();
   const observer=new MutationObserver(()=>{if($('modal').classList.contains('hidden'))return;const buttons=$('modalContent').querySelectorAll('button,input,select');if(buttons.length&&document.activeElement===document.body)buttons[0].focus()});observer.observe($('modalContent'),{childList:true});
   document.addEventListener('keydown',e=>{if(e.key!=='Tab'||$('modal').classList.contains('hidden'))return;const focus=[...$('modalContent').querySelectorAll('button:not(:disabled),input,select')];if(!focus.length)return;const idx=focus.indexOf(document.activeElement),next=e.shiftKey?(idx<=0?focus.length-1:idx-1):(idx+1)%focus.length;e.preventDefault();focus[next].focus()},true);
   setInterval(()=>{

@@ -6,10 +6,10 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
 (async()=>{
  const server=createGameServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));
  const base=process.env.DENTINH_BROWSER_URL||'http://127.0.0.1:'+server.address().port+'/',browser=await chromium.launch({channel:'chrome',headless:true});
- async function open(context){
+ async function open(context,url=base){
   const p=await context.newPage();p.on('pageerror',e=>errors.push(e.stack));
   await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));
-  await p.goto(base);
+  await p.goto(url);
   await p.waitForFunction(()=>window.DTQuanLePixel?.ready()&&DTWorldPixel.ready()&&
     ['monarchMoves','monarchUlt','monarchPortrait','monarchKeyart'].every(key=>DTQuanLePixel[key].naturalWidth>0));
   assert(!/Kiệt|Lôi Thương/.test(await p.locator('body').innerText()));
@@ -17,7 +17,24 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
   await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.player.crit=0;g.input.aimX=g.player.x+180;g.input.aimY=g.player.y});return p;
  }
  try{
-  const context=await browser.newContext({viewport:{width:1280,height:720}}),p=await open(context);
+  const viewport={width:1280,height:720};
+  const context=await browser.newContext({viewport,hasTouch:true});
+  await context.addInitScript(()=>{
+    const match=window.matchMedia.bind(window);
+    window.matchMedia=query=>{
+      const media=match(query);
+      if(query==='(any-hover:hover)')Object.defineProperty(media,'matches',{value:true});
+      return media;
+    };
+  });
+  const p=await open(context);
+  assert.equal(await p.evaluate(()=>document.body.classList.contains('touch-mode')),false,'Hybrid PC should use the desktop HUD');
+  const pcUrl=new URL(base);
+  pcUrl.searchParams.set('input','desktop');
+  const pc=await browser.newContext({viewport,hasTouch:true}),pcPage=await open(pc,pcUrl.href);
+  assert.equal(await pcPage.evaluate(()=>document.body.classList.contains('touch-mode')),false,'PC launcher should use the desktop HUD even with coarse pointer detection');
+  await pc.close();
+  pass('Hybrid pointers and the PC launcher keep the desktop HUD');
   const start=await p.evaluate(()=>denTinh.game.player.x);await p.keyboard.down('d');await p.waitForTimeout(260);await p.keyboard.up('d');assert(await p.evaluate(x=>denTinh.game.player.x>x+5,start));pass('Quân Lê menu and real keyboard movement');
   const stats=await p.evaluate(()=>{
    const g=denTinh.game;g.paused=true;g.world.enemies=[];g.world.ensureChunks=()=>{};g.world.collision=()=>false;g.effects=[];g.shadowArmy=[];g.shadowRemains=[];g.player.action=null;g.player.mp=g.player.maxMp;g.player.ult=100;g.player.cd.q=g.player.cd.e=g.player.cd.r=0;

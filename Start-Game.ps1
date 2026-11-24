@@ -47,7 +47,7 @@ $gameBrowsers = @(
   "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe"
 )
 $gameBrowser = $gameBrowsers | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
-$gameUrl = "http://127.0.0.1:$gamePort/"
+$gameUrl = "http://127.0.0.1:$gamePort/?input=desktop"
 if ($gameBrowser) {
   $gameArguments = @(
     "--app=$gameUrl",
