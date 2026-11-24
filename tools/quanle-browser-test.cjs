@@ -36,6 +36,15 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
   await pc.close();
   pass('Hybrid pointers and the PC launcher keep the desktop HUD');
   const start=await p.evaluate(()=>denTinh.game.player.x);await p.keyboard.down('d');await p.waitForTimeout(260);await p.keyboard.up('d');assert(await p.evaluate(x=>denTinh.game.player.x>x+5,start));pass('Quân Lê menu and real keyboard movement');
+  const beforeIme=await p.evaluate(()=>{
+   const x=denTinh.game.player.x;
+   window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyD',key:'Process',isComposing:true}));
+   return x;
+  });
+  await p.waitForFunction(x=>denTinh.game.player.x>x+5,beforeIme,{timeout:2000});
+  await p.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keyup',{code:'KeyD',key:'đ'})));
+  await p.waitForFunction(()=>denTinh.game.input.dx===0,null,{timeout:2000});
+  pass('WASD moves and releases with Vietnamese composition key events');
   const stats=await p.evaluate(()=>{
    const g=denTinh.game;g.paused=true;g.world.enemies=[];g.world.ensureChunks=()=>{};g.world.collision=()=>false;g.effects=[];g.shadowArmy=[];g.shadowRemains=[];g.player.action=null;g.player.mp=g.player.maxMp;g.player.ult=100;g.player.cd.q=g.player.cd.e=g.player.cd.r=0;
    const c=document.createElement('canvas');c.width=1536;c.height=800;const x=c.getContext('2d');let draws=0;const native=x.drawImage;x.drawImage=function(...a){if(this.imageSmoothingEnabled||a.slice(1).some(v=>!Number.isInteger(v)))throw Error('non-pixel draw');draws++;return native.apply(this,a)};x.imageSmoothingEnabled=false;

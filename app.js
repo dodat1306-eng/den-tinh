@@ -170,8 +170,10 @@
     }
   }
   $('startButton').onclick=()=>begin(false);$('continueButton').onclick=()=>begin(true);$('helpButton').onclick=help;$('creditsButton').onclick=credits;$('pauseButton').onclick=pause;$('soundButton').onclick=()=>audio.toggle();$('mapButton').onclick=toggleMap;$('closeMap').onclick=toggleMap;$('fullscreenButton').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.()};
+  const movementKeys={KeyW:'w',KeyA:'a',KeyS:'s',KeyD:'d',ArrowUp:'arrowup',ArrowLeft:'arrowleft',ArrowDown:'arrowdown',ArrowRight:'arrowright'};
+  const inputKey=e=>movementKeys[e.code]||e.key.toLowerCase();
   addEventListener('keydown',e=>{
-    const key=e.key.toLowerCase(),playing=game.started&&!game.paused&&!game.dead;
+    const key=inputKey(e),playing=game.started&&!game.paused&&!game.dead;
     if(playing&&[' ','arrowup','arrowdown','arrowleft','arrowright'].includes(key))e.preventDefault();
     if(e.repeat){if(playing)keys[key]=true;return}
     if(key==='escape'){if(mapOpen){toggleMap();return}if(modalType){if(!['talent','death','victory'].includes(modalType))closeAndContinue();return}pause();return}
@@ -179,7 +181,7 @@
     if(key==='m'){toggleMap();return}if(modalType||mapOpen)return;keys[key]=true;
     if(key==='k')window.DTAscensionUI?.showSkills();if(key===' ')game.dash();if(['q','e','r'].includes(key))game.skill(key);if(key==='h')game.heal();if(key==='f'){game.interact();handleEvents();save()}if(key==='i')inventory();
   });
-  addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+  addEventListener('keyup',e=>{keys[inputKey(e)]=false});
   $('gameCanvas').addEventListener('mousemove',e=>{const r=$('stage').getBoundingClientRect();mouse.x=(e.clientX-r.left)*1280/r.width;mouse.y=(e.clientY-r.top)*720/r.height});
   $('gameCanvas').addEventListener('mousedown',e=>{if(e.button===0&&!game.paused){mouse.down=true;audio.init()}});addEventListener('mouseup',()=>mouse.down=false);$('gameCanvas').addEventListener('contextmenu',e=>e.preventDefault());
   addEventListener('blur',()=>{keys={};mouse.down=false;if(game.started&&!game.paused&&!game.dead)pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden){save();keys={};mouse.down=false;if(game.started&&!game.paused&&!game.dead)pause()}});addEventListener('pagehide',save);
