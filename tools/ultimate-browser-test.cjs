@@ -9,7 +9,7 @@ const pass=(name,data={})=>{results.push({name,pass:true,...data});console.log('
  async function open(context,id){
   const p=await context.newPage();p.on('pageerror',e=>errors.push(e.stack));p.on('response',r=>{if(r.status()>=400&&['script','image','font','stylesheet'].includes(r.request().resourceType()))errors.push(r.status()+' '+r.url())});
   await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));
-  await p.goto(url);await p.waitForFunction(()=>window.DTUltimateIntro&&window.DTQuanLePixel?.ready()&&DTWorldPixel.ready()&&DTThienVuPixel.ready()&&DTHoaViPixel?.ready());
+  await p.goto(url);await p.waitForFunction(()=>window.DTUltimateIntro&&window.DTQuanLePixel?.ready()&&window.DTQuanLePixel?.beastsReady()&&DTWorldPixel.ready()&&DTThienVuPixel.ready()&&DTHoaViPixel?.ready());
   const names={an:'An',huyenkha:'Huyền Kha',quanle:'Quân Lê',hoavi:'HoaVi',thienvu:'Thiên Vũ'};
   await p.getByRole('button',{name:new RegExp('^Chọn '+names[id]+',')}).click();await p.locator('#startButton').click();await p.locator('#dialogueNext').click();
   await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.world.ensureChunks=()=>{};g.world.collision=()=>false;g.player.crit=0;g.input.aimX=g.player.x+180;g.input.aimY=g.player.y;g.paused=true});return p;

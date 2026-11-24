@@ -60,6 +60,20 @@ test('Quan Le uses combo segments, the ritual timeline and legacy frames on fail
     [art.monarchUlt.naturalWidth,art.monarchMoves.naturalWidth]=widths;
     DTSettings.reducedMotion=false;
   }
+  for(const [idx,id] of art.BEAST_IDS.entries()){
+    const sheet='assets/quanle-beasts-'+(Math.floor(idx/6)+1)+'.png';
+    for(const [state,start,end] of [[{spawnAge:.2},0,28],[{spawnAge:1},28,64],[{spawnAge:1,moving:true},64,112],[{spawnAge:1,action:{elapsed:.3,duration:.6}},112,200]]){
+      const before=imageCalls.length;
+      art.beast({ctx:c,game:{time:.5}},{kind:'shadow_treant',variant:idx>=22?id:null,...(idx<22?{kind:id}:{}),x:120,y:140,hp:50,maxHp:50,...state});
+      const draw=imageCalls.slice(before).find(x=>x.src===sheet);
+      assert(draw,id+' should draw from '+sheet);
+      assert(draw.args.every(Number.isInteger));
+      assert.deepEqual(draw.args.slice(2,4),[88,74]);
+      assert.deepEqual(draw.args.slice(6,8),[176,148]);
+      const cell=draw.args[1]/74*40+draw.args[0]/88-(idx%6)*200;
+      assert(cell>=start&&cell<end,id+' cell '+cell+' out of range');
+    }
+  }
 });
 test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells at unit two for heroes and clones',()=>{
   const c=context();
