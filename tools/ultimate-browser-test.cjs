@@ -51,7 +51,31 @@ const pass=(name,data={})=>{results.push({name,pass:true,...data});console.log('
   }
   {
    const context=await browser.newContext({viewport:{width:1280,height:720}}),p=await open(context,'quanle');
-   const result=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=320;const ctx=c.getContext('2d');let rect,alpha;const draw=ctx.drawImage;ctx.drawImage=function(...v){if(v[0]===DTQuanLePixel.character){rect=v.slice(1,5);alpha=this.globalAlpha}return draw.apply(this,v)};for(const[view,angle]of Object.entries({E:0,S:Math.PI/2,W:Math.PI,N:-Math.PI/2})){for(const action of[null,{key:'attack',angle,elapsed:.1,duration:.24}]){ctx.globalAlpha=.25;DTQuanLePixel.hero(ctx,{x:160,y:240,moveFacing:action?angle+Math.PI:angle,facing:angle+Math.PI,moving:true,action},denTinh.game.hero,.1,false);const clip=DTQuanLeAtlas.clips[view+'/'+(action?'attack':'run')];if(!clip.cells.some(f=>JSON.stringify([f.x,f.y,f.w,f.h])===JSON.stringify(rect)))throw Error('Facing mismatch '+view);if(alpha!==.25)throw Error('Ghost alpha lost')}}return{directions:4,movementAndAttack:true,ghostAlpha:.25}});
+   await p.waitForFunction(()=>DTQuanLePixel.monarchMoves.naturalWidth>0);
+   const result=await p.evaluate(()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=canvas.height=320;
+    const ctx=canvas.getContext('2d'),draw=ctx.drawImage;
+    let rect,alpha;
+    ctx.drawImage=function(...args){
+     if(args[0]===DTQuanLePixel.monarchMoves){rect=args.slice(1,5);alpha=this.globalAlpha}
+     return draw.apply(this,args);
+    };
+    const angles=[Math.PI/2,0,-Math.PI/2,Math.PI];
+    for(const [view,angle] of angles.entries()){
+     for(const action of [null,{key:'attack',angle,elapsed:.1,duration:.24}]){
+      rect=null;
+      ctx.globalAlpha=.25;
+      DTQuanLePixel.hero(ctx,{x:160,y:240,moveFacing:action?angle+Math.PI:angle,facing:angle+Math.PI,moving:true,action},denTinh.game.hero,.1,false);
+      const [x,y,w,h]=rect||[];
+      const frame=y/128*20+x/152-view*116;
+      const [start,end]=action?[40,64]:[12,24];
+      if(w!==152||h!==128||x%152!==0||y%128!==0||frame<start||frame>=end)throw Error('Facing mismatch '+'SENW'[view]);
+      if(alpha!==.25)throw Error('Ghost alpha lost');
+     }
+    }
+    return{directions:4,movementAndAttack:true,ghostAlpha:.25};
+   });
    pass('Quân Lê follows movement and attack aim in four directions, preserves ghost opacity',result);await context.close();
   }
   for(const viewport of[{width:390,height:844},{width:844,height:390}]){

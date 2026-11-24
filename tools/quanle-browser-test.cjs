@@ -9,7 +9,9 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
  async function open(context){
   const p=await context.newPage();p.on('pageerror',e=>errors.push(e.stack));
   await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));
-  await p.goto(base);await p.waitForFunction(()=>window.DTQuanLePixel?.ready()&&DTWorldPixel.ready());
+  await p.goto(base);
+  await p.waitForFunction(()=>window.DTQuanLePixel?.ready()&&DTWorldPixel.ready()&&
+    ['monarchMoves','monarchUlt','monarchPortrait','monarchKeyart'].every(key=>DTQuanLePixel[key].naturalWidth>0));
   assert(!/Kiệt|Lôi Thương/.test(await p.locator('body').innerText()));
   await p.getByRole('button',{name:/^Chọn Quân Lê,/}).click();await p.locator('#startButton').click();await p.locator('#dialogueNext').click();
   await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.player.crit=0;g.input.aimX=g.player.x+180;g.input.aimY=g.player.y});return p;

@@ -188,16 +188,14 @@
           c.drawImage(root.DTWorldPixel.actors,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
           drawn=true;
         }
-      }else if((id==='quanle'||id==='kiet')&&root.DTQuanLePixel?.ready()){
-        if(root.DTQuanLePixel.portrait?.(c,w,h,bob)){
+      }else if(id==='quanle'||id==='kiet'){
+        const art=root.DTQuanLePixel;
+        drawn=art?.portrait?.(c,w,h,bob)||false;
+        const clip=root.DTQuanLeAtlas?.clips?.['S/idle'];
+        if(!drawn&&clip&&art?.ready()){
+          const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
+          c.drawImage(art.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
           drawn=true;
-        }else{
-          const clip=root.DTQuanLeAtlas?.clips?.['S/idle'];
-          if(clip){
-            const f=clip.cells[calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames];
-            c.drawImage(root.DTQuanLePixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
-            drawn=true;
-          }
         }
       }else if(id==='hoavi'&&root.DTHoaViPixel?.ready()){
         const cells=root.DTHoaViAtlas?.actions?.idle?.directions?.S;

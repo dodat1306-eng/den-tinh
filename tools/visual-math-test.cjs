@@ -24,19 +24,56 @@ for(const f of['world.js','content.js','engine.js','expansion.js','frontier.js',
 const results=[];
 function test(name,fn){try{fn();results.push({name,pass:true});console.log('PASS '+name)}catch(e){results.push({name,pass:false,error:e.stack});console.error('FAIL '+name+' '+e.stack)}}
 const Art=DTAscensionArt;
+test('Quan Le uses combo segments, the ritual timeline and legacy frames on failed loads',()=>{
+  const art=DTQuanLePixel,hero=DTWorld.HEROES.quanle,c=context();
+  const body=state=>{
+    const before=imageCalls.length;
+    art.hero(c,{x:100,y:100,facing:Math.PI/2,...state},hero,-1,false);
+    const draws=imageCalls.slice(before).filter(x=>x.src.startsWith('assets/quanle-')&&!x.src.includes('vfx'));
+    assert.equal(draws.length,1);
+    assert(draws[0].args.every(Number.isInteger));
+    return draws[0];
+  };
+  for(let comboIndex=0;comboIndex<3;comboIndex++){
+    const frame=40+comboIndex*8+4;
+    const draw=body({comboIndex,action:{key:'attack',elapsed:.5,duration:1}});
+    assert.equal(draw.src,'assets/quanle-monarch-moves.png');
+    assert.deepEqual(draw.args.slice(0,4),[frame%20*152,Math.floor(frame/20)*128,152,128]);
+  }
+  const ritual={dashTime:1,ultIntro:{elapsed:4.49,duration:4.5,cast:{key:'r',angle:0}}};
+  assert.equal(body(ritual).src,'assets/quanle-monarch-r.png');
+  assert.deepEqual(body(ritual).args.slice(0,4),[7*152,7*128,152,128]);
+  const expired={action:{key:'r',elapsed:1,duration:1}};
+  assert.equal(body(expired).src,'assets/quanle-monarch-moves.png');
+  assert.deepEqual(body(expired).args.slice(0,4),[0,0,152,128]);
+  const widths=[art.monarchUlt.naturalWidth,art.monarchMoves.naturalWidth];
+  try{
+    DTSettings.reducedMotion=true;
+    assert.deepEqual(body(ritual).args.slice(0,4),[0,0,152,128]);
+    art.monarchUlt.naturalWidth=0;
+    assert(art.ready());
+    assert.equal(body(ritual).src,'assets/quanle-pixel-v1.png');
+    assert.equal(body({}).src,'assets/quanle-monarch-moves.png');
+    art.monarchMoves.naturalWidth=0;
+    assert.equal(body({}).src,'assets/quanle-pixel-v1.png');
+  }finally{
+    [art.monarchUlt.naturalWidth,art.monarchMoves.naturalWidth]=widths;
+    DTSettings.reducedMotion=false;
+  }
+});
 test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells at unit two for heroes and clones',()=>{
   const c=context();
   for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning']){
     const before=imageCalls.length;
     Art.drawSpriteHero(c,{x:100,y:100,facing:0,elementForm:element},hero,0);
-    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thienvu-pixel-v08.png','assets/quanle-pixel-v1.png','assets/quynhkun-pixel-v1.png','assets/ait01-pixel-v1.png','assets/huyenkha-moves.png'].includes(call.src));
+    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thienvu-pixel-v08.png','assets/quanle-monarch-moves.png','assets/quynhkun-pixel-v1.png','assets/ait01-pixel-v1.png','assets/huyenkha-moves.png'].includes(call.src));
     assert.equal(drawn.length,1,hero.id+' needs one body sprite');
     if(hero.id==='thienvu'){
       const cell=DTThienVuAtlas.forms[element].actions.idle.directions.E[0];
       assert.equal(drawn[0].src,'assets/thienvu-pixel-v08.png');
       assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
       assert.deepEqual(drawn[0].args.slice(-2),[128,128]);
-    }else if(hero.id==='huyenkha'){assert.equal(drawn[0].src,'assets/huyenkha-moves.png');assert.deepEqual(drawn[0].args.slice(0,4),[0,0,178,161]);}else if(hero.id==='ait01'){assert.equal(drawn[0].src,'assets/ait01-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else if(hero.id==='quynhkun'){assert.equal(drawn[0].src,'assets/quynhkun-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else if(hero.id==='quanle'){assert.equal(drawn[0].src,'assets/quanle-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else{
+    }else if(hero.id==='huyenkha'){assert.equal(drawn[0].src,'assets/huyenkha-moves.png');assert.deepEqual(drawn[0].args.slice(0,4),[0,0,178,161]);}else if(hero.id==='ait01'){assert.equal(drawn[0].src,'assets/ait01-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else if(hero.id==='quynhkun'){assert.equal(drawn[0].src,'assets/quynhkun-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else if(hero.id==='quanle'){assert.equal(drawn[0].src,'assets/quanle-monarch-moves.png');assert.deepEqual(drawn[0].args.slice(-2),[152,128]);}else{
       assert.equal(drawn[0].src,'assets/heroes.png');
       assert.equal(drawn[0].args[0],0);
       assert.equal(drawn[0].args[1],['an','linh','kiet','hoavi'].indexOf(hero.id)*313.5);
