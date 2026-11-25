@@ -9,9 +9,9 @@ function active(form='lightning'){const g=new DTGame('thienvu',71426);g.start();
 function dummy(id,x=900,y=2200,hp=100000){return{id,type:'slime',x,y,homeX:x,homeY:y,r:15,hp,maxHp:hp,speed:0,damage:0,xp:0,gold:0,alive:true,cool:999,phase:0,timer:0,hit:0,slow:0,knockX:0,knockY:0}}
 test('Fifth hero has seven distinct forms, twenty-one named skills and its catalyst weapon',()=>{assert.equal(Object.keys(DTWorld.HEROES).length,7);assert.equal(DTElements.forms.length,7);assert.equal(new Set(DTElements.forms.flatMap(f=>[f.q,f.e,f.r])).size,21);const g=active();assert.equal(g.weapon.id,'prism');assert.equal(g.player.weapons.length,2)});
 test('Transformation changes appearance and skills while retaining cooldowns, health and ultimate charge',()=>{const g=active();g.skill('q');const mp=g.player.mp,cd=g.player.cd.q;g.player.ult=72;g.player.hp=45;for(const f of DTElements.forms){g.transformElement(f.id);assert.equal(g.hero.q,f.q);assert.equal(g.hero.color,f.color);assert.equal(g.player.cd.q,cd);assert.equal(g.player.mp,mp);assert.equal(g.player.hp,45);assert.equal(g.player.ult,72);assert(!g.skill('q'))}});
-test('Every form Q damages a target using its actual attack behavior',()=>{for(const f of DTElements.forms){const g=active(f.id),e=dummy('target');g.world.enemies=[e];assert(g.skill('q'),f.id);assert.equal(g.player.mp,76);for(let i=0;i<100;i++)g.update(1/60);assert(e.hp<e.maxHp,'No Q damage: '+f.id);assert(!g.dead)}});
-test('Every form E implements a persistent field or actual earth shield',()=>{for(const f of DTElements.forms){const g=active(f.id);g.player.hp=40;assert(g.skill('e'));assert.equal(g.player.mp,62);assert(!g.skill('e'));if(f.id==='earth'){assert(g.player.shield>=45);assert(g.player.earthArmor>0)}else assert(g.elementFields.some(x=>x.element===f.id));if(f.id==='nature')assert(g.player.hp>40)}});
-test('Every ultimate damages and never refills itself, including delayed hits and fields',()=>{for(const f of DTElements.forms){const g=active(f.id),e=dummy('target');g.world.enemies=[e];g.player.ult=100;assert(g.skill('r'));checkCooldown(g);for(let i=0;i<360;i++)g.update(1/60);assert(e.hp<e.maxHp,'No R damage: '+f.id);checkCooldown(g,'R self charge: '+f.id)}});
+test('Every form Q damages a target using its actual attack behavior',()=>{for(const f of DTElements.allForms){const g=active(f.id),e=dummy('target');g.world.enemies=[e];assert(g.skill('q'),f.id);assert.equal(g.player.mp,76);for(let i=0;i<100;i++)g.update(1/60);assert(e.hp<e.maxHp,'No Q damage: '+f.id);assert(!g.dead)}});
+test('Every form E implements a persistent field or actual earth shield',()=>{for(const f of DTElements.allForms){const g=active(f.id);g.player.hp=40;assert(g.skill('e'));assert.equal(g.player.mp,62);assert(!g.skill('e'));if(f.id==='earth'){assert(g.player.shield>=45);assert(g.player.earthArmor>0)}else assert(g.elementFields.some(x=>x.element===f.id));if(f.id==='nature')assert(g.player.hp>40)}});
+test('Every ultimate damages and never refills itself, including delayed hits and fields',()=>{for(const f of DTElements.allForms){const g=active(f.id),e=dummy('target');g.world.enemies=[e];g.player.ult=100;assert(g.skill('r'));checkCooldown(g);for(let i=0;i<360;i++)g.update(1/60);assert(e.hp<e.maxHp,'No R damage: '+f.id);checkCooldown(g,'R self charge: '+f.id)}});
 test('Split modes create exactly 3, 5 or 7 different living elemental bodies',()=>{for(const n of[3,5,7]){const g=active();g.selectSplitCount(n);const mp=g.player.mp;assert(g.splitElementals());g.updateElementSplitIntro(4.2);assert.equal(g.elementClones.length+1,n);assert.equal(new Set([g.element.id,...g.elementClones.map(c=>c.element)]).size,n);assert.equal(mp-g.player.mp,{3:30,5:45,7:60}[n]);assert(g.elementClones.every(c=>!g.world.collision(c.x,c.y,c.r)))}});
 test('Clone AI really attacks and does not generate free ultimate charge',()=>{const g=active(),e=dummy('target',870);g.world.enemies=[e];g.selectSplitCount(7);g.splitElementals();g.updateElementSplitIntro(4.2);for(let i=0;i<240;i++)g.update(1/60);assert(e.hp<e.maxHp);assert(g.projectiles.some(b=>b.ally)||g.elementClones.some(c=>c.attackCd>0));checkCooldown(g)});
 test('Changing the leader form during a split preserves remaining time and unique elements',()=>{const g=active();g.selectSplitCount(7);g.splitElementals();g.updateElementSplitIntro(4.2);g.update(.03);const life=g.elementSplitTime;for(const f of DTElements.forms){g.transformElement(f.id);assert.equal(g.elementSplitTime,life);assert.equal(g.elementClones.length,6);assert.equal(new Set([g.element.id,...g.elementClones.map(c=>c.element)]).size,7)}});
@@ -24,5 +24,63 @@ test('Elemental ultimate keeps the leader element with real damage and no self c
 test('Save and restore retain form, split size, remaining time, clone health and player resources',()=>{const g=active('nature');g.selectSplitCount(7);g.splitElementals();g.updateElementSplitIntro(4.2);g.player.hp=51;g.player.ult=47;g.elementClones[0].hp=12;g.update(.02);const r=DTGame.restore(JSON.parse(JSON.stringify(g.serialize())));assert.equal(r.element.id,'nature');assert.equal(r.player.splitCount,7);assert.equal(r.elementClones.length,6);assert.equal(r.player.hp,51);assert.equal(r.player.cd.r,g.player.cd.r);assert.equal(r.elementClones[0].hp,12);assert.equal(r.elementSplitTime,g.elementSplitTime);assert.equal(r.weapon.id,'prism')});
 test('Malformed clone saves are bounded and old heroes keep their progress',()=>{const g=active(),s=g.serialize();s.elemental={form:'invalid',splitCount:999,remaining:999,cooldown:999,clones:[{element:'fire',x:NaN,y:0,hp:999}]};const r=DTGame.restore(s);assert.equal(r.element.id,'lightning');assert.equal(r.player.splitCount,3);assert(r.elementSplitTime<=18&&r.elementSplitCd<=30);assert.equal(r.elementClones.length,0);const old=DTGame.restore(oldSave);assert.equal(old.hero.id,'hoavi');assert.equal(old.player.gold,117);assert(old.outposts.jade.claimed)});
 test('Death and travel cancel clones and scheduled attacks',()=>{const g=active();g.splitElementals();g.updateElementSplitIntro(4.2);g.player.ult=100;g.skill('r');g.respawn();assert.equal(g.elementClones.length,0);assert.equal(g.elementFields.length,0);assert.equal(g.elementActions.length,0);g.player.x=1120;g.player.y=2600;g.outposts.jade.complete=g.outposts.jade.claimed=true;assert(g.travelTo('jade'));assert.equal(g.elementSplitTime,0)});
+test('Origin splits return to origin after changing leader, saving, and recalling or expiring',()=>{
+  const g=active('origin');
+  assert.equal(new DTGame('thienvu',71426).element.id,'origin');
+  assert(g.selectSplitCount(7));
+  assert(g.splitElementals());
+  const split=DTGame.restore(JSON.parse(JSON.stringify(g.serialize())));
+  assert.equal(split.player.ultIntro.element,'origin');
+  split.updateElementSplitIntro(4.2);
+  assert.equal(split.element.id,'lightning');
+  assert.equal(split.elementClones.length,6);
+  assert(split.transformElement('fire'));
+
+  const saved=JSON.parse(JSON.stringify(split.serialize()));
+  for(const recall of [
+    game=>game.splitElementals(),
+    game=>game.transformElement('origin'),
+    game=>game.updateElementClones(game.elementSplitTime),
+    game=>game.respawn()
+  ]){
+    const restored=DTGame.restore(saved);
+    assert.equal(restored.element.id,'fire');
+    assert.equal(restored.elementClones.length,6);
+    recall(restored);
+    assert.equal(restored.element.id,'origin');
+    assert.equal(restored.elementClones.length,0);
+    assert.equal(restored.elementSplitTime,0);
+  }
+
+  delete saved.elemental.preSplitForm;
+  const legacy=DTGame.restore(saved);
+  assert(legacy.splitElementals());
+  assert.equal(legacy.element.id,'fire');
+  delete saved.elemental;
+  assert.equal(DTGame.restore(saved).element.id,'lightning');
+});
+test('Origin ultimate schedules a separate strike for each of the seven elements',()=>{
+  const g=active('origin');
+  g.player.ult=100;
+  assert(g.skill('r'));
+  assert.deepEqual(g.elementActions.map(a=>a.element),DTElements.forms.map(f=>f.id));
+  assert.deepEqual(g.elementActions.map(a=>a.delay),DTElements.forms.map((_,i)=>i*.08));
+});
+test('Tree spirits preserve prop type and trigger their ward pose when hit',()=>{
+  const g=active('nature');
+  g.world.enemies=[];
+  g.summonElement('treant',g.player,g.player,20,4,{type:'banyan'});
+  const [tree]=g.elementSummons, hp=tree.hp;
+  assert.equal(tree.sourcePropType,'banyan');
+  tree.spawnAge=.45;
+  const projectile={friendly:false,life:1,x:tree.x,y:tree.y,r:15,damage:7};
+  g.projectiles=[projectile];
+  g.updateElementSummons(.02);
+  assert.equal(tree.hp,hp-7);
+  assert.equal(projectile.life,0);
+  assert.equal(tree.hurtCd,.45);
+  g.updateElementSummons(.21);
+  assert(tree.hurtCd<.25);
+});
 test('New source parses and art is a deployable transparent PNG',()=>{for(const f of['elemental.js','elemental-visuals.js','elemental-ui.js'])new vm.Script(fs.readFileSync(path.join(root,f),'utf8'));const b=fs.readFileSync(path.join(root,'assets/thien-vu-v04.png'));assert.equal(b.toString('ascii',1,4),'PNG');assert(b.length<25*1024*1024);assert(JSON.stringify(active().serialize()).length<160000)});
 fs.writeFileSync(path.join(root,'qa/elemental-report.json'),JSON.stringify({date:new Date().toISOString(),passed:tests.filter(t=>t.pass).length,total:tests.length,tests},null,2));console.log(tests.filter(t=>t.pass).length+'/'+tests.length+' elemental checks passed');process.exitCode=tests.every(t=>t.pass)?0:1;

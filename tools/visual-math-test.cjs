@@ -77,16 +77,15 @@ test('Quan Le uses combo segments, the ritual timeline and legacy frames on fail
 });
 test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cells at unit two for heroes and clones',()=>{
   const c=context();
-  for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?DTElements.forms.map(f=>f.id):['lightning']){
+  for(const hero of Object.values(DTWorld.HEROES))for(const element of hero.id==='thienvu'?['origin',...DTElements.forms.map(f=>f.id)]:['lightning']){
     const before=imageCalls.length;
     Art.drawSpriteHero(c,{x:100,y:100,facing:0,elementForm:element},hero,0);
-    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/thienvu-pixel-v08.png','assets/quanle-monarch-moves.png','assets/quynhkun-pixel-v1.png','assets/ait01-pixel-v1.png','assets/huyenkha-moves.png'].includes(call.src));
+    const drawn=imageCalls.slice(before).filter(call=>['assets/heroes.png','assets/quanle-monarch-moves.png','assets/quynhkun-pixel-v1.png','assets/ait01-pixel-v1.png','assets/huyenkha-moves.png'].includes(call.src)||call.src.startsWith('assets/thienvu-form-'));
     assert.equal(drawn.length,1,hero.id+' needs one body sprite');
     if(hero.id==='thienvu'){
-      const cell=DTThienVuAtlas.forms[element].actions.idle.directions.E[0];
-      assert.equal(drawn[0].src,'assets/thienvu-pixel-v08.png');
-      assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
-      assert.deepEqual(drawn[0].args.slice(-2),[128,128]);
+      assert.equal(drawn[0].src,'assets/thienvu-form-'+element+'.png');
+      assert.deepEqual(drawn[0].args.slice(0,4),[0,11*84,96,84]);
+      assert.deepEqual(drawn[0].args.slice(-2),[192,168]);
     }else if(hero.id==='huyenkha'){assert.equal(drawn[0].src,'assets/huyenkha-moves.png');assert.deepEqual(drawn[0].args.slice(0,4),[0,0,178,161]);}else if(hero.id==='ait01'){assert.equal(drawn[0].src,'assets/ait01-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else if(hero.id==='quynhkun'){assert.equal(drawn[0].src,'assets/quynhkun-pixel-v1.png');assert.deepEqual(drawn[0].args.slice(-2),[128,128]);}else if(hero.id==='quanle'){assert.equal(drawn[0].src,'assets/quanle-monarch-moves.png');assert.deepEqual(drawn[0].args.slice(-2),[152,128]);}else{
       assert.equal(drawn[0].src,'assets/heroes.png');
       assert.equal(drawn[0].args[0],0);
@@ -94,12 +93,12 @@ test('Heroes keep their atlas cells; all seven Thien Vu forms use 64px pixel cel
     }
   }
   const g=new DTGame('thienvu',71426),r=new DTRenderer(canvas(),g);g.start();g.skipTutorial?.();
+  assert.equal(g.element.id,'origin');
   for(const element of DTElements.forms.map(f=>f.id)){
     const before=imageCalls.length;r.drawElementClone({x:100,y:100,element,hp:20,maxHp:40,facing:Math.PI,alive:true});
-    const drawn=imageCalls.slice(before).filter(call=>call.src==='assets/thienvu-pixel-v08.png');
-    const cell=DTThienVuAtlas.forms[element].actions.idle.directions.W[0];
-    assert.equal(drawn.length,1);assert.deepEqual(drawn[0].args.slice(0,4),[cell.x,cell.y,64,64]);
-    assert.deepEqual(drawn[0].args.slice(-2),[128,128]);
+    const drawn=imageCalls.slice(before).filter(call=>call.src==='assets/thienvu-form-'+element+'.png');
+    assert.equal(drawn.length,1);assert.deepEqual(drawn[0].args.slice(0,4),[0,11*84,96,84]);
+    assert.deepEqual(drawn[0].args.slice(-2),[192,168]);
   }
 });
 test('Cast poses remain finite and complete at anticipation, release and recovery',()=>{

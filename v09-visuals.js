@@ -205,12 +205,15 @@
           drawn=true;
         }
       }else if(id==='thienvu'&&root.DTThienVuPixel?.ready()){
-        const form=g?.element?.id||g?.player?.elementForm||'lightning';
-        const cells=root.DTThienVuAtlas?.forms?.[form]?.actions?.idle?.directions?.S;
-        if(cells){
-          const f=cells[calm?0:Math.floor(Math.max(0,t)*6)%cells.length];
-          c.drawImage(root.DTThienVuPixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
-          drawn=true;
+        const form=g?.element?.id||g?.player?.elementForm||'origin';
+        if(root.DTThienVuPixel.portrait?.(c,w,h,bob,form,t))drawn=true;
+        else{
+          const cells=root.DTThienVuAtlas?.forms?.[form==='origin'?'lightning':form]?.actions?.idle?.directions?.S;
+          if(cells){
+            const f=cells[calm?0:Math.floor(Math.max(0,t)*6)%cells.length];
+            c.drawImage(root.DTThienVuPixel.character,f.x+10,f.y+4,44,40,-10,10+bob,132,120);
+            drawn=true;
+          }
         }
       }else if(id==='quynhkun'&&root.DTQuynhKunPixel?.ready()){
         const clip=root.DTQuynhKunAtlas?.clips?.['S/idle'];

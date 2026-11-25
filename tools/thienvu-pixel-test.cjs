@@ -13,12 +13,12 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
       const pixel=await p.evaluate(()=>{
         const P=DTThienVuPixel,meta=DTThienVuAtlas,cv=document.createElement('canvas');cv.width=720;cv.height=560;const c=cv.getContext('2d',{willReadFrequently:true});let checks=0;
         for(const method of ['createRadialGradient','createLinearGradient','arc','ellipse','lineTo','bezierCurveTo','quadraticCurveTo','rotate','clip'])c[method]=()=>{throw Error('forbidden pixel path '+method)};
-        const native=c.drawImage;c.drawImage=function(...a){if(this.imageSmoothingEnabled)throw Error('smoothing');if(a.slice(1).some(v=>!Number.isInteger(v)))throw Error('fractional drawImage '+JSON.stringify(a.slice(1)));return native.apply(this,a)};
+        const rockFrames=new Set(),native=c.drawImage;c.drawImage=function(...a){if(a[0]===P.golemSheet&&a[2]===30*108)rockFrames.add(a[1]/120);if(this.imageSmoothingEnabled)throw Error('smoothing');if(a.slice(1).some(v=>!Number.isInteger(v)))throw Error('fractional drawImage '+JSON.stringify(a.slice(1)));return native.apply(this,a)};
         const card=document.querySelector('canvas[data-thienvu]');if(!card||card.width!==128||!card.getContext('2d').getImageData(0,0,128,128).data.some(v=>v))throw Error('empty menu atlas');
         const check=(allowed)=>{const a=c.getImageData(0,0,720,560).data;let filled=0;for(let i=0;i<a.length;i+=4){if(![0,255].includes(a[i+3]))throw Error('fractional alpha');if(a[i+3]){const h=Array.from(a.slice(i,i+3),n=>n.toString(16).padStart(2,'0')).join('');if(!allowed.has(h))throw Error('palette '+h);filled++}}if(!filled)throw Error('empty paint');checks++;return a};
         const all=new Set(DTThienVuVFX.palette.map(h=>h.slice(1).toLowerCase()));
-        for(const [form,spec] of Object.entries(meta.forms)){
-          const palette=new Set([...spec.palette,...DTThienVuVFX.palette].map(h=>h.slice(1).toLowerCase()));
+        for(const form of P.FORM_IDS){
+          const palette=new Set([...(meta.forms[form]?.palette||[]),...DTThienVuVFX.palette].map(h=>h.slice(1).toLowerCase()));
           for(const [facing,view] of [[0,'E'],[Math.PI/2,'S'],[Math.PI,'W'],[-Math.PI/2,'N']])for(const key of ['idle','run','dash','attack','q','e','r','hit']){
             const actor={x:250,y:230,elementForm:form,facing,moving:key==='run',dashTime:key==='dash'?.1:0,hit:key==='hit'?.1:0};if(['attack','q','e','r'].includes(key))actor.action={key,angle:facing,elapsed:.24,release:.16,duration:.65};
             if(P.frame(actor,2).direction!==view)throw Error('view '+view);c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,720,560);c.setTransform(1.28,0,0,1.28,13.4,10.6);c.imageSmoothingEnabled=true;c.globalAlpha=.37;P.hero(c,actor,2);check(palette);
@@ -31,15 +31,40 @@ const pass=(name,details={})=>{results.push({name,pass:true,...details});console
           for(let y=sy-116;y<sy+8;y+=2)for(let x=sx-64;x<sx+64;x+=2){const i=(y*720+x)*4;for(const delta of [4,720*4,720*4+4])for(let k=0;k<4;k++)if(data[i+k]!==data[i+delta+k])throw Error('non-square main pixel')}
         }
         const game={hero:{id:'thienvu'},element:{id:'lightning'},time:.21},renderer={ctx:c,game};
+        const summon={x:330,y:320,life:7,maxLife:8,spawnAge:.2,moveDir:'W'};
+        for(const [kind,type] of [['golem',null],['oak','tree'],['bamboo','bamboo'],['banyan','banyan']]){
+          const actor={...summon,kind:kind==='golem'?'golem':'treant',sourceProp:type?{type}:null};
+          const pose=P.summonFrame300(actor,game.time);
+          if(pose?.index300!==16||pose.variant!==kind||!pose.mirror)throw Error('spawn frame '+kind);
+          c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,720,560);
+          P.summon(renderer,actor);check(all);
+        }
+        const ward=P.summonFrame300({...summon,kind:'treant',sourcePropType:'banyan',spawnAge:.45,hurtCd:.45},game.time);
+        if(ward.variant!=='banyan'||ward.index300!==276)throw Error('banyan ward frame');
+        for(const time of [1.25,1.3]){
+          c.clearRect(0,0,720,560);
+          P.summon({ctx:c,game:{time}},{...summon,kind:'golem',spawnAge:.45,thrown:{currentX:430,currentY:250,height:40}});
+          check(all);
+        }
+        if(rockFrames.size!==2||!rockFrames.has(0)||!rockFrames.has(1))throw Error('missing animated golem rock frames');
         const cases=[['element-transform','fire'],['element-recall','ice'],['choreo-split','nature'],['element-convergence','light'],['element-impact','earth'],['element-impact','ice'],['bolt','lightning'],['choreo-hit','wind'],['mythic-tether','lightning'],['mythic-tether','ice'],['mythic-tether','nature'],['element-beam','light']];
         for(const [type,element]of cases){c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,720,560);P.effect(renderer,{type,element,x:250,y:270,tx:470,ty:300,r:90,maxLife:.6,life:.36,points:Object.keys(meta.forms).map((element,i)=>({element,x:130+i*55,y:400}))});check(all)}
+        c.clearRect(0,0,720,560);P.field(renderer,{combat:true,kind:'sigil',behavior:'origin_prism',element:'origin',x:320,y:270,r:160,life:4});check(all);
         for(const [kind,element]of [['wall','earth'],['mirror','ice'],['mirror','light'],['sigil','lightning'],['vortex','wind'],['tornado','wind'],['orbs','fire'],['garden','nature'],['vine','nature']]){c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,720,560);P.field(renderer,{kind,element,x:320,y:270,r:105,life:4,angle:.37});check(all)}
         P.screen(c,()=>{for(let i=0;i<100;i++)P.segment(c,'split_beam_lightning',i%6,{x:100,y:100},{x:300+i,y:230-i})});const cache=P.cacheStats();if(cache.rasters>64||cache.bytes>8*1024*1024)throw Error('unbounded raster cache');
         return {checks,cache};
       });pass('Binary alpha, per-form palette, all poses/views, integer nearest draws, VFX and bounded cache at DPR '+dpr,pixel);
       if(dpr===1){
         await p.getByRole('button',{name:/^Chọn Thiên Vũ,/}).click();await p.locator('#startButton').click();await p.locator('#dialogueNext').click();
-        await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.paused=true});
+        await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents()});
+        const activeForm=()=>p.evaluate(()=>denTinh.game.element.id);
+        assert.equal(await activeForm(),'origin');
+        await p.keyboard.press('4');assert.equal(await activeForm(),'fire');
+        await p.keyboard.press('c');await p.getByRole('button',{name:'0 · Nguyên Bản'}).click();
+        assert.equal(await activeForm(),'origin');
+        await p.keyboard.press('2');assert.equal(await activeForm(),'wind');
+        await p.keyboard.press('0');assert.equal(await activeForm(),'origin');
+        pass('Nguyên Bản is the default, selectable from the wheel and with 0');
         await p.evaluate(()=>{const g=denTinh.game;g.paused=false;DTElementUI.openWheel();const cards=[...document.querySelectorAll('#elementWheel canvas')];if(cards.length!==7)throw Error('missing form previews');for(const cv of cards){const box=cv.getBoundingClientRect();if(cv.width!==128||cv.height!==128||box.width!==96||box.height!==96||!cv.getContext('2d').getImageData(0,0,128,128).data.some(v=>v))throw Error('cropped or empty form preview')}DTElementUI.closeWheel();g.paused=true});pass('Element wheel paints all seven square pixel previews');
         async function stage(kind){return p.evaluate(kind=>{
           const g=denTinh.game,p=g.player,r=denTinh.renderer;g.paused=false;g.cancelActions();g.effects=[];g.projectiles=[];g.mythicFields=[];g.elementFields=[];g.castQueue=[];g.elementClones=[];g.elementSplitTime=0;g.elementSplitCd=0;
