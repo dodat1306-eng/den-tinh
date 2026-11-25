@@ -42,8 +42,10 @@ namespace DenTinh.UnityRuntime {
                 if(t>=2.8f)GUI.Label(new Rect(x-200,y-165,400,45),"TRỖI DẬY (ARISE)",new GUIStyle(title){fontSize=26,alignment=TextAnchor.MiddleCenter});if(t>=4)IntroLine(at+new Vector2(0,-440),at,cyan,7);
             }else if(Game.Hero.id=="hoavi"){
                 command="OVERCLOCK: MA TRẬN BIÊN DỊCH TỐI THƯỢNG";stage=t<1.5f?"TERMINAL ONLINE":t<3.2f?"ASSEMBLING TWIN CYBER-LOTUS":"COMPILE 100%";
-                for(int i=0;i<3;i++){float xx=x+(i-1)*150,yy=y-160-Mathf.Abs(i-1)*25;IntroBox(xx-65,yy-35,130,70,new Color(.02f,.12f,.18f,.95f));for(int n=0;n<5;n++){IntroBox(xx-60,yy-28+n*12,65+(n%3)*18,2,cyan);}}
-                if(t>=1.5f){for(int i=0;i<30;i++)IntroBox(x-120+i%10*24,y+15+i/10*9,20,6,cyan);foreach(int side in new[]{-1,1}){Vector2 satellite=at+new Vector2(side*110,-95);IntroRing(satellite,30,cyan,.7f);for(int n=0;n<6;n++){float a=n*Mathf.PI/3;IntroLine(satellite,satellite+new Vector2(Mathf.Cos(a)*35,Mathf.Sin(a)*28),n%2==0?cyan:purple,6);}}}if(t>=3.2f&&!settings.reducedMotion)IntroRing(at,70+(t-3.2f)*190,cyan);
+                int uf=settings.reducedMotion?205:Mathf.Clamp((int)(Mathf.Clamp01(t/4.5f)*300),0,299);
+                IntroRing(at+new Vector2(0,14),80+185*Mathf.Clamp01(t/1.4f),cyan,.42f,settings.reducedMotion?0:t*.35f);
+                IntroSprite(PixelArt.HoaViVfx("ult_r",uf),at+new Vector2(0,18),1.5f);
+                if(t>=3.2f&&!settings.reducedMotion)IntroRing(at+new Vector2(0,14),90+(t-3.2f)*240,cyan,.42f);
             }else if(Game.Hero.id=="an"){
                 command="THIÊN ĐĂNG PHƯỢNG HOÀNG KHAI HỎA";stage=t<1.5f?"THIÊN ĐĂNG THỨC TỈNH":t<3.2f?"BÁT ĐĂNG QUY VỊ":"PHƯỢNG HOÀNG KHAI HỎA";
                 for(int n=0;n<3;n++)IntroRing(at,(55+n*35)*Mathf.Clamp01(t/1.5f),gold);IntroBox(x-10,y-145,20,28,gold);
@@ -53,7 +55,7 @@ namespace DenTinh.UnityRuntime {
                 for(int n=0;n<9;n++){float xx=x+(n-4)*40,h=(80+n%3*24)*Mathf.Clamp01(t/1.5f);IntroLine(new Vector2(xx,y+20),new Vector2(xx,y+20-h),green,6);for(int j=0;j<3;j++)IntroLine(new Vector2(xx,y-j*25),new Vector2(xx+25,y-20-j*25),green,4);}
                 if(t>=1.5f){Vector2[] bow={new Vector2(-70,-150),new Vector2(35,-190),new Vector2(65,-90),new Vector2(35,-20),new Vector2(-70,-30)};for(int n=0;n<4;n++)IntroLine(at+bow[n],at+bow[n+1],green,6);IntroLine(at+bow[0],at+new Vector2(-20,-90),gold);IntroLine(at+bow[4],at+new Vector2(-20,-90),gold);for(int n=0;n<21;n++){float xx=x-40+(t>=3.2f?(t-3.2f)*320:0),yy=y-160+n*6;IntroLine(new Vector2(xx-35,yy),new Vector2(xx+85,yy-5),green);}}
             }
-            Sprite hero=Game.IsElemental?PixelArt.ElementActor(p.element,p.moveDir,p.moving,0,p.action,Game.Time,settings.reducedMotion):PixelArt.WorldHero(Game.Hero,p,Game.Time,settings.reducedMotion);IntroSprite(hero,at+new Vector2(0,Game.IsElemental&&t>=3?-24:0));
+            if(Game.Hero.id!="hoavi"){Sprite hero=Game.IsElemental?PixelArt.ElementActor(p.element,p.moveDir,p.moving,0,p.action,Game.Time,settings.reducedMotion):PixelArt.WorldHero(Game.Hero,p,Game.Time,settings.reducedMotion);IntroSprite(hero,at+new Vector2(0,Game.IsElemental&&t>=3?-24:0));}
             float height=28*Mathf.Clamp01(t/.25f);IntroBox(0,0,1280,height,Color.black);IntroBox(0,720-height,1280,height,Color.black);GUIStyle label=new GUIStyle(text){alignment=TextAnchor.MiddleCenter,fontSize=16};GUI.Label(new Rect(0,0,1280,28),command,label);GUI.Label(new Rect(0,692,1280,28),stage+" · "+(ritual.Duration-t).ToString("F1")+"s",label);GUI.matrix=previous;
         }
     }

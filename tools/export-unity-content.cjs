@@ -17,7 +17,34 @@ for(const [file,texture]of [['thienvu-pixel-v08','ThienVu'],['thienvu-vfx-pixel'
 fs.writeFileSync(path.join(art,'ThienVuClips.json'),JSON.stringify({clips}));console.log('Exported original catalog + Thiên Vũ, seven elements and '+clips.length+' pixel clips.');
 
 const shadowClips=[];for(const[file,texture]of[['quanle-pixel-v1','QuanLe'],['quanle-vfx-pixel','QuanLeVFX']]){const meta=JSON.parse(fs.readFileSync(path.join(root,'assets',file+'.json'),'utf8'));fs.copyFileSync(path.join(root,'assets',file+'.png'),path.join(art,texture+'.png'));for(const[key,c]of Object.entries(meta.clips))shadowClips.push({key,texture,fps:c.fps,cells:c.cells})}fs.writeFileSync(path.join(art,'QuanLeClips.json'),JSON.stringify({clips:shadowClips}));
-const hoavi=JSON.parse(fs.readFileSync(path.join(root,'assets/hoavi-pixel-v08.json'),'utf8')),hoaviClips=[];fs.copyFileSync(path.join(root,hoavi.image),path.join(art,'HoaVi.png'));for(const[action,clip]of Object.entries(hoavi.actions))for(const[view,cells]of Object.entries(clip.directions))hoaviClips.push({key:view+'/'+action,texture:'HoaVi',fps:clip.fps,cells:cells.map(c=>({...c,anchorX:hoavi.anchorX,anchorY:hoavi.anchorY}))});const hoaviVfx=JSON.parse(fs.readFileSync(path.join(root,'assets/hoavi-vfx-pixel.json'),'utf8'));fs.copyFileSync(path.join(root,'assets/hoavi-vfx-pixel.png'),path.join(art,'HoaViVFX.png'));for(const[key,c]of Object.entries(hoaviVfx.clips))hoaviClips.push({key,texture:'HoaViVFX',fps:c.fps,cells:c.cells});fs.writeFileSync(path.join(art,'HoaViClips.json'),JSON.stringify({clips:hoaviClips}));
+for(const [srcName,dstName]of[['hoavi-locomotion.png','HoaViLocomotion.png'],['hoavi-actions.png','HoaViActions.png'],['hoavi-skills.png','HoaViSkills.png'],['hoavi-ult-r.png','HoaViUltR.png'],['hoavi-vfx.png','HoaViVFX.png'],['hoavi-portrait.png','HoaViPortrait.png']])fs.copyFileSync(path.join(root,'assets',srcName),path.join(art,dstName));
+for(const oldFile of['HoaVi.png','HoaVi.png.meta']){const oldPath=path.join(art,oldFile);if(fs.existsSync(oldPath))fs.unlinkSync(oldPath);}
+const hoaviViews=['S','E','N','W'],hoaviGrid=(tex,base,count,cols,cw,ch,ax,ay)=>Array.from({length:count},(_,i)=>{const idx=base+i;return{x:(idx%cols)*cw,y:Math.floor(idx/cols)*ch,w:cw,h:ch,anchorX:ax,anchorY:ay}});
+const hoaviClips=[];
+hoaviViews.forEach((v,vi)=>{
+  hoaviClips.push({key:v+'/idle',texture:'HoaViLocomotion',fps:30,cells:hoaviGrid('HoaViLocomotion',vi*30,30,20,104,96,52,80)});
+  hoaviClips.push({key:v+'/run',texture:'HoaViLocomotion',fps:36,cells:hoaviGrid('HoaViLocomotion',120+vi*30,30,20,104,96,52,80)});
+  hoaviClips.push({key:v+'/dash',texture:'HoaViActions',fps:45,cells:hoaviGrid('HoaViActions',vi*45,45,30,112,100,56,82)});
+  hoaviClips.push({key:v+'/hit',texture:'HoaViActions',fps:36,cells:hoaviGrid('HoaViActions',180+vi*45,45,30,112,100,56,82)});
+  hoaviClips.push({key:v+'/attack',texture:'HoaViSkills',fps:40,cells:hoaviGrid('HoaViSkills',vi*60,60,30,112,100,56,82)});
+  hoaviClips.push({key:v+'/q_debug',texture:'HoaViSkills',fps:40,cells:hoaviGrid('HoaViSkills',240+vi*60,60,30,112,100,56,82)});
+  hoaviClips.push({key:v+'/e_cast',texture:'HoaViSkills',fps:40,cells:hoaviGrid('HoaViSkills',480+vi*30,30,30,112,100,56,82)});
+  hoaviClips.push({key:v+'/e_blink',texture:'HoaViSkills',fps:40,cells:hoaviGrid('HoaViSkills',600+vi*30,30,30,112,100,56,82)});
+  hoaviClips.push({key:v+'/r_overclock',texture:'HoaViUltR',fps:45,cells:hoaviGrid('HoaViUltR',0,300,20,160,120,80,96)});
+});
+hoaviClips.push({key:'interact_shrine',texture:'HoaViActions',fps:36,cells:hoaviGrid('HoaViActions',360,180,30,112,100,56,82)});
+hoaviClips.push({key:'interact_relic',texture:'HoaViActions',fps:36,cells:hoaviGrid('HoaViActions',540,180,30,112,100,56,82)});
+hoaviClips.push({key:'interact_terminal',texture:'HoaViActions',fps:36,cells:hoaviGrid('HoaViActions',720,180,30,112,100,56,82)});
+hoaviClips.push({key:'ult_r',texture:'HoaViUltR',fps:45,cells:hoaviGrid('HoaViUltR',0,300,20,160,120,80,96)});
+hoaviClips.push({key:'satellite_drone',texture:'HoaViVFX',fps:36,cells:Array.from({length:36},(_,i)=>({x:(i%24)*40,y:Math.floor(i/24)*40,w:40,h:40}))});
+hoaviClips.push({key:'checkpoint_seal',texture:'HoaViVFX',fps:30,cells:Array.from({length:24},(_,i)=>({x:(i%12)*72,y:80+Math.floor(i/12)*72,w:72,h:72}))});
+hoaviClips.push({key:'checkpoint_column',texture:'HoaViVFX',fps:40,cells:Array.from({length:24},(_,i)=>({x:i*40,y:224,w:40,h:88}))});
+hoaviClips.push({key:'code_bolt',texture:'HoaViVFX',fps:36,cells:Array.from({length:16},(_,i)=>({x:i*36,y:320,w:36,h:20}))});
+hoaviClips.push({key:'fault_mark',texture:'HoaViVFX',fps:30,cells:Array.from({length:16},(_,i)=>({x:i*28,y:344,w:28,h:28}))});
+hoaviClips.push({key:'pixel_shield',texture:'HoaViVFX',fps:30,cells:Array.from({length:16},(_,i)=>({x:i*56,y:380,w:56,h:68}))});
+hoaviClips.push({key:'satellite_beam',texture:'HoaViVFX',fps:16,cells:Array.from({length:4},(_,i)=>({x:480+i*32,y:456,w:32,h:16}))});
+hoaviClips.push({key:'hit_glitch',texture:'HoaViVFX',fps:24,cells:Array.from({length:8},(_,i)=>({x:544+i*36,y:492,w:36,h:36}))});
+fs.writeFileSync(path.join(art,'HoaViClips.json'),JSON.stringify({clips:hoaviClips}));
 
 const full={console,localStorage:{getItem:()=>null,setItem:()=>{}}};full.globalThis=full;vm.createContext(full);
 for(const f of ['world','content','engine','expansion','frontier','elemental','mythic-content','quynhkun','ait01','ascension','endless','journey','v09-content','world-destruction','shadow','relic-trials','v09'])vm.runInContext(fs.readFileSync(path.join(root,f+'.js'),'utf8'),full);

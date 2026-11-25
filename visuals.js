@@ -21,6 +21,7 @@
     return game&&game.hero.id===h.id&&!game.skillRanks?game.weapon.id:({an:'lantern',linh:'bamboo',kiet:'thunder',hoavi:'terminal'}[h.id]||'lantern');
   }
   root.DTVisualHero=function(c,p,h,time=0,scale=1,npc=false){
+    if(!npc&&h.id==='hoavi'&&root.DTHoaViPixel?.ready())return root.DTHoaViPixel.hero(c,p,time);
     if(!npc&&atlas.complete&&atlas.naturalWidth){
       const moving=p.moving&&Math.hypot(p.velocityX??1,p.velocityY??1)>3,phase=p.stride??time*14;
       const row={an:0,linh:1,kiet:2,hoavi:3}[h.id]||0,frame=moving?Math.floor(phase*2/Math.PI)%4:0,cw=atlas.naturalWidth/4,ch=atlas.naturalHeight/4,face=Math.cos(root.DTBodyAngle(p))<0?-1:1;

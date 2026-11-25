@@ -19,7 +19,7 @@ const report = {
 async function verify() {
   assert.equal(version, '1.1.0');
   const files = walk(dist).filter(file => file !== '_headers').sort();
-  assert.equal(files.length, 129, 'Build the complete 1.1.0 release with Huyền Kha, Quân Lê and Thiên Vũ atlases first');
+  assert.equal(files.length, 130, 'Build the complete 1.1.0 release with Huyền Kha, Quân Lê, Thiên Vũ and HoaVi atlases first');
   for (let offset = 0; offset < files.length; offset += 4) {
     await Promise.all(files.slice(offset, offset + 4).map(async file => {
       const response = await fetch(new URL(file, base), {

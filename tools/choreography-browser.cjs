@@ -10,7 +10,7 @@ fs.mkdirSync(out,{recursive:true});const pass=name=>{results.push({name,pass:tru
   if(!process.env.DENTINH_BROWSER_URL)await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));
   await p.goto(url);await p.waitForFunction(()=>window.DTChoreography?.texture.naturalWidth===1024&&window.DTElementArt?.art.naturalWidth>0);
   if(id==='thienvu')await p.waitForFunction(()=>DTThienVuPixel.ready());
-  if(id==='hoavi')await p.waitForFunction(()=>DTChoreography.hoaviTexture.naturalWidth===DTHoaViAtlas.width);
+  if(id==='hoavi')await p.waitForFunction(()=>DTHoaViPixel.ready());
   const names={an:'An',huyenkha:'Huyền Kha',quanle:'Quân Lê',hoavi:'HoaVi',thienvu:'Thiên Vũ'};
   await p.getByRole('button',{name:new RegExp('^Chọn '+names[id]+',')}).click();await p.locator('#startButton').click();await p.locator('#dialogueNext').click();
   await p.evaluate(()=>{const g=denTinh.game;g.skipTutorial();g.consumeEvents();g.world.enemies=[];g.player.crit=0;g.input.aimX=g.player.x+160;g.input.aimY=g.player.y+40});
@@ -41,7 +41,7 @@ fs.mkdirSync(out,{recursive:true});const pass=name=>{results.push({name,pass:tru
    });
    const ultimate=await stage(p,'r',{huyenkha:154,thienvu:45}[id]??275);assert(ultimate.effects>0);await p.screenshot({path:path.join(out,'v07-'+id+'-r.png')});pass(id+' R renders with its own visual language');
    if(id==='hoavi'){
-    const review=path.join(__dirname,'../design/blender/hoavi');
+    const review=path.join(__dirname,'../qa/hoavi');fs.mkdirSync(review,{recursive:true});
     await p.evaluate(()=>{const g=denTinh.game,p=g.player;g.cancelActions();g.effects=[];g.projectiles=[];g.paused=false;p.x=1500;p.y=1000;p.mp=p.maxMp;p.code=4;p.cd.q=0;p.invulnerable=0;g.world.collision=()=>false;g.world.ensureChunks=()=>{};g.world.enemies=[{id:'qa-code-target',type:'slime',x:p.x+190,y:p.y+30,hp:100000,maxHp:100000,r:15,alive:true,speed:0,damage:0,xp:0,gold:0,hit:0}];g.input={dx:0,dy:0,fire:false,aimX:p.x+650,aimY:p.y+100};if(!g.skill('q'))throw Error('Q rejected');for(let i=0;i<5;i++)g.update(1/60);g.paused=true;g.consumeEvents();const r=denTinh.renderer;r.camera.x=p.x-640/r.zoom;r.camera.y=p.y-360/r.zoom;r.draw(.016)});
     await p.screenshot({path:path.join(review,'hoavi-game-windup.png')});
     const first=await p.evaluate(()=>{const g=denTinh.game;g.paused=false;for(let i=0;i<10&&!g.castQueue.some(c=>c.type==='code-echo');i++)g.update(1/60);g.paused=true;g.consumeEvents();denTinh.renderer.draw(.016);return{queued:g.castQueue.filter(c=>c.type==='code-echo').length,beam:g.effects.some(e=>e.type==='element-beam'&&e.hero==='hoavi'),fault:g.world.enemies[0].codeFault}});

@@ -1,6 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.DENTINH_PLAYWRIGHT||'../runtime/qa-tools/node_modules/playwright'),{createGameServer}=require('./server.cjs');
-const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.DENTINH_QA_OUTPUT||path.join(root,'design/blender/hoavi')),results=[],errors=[];
+const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.DENTINH_QA_OUTPUT||path.join(root,'qa/hoavi')),results=[],errors=[];
+fs.mkdirSync(out,{recursive:true});
 const pass=(name,details)=>{results.push({name,pass:true,...details});console.log('PASS '+name)};
 (async()=>{
   const server=createGameServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'chrome',headless:true});
