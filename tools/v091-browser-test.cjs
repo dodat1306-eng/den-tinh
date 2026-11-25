@@ -4,7 +4,25 @@ const out=path.resolve('qa/v091'),results=[],errors=[];fs.mkdirSync(out,{recursi
 const pass=name=>{results.push({name,pass:true});console.log('PASS '+name)};
 (async()=>{
  const server=createGameServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'chrome',headless:true});
- async function open(viewport){const context=await browser.newContext({viewport}),p=await context.newPage();p.on('pageerror',e=>errors.push(e.stack));await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));await p.goto(process.env.DENTINH_BROWSER_URL||'http://127.0.0.1:'+server.address().port);await p.waitForFunction(()=>DTV09Art.ready()&&DTWorldPixel.ready()&&denTinh.game.time>=.1);assert.equal(await p.locator('#fatalError').textContent(),'');await p.reload();await p.waitForFunction(()=>DTV09Art.ready()&&DTWorldPixel.ready()&&denTinh.game.time>=.1);assert.equal(await p.locator('#fatalError').textContent(),'');await p.locator('#startButton').click();await p.locator('#dialogueNext').click();await p.evaluate(()=>{denTinh.game.skipTutorial();denTinh.game.world.enemies=[];denTinh.game.world.ensureChunks=()=>{};denTinh.game.consumeEvents()});return {p,context}}
+ async function open(viewport){
+  const context=await browser.newContext({viewport}),p=await context.newPage();
+  const url=process.env.DENTINH_BROWSER_URL||'http://127.0.0.1:'+server.address().port;
+  p.on('pageerror',e=>errors.push(e.stack));
+  if(['127.0.0.1','localhost','[::1]'].includes(new URL(url).hostname)){
+   await p.route('**/save',r=>r.fulfill({contentType:'application/json',body:r.request().method()==='GET'?'null':'{"saved":true}'}));
+  }
+  const navigation={waitUntil:'domcontentloaded',timeout:90000};
+  for(const reload of [false,true]){
+   const response=reload?await p.reload(navigation):await p.goto(url,navigation);
+   assert.equal(response.status(),200);
+   await p.waitForFunction(()=>DTV09Art.ready()&&DTNpcPixel.ready()&&DTWorldPixel.ready()&&denTinh.game.time>=.1,null,{timeout:90000});
+   assert.equal(await p.locator('#fatalError').textContent(),'');
+  }
+  await p.locator('#startButton').click();
+  await p.locator('#dialogueNext').click();
+  await p.evaluate(()=>{denTinh.game.skipTutorial();denTinh.game.world.enemies=[];denTinh.game.world.ensureChunks=()=>{};denTinh.game.consumeEvents()});
+  return {p,context};
+ }
  try{
   const {p,context}=await open({width:1440,height:900});
   await p.keyboard.press('i');assert.equal(await p.locator('[data-stat]').count(),12);await p.getByRole('button',{name:'Cộng Thể Lực',exact:true}).click();assert.equal(await p.evaluate(()=>denTinh.game.player.stats.vit),1);await p.locator('#modalContent').evaluate(e=>e.scrollTop=0);await p.screenshot({path:path.join(out,'inventory-desktop.png')});pass('I shows twelve stats; real click spends point and changes Max HP');
@@ -14,7 +32,33 @@ const pass=name=>{results.push({name,pass:true});console.log('PASS '+name)};
   await p.evaluate(()=>{const g=denTinh.game,n=g.world.npcs.find(n=>n.id==='weaver_woman');g.player.x=n.x;g.player.y=n.y;g.paused=false;g.consumeEvents()});await p.keyboard.press('f');assert((await p.locator('#modalContent').innerText()).includes('Chị Lụa'));await p.locator('#dialogueNext').click();pass('F uses NPC-specific personal quest dialogue');
   await p.evaluate(()=>{const r=denTinh.renderer,draw=r.ctx.drawImage.bind(r.ctx);r.relicPaints=0;r.ctx.drawImage=(...args)=>{if(args[0]?.src?.includes('relics-pixel-v09.png'))r.relicPaints++;return draw(...args)}});
   for(const[id,name]of [['aegis','pedestal-ruins'],['cinderella','pedestal-waterfall'],['wildfire','forest-lamps']]){await p.evaluate(id=>{const g=denTinh.game,o=g.world.relicPedestals.find(o=>o.relic===id);denTinh.renderer.relicPaints=0;g.player.x=o.x-180;g.player.y=o.y+15;g.paused=false;g.update(.02);g.paused=true;g.consumeEvents();document.querySelector('#toastBox').replaceChildren();for(let i=0;i<80;i++)denTinh.renderer.draw(.04)},id);assert(await p.evaluate(()=>denTinh.renderer.relicPaints)>0,'Active renderer must paint physical relic atlas');await p.screenshot({path:path.join(out,name+'.png')})}pass('World paints physical relics, mirror beams and four numbered lamps');
-  const animation=await p.evaluate(()=>{const r=denTinh.renderer,g=r.game,draw=r.ctx.drawImage,records=[],t=g.time,px=g.player.x,py=g.player.y;const sheetSet=new Set(DTNpcPixel.sheets);r.ctx.drawImage=function(...a){if(sheetSet.has(a[0]))records.push(a.slice(1,5));return draw.apply(this,a)};g.player.x=-99999;g.player.y=-99999;for(const def of DTV09Content.npc){const n=g.world.npcs.find(n=>(n.type||n.id)===def.id);for(let f=0;f<6;f++){g.time=f*0.4;r.drawNpc(n)}}const animated=records.length===150&&DTV09Content.npc.every((_,i)=>new Set(records.slice(i*6,i*6+6).map(a=>a.join(','))).size===6);records.length=0;DTSettings.reducedMotion=true;const elder=g.world.npcs.find(n=>n.id==='elder');g.time=.2;r.drawNpc(elder);g.time=3.9;r.drawNpc(elder);DTSettings.reducedMotion=false;r.ctx.drawImage=draw;g.time=t;g.player.x=px;g.player.y=py;return {animated,reduced:records.length===2&&records[0].join(',')===records[1].join(',')}});assert(animation.animated);assert(animation.reduced);pass('All 25 NPCs animate across 520-frame overhaul sheets; reduced motion holds steady frame');
+  const animation=await p.evaluate(()=>{
+   const r=denTinh.renderer,g=r.game,draw=r.ctx.drawImage,records=[],sheets=new Set(DTNpcPixel.sheets);
+   const {time,paused}=g,{x,y}=g.player,reducedMotion=DTSettings.reducedMotion;
+   r.ctx.drawImage=function(...args){if(sheets.has(args[0]))records.push(args.slice(1,5).join(','));return draw.apply(this,args)};
+   try{
+    // Sample daily work after the preceding F interaction has finished.
+    const start=time+DTNpcOverhaulAtlas.frames.interact/DTNpcOverhaulAtlas.fps.interact;
+    g.paused=false;g.player.x=-99999;g.player.y=-99999;DTSettings.reducedMotion=false;
+    let allWork=true;
+    for(const def of DTV09Content.npc){
+     const n=g.world.npcs.find(n=>(n.type||n.id)===def.id);
+     for(let f=0;f<6;f++){
+      g.time=start+f*.4;
+      if(DTNpcPixel.selectFrame(n,g).mode!=='work')allWork=false;
+      r.drawNpc(n);
+     }
+    }
+    const animated=allWork&&records.length===150&&DTV09Content.npc.every((_,i)=>new Set(records.slice(i*6,i*6+6)).size===6);
+    records.length=0;DTSettings.reducedMotion=true;
+    const elder=g.world.npcs.find(n=>n.id==='elder');
+    g.time=start+.2;r.drawNpc(elder);g.time=start+3.9;r.drawNpc(elder);
+    return {animated,reduced:records.length===2&&records[0]===records[1]};
+   }finally{
+    r.ctx.drawImage=draw;g.time=time;g.paused=paused;g.player.x=x;g.player.y=y;DTSettings.reducedMotion=reducedMotion;
+   }
+  });
+  assert(animation.animated);assert(animation.reduced);pass('All 25 NPCs animate across 520-frame overhaul sheets; reduced motion holds steady frame');
   const map=await p.evaluate(()=>{const g=denTinh.game,r=denTinh.renderer,c=document.createElement('canvas');c.width=800;c.height=560;const ctx=c.getContext('2d'),fill=ctx.fillRect.bind(ctx);let count=0;ctx.fillRect=(...a)=>{if(ctx.fillStyle==='#e9bf6f')count++;return fill(...a)};g.world.relicPedestals.forEach(o=>o.discovered=false);g.player.x=3500;g.player.y=2000;r.map(c,true);const hidden=count;g.world.relicPedestals.find(o=>o.relic==='power').discovered=true;count=0;r.map(c,true);return{hidden,shown:count}});assert.equal(map.hidden,0);assert.equal(map.shown,1);pass('M draws only discovered pedestals');
   await p.evaluate(()=>{denTinh.game.paused=false;DTAscensionUI.showRelics()});const catalog=await p.locator('#modalContent').innerText();assert(catalog.includes('Rìa tây Rừng Trúc'));assert(!/\d{3,}\s*,\s*-?\d{3,}/.test(catalog));await p.screenshot({path:path.join(out,'relic-riddles.png')});await p.keyboard.press('Escape');pass('Relic catalog gives landmark riddles without coordinates');
   for(let i=0;i<4;i++){await p.evaluate(i=>{const g=denTinh.game,a=g.world.bossAltars.find(a=>a.relic==='wukong'),n=a.nodes[i];g.player.x=n.x;g.player.y=n.y;g.paused=false;g.time+=.3;g.consumeEvents()},i);await p.keyboard.press('f');assert(await p.evaluate(i=>denTinh.game.world.bossAltars.find(a=>a.relic==='wukong').nodes[i].active,i))}assert(await p.evaluate(()=>denTinh.game.world.enemies.some(e=>e.alive&&e.v09Boss&&e.relic==='wukong')));pass('Four real F presses ring compass bells and summon hidden Boss');
