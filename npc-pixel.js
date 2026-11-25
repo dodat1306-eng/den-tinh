@@ -65,7 +65,6 @@
     activeInteractions.set(id,{
       id,
       gameStart:gTime,
-      gameEnd:gTime+duration,
       wallStart:nowWall(),
       duration
     });
@@ -90,18 +89,23 @@
     let mode=n?.animMode||null;
     let local=0;
 
-    if(!mode){
+    if(mode){
+      const count=mode==='interact'?INTERACT_FRAMES:mode==='greet'?GREET_FRAMES:WORK_FRAMES;
+      if(Number.isInteger(n.animFrame)){
+        local=clamp(n.animFrame,0,count-1);
+      }else if(!still){
+        const fps=mode==='interact'?30:mode==='greet'?28:26;
+        local=Math.floor(gTime*fps)%count;
+      }
+    }else{
       const inter=activeInteractions.get(id);
       if(inter){
-        if(game?.paused){
-          const wEl=Math.max(0,nowWall()-inter.wallStart);
+        // Dialogue pauses game time. Keep the clip moving through pause and resume.
+        const elapsed=Math.max(0,gTime-inter.gameStart,nowWall()-inter.wallStart);
+        if(game?.paused||elapsed<inter.duration){
           mode='interact';
-          local=still?90:Math.floor(wEl*30)%INTERACT_FRAMES;
-        }else if(gTime>=inter.gameStart&&gTime<inter.gameEnd){
-          const u=(gTime-inter.gameStart)/Math.max(.1,inter.duration);
-          mode='interact';
-          local=still?90:clamp(Math.floor(u*INTERACT_FRAMES),0,INTERACT_FRAMES-1);
-        }else if(gTime>=inter.gameEnd){
+          local=still?90:Math.floor(elapsed*INTERACT_FRAMES/Math.max(.1,inter.duration))%INTERACT_FRAMES;
+        }else{
           activeInteractions.delete(id);
         }
       }
@@ -117,13 +121,6 @@
         mode='work';
         local=still?0:Math.floor((gTime+phaseOffset(id,n.x,n.y))*26)%WORK_FRAMES;
       }
-    }else if(!Number.isInteger(n?.animFrame)){
-      const fps=mode==='interact'?30:mode==='greet'?28:26;
-      const count=mode==='interact'?INTERACT_FRAMES:mode==='greet'?GREET_FRAMES:WORK_FRAMES;
-      local=still?0:Math.floor(Math.max(0,gTime)*fps)%count;
-    }else{
-      const count=mode==='interact'?INTERACT_FRAMES:mode==='greet'?GREET_FRAMES:WORK_FRAMES;
-      local=clamp(n.animFrame,0,count-1);
     }
 
     const baseOffset=mode==='interact'?WORK_FRAMES+GREET_FRAMES:mode==='greet'?WORK_FRAMES:0;

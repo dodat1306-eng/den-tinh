@@ -120,8 +120,17 @@ g.player.x = lua.x + 80; g.player.y = lua.y;
 assert.equal(scope.DTNpcPixel.selectFrame(lua, g).mode, 'greet');
 g.player.x = lua.x; g.player.y = lua.y;
 g.paused = false;
+g.time = 17;
 assert(g.interact(), 'F near Chị Lụa must interact');
 assert.equal(scope.DTNpcPixel.selectFrame(lua, g).mode, 'interact');
+assert.equal(scope.DTNpcPixel.selectFrame(lua, g).frame, 0);
+g.paused = true;
+scope.performance.now = () => 1500;
+assert.equal(scope.DTNpcPixel.selectFrame(lua, g).frame, 15, 'Dialogue must animate while game time is paused');
+g.paused = false;
+assert.equal(scope.DTNpcPixel.selectFrame(lua, g).frame, 15, 'Closing dialogue must keep the current frame');
+g.time += 6;
+assert.equal(scope.DTNpcPixel.selectFrame(lua, g).mode, 'greet');
 
 for (const calm of [false, true]) {
   scope.DTSettings.reducedMotion = calm;

@@ -262,7 +262,7 @@
       <button id="autoSlideBtn" class="active">▶ Trình Chiếu Tự Động: BẬT</button>
       <button id="prevNpcBtn">← NPC Trước</button>
       <button id="nextNpcBtn">NPC Kế →</button>
-      <a class="btn primary" href="/?input=desktop">Vào Game Xem Làng Đèn →</a>
+      <a class="btn primary" href="/">Vào Game Xem Làng Đèn →</a>
     </div>
   </header>
 
@@ -365,8 +365,6 @@
       let viewMode = 'cycle'; // 'work' | 'greet' | 'interact' | 'cycle'
       let playing = true;
       let autoSlide = true;
-      let slideTimer = 0;
-      const SLIDE_SECONDS = 8.5;
       let zoom = 3;
       let speed = 1;
       let flip = false;
@@ -428,7 +426,6 @@
       function selectNpc(idx, manual = false) {
         currentIdx = (idx + specs.length) % specs.length;
         playCursor = 0;
-        slideTimer = 0;
         if (manual && autoSlide) toggleAutoSlide(false);
         updateInfo();
       }
@@ -443,7 +440,6 @@
 
       function toggleAutoSlide(force) {
         autoSlide = typeof force === 'boolean' ? force : !autoSlide;
-        slideTimer = 0;
         const btn = document.getElementById('autoSlideBtn');
         btn.classList.toggle('active', autoSlide);
         btn.textContent = autoSlide ? '▶ Trình Chiếu Tự Động: BẬT' : '⏸ Trình Chiếu Tự Động: TẮT';
@@ -625,24 +621,16 @@
         lastNow = now;
         const nowSec = now / 1000;
 
+        const total = totalForMode(viewMode);
         if (playing) {
           const sub = resolveSubFrame(playCursor);
           const fps = sub.mode === 'interact' ? 30 : sub.mode === 'greet' ? 28 : 26;
-          const total = totalForMode(viewMode);
-          playCursor = (playCursor + dt * fps * speed) % total;
-          range.value = String(Math.floor(playCursor));
-          if (autoSlide) {
-            slideTimer += dt * speed;
-            slideBar.style.width = Math.min(100, (slideTimer / SLIDE_SECONDS) * 100) + '%';
-            if (slideTimer >= SLIDE_SECONDS) {
-              slideTimer = 0;
-              selectNpc(currentIdx + 1, false);
-            }
-          } else {
-            slideBar.style.width = '0%';
-          }
+          playCursor += dt * fps * speed;
+          if (autoSlide && playCursor >= total) selectNpc(currentIdx + 1);
+          else playCursor %= total;
         }
-        const total = totalForMode(viewMode);
+        range.value = String(Math.floor(playCursor));
+        slideBar.style.width = (autoSlide ? playCursor / total * 100 : 0) + '%';
         counter.textContent = String(Math.floor(playCursor) + 1).padStart(3, '0') + ' / ' + total;
 
         drawStage(nowSec);
