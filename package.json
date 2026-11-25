@@ -8,7 +8,7 @@
     "deploy": "npm run build:web && npx wrangler@4.156.0 deploy",
     "start": "node tools/server.cjs",
     "start:lan": "node tools/server.cjs --lan",
-    "test": "node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs && node tools/choreography-test.cjs && node tools/elemental-npc-test.cjs && node tools/quanle-test.cjs && node tools/element-split-patrol-test.cjs && node tools/v09-test.cjs && node tools/npc-startup-test.cjs && node tools/quynhkun-test.cjs && node tools/ait01-test.cjs && node tools/huyenkha-test.cjs",
+    "test": "node tools/test.cjs && node tools/expansion-test.cjs && node tools/frontier-test.cjs && node tools/elemental-test.cjs && node tools/ascension-test.cjs && node tools/endless-test.cjs && node tools/visual-math-test.cjs && node tools/journey-test.cjs && node tools/choreography-test.cjs && node tools/elemental-npc-test.cjs && node tools/quanle-test.cjs && node tools/element-split-patrol-test.cjs && node tools/v09-test.cjs && node tools/npc-startup-test.cjs && node tools/npc-overhaul-test.cjs && node tools/quynhkun-test.cjs && node tools/ait01-test.cjs && node tools/huyenkha-test.cjs",
     "test:ascension": "node tools/ascension-test.cjs",
     "test:endless": "node tools/endless-test.cjs",
     "test:elemental": "node tools/elemental-test.cjs",

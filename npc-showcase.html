@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đèn Tinh · Trình Chiếu 26 NPC (13.520 Frame)</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="fonts.css">
+  <style>
+    :root {
+      --bg0: #081119;
+      --bg1: #101f2c;
+      --bg2: #172b3b;
+      --line: #2d495e;
+      --gold: #f5be49;
+      --gold-hi: #ffe89e;
+      --cyan: #6be2f2;
+      --text: #f3e7cc;
+      --muted: #a9bfcc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 0%, #173042 0%, #081119 65%);
+      color: var(--text);
+      font-family: "DenTinh Sans", "Segoe UI", system-ui, sans-serif;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 22px;
+      background: rgba(8, 17, 25, 0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      color: var(--gold-hi);
+    }
+    .brand small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    button, a.btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--bg2);
+      color: var(--text);
+      padding: 8px 13px;
+      border-radius: 8px;
+      font: 600 13px inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color .15s, background .15s, transform .1s;
+    }
+    button:hover, a.btn:hover { border-color: var(--gold); background: #1f394d; }
+    button.active, button.primary, a.btn.primary {
+      background: linear-gradient(180deg, #d89b2b, #9e6814);
+      border-color: var(--gold-hi);
+      color: #140c04;
+    }
+    main {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 18px 20px 36px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+    }
+    @media (max-width: 1080px) { main { grid-template-columns: 1fr; } }
+    .panel {
+      background: rgba(16, 31, 44, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+    }
+    .stage-wrap {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #264154;
+      background: #071018;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+    #stageCanvas { width: 100%; max-width: 680px; height: auto; display: block; }
+    .slide-progress {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+    }
+    .slide-progress i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--gold));
+    }
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    @media (max-width: 680px) { .mode-tabs { grid-template-columns: repeat(2, 1fr); } }
+    .mode-tabs button { padding: 9px 8px; font-size: 12px; text-align: center; }
+    .scrubber {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: rgba(8, 17, 25, 0.65);
+      border-radius: 9px;
+      border: 1px solid #22384a;
+    }
+    .scrubber input[type="range"] { flex: 1; accent-color: var(--gold); }
+    .scrubber code {
+      min-width: 118px;
+      text-align: right;
+      color: var(--gold-hi);
+      font-size: 12.5px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toolbar .group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .toolbar span { font-size: 12px; color: var(--muted); }
+    .bio-card {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(9, 19, 28, 0.85);
+      border: 1px solid #2b4559;
+    }
+    .portrait-box {
+      width: 128px;
+      height: 128px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 22px rgba(245, 190, 73, 0.22);
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 4px;
+    }
+    .bio-head h2 { margin: 0 0 6px; font-size: 22px; color: var(--gold-hi); }
+    .act-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #183244;
+      border: 1px solid #2f5770;
+      font-size: 12px;
+      color: #dff8ff;
+    }
+    .tier-row { display: flex; gap: 6px; margin: 12px 0 8px; flex-wrap: wrap; }
+    .tier-row button { padding: 5px 10px; font-size: 12px; }
+    .dialogue-quote {
+      margin: 0;
+      padding: 12px 14px;
+      background: rgba(16, 31, 44, 0.75);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      line-height: 1.55;
+      font-size: 14px;
+      color: #f6ebd4;
+      min-height: 76px;
+    }
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .stat-chip {
+      padding: 9px 10px;
+      border-radius: 9px;
+      background: rgba(8, 17, 25, 0.65);
+      border: 1px solid #22384a;
+      text-align: center;
+    }
+    .stat-chip b { display: block; font-size: 17px; color: var(--gold-hi); }
+    .stat-chip small { font-size: 11px; color: var(--muted); }
+    .gallery-section {
+      grid-column: 1 / -1;
+    }
+    .gallery-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .gallery-head h3 { margin: 0; font-size: 16px; color: var(--gold-hi); }
+    .npc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
+      gap: 10px;
+    }
+    .npc-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 6px 10px;
+      border-radius: 10px;
+      background: rgba(9, 19, 28, 0.82);
+      border: 1px solid #233b4d;
+      cursor: pointer;
+      transition: border-color .15s, transform .12s, background .15s;
+    }
+    .npc-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+    .npc-card.selected {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, rgba(44, 68, 86, 0.72), rgba(16, 30, 42, 0.92));
+      box-shadow: 0 0 0 1px var(--gold);
+    }
+    .npc-card strong { font-size: 12.5px; margin-top: 4px; color: var(--text); text-align: center; }
+    .npc-card small { font-size: 10.5px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>✦ ĐÈN TINH · TRÌNH CHIẾU NGOẠI HÌNH &amp; HOẠT ẢNH 26 NPC</h1>
+      <small>520 frame / NPC (180 Hoạt động · 160 Chào hỏi · 180 Tương tác) · Tổng 13.520 frame Pixel Art</small>
+    </div>
+    <div class="top-actions">
+      <button id="autoSlideBtn" class="active">▶ Trình Chiếu Tự Động: BẬT</button>
+      <button id="prevNpcBtn">← NPC Trước</button>
+      <button id="nextNpcBtn">NPC Kế →</button>
+      <a class="btn primary" href="/?input=desktop">Vào Game Xem Làng Đèn →</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="stage-wrap">
+        <canvas id="stageCanvas" width="680" height="390"></canvas>
+        <div class="slide-progress"><i id="slideBar"></i></div>
+      </div>
+
+      <div class="mode-tabs">
+        <button data-mode="work">Hoạt Động (180f)</button>
+        <button data-mode="greet">Chào Hỏi (160f)</button>
+        <button data-mode="interact">Tương Tác F (180f)</button>
+        <button data-mode="cycle" class="active">Liên Hoàn (520f)</button>
+      </div>
+
+      <div class="scrubber">
+        <button id="playPauseBtn">⏸ Tạm dừng</button>
+        <button id="stepPrevBtn" title="Lùi 1 frame">◀</button>
+        <input id="frameRange" type="range" min="0" max="519" value="0">
+        <button id="stepNextBtn" title="Tiến 1 frame">▶</button>
+        <code id="frameCounter">001 / 520</code>
+      </div>
+
+      <div class="toolbar">
+        <div class="group">
+          <span>Phóng đại:</span>
+          <button data-zoom="2">2×</button>
+          <button data-zoom="3" class="active">3×</button>
+          <button data-zoom="4">4×</button>
+          <button id="flipBtn">⇄ Lật hướng</button>
+          <button id="gridBtn">▦ Lưới Texel</button>
+        </div>
+        <div class="group">
+          <span>Tốc độ:</span>
+          <button data-speed="0.5">0.5×</button>
+          <button data-speed="1" class="active">1×</button>
+          <button data-speed="1.5">1.5×</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="bio-card">
+        <div class="portrait-box">
+          <canvas id="portraitCanvas" width="128" height="128"></canvas>
+        </div>
+        <div class="bio-head">
+          <span class="eyebrow" id="npcZone">LÀNG ĐÈN</span>
+          <h2 id="npcTitle">Bà Năm</h2>
+          <div class="act-pill" id="npcActionDesc">Chăm đèn tổ tiên &amp; chỉnh kính lão</div>
+        </div>
+      </div>
+
+      <div class="tier-row" id="tierButtons">
+        <button data-tier="0" class="active">Thoại Tầng 1</button>
+        <button data-tier="1">Thoại Tầng 2</button>
+        <button data-tier="2">Thoại Tầng 3</button>
+        <button data-tier="3">Sự Thật Cuối</button>
+      </div>
+      <blockquote class="dialogue-quote" id="npcQuote"></blockquote>
+
+      <div class="stats-strip">
+        <div class="stat-chip"><b>180 frame</b><small>Hoạt động thường ngày (26 fps)</small></div>
+        <div class="stat-chip"><b>160 frame</b><small>Chào hỏi khi đến gần (28 fps)</small></div>
+        <div class="stat-chip"><b>180 frame</b><small>Tương tác / Nghi thức F (30 fps)</small></div>
+      </div>
+      <div class="stats-strip">
+        <div class="stat-chip"><b id="statIndex">#01 / 26</b><small>Thứ tự danh mục</small></div>
+        <div class="stat-chip"><b>80 × 76 tx</b><small>Ô gốc (160×152 px in-game)</small></div>
+        <div class="stat-chip"><b>128 × 128 px</b><small>Chân dung hội thoại động</small></div>
+      </div>
+    </section>
+
+    <section class="panel gallery-section">
+      <div class="gallery-head">
+        <h3>Sân Khấu Toàn Cảnh 26 NPC (Chạy Thực Thời Gian Thực · Nhấp Để Phóng Lớn)</h3>
+        <small style="color:var(--muted)">Phím tắt: ← / → đổi NPC · Space tạm dừng · 1 / 2 / 3 / 4 đổi chế độ hoạt ảnh</small>
+      </div>
+      <div class="npc-grid" id="npcGrid"></div>
+    </section>
+  </main>
+
+  <script>window.DTWorld={endless:{chapters:[]}};</script>
+  <script src="v09-content.js"></script>
+  <script src="npc-pixel.js"></script>
+  <script>
+    (function(){
+      'use strict';
+      const specs = DTNpcPixel.SPECS;
+      const V = window.DTV09Content;
+      const stageCv = document.getElementById('stageCanvas'), stageCtx = stageCv.getContext('2d');
+      const portCv = document.getElementById('portraitCanvas'), portCtx = portCv.getContext('2d');
+      const range = document.getElementById('frameRange');
+      const counter = document.getElementById('frameCounter');
+      const slideBar = document.getElementById('slideBar');
+
+      let currentIdx = 0;
+      let viewMode = 'cycle'; // 'work' | 'greet' | 'interact' | 'cycle'
+      let playing = true;
+      let autoSlide = true;
+      let slideTimer = 0;
+      const SLIDE_SECONDS = 8.5;
+      let zoom = 3;
+      let speed = 1;
+      let flip = false;
+      let showGrid = false;
+      let tier = 0;
+      let playCursor = 0;
+      let lastNow = performance.now();
+
+      const cards = [];
+      const gridEl = document.getElementById('npcGrid');
+      specs.forEach((sp, idx) => {
+        const card = document.createElement('div');
+        card.className = 'npc-card' + (idx === 0 ? ' selected' : '');
+        const cv = document.createElement('canvas');
+        cv.width = 120; cv.height = 114;
+        card.innerHTML = '';
+        card.appendChild(cv);
+        const st = document.createElement('strong');
+        st.textContent = sp.name;
+        const sm = document.createElement('small');
+        sm.textContent = sp.zone;
+        card.appendChild(st);
+        card.appendChild(sm);
+        card.onclick = () => { selectNpc(idx, true); };
+        gridEl.appendChild(card);
+        cards.push({ card, cv, ctx: cv.getContext('2d'), sp, idx });
+      });
+
+      function totalForMode(m) {
+        return m === 'work' ? 180 : m === 'greet' ? 160 : m === 'interact' ? 180 : 520;
+      }
+
+      function resolveSubFrame(f520) {
+        const fi = Math.max(0, Math.floor(f520));
+        if (viewMode === 'work') return { mode: 'work', local: fi % 180, total: 180 };
+        if (viewMode === 'greet') return { mode: 'greet', local: fi % 160, total: 160 };
+        if (viewMode === 'interact') return { mode: 'interact', local: fi % 180, total: 180 };
+        const c = ((Math.floor(f520) % 520) + 520) % 520;
+        if (c < 180) return { mode: 'work', local: c, total: 180 };
+        if (c < 340) return { mode: 'greet', local: c - 180, total: 160 };
+        return { mode: 'interact', local: c - 340, total: 180 };
+      }
+
+      function updateInfo() {
+        const sp = specs[currentIdx];
+        document.getElementById('npcZone').textContent = sp.zone + ' · ID: ' + sp.id;
+        document.getElementById('npcTitle').textContent = sp.name;
+        document.getElementById('statIndex').textContent = '#' + String(currentIdx + 1).padStart(2, '0') + ' / ' + specs.length;
+        const lines = V.dialogues[sp.id] || [
+          'Dòng nước ngọc mát lành giữa lòng Làng Đèn hồi phục trọn vẹn sinh lực và bổ sung bình máu cho người giữ lửa.',
+          'Mỗi khi thắp sáng một Ấn Linh, mặt nước Giếng Ngọc lại phản chiếu thêm một mảnh trời sao cũ.',
+          'Dưới đáy giếng giữ lời chúc phúc thanh tịnh giúp bước chân người đi trong sương nhẹ hơn.',
+          'Ngôi làng đã nhớ lại tên mình; mặt nước giếng trong vắt soi bóng mái đình buổi sớm.'
+        ];
+        document.getElementById('npcQuote').textContent = '“' + (lines[tier] || lines[0]) + '”';
+        cards.forEach((c, i) => c.card.classList.toggle('selected', i === currentIdx));
+      }
+
+      function selectNpc(idx, manual = false) {
+        currentIdx = (idx + specs.length) % specs.length;
+        playCursor = 0;
+        slideTimer = 0;
+        if (manual && autoSlide) toggleAutoSlide(false);
+        updateInfo();
+      }
+
+      function setMode(m) {
+        viewMode = m;
+        playCursor = 0;
+        range.max = String(totalForMode(m) - 1);
+        range.value = '0';
+        document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+      }
+
+      function toggleAutoSlide(force) {
+        autoSlide = typeof force === 'boolean' ? force : !autoSlide;
+        slideTimer = 0;
+        const btn = document.getElementById('autoSlideBtn');
+        btn.classList.toggle('active', autoSlide);
+        btn.textContent = autoSlide ? '▶ Trình Chiếu Tự Động: BẬT' : '⏸ Trình Chiếu Tự Động: TẮT';
+      }
+
+      document.getElementById('autoSlideBtn').onclick = () => toggleAutoSlide();
+      document.getElementById('prevNpcBtn').onclick = () => selectNpc(currentIdx - 1, true);
+      document.getElementById('nextNpcBtn').onclick = () => selectNpc(currentIdx + 1, true);
+      document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+      const playBtn = document.getElementById('playPauseBtn');
+      playBtn.onclick = () => {
+        playing = !playing;
+        playBtn.textContent = playing ? '⏸ Tạm dừng' : '▶ Phát tiếp';
+      };
+      document.getElementById('stepPrevBtn').onclick = () => {
+        playing = false; playBtn.textContent = '▶ Phát tiếp';
+        const max = totalForMode(viewMode);
+        playCursor = (Math.floor(playCursor) - 1 + max) % max;
+      };
+      document.getElementById('stepNextBtn').onclick = () => {
+        playing = false; playBtn.textContent = '▶ Phát tiếp';
+        const max = totalForMode(viewMode);
+        playCursor = (Math.floor(playCursor) + 1) % max;
+      };
+      range.oninput = () => {
+        playing = false; playBtn.textContent = '▶ Phát tiếp';
+        playCursor = Number(range.value) || 0;
+      };
+
+      document.querySelectorAll('[data-zoom]').forEach(b => b.onclick = () => {
+        zoom = Number(b.dataset.zoom);
+        document.querySelectorAll('[data-zoom]').forEach(x => x.classList.toggle('active', x === b));
+      });
+      document.querySelectorAll('[data-speed]').forEach(b => b.onclick = () => {
+        speed = Number(b.dataset.speed);
+        document.querySelectorAll('[data-speed]').forEach(x => x.classList.toggle('active', x === b));
+      });
+      document.getElementById('flipBtn').onclick = e => { flip = !flip; e.currentTarget.classList.toggle('active', flip); };
+      document.getElementById('gridBtn').onclick = e => { showGrid = !showGrid; e.currentTarget.classList.toggle('active', showGrid); };
+      document.querySelectorAll('[data-tier]').forEach(b => b.onclick = () => {
+        tier = Number(b.dataset.tier);
+        document.querySelectorAll('[data-tier]').forEach(x => x.classList.toggle('active', x === b));
+        updateInfo();
+      });
+
+      addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') selectNpc(currentIdx + 1, true);
+        else if (e.key === 'ArrowLeft') selectNpc(currentIdx - 1, true);
+        else if (e.key === ' ') { e.preventDefault(); playBtn.click(); }
+        else if (e.key === '1') setMode('work');
+        else if (e.key === '2') setMode('greet');
+        else if (e.key === '3') setMode('interact');
+        else if (e.key === '4') setMode('cycle');
+      });
+
+      function drawStage(nowSec) {
+        const sp = specs[currentIdx];
+        const W = stageCv.width, H = stageCv.height;
+        stageCtx.clearRect(0, 0, W, H);
+
+        // Atmospheric courtyard night background
+        const bg = stageCtx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, '#07111a');
+        bg.addColorStop(0.68, '#102231');
+        bg.addColorStop(1, '#162936');
+        stageCtx.fillStyle = bg;
+        stageCtx.fillRect(0, 0, W, H);
+
+        const groundY = Math.round(H * 0.78);
+        // Stone courtyard terrace
+        stageCtx.fillStyle = '#182b38';
+        stageCtx.beginPath();
+        stageCtx.ellipse(W / 2, groundY + 4, 185, 38, 0, 0, Math.PI * 2);
+        stageCtx.fill();
+        stageCtx.strokeStyle = '#2f4e63';
+        stageCtx.lineWidth = 2;
+        stageCtx.stroke();
+
+        if (sp.light) {
+          const glow = stageCtx.createRadialGradient(W / 2, groundY - 60, 8, W / 2, groundY - 40, 185);
+          glow.addColorStop(0, sp.light + '44');
+          glow.addColorStop(1, 'transparent');
+          stageCtx.fillStyle = glow;
+          stageCtx.fillRect(0, 0, W, H);
+        }
+
+        const sub = resolveSubFrame(playCursor);
+        const modeLabels = {
+          work: 'HOẠT ĐỘNG THƯỜNG NGÀY · ' + sp.work,
+          greet: 'CHÀO HỎI KHI ĐẾN GẦN · ' + sp.greet,
+          interact: 'TƯƠNG TÁC NGHI THỨC (F) · ' + sp.interact
+        };
+        document.getElementById('npcActionDesc').textContent = modeLabels[sub.mode];
+
+        if (DTNpcPixel.ready()) {
+          const sel = DTNpcPixel.selectFrame({ id: sp.id, type: sp.id, animMode: sub.mode, animFrame: sub.local }, { time: nowSec });
+          if (sel) {
+            stageCtx.save();
+            stageCtx.imageSmoothingEnabled = false;
+            stageCtx.fillStyle = '#050d1488';
+            stageCtx.beginPath();
+            stageCtx.ellipse(W / 2, groundY, 24 * zoom, 8 * zoom, 0, 0, Math.PI * 2);
+            stageCtx.fill();
+
+            stageCtx.translate(Math.round(W / 2), groundY);
+            if (flip) stageCtx.scale(-1, 1);
+            stageCtx.drawImage(
+              sel.sheet,
+              sel.sx, sel.sy, sel.w, sel.h,
+              -sel.ax * zoom, -sel.ay * zoom, sel.w * zoom, sel.h * zoom
+            );
+
+            if (showGrid) {
+              stageCtx.strokeStyle = 'rgba(255,255,255,0.10)';
+              stageCtx.lineWidth = 1;
+              for (let gx = 0; gx <= sel.w; gx += 4) {
+                const px = -sel.ax * zoom + gx * zoom;
+                stageCtx.beginPath(); stageCtx.moveTo(px, -sel.ay * zoom); stageCtx.lineTo(px, (sel.h - sel.ay) * zoom); stageCtx.stroke();
+              }
+              for (let gy = 0; gy <= sel.h; gy += 4) {
+                const py = -sel.ay * zoom + gy * zoom;
+                stageCtx.beginPath(); stageCtx.moveTo(-sel.ax * zoom, py); stageCtx.lineTo((sel.w - sel.ax) * zoom, py); stageCtx.stroke();
+              }
+            }
+            stageCtx.restore();
+          }
+
+          // Portrait preview on right panel
+          portCtx.clearRect(0, 0, 128, 128);
+          portCtx.fillStyle = '#09131c';
+          portCtx.fillRect(0, 0, 128, 128);
+          if (sp.id === 'well') {
+            const selW = DTNpcPixel.selectFrame({ id: 'well', type: 'well', animMode: 'interact', animFrame: Math.floor(nowSec * 30) % 180 }, { time: nowSec });
+            portCtx.imageSmoothingEnabled = false;
+            portCtx.drawImage(selW.sheet, selW.sx + 12, selW.sy + 8, 56, 56, 4, 4, 120, 120);
+          } else {
+            DTNpcPixel.portrait(portCtx, sp.id, 128, 128, nowSec, false);
+          }
+          portCtx.strokeStyle = '#5c4028'; portCtx.lineWidth = 4; portCtx.strokeRect(2, 2, 124, 124);
+          portCtx.strokeStyle = sp.light || '#f5be49'; portCtx.lineWidth = 2; portCtx.strokeRect(5, 5, 118, 118);
+        }
+
+        // HUD badges inside stage
+        stageCtx.fillStyle = 'rgba(8, 17, 25, 0.78)';
+        stageCtx.fillRect(14, 14, 290, 52);
+        stageCtx.strokeStyle = '#2d495e';
+        stageCtx.strokeRect(14, 14, 290, 52);
+        stageCtx.fillStyle = '#ffe89e';
+        stageCtx.font = '700 15px "DenTinh Sans", sans-serif';
+        stageCtx.fillText(sp.name + ' · ' + sp.zone, 26, 36);
+        stageCtx.fillStyle = '#8be9f5';
+        stageCtx.font = '12px "DenTinh Sans", sans-serif';
+        stageCtx.fillText(
+          (sub.mode === 'work' ? 'Hoạt động' : sub.mode === 'greet' ? 'Chào hỏi' : 'Tương tác') +
+          ' · Frame ' + String(sub.local + 1).padStart(3, '0') + ' / ' + sub.total,
+          26, 55
+        );
+      }
+
+      function drawGallery(nowSec) {
+        if (!DTNpcPixel.ready()) return;
+        for (const item of cards) {
+          const { ctx, cv, sp, idx } = item;
+          ctx.clearRect(0, 0, cv.width, cv.height);
+          const m = idx === currentIdx ? resolveSubFrame(playCursor).mode : ((Math.floor(nowSec / 4 + idx) % 3) === 0 ? 'interact' : (Math.floor(nowSec / 4 + idx) % 3) === 1 ? 'greet' : 'work');
+          const sel = DTNpcPixel.selectFrame({ id: sp.id, type: sp.id, animMode: m }, { time: nowSec + idx * 0.37 });
+          if (!sel) continue;
+          ctx.imageSmoothingEnabled = false;
+          ctx.fillStyle = '#07111a66';
+          ctx.beginPath(); ctx.ellipse(60, 98, 26, 7, 0, 0, Math.PI * 2); ctx.fill();
+          const s = 1.45;
+          ctx.drawImage(sel.sheet, sel.sx, sel.sy, sel.w, sel.h, Math.round(60 - sel.ax * s), Math.round(98 - sel.ay * s), Math.round(sel.w * s), Math.round(sel.h * s));
+        }
+      }
+
+      function tick(now) {
+        const dt = Math.min(0.05, Math.max(0, (now - lastNow) / 1000));
+        lastNow = now;
+        const nowSec = now / 1000;
+
+        if (playing) {
+          const sub = resolveSubFrame(playCursor);
+          const fps = sub.mode === 'interact' ? 30 : sub.mode === 'greet' ? 28 : 26;
+          const total = totalForMode(viewMode);
+          playCursor = (playCursor + dt * fps * speed) % total;
+          range.value = String(Math.floor(playCursor));
+          if (autoSlide) {
+            slideTimer += dt * speed;
+            slideBar.style.width = Math.min(100, (slideTimer / SLIDE_SECONDS) * 100) + '%';
+            if (slideTimer >= SLIDE_SECONDS) {
+              slideTimer = 0;
+              selectNpc(currentIdx + 1, false);
+            }
+          } else {
+            slideBar.style.width = '0%';
+          }
+        }
+        const total = totalForMode(viewMode);
+        counter.textContent = String(Math.floor(playCursor) + 1).padStart(3, '0') + ' / ' + total;
+
+        drawStage(nowSec);
+        drawGallery(nowSec);
+        requestAnimationFrame(tick);
+      }
+
+      updateInfo();
+      requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>

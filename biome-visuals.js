@@ -122,7 +122,7 @@
     const e=g.worldEvent;
     if (e&&inView(e)) {
       if (e.id==='traveler_rescue') objects.push({y:e.y,draw:()=>{
-        r.drawNpc({...e,id:'ferryman',type:'ferryman',name:'Lữ Khách Giữ Đèn'});
+        r.drawNpc({...e,id:'ferryman',type:'ferryman',animMode:'interact',name:'Lữ Khách Giữ Đèn'});
         label(c,'Lữ Khách Giữ Đèn',e.x,e.y-112,gold);
         bar(c,e.x-32,e.y-104,64,e.hp/e.maxHp,'#9fdf95');
       }});

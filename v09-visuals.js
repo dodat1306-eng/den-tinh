@@ -68,7 +68,7 @@
     for(const o of g.questMemories?.()||[])if(inView(o))objects.push({y:o.y,draw:()=>{const c=this.ctx;c.save();c.fillStyle='#443f56';c.fillRect(o.x-12,o.y-27,24,29);c.fillStyle='#d8c699';c.fillRect(o.x-9,o.y-24,18,19);c.strokeStyle='#bc9eda';c.beginPath();c.ellipse(o.x,o.y+3,24,9,0,0,TAU);c.stroke();c.fillStyle='#47384e';c.fillRect(o.x-5,o.y-18,10,2);c.fillRect(o.x-5,o.y-12,7,2);c.fillStyle='#fff1b3';c.fillRect(o.x-2,o.y-38+Math.sin(g.time*3)*2,4,4);c.restore()}});
     for(const s of g.relicClones||[])if(inView(s))objects.push({y:s.y,draw:()=>{const c=this.ctx;c.save();c.globalAlpha=.8;root.DTArt.drawHero(c,{...s,facing:0},g.hero,g.time,.85);c.strokeStyle='#d9ae58';c.lineWidth=3;c.beginPath();c.moveTo(s.x+17,s.y-41);c.lineTo(s.x+17,s.y);c.stroke();c.restore()}});return objects;
   };
-  const npc=R.drawNpc;R.drawNpc=function(n){const clip=root.DTNpcPixelAtlas?.clips[(n.type||n.id)+'/idle'];if(!clip||!actors.complete||!actors.naturalWidth)return npc.call(this,n);const frame=clip.cells[root.DTSettings?.reducedMotion?0:Math.floor(Math.max(0,this.game.time)*clip.fps)%clip.frames],unit=root.DTNpcPixelAtlas.unit||2,c=this.ctx;c.save();c.imageSmoothingEnabled=false;c.fillStyle='#08192365';c.beginPath();c.ellipse(n.x,n.y,21,7,0,0,TAU);c.fill();c.drawImage(actors,frame.x,frame.y,frame.w,frame.h,Math.round(n.x-frame.anchorX*unit),Math.round(n.y-frame.anchorY*unit),frame.w*unit,frame.h*unit);c.font='11px "DenTinh Sans"';c.textAlign='center';c.fillStyle='#f0dfb9';c.fillText(n.name,n.x,n.y+19);c.restore()};
+  const npc=R.drawNpc;R.drawNpc=function(n){if(root.DTNpcPixel?.draw(this,n))return;const clip=root.DTNpcPixelAtlas?.clips[(n.type||n.id)+'/idle'];if(!clip||!actors.complete||!actors.naturalWidth)return npc.call(this,n);const frame=clip.cells[root.DTSettings?.reducedMotion?0:Math.floor(Math.max(0,this.game.time)*clip.fps)%clip.frames],unit=root.DTNpcPixelAtlas.unit||2,c=this.ctx;c.save();c.imageSmoothingEnabled=false;c.fillStyle='#08192365';c.beginPath();c.ellipse(n.x,n.y,21,7,0,0,TAU);c.fill();c.drawImage(actors,frame.x,frame.y,frame.w,frame.h,Math.round(n.x-frame.anchorX*unit),Math.round(n.y-frame.anchorY*unit),frame.w*unit,frame.h*unit);c.font='11px "DenTinh Sans"';c.textAlign='center';c.fillStyle='#f0dfb9';c.fillText(n.name,n.x,n.y+19);c.restore()};
   const prop=R.drawProp;R.drawProp=function(p){if(p.relicCleared)return;return prop.call(this,p)};
   const effect=R.drawEffect;R.drawEffect=function(e){if(e.type!=='rpg-level'&&e.type!=='rpg-soul')return effect.call(this,e);const c=this.ctx,alpha=e.life/e.maxLife;c.save();c.globalAlpha=alpha;if(e.type==='rpg-level'){const grad=c.createLinearGradient(0,e.y-220,0,e.y);grad.addColorStop(0,'#ffe8a000');grad.addColorStop(1,'#fff0bbcc');c.fillStyle=grad;c.fillRect(e.x-18,e.y-220,36,220);c.strokeStyle='#b8e4ce';c.lineWidth=3;c.beginPath();c.ellipse(e.x,e.y,60*(1-alpha)+20,16,0,0,TAU);c.stroke()}else{const f=1-alpha,x=e.x+(e.tx-e.x)*f,y=e.y+(e.ty-e.y)*f;c.fillStyle='#ffe4a6';c.fillRect(x-4,y-4,8,8)}c.restore()};
   const scenery=R.drawScenery;R.drawScenery=function(inView){scenery?.call(this,inView);const c=this.ctx,g=this.game;for(const p of [...g.world.relicPedestals,...g.world.bossAltars])if(!p.claimed&&inView(p))trialGround(this,p);if(g.domGuide){c.save();c.strokeStyle='#ffe1a0';c.lineWidth=2;c.setLineDash([3,9]);c.beginPath();c.moveTo(g.player.x,g.player.y);c.lineTo(g.domGuide.x,g.domGuide.y);c.stroke();c.restore()}};
@@ -167,9 +167,10 @@
     }
     c.globalAlpha=1;
     // 2. Close-up Head, Shoulders & Signature Prop
-    let drawn=false;
+    let drawn=false,npcOverhaul=false;
     if(info.kind==='npc'){
-      const clip=root.DTNpcPixelAtlas?.clips?.[info.id+'/idle'];
+      if(root.DTNpcPixel?.portrait?.(c,info.id,w,h,t,calm)){drawn=true;npcOverhaul=true}
+      const clip=!drawn&&root.DTNpcPixelAtlas?.clips?.[info.id+'/idle'];
       if(clip&&actors.complete&&actors.naturalWidth>0){
         const idx=calm?0:Math.floor(Math.max(0,t)*clip.fps)%clip.frames,f=clip.cells[idx];
         // Zoomed upper body (head, shoulders & held prop) at crisp 3x pixel scale
@@ -244,17 +245,17 @@
         c.fillRect(42,44+bob,6,6);c.fillRect(64,44+bob,6,6);
         c.fillStyle='#ffffff';c.fillRect(44,44+bob,2,2);c.fillRect(66,44+bob,2,2);
       }
-    }else if(blink){
+    }else if(blink&&!npcOverhaul){
       // Subtle eye-blink shimmer on atlas portrait
       c.fillStyle=info.bg;c.globalAlpha=.45;c.fillRect(44,46+bob,24,3);c.globalAlpha=1;
     }
     // 3. Signature Prop Overlay & Animated Foreground Details
     const pBob=calm?0:Math.round(Math.sin(t*4.5)*3);
-    if(info.prop==='lantern'){
+    if(!npcOverhaul&&info.prop==='lantern'){
       c.fillStyle='#785438';c.fillRect(84,48+pBob,14,4);
       c.fillStyle='#ffb84d';c.fillRect(86,52+pBob,10,14);
       c.fillStyle='#fff6cc';c.fillRect(88,54+pBob,6,10);
-    }else if(info.prop==='code'||info.prop==='core'){
+    }else if(!npcOverhaul&&(info.prop==='code'||info.prop==='core')){
       c.fillStyle='#22d3ee';c.font='bold 10px monospace';
       c.fillText(Math.floor(t*4)%2?'01':'<>',82,32+pBob);
     }else if(info.prop==='talisman'){
@@ -275,5 +276,5 @@
     c.restore();
     return info;
   }
-  root.DTV09Art={icon,atlas,actors,resolveSpeaker,drawPortrait,ready:()=>!!atlas.naturalWidth&&!!actors.naturalWidth&&!!root.DTNpcPixelAtlas};
+  root.DTV09Art={icon,atlas,actors,resolveSpeaker,drawPortrait,ready:()=>!!atlas.naturalWidth&&(root.DTNpcPixel?root.DTNpcPixel.ready():!!actors.naturalWidth&&!!root.DTNpcPixelAtlas)};
 })(globalThis);

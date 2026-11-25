@@ -284,6 +284,7 @@
     for(const e of g.effects||[])if(near(e)&&['shadow-portal','shadow-legion','lightning','bolt','ultimate','shock','element-beam'].includes(e.type)){
       add(e.x,e.y-14,Math.max(115,(e.r||90)*1.25),e.color||'#c084fc',.85,true);
     }
+    root.DTNpcPixel?.collectLights?.(g,near,add,still());
     this._frameLights=lights;
     return lights;
   };
