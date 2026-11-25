@@ -214,9 +214,9 @@ function buildActionsAtlas() {
       // Trailing quantum hologram ribbons & lotus motes
       if (burst > 0.05) {
         for (let r = 0; r < 6; r++) {
-          const dist = 10 + r * 5.2 * burst;
-          const rx = AX - fx * dist + (fx === 0 ? Math.sin(r * 2.1 + u * 12) * 10 : 0);
-          const ry = AY - 34 + (r - 2.5) * 5 - fy * dist * 0.45;
+          const dist = 10 + r * 4.6 * burst;
+          const rx = AX - fx * dist + (fx === 0 ? Math.sin(r * 2.1 + u * 12) * 8 : 0);
+          const ry = AY - 25 + (r - 2.5) * 4.2 - fy * dist * 0.45;
           cell.rect(rx - 4, ry, 8, 1.5, r % 2 === 0 ? C.CYAN3 : C.PINK);
         }
       }
@@ -282,14 +282,14 @@ function buildActionsAtlas() {
         for (let k = 0; k < 6; k++) {
           const a = (k * TAU) / 6 + f * 0.3;
           cell.line(
-            AX + fx * 10 + Math.cos(a) * 6, AY - 34 + Math.sin(a) * 6,
-            AX + fx * 10 + Math.cos(a) * 14, AY - 34 + Math.sin(a) * 14,
+            AX + fx * 9 + Math.cos(a) * 5, AY - 26 + Math.sin(a) * 5,
+            AX + fx * 9 + Math.cos(a) * 12, AY - 26 + Math.sin(a) * 12,
             1.2, k % 2 === 0 ? C.RED : C.CYAN3
           );
         }
       }
       if (shield > 0.1) {
-        drawHexBarrier(cell, AX + fx * 12, AY - 34 + fy * 4, 15 * shield + 6, 19 * shield + 6, f * 0.2, C.CYAN3);
+        drawHexBarrier(cell, AX + fx * 10, AY - 26 + fy * 3, 12 * shield + 5, 15 * shield + 5, f * 0.2, C.CYAN3);
       }
 
       const idx = 180 + vIdx * 45 + f;
@@ -336,7 +336,7 @@ function buildActionsAtlas() {
 
     // Ascending Golden-Cyan Spirit Lantern (`Đèn Tinh`) + Sacred Rune Spiral
     if (f >= 30 && f <= 165) {
-      const ly = AY - 44 - smooth(lanternU) * 24;
+      const ly = AY - 36 - smooth(lanternU) * 20;
       const lx = AX + Math.sin(u * TAU * 2) * 2;
       // Spiral particles rising from keyboard to lantern
       for (let p = 0; p < 8; p++) {
@@ -387,13 +387,13 @@ function buildActionsAtlas() {
     });
 
     // Levitating Encrypted Relic Cube + Dual Scanning Holo Windows
-    const rx = AX + 24, ry = AY - 30 - smooth(clamp(f / 120, 0, 1)) * 8 + Math.sin(f * 0.15) * 2;
+    const rx = AX + 22, ry = AY - 24 - smooth(clamp(f / 120, 0, 1)) * 7 + Math.sin(f * 0.15) * 1.8;
     if (scan > 0.15) {
-      drawCodeWindow(cell, AX + 8, AY - 52, 20, 15, Math.floor(f / 3), f < 85);
+      drawCodeWindow(cell, AX + 7, AY - 44, 18, 14, Math.floor(f / 3), f < 85);
       // Laser scanner rays from HoaVi's hand/window to Relic
-      cell.line(AX + 10, AY - 26, rx, ry - 5, 1.0, C.CYAN3);
-      cell.line(AX + 10, AY - 26, rx, ry + 5, 1.0, f < 85 ? C.RED : C.GOLD2);
-      cell.ring(rx, ry, 9, 9, 1.0, f < 85 ? C.RED : C.CYAN3);
+      cell.line(AX + 8, AY - 22, rx, ry - 4, 1.0, C.CYAN3);
+      cell.line(AX + 8, AY - 22, rx, ry + 4, 1.0, f < 85 ? C.RED : C.GOLD2);
+      cell.ring(rx, ry, 8, 8, 1.0, f < 85 ? C.RED : C.CYAN3);
     }
     if (f < 165) {
       const colMain = f < 85 ? C.ROBE2 : C.GOLD2;
@@ -423,9 +423,9 @@ function buildActionsAtlas() {
 
     // 2 side angled Hologram IDE Monitors behind/beside HoaVi
     if (ide > 0.2) {
-      const sw = Math.round(20 * ide), sh = Math.round(16 * ide);
-      drawCodeWindow(cell, AX - 29, AY - 44, sw, sh, Math.floor(f / 2), false);
-      drawCodeWindow(cell, AX + 29, AY - 44, sw, sh, Math.floor(f / 2) + 2, false);
+      const sw = Math.round(18 * ide), sh = Math.round(14 * ide);
+      drawCodeWindow(cell, AX - 26, AY - 36, sw, sh, Math.floor(f / 2), false);
+      drawCodeWindow(cell, AX + 26, AY - 36, sw, sh, Math.floor(f / 2) + 2, false);
     }
 
     drawHoaViRig(cell, AX, AY, {
@@ -451,14 +451,14 @@ function buildActionsAtlas() {
 
     // Holographic Cyber-Lotus & Digital Fox Spirit (`Đốm`) projected above keyboard!
     if (f >= 45 && f <= 155) {
-      const hy = AY - 68 + Math.sin(f * 0.18) * 2;
-      drawLotusEmblem(cell, AX, hy, 5.5, C.CYAN3, C.PINK, C.WHITE, u * TAU * 2);
+      const hy = AY - 54 + Math.sin(f * 0.18) * 2;
+      drawLotusEmblem(cell, AX, hy, 5.0, C.CYAN3, C.PINK, C.WHITE, u * TAU * 2);
     }
     // Signature anime diagonal sparkle on glasses push!
     if (pushGlasses > 0.55) {
-      const gx = AX + 6, gy = AY - 49;
-      cell.line(gx - 5, gy, gx + 5, gy, 1.2, C.WHITE);
-      cell.line(gx, gy - 5, gx, gy + 5, 1.2, C.CYAN3);
+      const gx = AX + 4, gy = AY - 37;
+      cell.line(gx - 4, gy, gx + 4, gy, 1.2, C.WHITE);
+      cell.line(gx, gy - 4, gx, gy + 4, 1.2, C.CYAN3);
     }
 
     const idx = 720 + f;
@@ -527,16 +527,16 @@ function buildSkillsAtlas() {
 
       // Volumetric Cyber Slash / Lotus Muzzle Burst per Combo!
       if (snap > 0.15) {
-        const mx = AX + fx * 20, my = AY - 32 + fy * 14 - hop;
+        const mx = AX + fx * 18, my = AY - 25 + fy * 12 - hop * 0.8;
         if (combo === 0) {
-          cell.ring(mx, my, 5 + snap * 7, 5 + snap * 7, 1.2, C.CYAN3);
-          cell.line(mx - fx * 6, my - fy * 6, mx + fx * 14, my + fy * 12, 2.2, C.WHITE);
+          cell.ring(mx, my, 4 + snap * 6, 4 + snap * 6, 1.2, C.CYAN3);
+          cell.line(mx - fx * 5, my - fy * 5, mx + fx * 12, my + fy * 10, 2.0, C.WHITE);
         } else if (combo === 1) {
-          drawCyberCrescent(cell, AX + fx * 8, AY - 32, aimAngle, 20 + snap * 6, 1.9, 3.2 * snap, C.CYAN2, C.PINK);
+          drawCyberCrescent(cell, AX + fx * 7, AY - 25, aimAngle, 17 + snap * 5, 1.9, 2.8 * snap, C.CYAN2, C.PINK);
         } else {
           // Combo 3 SUDO OVERRIDE: 8-petal Cyber-Lotus cannon bloom!
-          drawLotusEmblem(cell, mx + fx * 4, my, 6 + snap * 9, C.CYAN3, C.PINK, C.WHITE, cu * TAU);
-          cell.ring(mx + fx * 4, my, 8 + snap * 11, 8 + snap * 11, 1.2, C.GOLD2);
+          drawLotusEmblem(cell, mx + fx * 3, my, 5 + snap * 8, C.CYAN3, C.PINK, C.WHITE, cu * TAU);
+          cell.ring(mx + fx * 3, my, 7 + snap * 9, 7 + snap * 9, 1.2, C.GOLD2);
         }
       }
 
@@ -557,10 +557,10 @@ function buildSkillsAtlas() {
 
       // Echo Sakura-Cyan Hologram Afterimage (frames 36..59)
       if (echo > 0.15) {
-        const ex = AX - fx * (6 + echo * 6);
-        for (let r = 0; r < 9; r++) {
-          const yy = AY - 58 + r * 6;
-          cell.rect(ex - 9 + (r % 2) * 3, yy, 18, 1.5, r % 2 === 0 ? C.PINK : C.CYAN2);
+        const ex = AX - fx * (6 + echo * 5);
+        for (let r = 0; r < 8; r++) {
+          const yy = AY - 46 + r * 5.2;
+          cell.rect(ex - 7 + (r % 2) * 3, yy, 14, 1.4, r % 2 === 0 ? C.PINK : C.CYAN2);
         }
       }
 
@@ -584,16 +584,16 @@ function buildSkillsAtlas() {
       });
 
       // Stacked Hologram Code Windows + Breakpoint Reticle & Railgun Lance
-      const wx = AX + (fx !== 0 ? fx * 22 : 20);
-      const wy = AY - 40 + fy * 10;
+      const wx = AX + (fx !== 0 ? fx * 20 : 18);
+      const wy = AY - 33 + fy * 8;
       if (f >= 3 && f <= 38) {
-        drawCodeWindow(cell, wx, wy - 6, 20, 15, Math.floor(f / 2), f >= 12 && f <= 26);
+        drawCodeWindow(cell, wx, wy - 5, 18, 14, Math.floor(f / 2), f >= 12 && f <= 26);
       }
       if (fire > 0.1) {
-        const bx = AX + fx * 22, by = AY - 32 + fy * 14;
-        cell.ring(bx, by, 6 + fire * 10, 6 + fire * 10, 1.4, C.CYAN3);
-        cell.ring(bx + fx * 6, by + fy * 4, 4 + fire * 6, 4 + fire * 6, 1.2, C.PINK);
-        cell.line(AX + fx * 10, AY - 32, bx + fx * 16, by + fy * 12, 3.0 * fire + 1, C.WHITE);
+        const bx = AX + fx * 20, by = AY - 25 + fy * 12;
+        cell.ring(bx, by, 5 + fire * 9, 5 + fire * 9, 1.4, C.CYAN3);
+        cell.ring(bx + fx * 5, by + fy * 4, 3.5 + fire * 5, 3.5 + fire * 5, 1.2, C.PINK);
+        cell.line(AX + fx * 8, AY - 25, bx + fx * 15, by + fy * 11, 2.8 * fire + 1, C.WHITE);
         // Red breakpoint <!> diamond lock
         cell.poly([[bx, by - 5], [bx + 5, by], [bx, by + 5], [bx - 5, by]], C.RED);
         cell.set(bx, by, C.WHITE);
@@ -733,19 +733,19 @@ function buildUltAtlas() {
     // 2. Three Panoramic Floating Terminal Screens (frames 12..255)
     if (f >= 12 && f <= 265) {
       const fade = f < 35 ? smooth((f - 12) / 23) : f > 240 ? 1 - smooth((f - 240) / 25) : 1;
-      const w = Math.round(26 * fade), h = Math.round(18 * fade);
+      const w = Math.round(24 * fade), h = Math.round(16 * fade);
       if (w >= 8) {
-        drawCodeWindow(cell, AX - 46, AY - 52 - levitate * 0.4, w, h, Math.floor(f / 2), f >= 160);
-        drawCodeWindow(cell, AX + 46, AY - 52 - levitate * 0.4, w, h, Math.floor(f / 2) + 3, f >= 160);
-        drawCodeWindow(cell, AX, AY - 78 - levitate * 0.3, Math.round(32 * fade), Math.round(14 * fade), Math.floor(f / 2) + 1, f >= 220);
+        drawCodeWindow(cell, AX - 44, AY - 42 - levitate * 0.4, w, h, Math.floor(f / 2), f >= 160);
+        drawCodeWindow(cell, AX + 44, AY - 42 - levitate * 0.4, w, h, Math.floor(f / 2) + 3, f >= 160);
+        drawCodeWindow(cell, AX, AY - 65 - levitate * 0.3, Math.round(30 * fade), Math.round(13 * fade), Math.floor(f / 2) + 1, f >= 220);
       }
     }
 
     // 3. Twin Giant Shoulder Lotus Halos (frames 75..260)
     if (f >= 75 && f <= 270) {
-      const lr = 11 * (f > 245 ? 1 - smooth((f - 245) / 25) : smooth(p2));
+      const lr = 10 * (f > 245 ? 1 - smooth((f - 245) / 25) : smooth(p2));
       for (const side of [-1, 1]) {
-        const lx = AX + side * 28, ly = AY - 46 - levitate;
+        const lx = AX + side * 24, ly = AY - 36 - levitate;
         drawLotusEmblem(cell, lx, ly, lr, C.CYAN3, C.ROBE3, C.GOLD2, side * u * TAU * 3);
       }
     }
@@ -757,15 +757,15 @@ function buildUltAtlas() {
       for (let i = 0; i < eyeCount; i++) {
         const ringIdx = i < 6 ? 0 : 1;
         const slotAngle = ((i % 6) * TAU) / 6 + u * TAU * (ringIdx === 0 ? 2.0 : -1.5);
-        const rx = ringIdx === 0 ? 44 : 64;
-        const ry = ringIdx === 0 ? 24 : 34;
+        const rx = ringIdx === 0 ? 40 : 60;
+        const ry = ringIdx === 0 ? 22 : 32;
         const ex = AX + Math.cos(slotAngle) * rx;
-        const ey = AY - 44 - levitate * 0.7 + Math.sin(slotAngle) * ry;
-        const outAngle = Math.atan2(ey - (AY - 44 - levitate), ex - AX);
+        const ey = AY - 35 - levitate * 0.7 + Math.sin(slotAngle) * ry;
+        const outAngle = Math.atan2(ey - (AY - 35 - levitate), ex - AX);
 
         // Laser targeting tether in P3 / Plasma Omni-Beam in P4!
         if (f >= 165 && f < 240 && i % 2 === (Math.floor(f / 6) % 2)) {
-          cell.line(AX, AY - 40 - levitate, ex, ey, 1.0, C.CYAN1);
+          cell.line(AX, AY - 32 - levitate, ex, ey, 1.0, C.CYAN1);
         }
         if (firing) {
           const bx = ex + Math.cos(outAngle) * 32;
@@ -808,8 +808,8 @@ function buildUltAtlas() {
     // 6. Peak Overclock Shockwave Dome (frames 242..282)
     if (f >= 242 && f <= 282) {
       const su = (f - 242) / 40;
-      cell.ring(AX, AY - 34, 18 + su * 58, 12 + su * 38, 1.8 * (1 - su) + 0.8, C.WHITE);
-      cell.ring(AX, AY - 34, 12 + su * 50, 8 + su * 32, 1.4, C.CYAN3);
+      cell.ring(AX, AY - 26, 18 + su * 58, 12 + su * 38, 1.8 * (1 - su) + 0.8, C.WHITE);
+      cell.ring(AX, AY - 26, 12 + su * 50, 8 + su * 32, 1.4, C.CYAN3);
     }
 
     cell.blitTo(atlas, CW * COLS, (f % COLS) * CW, Math.floor(f / COLS) * CH);
@@ -967,8 +967,8 @@ function buildVfxV2Atlas() {
     ss.blitTo(atlas, W, 480 + p * 32, 456);
   }
   const shad = new PixelSurface(32, 8);
-  shad.ellipse(16, 4, 14, 3.2, C.TERM);
-  shad.ellipse(16, 4, 10, 2.2, C.OUT);
+  shad.ellipse(16, 4, 11.5, 2.8, C.TERM);
+  shad.ellipse(16, 4, 8.2, 1.9, C.OUT);
   shad.blitTo(atlas, W, 608, 456);
 
   // I. 8-frame `code_window` (40×32, x=0..319, y=492), 8-frame `muzzle_snap` (28×28, x=320..543, y=492), 8-frame `hit_glitch` (36×36, x=544..831, y=492)

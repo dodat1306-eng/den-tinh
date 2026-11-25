@@ -310,34 +310,32 @@ function drawCodeWindow(s, cx, cy, w = 22, h = 18, scroll = 0, alert = false) {
 }
 
 // Draw HoaVi's Peach-Blossom & Golden Pagoda Hairpin (Trâm Hoa Đào Kim Ngọc)
-function drawPeachHairpin(s, hx, hy, sideSign = -1, sway = 0) {
-  // Golden 3-tier pagoda pin pointing up-outward
-  const px = hx + sideSign * 1.5, py = hy - 3;
-  s.line(hx, hy, px + sideSign * 2.2, py - 6.5, 1.5, C.GOLD1);
+function drawPeachHairpin(s, hx, hy, sideSign = -1, sway = 0, scale = 0.8) {
+  const px = hx + sideSign * 1.2 * scale, py = hy - 2.4 * scale;
+  s.line(hx, hy, px + sideSign * 1.8 * scale, py - 5.4 * scale, Math.max(1.1, 1.4 * scale), C.GOLD1);
   for (let tier = 0; tier < 3; tier++) {
-    const ty = py - 1.5 - tier * 2.1;
-    const tx = hx + sideSign * (1.0 + tier * 0.65);
-    const w = 2.2 - tier * 0.45;
-    s.poly([[tx, ty - 1.5], [tx - w, ty + 0.5], [tx + w, ty + 0.5]], tier === 2 ? C.WHITE : C.GOLD2);
+    const ty = py - (1.2 + tier * 1.8) * scale;
+    const tx = hx + sideSign * (0.9 + tier * 0.55) * scale;
+    const w = (1.9 - tier * 0.38) * scale;
+    s.poly([[tx, ty - 1.3 * scale], [tx - w, ty + 0.4 * scale], [tx + w, ty + 0.4 * scale]], tier === 2 ? C.WHITE : C.GOLD2);
   }
-  // 5-petal Pink Peach Blossom
   for (let p = 0; p < 5; p++) {
     const a = (p * Math.PI * 2) / 5 - Math.PI / 2;
-    s.ellipse(hx + Math.cos(a) * 2.3, hy + Math.sin(a) * 2.3, 1.6, 1.6, C.PINK);
+    s.ellipse(hx + Math.cos(a) * 1.85 * scale, hy + Math.sin(a) * 1.85 * scale, 1.3 * scale, 1.3 * scale, C.PINK);
   }
-  s.set(hx - 1, hy - 2, C.WHITE);
-  s.ellipse(hx, hy, 1.1, 1.1, C.GOLD2);
-  // Hanging golden thread + cyan diamond crystal drop
-  const dx = hx + sideSign * 1.2 + sway * 1.2;
-  const dy = hy + 5.5;
-  s.line(hx + sideSign * 0.8, hy + 2, dx, dy - 1.5, 1, C.GOLD1);
-  s.poly([[dx, dy - 1.8], [dx + 1.4, dy], [dx, dy + 2.0], [dx - 1.4, dy]], C.CYAN2);
-  s.set(dx, dy - 0.5, C.CYAN3);
+  s.set(hx - 0.8 * scale, hy - 1.5 * scale, C.WHITE);
+  s.ellipse(hx, hy, 0.9 * scale, 0.9 * scale, C.GOLD2);
+  const dx = hx + sideSign * 1.0 * scale + sway * 1.0;
+  const dy = hy + 4.4 * scale;
+  s.line(hx + sideSign * 0.6 * scale, hy + 1.6 * scale, dx, dy - 1.2 * scale, 1, C.GOLD1);
+  s.poly([[dx, dy - 1.5 * scale], [dx + 1.15 * scale, dy], [dx, dy + 1.65 * scale], [dx - 1.15 * scale, dy]], C.CYAN2);
+  s.set(dx, dy - 0.4 * scale, C.CYAN3);
 }
 
 /**
  * Master articulated 4-directional HoaVi character renderer (`S`, `E`, `N`, `W`).
- * Standing height ~62px above ground anchor (ax, ay).
+ * World-calibrated standing height ~48px above ground anchor (ax, ay) to match Làng Đèn & NPCs.
+ * E/W use a clean true side-profile with 1 eye & 1 round glasses lens.
  */
 function drawHoaViRig(s, ax, ay, opts = {}) {
   const {
@@ -346,7 +344,7 @@ function drawHoaViRig(s, ax, ay, opts = {}) {
     leanX = 0,           // torso lean X
     leanY = 0,           // torso lean Y
     stride = 0,          // -1..1 leg cycle
-    legSpread = 5.0,
+    legSpread = 3.8,
     leftFootLift = 0,
     rightFootLift = 0,
     leftFootX = 0,
@@ -365,7 +363,7 @@ function drawHoaViRig(s, ax, ay, opts = {}) {
     keyboardKey = 0,
     prisms = true,       // draw twin orbiting cyan-gold prisms
     prismPhase = 0,
-    prismRadius = 21,
+    prismRadius = 16.5,
     backHalo = 0,        // 0..1 cyber-lotus back mandala halo
     addOutline = true,
   } = opts;
@@ -373,81 +371,90 @@ function drawHoaViRig(s, ax, ay, opts = {}) {
   const isBack = view === 'N';
   const isSide = view === 'E' || view === 'W';
   const dirSign = view === 'E' ? 1 : view === 'W' ? -1 : 0;
+  const K = 0.76; // world-matched scale factor (~48 texels tall)
 
   const bodyS = new PixelSurface(s.w, s.h);
 
-  const hipX = ax + leanX * 0.45;
-  const hipY = ay - 22 + bob + leanY * 0.5;
-  const chestX = ax + leanX;
-  const chestY = ay - 35 + bob + leanY;
-  const headX = chestX + headTurn + dirSign * 1.2;
-  const headY = chestY - 14 + headTilt;
+  const hipX = ax + leanX * 0.45 * K;
+  const hipY = ay - 17.0 + bob * K + leanY * 0.45 * K;
+  const chestX = ax + leanX * K;
+  const chestY = ay - 27.0 + bob * K + leanY * K;
+  const headX = chestX + headTurn * K + dirSign * 0.8;
+  const headY = chestY - 10.8 + headTilt * K;
+  const pRad = prismRadius * 0.8;
 
   // 0. Back prism (behind character)
   if (prisms) {
     for (let i = 0; i < 2; i++) {
       const a = prismPhase + i * Math.PI;
       if (Math.sin(a) < 0) {
-        const px = chestX + Math.cos(a) * prismRadius;
-        const py = hipY - 3 + Math.sin(a) * 5.5;
-        drawPrismOrb(bodyS, px, py, 0.95, Math.abs(Math.cos(a * 2)));
+        const px = chestX + Math.cos(a) * pRad;
+        const py = hipY - 2.2 + Math.sin(a) * 4.2;
+        drawPrismOrb(bodyS, px, py, 0.76, Math.abs(Math.cos(a * 2)));
       }
     }
   }
 
   // Optional Cyber-Lotus Halo behind shoulders (during skills / interactions / R)
   if (backHalo > 0.05) {
-    const hr = 14 + backHalo * 10;
-    bodyS.ring(chestX, chestY - 4, hr, hr * 0.92, 1.2, C.CYAN2);
-    drawLotusEmblem(bodyS, chestX, chestY - 4, hr * 0.72, C.CYAN3, C.PINK, C.GOLD2, prismPhase * 0.5);
+    const hr = 11 + backHalo * 8;
+    bodyS.ring(chestX, chestY - 3, hr, hr * 0.92, 1.1, C.CYAN2);
+    drawLotusEmblem(bodyS, chestX, chestY - 3, hr * 0.72, C.CYAN3, C.PINK, C.GOLD2, prismPhase * 0.5);
   }
 
   // 1. Back Hair Silhouette (behind shoulders in S/E/W)
   if (!isBack) {
-    bodyS.ellipse(headX - dirSign * 1.5, headY + 1.5, 12.2, 11.8, C.INK1);
-    bodyS.ellipse(headX - dirSign * 1.0, headY + 0.5, 11.4, 11.0, C.INK2);
-    // Back side locks hanging to collar with cyan crystal tips
-    for (const side of [-1, 1]) {
-      const lx = headX + side * 9.8 + coatSway * 0.5;
+    bodyS.ellipse(headX - dirSign * 1.8, headY + 1.2, isSide ? 8.6 : 9.4, 9.0, C.INK1);
+    bodyS.ellipse(headX - dirSign * 1.4, headY + 0.5, isSide ? 8.0 : 8.7, 8.3, C.INK2);
+    if (!isSide) {
+      for (const side of [-1, 1]) {
+        const lx = headX + side * 7.6 + coatSway * 0.4;
+        bodyS.poly([
+          [lx - 1.9, headY + 0.8],
+          [lx + 1.9, headY + 0.8],
+          [lx + 1.3 + coatSway * 0.5, headY + 11.2],
+          [lx - 1.0 + coatSway * 0.5, headY + 10.4],
+        ], C.INK2);
+        bodyS.set(lx + 0.3 + coatSway * 0.5, headY + 10.5, C.CYAN2);
+      }
+    } else {
+      // Flowing back bob silhouette trailing behind head in E/W
+      const bx = headX - dirSign * 5.8;
       bodyS.poly([
-        [lx - 2.4, headY + 1],
-        [lx + 2.4, headY + 1],
-        [lx + 1.6 + coatSway * 0.7, headY + 14.5],
-        [lx - 1.2 + coatSway * 0.7, headY + 13.5],
+        [bx - dirSign * 3.0, headY - 2.5],
+        [bx + dirSign * 2.2, headY - 2.0],
+        [bx + dirSign * 1.5 + coatSway * 0.4, headY + 10.5],
+        [bx - dirSign * 3.6 + coatSway * 0.5, headY + 9.8],
       ], C.INK2);
-      bodyS.set(lx + 0.4 + coatSway * 0.7, headY + 13.5, C.CYAN2);
+      bodyS.set(bx - dirSign * 2.5 + coatSway * 0.5, headY + 9.5, C.CYAN2);
     }
   }
 
-  // 2. Back Arm (for E/W views, draw far arm behind torso)
+  // 2. Articulated Bell Sleeves & Hands
   const drawSleeveArm = (sideSign, pose, isFar) => {
-    const shX = chestX + (isSide ? -sideSign * 1.5 : sideSign * 8.2);
-    const shY = chestY + 1.5;
-    const defDx = isSide ? dirSign * (isFar ? 7.5 : 6.0) + stride * (isFar ? -4 : 4) : sideSign * 5.5;
-    const defDy = isSide ? 8.5 : 9.5 + (sideSign < 0 ? stride : -stride) * 2.2;
-    const dx = pose ? pose.dx : defDx;
-    const dy = pose ? pose.dy : defDy;
+    const shX = chestX + (isSide ? -sideSign * 1.2 : sideSign * 6.4);
+    const shY = chestY + 1.2;
+    const defDx = isSide ? dirSign * (isFar ? 5.8 : 4.6) + stride * (isFar ? -3.0 : 3.0) : sideSign * 4.2;
+    const defDy = isSide ? 6.5 : 7.4 + (sideSign < 0 ? stride : -stride) * 1.8;
+    const dx = pose ? pose.dx * K : defDx;
+    const dy = pose ? pose.dy * K : defDy;
     const wristX = shX + dx;
     const wristY = shY + dy;
-    const elbowX = (shX + wristX) * 0.5 + (isSide ? -dirSign * 1.2 : sideSign * 2.2);
-    const elbowY = (shY + wristY) * 0.5 + 2.0;
+    const elbowX = (shX + wristX) * 0.5 + (isSide ? -dirSign * 1.0 : sideSign * 1.7);
+    const elbowY = (shY + wristY) * 0.5 + 1.5;
 
-    // Puffed royal-violet bell sleeve
-    bodyS.capsule(shX, shY, elbowX, elbowY, 4.4, 5.2, isFar ? C.ROBE0 : C.ROBE1);
-    bodyS.capsule(shX, shY - 0.6, elbowX, elbowY - 0.5, 3.4, 4.2, isFar ? C.ROBE1 : C.ROBE2);
-    if (!isFar) bodyS.line(shX + sideSign * 0.5, shY - 1.5, elbowX, elbowY - 1.8, 1.4, C.ROBE3);
+    bodyS.capsule(shX, shY, elbowX, elbowY, 3.3, 3.9, isFar ? C.ROBE0 : C.ROBE1);
+    bodyS.capsule(shX, shY - 0.5, elbowX, elbowY - 0.4, 2.5, 3.1, isFar ? C.ROBE1 : C.ROBE2);
+    if (!isFar) bodyS.line(shX + sideSign * 0.4, shY - 1.2, elbowX, elbowY - 1.3, 1.1, C.ROBE3);
 
-    // Wide cream-ivory cuff + gold rim
-    bodyS.capsule(elbowX, elbowY, wristX, wristY, 4.8, 4.2, isFar ? C.ROBE0 : C.ROBE1);
-    bodyS.ellipse(wristX, wristY, 4.2, 3.6, C.SILK2);
-    bodyS.ellipse(wristX, wristY, 3.1, 2.5, C.INK1);
-    bodyS.ring(wristX, wristY, 4.3, 3.7, 1.0, C.GOLD2);
+    bodyS.capsule(elbowX, elbowY, wristX, wristY, 3.6, 3.1, isFar ? C.ROBE0 : C.ROBE1);
+    bodyS.ellipse(wristX, wristY, 3.2, 2.7, C.SILK2);
+    bodyS.ellipse(wristX, wristY, 2.2, 1.8, C.INK1);
+    bodyS.ring(wristX, wristY, 3.3, 2.8, 0.9, C.GOLD2);
 
-    // Hand & dainty fingers
-    const hx = wristX + (dx >= 0 ? 1.2 : -1.2) * 0.6;
-    const hy = wristY + 1.2;
-    bodyS.ellipse(hx, hy, 2.5, 2.2, isFar ? C.SKIN2 : C.SKIN1);
-    bodyS.set(hx + (isSide ? dirSign * 2 : sideSign * 1.5), hy + 0.8, C.SKIN2);
+    const hx = wristX + (dx >= 0 ? 0.6 : -0.6);
+    const hy = wristY + 0.9;
+    bodyS.ellipse(hx, hy, 1.9, 1.7, isFar ? C.SKIN2 : C.SKIN1);
   };
 
   if (isSide) {
@@ -457,319 +464,281 @@ function drawHoaViRig(s, ax, ay, opts = {}) {
   // 3. Separated Gold-Laced Dark Boots (`Ủng Đen Dây Chéo Vàng Kim`)
   const legs = isSide
     ? [
-        { side: -1, x: hipX - dirSign * 3.2 + stride * 5.8 + leftFootX, lift: leftFootLift + Math.max(0, -stride) * 2.5, far: true },
-        { side: 1,  x: hipX + dirSign * 2.8 - stride * 5.8 + rightFootX, lift: rightFootLift + Math.max(0, stride) * 2.5, far: false },
+        { side: -1, x: hipX - dirSign * 2.2 + stride * 4.5 + leftFootX * K, lift: (leftFootLift + Math.max(0, -stride) * 2.0) * K, far: true },
+        { side: 1,  x: hipX + dirSign * 2.0 - stride * 4.5 + rightFootX * K, lift: (rightFootLift + Math.max(0, stride) * 2.0) * K, far: false },
       ]
     : [
-        { side: -1, x: hipX - legSpread + leftFootX, lift: leftFootLift + Math.max(0, stride) * 3.0, far: false },
-        { side: 1,  x: hipX + legSpread + rightFootX, lift: rightFootLift + Math.max(0, -stride) * 3.0, far: false },
+        { side: -1, x: hipX - legSpread + leftFootX * K, lift: (leftFootLift + Math.max(0, stride) * 2.4) * K, far: false },
+        { side: 1,  x: hipX + legSpread + rightFootX * K, lift: (rightFootLift + Math.max(0, -stride) * 2.4) * K, far: false },
       ];
 
   for (const leg of legs) {
     const fy = ay - leg.lift;
     const kx = (hipX + leg.x) * 0.5;
-    const ky = hipY + 11 - leg.lift * 0.45;
-    // Boot shaft
-    bodyS.capsule(kx, hipY + 8, leg.x, fy - 2.5, 3.6, 3.8, C.INK1);
-    if (!leg.far) bodyS.capsule(kx - 0.5, hipY + 8, leg.x - 0.4, fy - 3.0, 2.3, 2.5, C.INK2);
-    // Boot foot + toe cap
-    const toeDir = isSide ? dirSign * 2.4 : leg.side * 0.9;
-    bodyS.ellipse(leg.x + toeDir * 0.5, fy - 1.8, isSide ? 5.2 : 4.3, 2.6, C.INK1);
-    bodyS.ellipse(leg.x + toeDir * 0.4, fy - 2.3, isSide ? 4.2 : 3.4, 1.8, C.INK2);
-    // Golden sole trim & toe arch
-    bodyS.line(leg.x - 3.5, fy - 0.5, leg.x + 3.5 + toeDir * 0.5, fy - 0.5, 1.1, C.GOLD1);
+    bodyS.capsule(kx, hipY + 6.2, leg.x, fy - 2.0, 2.8, 2.9, C.INK1);
+    if (!leg.far) bodyS.capsule(kx - 0.4, hipY + 6.2, leg.x - 0.3, fy - 2.4, 1.8, 1.9, C.INK2);
+    const toeDir = isSide ? dirSign * 2.0 : leg.side * 0.7;
+    bodyS.ellipse(leg.x + toeDir * 0.5, fy - 1.4, isSide ? 4.0 : 3.3, 2.0, C.INK1);
+    bodyS.ellipse(leg.x + toeDir * 0.4, fy - 1.8, isSide ? 3.2 : 2.6, 1.4, C.INK2);
+    bodyS.line(leg.x - 2.6, fy - 0.4, leg.x + 2.6 + toeDir * 0.5, fy - 0.4, 1.0, C.GOLD1);
     if (!isBack && !leg.far) {
-      bodyS.set(leg.x + toeDir * 0.5, fy - 3.2, C.GOLD2);
-      // Crisscross golden boot laces (3 X-rungs!)
-      for (let r = 0; r < 3; r++) {
-        const ly = fy - 5.2 - r * 2.5;
-        bodyS.set(leg.x - 1, ly, C.GOLD2);
-        bodyS.set(leg.x + 1, ly, C.GOLD2);
-        bodyS.set(leg.x, ly - 1, C.GOLD1);
+      bodyS.set(leg.x + toeDir * 0.5, fy - 2.5, C.GOLD2);
+      for (let r = 0; r < 2; r++) {
+        const ly = fy - 4.2 - r * 2.4;
+        bodyS.set(leg.x - 0.9, ly, C.GOLD2);
+        bodyS.set(leg.x + 0.9, ly, C.GOLD2);
+        bodyS.set(leg.x, ly - 0.9, C.GOLD1);
       }
     }
   }
 
   // 4. Layered Pleated Cream Inner Skirt + Split Swallowtail Violet Coat (`Tà Áo Tím Xẻ Tà`)
-  const skirtBottomY = ay - 10 + bob * 0.6;
-  const flare = 12.5 + coatFlare + Math.abs(stride) * 2.2;
-  // Inner cream pleated skirt
+  const skirtBottomY = ay - 7.8 + bob * 0.5 * K;
+  const flare = (9.6 + coatFlare * 0.75 + Math.abs(stride) * 1.7);
+  const cSway = coatSway * K;
+
   bodyS.poly([
-    [hipX - 7.5, hipY + 1],
-    [hipX + 7.5, hipY + 1],
-    [hipX + flare * 0.78 + coatSway, skirtBottomY],
-    [hipX - flare * 0.78 + coatSway, skirtBottomY],
+    [hipX - 5.8, hipY + 0.8],
+    [hipX + 5.8, hipY + 0.8],
+    [hipX + flare * 0.76 + cSway, skirtBottomY],
+    [hipX - flare * 0.76 + cSway, skirtBottomY],
   ], C.SILK1);
   bodyS.poly([
-    [hipX - 5.2, hipY + 1],
-    [hipX + 4.8, hipY + 1],
-    [hipX + flare * 0.52 + coatSway, skirtBottomY - 0.8],
-    [hipX - flare * 0.52 + coatSway, skirtBottomY - 0.8],
+    [hipX - 4.0, hipY + 0.8],
+    [hipX + 3.8, hipY + 0.8],
+    [hipX + flare * 0.50 + cSway, skirtBottomY - 0.6],
+    [hipX - flare * 0.50 + cSway, skirtBottomY - 0.6],
   ], C.SILK2);
-  // Subtle taupe wave embroidery along cream hem
-  for (let wx = -5; wx <= 5; wx += 2.5) {
-    bodyS.set(hipX + wx + coatSway, skirtBottomY - 1.5, C.SILK0);
-  }
+  for (let wx = -4; wx <= 4; wx += 2) bodyS.set(hipX + wx + cSway, skirtBottomY - 1.2, C.SILK0);
 
   if (isBack) {
-    // Two symmetrical swallowtail violet back panels (exact match to hoavi-back.png!)
     for (const side of [-1, 1]) {
       bodyS.poly([
-        [hipX + side * 0.8, hipY],
-        [hipX + side * 7.8, hipY + 0.5],
-        [hipX + side * (flare + 3.2) + coatSway, skirtBottomY + 2.2],
-        [hipX + side * (flare * 0.62) + coatSway, skirtBottomY - 2.2],
-        [hipX + side * 2.2 + coatSway * 0.6, skirtBottomY + 2.8],
+        [hipX + side * 0.6, hipY],
+        [hipX + side * 6.0, hipY + 0.4],
+        [hipX + side * (flare + 2.4) + cSway, skirtBottomY + 1.8],
+        [hipX + side * (flare * 0.62) + cSway, skirtBottomY - 1.8],
+        [hipX + side * 1.8 + cSway * 0.6, skirtBottomY + 2.2],
       ], side < 0 ? C.ROBE1 : C.ROBE2);
-      bodyS.line(
-        hipX + side * 2.2 + coatSway * 0.6, skirtBottomY + 2.5,
-        hipX + side * (flare + 2.8) + coatSway, skirtBottomY + 1.8,
-        1, C.GOLD1
-      );
-      bodyS.line(hipX + side * 4.2, hipY + 2, hipX + side * (flare * 0.82) + coatSway, skirtBottomY - 1, 1, C.ROBE3);
+      bodyS.line(hipX + side * 1.8 + cSway * 0.6, skirtBottomY + 2.0, hipX + side * (flare + 2.0) + cSway, skirtBottomY + 1.4, 1, C.GOLD1);
+      bodyS.line(hipX + side * 3.2, hipY + 1.5, hipX + side * (flare * 0.8) + cSway, skirtBottomY - 0.8, 1, C.ROBE3);
     }
   } else if (isSide) {
-    // Sweeping side swallowtail violet coat panel exposing cream front skirt
     bodyS.poly([
-      [hipX - dirSign * 6.5, hipY],
-      [hipX + dirSign * 3.5, hipY + 0.5],
-      [hipX + dirSign * 4.5 + coatSway, skirtBottomY + 1.0],
-      [hipX - dirSign * 2.0 + coatSway, skirtBottomY - 2.5],
-      [hipX - dirSign * (flare + 2.5) + coatSway, skirtBottomY + 2.5],
+      [hipX - dirSign * 5.0, hipY],
+      [hipX + dirSign * 2.6, hipY + 0.4],
+      [hipX + dirSign * 3.5 + cSway, skirtBottomY + 0.8],
+      [hipX - dirSign * 1.6 + cSway, skirtBottomY - 2.0],
+      [hipX - dirSign * (flare + 2.0) + cSway, skirtBottomY + 2.0],
     ], C.ROBE1);
     bodyS.poly([
-      [hipX - dirSign * 4.5, hipY + 1],
-      [hipX + dirSign * 2.5, hipY + 1],
-      [hipX + dirSign * 3.2 + coatSway, skirtBottomY],
-      [hipX - dirSign * (flare * 0.8) + coatSway, skirtBottomY + 1.2],
+      [hipX - dirSign * 3.4, hipY + 0.8],
+      [hipX + dirSign * 2.0, hipY + 0.8],
+      [hipX + dirSign * 2.5 + cSway, skirtBottomY],
+      [hipX - dirSign * (flare * 0.78) + cSway, skirtBottomY + 1.0],
     ], C.ROBE2);
-    bodyS.line(hipX - dirSign * (flare + 2.0) + coatSway, skirtBottomY + 2.0, hipX + dirSign * 4.0 + coatSway, skirtBottomY + 0.8, 1, C.GOLD1);
+    bodyS.line(hipX - dirSign * (flare + 1.6) + cSway, skirtBottomY + 1.6, hipX + dirSign * 3.0 + cSway, skirtBottomY + 0.6, 1, C.GOLD1);
   } else {
-    // Front S view: Left & Right split violet over-skirt panels framing cream center skirt
     for (const side of [-1, 1]) {
       bodyS.poly([
-        [hipX + side * 3.2, hipY],
-        [hipX + side * 8.0, hipY + 0.5],
-        [hipX + side * (flare + 2.6) + coatSway, skirtBottomY + 2.2],
-        [hipX + side * (flare * 0.68) + coatSway, skirtBottomY + 0.5],
-        [hipX + side * 5.2 + coatSway * 0.5, skirtBottomY - 1.2],
+        [hipX + side * 2.5, hipY],
+        [hipX + side * 6.2, hipY + 0.4],
+        [hipX + side * (flare + 2.0) + cSway, skirtBottomY + 1.8],
+        [hipX + side * (flare * 0.68) + cSway, skirtBottomY + 0.4],
+        [hipX + side * 4.0 + cSway * 0.5, skirtBottomY - 1.0],
       ], side < 0 ? C.ROBE1 : C.ROBE2);
-      bodyS.line(hipX + side * 5.5, hipY + 2, hipX + side * (flare * 0.95) + coatSway, skirtBottomY, 1.2, C.ROBE3);
-      bodyS.line(hipX + side * 5.2 + coatSway * 0.5, skirtBottomY - 1, hipX + side * (flare + 2.2) + coatSway, skirtBottomY + 1.8, 1, C.GOLD1);
+      bodyS.line(hipX + side * 4.2, hipY + 1.6, hipX + side * (flare * 0.92) + cSway, skirtBottomY, 1.0, C.ROBE3);
+      bodyS.line(hipX + side * 4.0 + cSway * 0.5, skirtBottomY - 0.8, hipX + side * (flare + 1.8) + cSway, skirtBottomY + 1.4, 1, C.GOLD1);
     }
   }
 
   // 5. Upper Torso (`Áo Giao Lĩnh Tím` + Cream Y-Collar + Back 8-Petal Lotus)
   bodyS.poly([
-    [chestX - 8.2, chestY - 1],
-    [chestX + 8.2, chestY - 1],
-    [hipX + 7.2, hipY + 1],
-    [hipX - 7.2, hipY + 1],
+    [chestX - 6.3, chestY - 0.8],
+    [chestX + 6.3, chestY - 0.8],
+    [hipX + 5.6, hipY + 0.8],
+    [hipX - 5.6, hipY + 0.8],
   ], C.ROBE1);
   bodyS.poly([
-    [chestX - 6.5, chestY],
-    [chestX + 6.5, chestY],
-    [hipX + 5.5, hipY],
-    [hipX - 5.5, hipY],
+    [chestX - 5.0, chestY],
+    [chestX + 5.0, chestY],
+    [hipX + 4.3, hipY],
+    [hipX - 4.3, hipY],
   ], C.ROBE2);
 
   if (isBack) {
-    // Canonical 8-petal Sacred Cyber-Lotus embroidered on back (hoavi-back.png)
-    drawLotusEmblem(bodyS, chestX, chestY + 5.5, 4.8, C.SILK2, C.ROBE3, C.CYAN3, 0);
+    drawLotusEmblem(bodyS, chestX, chestY + 4.4, 3.8, C.SILK2, C.ROBE3, C.CYAN3, 0);
+  } else if (isSide) {
+    // Clean side-profile cream-ivory lapel along the chest front edge!
+    const fx = chestX + dirSign * 4.2;
+    bodyS.line(fx, chestY - 0.5, hipX + dirSign * 3.8, hipY - 0.5, 1.8, C.SILK2);
+    bodyS.line(fx - dirSign * 1.4, chestY + 0.2, fx - dirSign * 2.2, chestY + 4.2, 1.0, C.GOLD2);
   } else {
-    const cxOff = dirSign * 2.2;
-    // Inner lavender bodice under V-neck
-    bodyS.poly([
-      [chestX + cxOff - 3.5, chestY - 1],
-      [chestX + cxOff + 3.5, chestY - 1],
-      [chestX + cxOff, chestY + 7.5],
-    ], C.ROBE3);
-    // Bold cream-ivory cross-collar (`Áo Giao Lĩnh`) edged in gold
-    bodyS.line(chestX + cxOff - 4.8, chestY - 1, hipX + cxOff * 0.6 + 1.0, hipY - 0.5, 2.3, C.SILK2);
-    bodyS.line(chestX + cxOff + 4.8, chestY - 1, chestX + cxOff - 0.5, chestY + 7.8, 2.3, C.SILK2);
-    bodyS.line(chestX + cxOff - 5.6, chestY, chestX + cxOff - 6.8, chestY + 5.0, 1, C.GOLD2);
-    bodyS.line(chestX + cxOff + 5.6, chestY, chestX + cxOff + 6.8, chestY + 5.0, 1, C.GOLD2);
+    bodyS.poly([[chestX - 2.8, chestY - 0.8], [chestX + 2.8, chestY - 0.8], [chestX, chestY + 6.0]], C.ROBE3);
+    bodyS.line(chestX - 3.8, chestY - 0.8, hipX + 0.8, hipY - 0.4, 1.9, C.SILK2);
+    bodyS.line(chestX + 3.8, chestY - 0.8, chestX - 0.4, chestY + 6.2, 1.9, C.SILK2);
+    bodyS.line(chestX - 4.5, chestY, chestX - 5.3, chestY + 4.0, 1, C.GOLD2);
+    bodyS.line(chestX + 4.5, chestY, chestX + 5.3, chestY + 4.0, 1, C.GOLD2);
   }
 
   // 6. Waist Sash + Cyan-Gold Diamond Buckle & Twin Hanging Cyan-Gold Tassels
-  bodyS.rect(hipX - 7.6, hipY - 1.5, 15.2, 2.8, C.INK1);
-  bodyS.line(hipX - 7.4, hipY - 1.6, hipX + 7.4, hipY - 1.6, 1, C.GOLD1);
+  bodyS.rect(hipX - 5.9, hipY - 1.2, 11.8, 2.2, C.INK1);
+  bodyS.line(hipX - 5.8, hipY - 1.3, hipX + 5.8, hipY - 1.3, 1, C.GOLD1);
   if (!isBack) {
-    const bx = hipX + dirSign * 2.5;
-    bodyS.poly([[bx, hipY - 3.2], [bx + 3.2, hipY], [bx, hipY + 3.2], [bx - 3.2, hipY]], C.GOLD2);
-    bodyS.poly([[bx, hipY - 1.8], [bx + 1.8, hipY], [bx, hipY + 1.8], [bx - 1.8, hipY]], C.CYAN3);
+    const bx = hipX + dirSign * 3.5;
+    bodyS.poly([[bx, hipY - 2.4], [bx + 2.4, hipY], [bx, hipY + 2.4], [bx - 2.4, hipY]], C.GOLD2);
+    bodyS.set(bx, hipY, C.CYAN3);
   }
-  // Twin hanging diamond-cyan tassels at hips
   const tasselSides = isSide ? [dirSign] : [-1, 1];
   for (const ts of tasselSides) {
-    const tx = hipX + ts * (isSide ? 1.0 : 6.8) + coatSway * 0.85;
-    const ty = hipY + 5.8;
-    bodyS.line(hipX + ts * (isSide ? 0.5 : 4.2), hipY + 0.8, tx, ty - 1.8, 1, C.GOLD2);
-    bodyS.poly([[tx, ty - 2.0], [tx + 1.8, ty], [tx, ty + 2.0], [tx - 1.8, ty]], C.GOLD2);
+    const tx = hipX + ts * (isSide ? 0.6 : 5.3) + cSway * 0.8;
+    const ty = hipY + 4.4;
+    bodyS.line(hipX + ts * (isSide ? 0.2 : 3.2), hipY + 0.6, tx, ty - 1.4, 1, C.GOLD2);
+    bodyS.poly([[tx, ty - 1.5], [tx + 1.4, ty], [tx, ty + 1.5], [tx - 1.4, ty]], C.GOLD2);
     bodyS.set(tx, ty, C.CYAN2);
-    bodyS.poly([[tx - 1.2, ty + 1.8], [tx + 1.2, ty + 1.8], [tx + 1.8 + coatSway * 0.4, ty + 5.8], [tx - 1.6 + coatSway * 0.4, ty + 5.8]], C.CYAN3);
-    bodyS.line(tx, ty + 2.2, tx + coatSway * 0.3, ty + 5.5, 1, C.CYAN1);
+    bodyS.poly([[tx - 1.0, ty + 1.4], [tx + 1.0, ty + 1.4], [tx + 1.4 + cSway * 0.4, ty + 4.4], [tx - 1.2 + cSway * 0.4, ty + 4.4]], C.CYAN3);
   }
 
-  // 7. Neck, Head, Glasses, Luminous Cyan Eyes, Amethyst Bob Hair & Peach Hairpin
-  bodyS.rect(headX - 2.5, chestY - 4, 5, 4, C.SKIN2);
+  // 7. Neck, Head, Glasses, Eyes, Amethyst Bob Hair & Peach Hairpin
+  bodyS.rect(headX - 2.0, chestY - 3.2, 4.0, 3.2, C.SKIN2);
 
   if (isBack) {
-    // Back of Amethyst Bob Hair with vertical scalloped locks (hoavi-back.png)
-    bodyS.ellipse(headX, headY + 1, 12.2, 11.8, C.INK2);
-    bodyS.ellipse(headX, headY, 11.2, 10.6, C.HAIR1);
-    bodyS.ellipse(headX, headY - 2.5, 9.6, 7.6, C.ROBE2);
-    bodyS.arc(headX, headY - 4.5, 7.2, 3.2, 1.6, Math.PI * 1.1, Math.PI * 1.9, C.ROBE3);
+    bodyS.ellipse(headX, headY + 0.8, 9.4, 9.0, C.INK2);
+    bodyS.ellipse(headX, headY, 8.6, 8.2, C.HAIR1);
+    bodyS.ellipse(headX, headY - 2.0, 7.4, 5.8, C.ROBE2);
+    bodyS.arc(headX, headY - 3.6, 5.6, 2.4, 1.3, Math.PI * 1.1, Math.PI * 1.9, C.ROBE3);
     for (let k = -3; k <= 3; k++) {
-      const lx = headX + k * 3.0 + coatSway * 0.35;
-      bodyS.line(lx, headY - 1, lx + k * 0.3, headY + 11.2, 1.6, k % 2 === 0 ? C.HAIR1 : C.INK2);
-      bodyS.set(lx + k * 0.3, headY + 11.5, C.INK1);
+      const lx = headX + k * 2.3 + cSway * 0.3;
+      bodyS.line(lx, headY - 0.8, lx + k * 0.25, headY + 8.6, 1.3, k % 2 === 0 ? C.HAIR1 : C.INK2);
     }
-    // Anatomical right side in N view is viewer's RIGHT (+1)
-    drawPeachHairpin(bodyS, headX + 10.2, headY - 3.5, 1, coatSway);
-  } else {
-    // Face shape (warm peach-ivory)
-    bodyS.ellipse(headX + dirSign * 0.8, headY + 1.8, isSide ? 9.2 : 9.8, 9.6, C.SKIN2);
-    bodyS.ellipse(headX + dirSign * 1.0, headY + 1.2, isSide ? 8.4 : 9.0, 8.8, C.SKIN1);
+    drawPeachHairpin(bodyS, headX + 7.8, headY - 2.8, 1, cSway, 0.78);
+  } else if (isSide) {
+    // === TRUE SIDE PROFILE (`E` / `W`): STRICTLY 1 EYE + 1 ROUND GLASSES LENS! ===
+    const faceCx = headX + dirSign * 1.4;
+    const eyeY = headY + 1.6;
+    // Side-profile warm peach head + cute nose tip bump on leading edge
+    bodyS.ellipse(faceCx, headY + 1.5, 6.8, 7.2, C.SKIN2);
+    bodyS.ellipse(faceCx + dirSign * 0.3, headY + 1.0, 6.2, 6.6, C.SKIN1);
+    // Cute nose profile silhouette on leading edge
+    bodyS.ellipse(faceCx + dirSign * 6.4, eyeY + 1.4, 1.1, 0.9, C.SKIN1);
+    bodyS.set(faceCx + dirSign * 5.6, eyeY + 2.4, C.SKIN2);
 
     // Crown & Top Hair Dome
-    bodyS.ellipse(headX - dirSign * 0.8, headY - 4.2, 11.4, 7.6, C.HAIR1);
-    bodyS.ellipse(headX - dirSign * 0.5, headY - 5.2, 9.8, 5.8, C.ROBE2);
-    // Luminous lavender hair halo highlight
-    bodyS.arc(headX - dirSign * 0.5, headY - 6.0, 7.2, 2.8, 1.5, Math.PI * 1.12, Math.PI * 1.88, C.ROBE3);
+    bodyS.ellipse(headX - dirSign * 0.8, headY - 3.4, 8.8, 5.8, C.HAIR1);
+    bodyS.ellipse(headX - dirSign * 0.5, headY - 4.2, 7.6, 4.4, C.ROBE2);
+    bodyS.arc(headX - dirSign * 0.4, headY - 4.8, 5.4, 2.2, 1.2, Math.PI * 1.12, Math.PI * 1.88, C.ROBE3);
 
-    // Eyes, Blush, Smile & Round Golden-Bridge Glasses!
-    const faceCx = headX + dirSign * 2.2;
-    const eyeY = headY + 2.0;
-
-    if (isSide) {
-      // 3/4 view: prominent near eye + far eye across golden nose bridge
-      const nearX = faceCx + dirSign * 2.2;
-      const farX = faceCx - dirSign * 4.2;
-      if (!blink) {
-        // Far eye
-        bodyS.ellipse(farX, eyeY, 1.8, 2.2, C.WHITE);
-        bodyS.ellipse(farX + dirSign * 0.4, eyeY + 0.2, 1.3, 1.8, C.CYAN1);
-        bodyS.set(farX + dirSign * 0.5, eyeY, C.CYAN3);
-        bodyS.set(farX - 0.4, eyeY - 0.8, C.WHITE);
-        // Near eye (vivid cyan)
-        bodyS.ellipse(nearX, eyeY, 2.4, 2.5, C.WHITE);
-        bodyS.ellipse(nearX + dirSign * 0.4, eyeY + 0.2, 1.8, 2.0, C.CYAN1);
-        bodyS.ellipse(nearX + dirSign * 0.5, eyeY + 0.4, 1.2, 1.3, C.CYAN2);
-        bodyS.set(nearX + dirSign * 0.5, eyeY + 0.8, C.CYAN3);
-        bodyS.set(nearX - dirSign * 0.6, eyeY - 0.8, C.WHITE);
-        bodyS.line(nearX - 2.0, eyeY - 2.2, nearX + 2.0, eyeY - 2.0, 1.1, C.INK1);
-      } else {
-        bodyS.line(farX - 1.5, eyeY + 0.5, farX + 1.5, eyeY + 0.5, 1.1, C.INK1);
-        bodyS.line(nearX - 2.2, eyeY + 0.5, nearX + 2.2, eyeY + 0.5, 1.1, C.INK1);
-      }
-      // Cheek blush & gentle confident smile
-      bodyS.ellipse(nearX + dirSign * 1.2, eyeY + 3.2, 1.5, 0.9, C.PINK);
-      if (smileOpen) bodyS.ellipse(faceCx + dirSign * 0.5, eyeY + 5.2, 1.6, 1.2, C.RED);
-      else bodyS.line(faceCx - 0.5, eyeY + 5.2, faceCx + dirSign * 1.8, eyeY + 4.9, 1, C.SKIN3);
-
-      // Iconic Round Glasses + Golden Nose Bridge & Temple!
-      bodyS.ring(farX, eyeY + 0.2, 3.0, 3.0, 1.0, C.INK1);
-      bodyS.ring(nearX, eyeY + 0.2, 3.6, 3.5, 1.0, C.INK1);
-      bodyS.set((farX + nearX) * 0.5, eyeY - 0.4, C.GOLD2); // golden bridge!
-      bodyS.line(nearX - dirSign * 3.6, eyeY - 0.4, nearX - dirSign * 6.5, eyeY - 1.0, 1, C.GOLD2); // golden temple!
-      if (glassesGlint > 0.2) {
-        bodyS.line(nearX - 1.8, eyeY - 1.8, nearX + 1.5, eyeY + 1.5, 1.2, C.WHITE);
-        bodyS.line(farX - 1.2, eyeY - 1.4, farX + 1.0, eyeY + 1.2, 1.1, C.CYAN3);
-      }
+    // SINGLE Side-Profile Luminous Cyan Eye (near leading face edge)
+    const ex = faceCx + dirSign * 2.8;
+    if (!blink) {
+      bodyS.ellipse(ex, eyeY, 1.9, 2.2, C.WHITE);
+      bodyS.ellipse(ex + dirSign * 0.5, eyeY + 0.1, 1.4, 1.7, C.CYAN1);
+      bodyS.set(ex + dirSign * 0.7, eyeY + 0.4, C.CYAN2);
+      bodyS.set(ex + dirSign * 0.7, eyeY + 0.9, C.CYAN3);
+      bodyS.set(ex + dirSign * 0.4, eyeY - 0.2, C.INK1); // crisp pupil
+      bodyS.set(ex - dirSign * 0.3, eyeY - 0.8, C.WHITE); // bright catchlight
+      bodyS.line(ex - 1.7, eyeY - 2.0, ex + 1.7, eyeY - 1.9, 1.0, C.INK1); // upper lash
     } else {
-      // Front S view: Symmetrical crystal-clear cyan eyes + round glasses!
-      for (const side of [-1, 1]) {
-        const ex = faceCx + side * 4.2;
-        if (!blink) {
-          bodyS.ellipse(ex, eyeY, 2.3, 2.4, C.WHITE);
-          bodyS.ellipse(ex, eyeY + 0.2, 1.7, 1.9, C.CYAN1);
-          bodyS.ellipse(ex, eyeY + 0.5, 1.2, 1.2, C.CYAN2);
-          bodyS.set(ex, eyeY + 1.0, C.CYAN3);
-          bodyS.set(ex, eyeY - 0.2, C.INK1); // crisp pupil
-          bodyS.set(ex - 0.9, eyeY - 0.9, C.WHITE); // bright catchlight
-          bodyS.line(ex - 2.1, eyeY - 2.2, ex + 2.1, eyeY - 2.1, 1.1, C.INK1); // upper lash
-          bodyS.line(ex - 1.8, eyeY - 3.6, ex + 1.6, eyeY - 3.8, 1.0, C.INK2); // eyebrow
-        } else {
-          bodyS.line(ex - 2.1, eyeY + 0.5, ex + 2.1, eyeY + 0.5, 1.1, C.INK1);
-        }
-        bodyS.ellipse(ex + side * 1.4, eyeY + 3.2, 1.5, 0.9, C.PINK);
-      }
-      if (smileOpen) {
-        bodyS.ellipse(faceCx, eyeY + 5.3, 1.8, 1.3, C.RED);
-        bodyS.set(faceCx, eyeY + 4.5, C.WHITE);
-      } else {
-        bodyS.line(faceCx - 1.4, eyeY + 5.2, faceCx + 1.4, eyeY + 5.0, 1, C.SKIN3);
-      }
-      // Round Dark Glasses Rims + Golden Bridge + Golden Temples!
-      for (const side of [-1, 1]) {
-        const ex = faceCx + side * 4.2;
-        bodyS.ring(ex, eyeY + 0.2, 3.2, 3.2, 1.0, C.INK1);
-        bodyS.set(ex + side * 3.5, eyeY - 0.4, C.GOLD2); // golden side hinge!
-        if (glassesGlint > 0.2) {
-          bodyS.line(ex - 1.5, eyeY - 1.5, ex + 1.3, eyeY + 1.3, 1.1, glassesGlint > 0.6 ? C.WHITE : C.CYAN3);
-        }
-      }
-      bodyS.rect(faceCx - 1.0, eyeY - 0.5, 2.0, 1.1, C.GOLD2); // crisp 2px golden bridge!
+      bodyS.line(ex - 1.8, eyeY + 0.4, ex + 1.8, eyeY + 0.4, 1.0, C.INK1);
+    }
+    // Rosy cheek & cute side-profile smile
+    bodyS.set(ex - dirSign * 1.2, eyeY + 2.8, C.PINK);
+    bodyS.set(ex - dirSign * 0.2, eyeY + 2.8, C.PINK);
+    if (smileOpen) bodyS.ellipse(faceCx + dirSign * 4.2, eyeY + 4.1, 1.2, 0.9, C.RED);
+    else bodyS.line(faceCx + dirSign * 3.0, eyeY + 4.2, faceCx + dirSign * 4.6, eyeY + 4.0, 1, C.SKIN3);
+
+    // SINGLE Round Side-Profile Glasses Lens + Golden Nose-Rest + Golden Temple Arm!
+    bodyS.ring(ex, eyeY + 0.1, 2.7, 2.9, 1.0, C.INK1);
+    bodyS.set(ex + dirSign * 2.8, eyeY - 0.4, C.GOLD2); // golden bridge rest on nose
+    bodyS.line(ex - dirSign * 2.7, eyeY - 0.4, ex - dirSign * 6.2, eyeY - 0.8, 1.0, C.GOLD2); // golden temple to ear!
+    if (glassesGlint > 0.2) {
+      bodyS.line(ex - 1.2, eyeY - 1.5, ex + 1.2, eyeY + 1.4, 1.1, glassesGlint > 0.6 ? C.WHITE : C.CYAN3);
     }
 
-    // Swept Parted Forehead Bangs & Side Cheek Locks (over top of forehead, never obscuring eyes!)
+    // Swept Forehead Bangs & Clean Side Hair Lock BEHIND the single eye/temple
     bodyS.poly([
-      [headX - 9.5, headY - 4.5],
-      [headX + 2.5, headY - 7.5],
-      [headX - 1.5, headY - 1.2],
-      [headX - 8.2, headY - 0.8],
+      [headX - dirSign * 6.5, headY - 4.0],
+      [headX + dirSign * 5.2, headY - 4.6],
+      [headX + dirSign * 6.5, headY - 1.4],
+      [headX + dirSign * 1.2, headY - 1.8],
+      [headX - dirSign * 5.8, headY - 0.8],
     ], C.ROBE2);
-    bodyS.poly([
-      [headX + 0.5, headY - 7.5],
-      [headX + 9.5, headY - 4.2],
-      [headX + 7.5, headY - 0.8],
-      [headX + 2.2, headY - 1.5],
-    ], C.HAIR1);
-    // Center swept bang lock
-    bodyS.poly([
-      [headX - 2.0, headY - 6.8],
-      [headX + 2.8, headY - 6.2],
-      [headX + 0.4, headY - 0.5],
-    ], C.ROBE3);
+    bodyS.line(headX - dirSign * 2.5, headY - 4.6, headX + dirSign * 4.2, headY - 3.0, 1.3, C.ROBE3);
 
-    // Side framing locks + cyan diamond tips
-    if (!isSide) {
-      for (const side of [-1, 1]) {
-        const sx = headX + side * 8.8;
-        bodyS.poly([
-          [sx - side * 1.4, headY - 4.5],
-          [sx + side * 2.2, headY - 3.5],
-          [sx + side * 1.5 + coatSway * 0.5, headY + 10.8],
-          [sx - side * 0.8 + coatSway * 0.5, headY + 8.5],
-        ], side < 0 ? C.ROBE2 : C.HAIR1);
-        bodyS.set(sx + side * 0.6 + coatSway * 0.5, headY + 10.2, C.CYAN3);
-      }
+    // Side framing lock behind ear/cheek (NEVER covers the eye!)
+    const sx = headX - dirSign * 3.4;
+    bodyS.poly([
+      [sx - 2.3, headY - 3.6],
+      [sx + 2.3, headY - 2.8],
+      [sx + 1.6 + cSway * 0.4, headY + 8.6],
+      [sx - 1.9 + cSway * 0.4, headY + 7.8],
+    ], C.ROBE2);
+    bodyS.line(sx - dirSign * 0.3, headY - 2.5, sx + cSway * 0.3, headY + 7.2, 1.1, C.ROBE3);
+    bodyS.set(sx + cSway * 0.4, headY + 8.4, C.CYAN3);
+
+    // Anatomical right-side Peach-Blossom Hairpin:
+    // - E view (facing right): anatomical right side faces camera -> full hairpin at temple!
+    // - W view (facing left): anatomical right side is far side -> only golden pin tip peeks cleanly behind top crown!
+    if (view === 'E') {
+      drawPeachHairpin(bodyS, headX - 2.8, headY - 3.2, -1, cSway, 0.78);
     } else {
-      // Side framing lock behind ear/cheek
-      const sx = headX - dirSign * 6.2;
-      bodyS.poly([
-        [sx - 2.8, headY - 4.5],
-        [sx + 2.8, headY - 3.5],
-        [sx + 2.0 + coatSway * 0.5, headY + 11.2],
-        [sx - 2.2 + coatSway * 0.5, headY + 10.2],
-      ], C.ROBE2);
-      bodyS.line(sx, headY - 3.0, sx + coatSway * 0.4, headY + 9.5, 1.4, C.ROBE3);
-      bodyS.set(sx + coatSway * 0.5, headY + 10.8, C.CYAN3);
+      bodyS.line(headX + 1.2, headY - 7.5, headX + 2.8, headY - 10.2, 1.2, C.GOLD2);
+      bodyS.set(headX + 2.9, headY - 10.4, C.WHITE);
+    }
+  } else {
+    // === FRONT `S` VIEW (Symmetrical 2 Eyes + Round Glasses + Golden Bridge) ===
+    const faceCx = headX;
+    const eyeY = headY + 1.9;
+    bodyS.ellipse(faceCx, headY + 1.5, 7.8, 7.4, C.SKIN2);
+    bodyS.ellipse(faceCx, headY + 1.0, 7.2, 6.8, C.SKIN1);
+
+    bodyS.ellipse(headX, headY - 3.6, 8.9, 5.6, C.HAIR1);
+    bodyS.ellipse(headX, headY - 4.3, 7.6, 4.3, C.ROBE2);
+    bodyS.arc(headX, headY - 4.8, 5.6, 2.2, 1.2, Math.PI * 1.12, Math.PI * 1.88, C.ROBE3);
+
+    for (const side of [-1, 1]) {
+      const ex = faceCx + side * 3.6;
+      if (!blink) {
+        bodyS.ellipse(ex, eyeY, 1.9, 2.0, C.WHITE);
+        bodyS.ellipse(ex, eyeY + 0.1, 1.4, 1.5, C.CYAN2);
+        bodyS.set(ex, eyeY + 0.8, C.CYAN3);
+        bodyS.set(ex, eyeY - 0.1, C.INK1);
+        bodyS.set(ex - 0.8, eyeY - 0.8, C.WHITE);
+        bodyS.line(ex - 1.5, eyeY - 1.9, ex + 1.5, eyeY - 1.9, 1.0, C.INK1);
+      } else {
+        bodyS.line(ex - 1.6, eyeY + 0.4, ex + 1.6, eyeY + 0.4, 1.0, C.INK1);
+      }
+      bodyS.set(ex + side * 1.3, eyeY + 2.7, C.PINK);
+      bodyS.ring(ex, eyeY + 0.1, 2.5, 2.5, 0.85, C.INK1);
+      bodyS.set(ex + side * 2.8, eyeY - 0.3, C.GOLD2);
+      if (glassesGlint > 0.2) {
+        bodyS.line(ex - 1.1, eyeY - 1.1, ex + 1.0, eyeY + 1.0, 1.0, glassesGlint > 0.6 ? C.WHITE : C.CYAN3);
+      }
+    }
+    bodyS.rect(faceCx - 0.8, eyeY - 0.4, 1.6, 1.0, C.GOLD2);
+    if (smileOpen) {
+      bodyS.ellipse(faceCx, eyeY + 4.1, 1.4, 1.0, C.RED);
+      bodyS.set(faceCx, eyeY + 3.5, C.WHITE);
+    } else {
+      bodyS.line(faceCx - 1.1, eyeY + 4.0, faceCx + 1.1, eyeY + 3.9, 1, C.SKIN3);
     }
 
-    // Peach-Blossom & Golden Pagoda Hairpin on HoaVi's anatomical RIGHT side:
-    // - S view: viewer's LEFT (headX - 9.8)
-    // - E view (facing right = anatomical right side toward camera!): prominent at headX - 2.5, headY - 4.5
-    // - W view (facing left = anatomical left side toward camera): peeks behind right-top crown
-    if (view === 'S') {
-      drawPeachHairpin(bodyS, headX - 9.6, headY - 3.5, -1, coatSway);
-    } else if (view === 'E') {
-      drawPeachHairpin(bodyS, headX - 3.5, headY - 4.2, -1, coatSway);
-    } else if (view === 'W') {
-      bodyS.line(headX + 5.5, headY - 7.5, headX + 7.5, headY - 11.5, 1.4, C.GOLD2);
-      bodyS.ellipse(headX + 6.5, headY - 6.8, 1.8, 1.8, C.PINK);
+    // Swept Parted Forehead Bangs & Side Locks
+    bodyS.poly([[headX - 7.5, headY - 3.6], [headX + 2.0, headY - 5.9], [headX - 1.2, headY - 1.2], [headX - 6.4, headY - 0.9]], C.ROBE2);
+    bodyS.poly([[headX + 0.4, headY - 5.9], [headX + 7.5, headY - 3.4], [headX + 5.8, headY - 0.9], [headX + 1.8, headY - 1.4]], C.HAIR1);
+    bodyS.poly([[headX - 1.6, headY - 5.4], [headX + 2.2, headY - 4.9], [headX + 0.3, headY - 0.8]], C.ROBE3);
+
+    for (const side of [-1, 1]) {
+      const sx = headX + side * 6.9;
+      bodyS.poly([
+        [sx - side * 1.1, headY - 3.6],
+        [sx + side * 1.7, headY - 2.8],
+        [sx + side * 1.2 + cSway * 0.4, headY + 8.4],
+        [sx - side * 0.6 + cSway * 0.4, headY + 6.6],
+      ], side < 0 ? C.ROBE2 : C.HAIR1);
+      bodyS.set(sx + side * 0.5 + cSway * 0.4, headY + 8.0, C.CYAN3);
     }
+    drawPeachHairpin(bodyS, headX - 7.5, headY - 2.8, -1, cSway, 0.78);
   }
 
   // 8. Front Arm(s)
@@ -783,24 +752,23 @@ function drawHoaViRig(s, ax, ay, opts = {}) {
   // 9. Crisp 1px #12091a Outline around Character Body
   if (addOutline) bodyS.outline(C.OUT);
 
-  // Blit character onto target surface
   for (let i = 0; i < s.buf.length; i++) {
     if (bodyS.buf[i] !== 0) s.buf[i] = bodyS.buf[i];
   }
 
-  // 10. Foreground Floating Props (Holo-Keyboard & Front Orbiting Prism)
+  // 10. Foreground Floating Props (Proportional Holo-Keyboard & Orbiting Prism)
   if (keyboard && !isBack) {
-    const kx = chestX + dirSign * 9.5;
-    const ky = chestY + 10.5 + keyboardY;
-    drawHoloKeyboard(s, kx, ky, dirSign * 0.6, isSide ? 22 : 28, keyboardKey);
+    const kx = chestX + dirSign * 8.2;
+    const ky = chestY + 8.2 + keyboardY * K;
+    drawHoloKeyboard(s, kx, ky, dirSign * 0.5, isSide ? 17 : 22, keyboardKey);
   }
   if (prisms) {
     for (let i = 0; i < 2; i++) {
       const a = prismPhase + i * Math.PI;
       if (Math.sin(a) >= 0) {
-        const px = chestX + Math.cos(a) * prismRadius;
-        const py = hipY - 3 + Math.sin(a) * 5.5;
-        drawPrismOrb(s, px, py, 1.0, Math.abs(Math.cos(a * 2)));
+        const px = chestX + Math.cos(a) * pRad;
+        const py = hipY - 2.2 + Math.sin(a) * 4.2;
+        drawPrismOrb(s, px, py, 0.78, Math.abs(Math.cos(a * 2)));
       }
     }
   }
